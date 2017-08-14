@@ -57,7 +57,6 @@ const manifest = {
                         Admin: './server/models/admin',
                         AuthAttempt: './server/models/auth-attempt',
                         Session: './server/models/session',
-                        Status: './server/models/status',
                         User: './server/models/user'
                     },
                     autoIndex: Config.get('/hapiMongoModels/autoIndex')
@@ -126,12 +125,6 @@ const manifest = {
         },
         {
             plugin: './server/api/signup',
-            options: {
-                routes: { prefix: '/api' }
-            }
-        },
-        {
-            plugin: './server/api/statuses',
             options: {
                 routes: { prefix: '/api' }
             }

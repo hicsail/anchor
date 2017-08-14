@@ -12,8 +12,6 @@ internals.applyRoutes = function (server, next) {
 
     const Account = server.plugins['hapi-mongo-models'].Account;
     const User = server.plugins['hapi-mongo-models'].User;
-    const Status = server.plugins['hapi-mongo-models'].Status;
-
 
     server.route({
         method: 'GET',
@@ -415,109 +413,6 @@ internals.applyRoutes = function (server, next) {
                 }
 
                 reply(results.account);
-            });
-        }
-    });
-
-
-    server.route({
-        method: 'POST',
-        path: '/accounts/{id}/notes',
-        config: {
-            auth: {
-                strategy: 'simple',
-                scope: 'admin'
-            },
-            validate: {
-                payload: {
-                    data: Joi.string().required()
-                }
-            }
-        },
-        handler: function (request, reply) {
-
-            const id = request.params.id;
-            const update = {
-                $push: {
-                    notes: {
-                        data: request.payload.data,
-                        timeCreated: new Date(),
-                        userCreated: {
-                            id: request.auth.credentials.user._id.toString(),
-                            name: request.auth.credentials.user.username
-                        }
-                    }
-                }
-            };
-
-            Account.findByIdAndUpdate(id, update, (err, account) => {
-
-                if (err) {
-                    return reply(err);
-                }
-
-                reply(account);
-            });
-        }
-    });
-
-
-    server.route({
-        method: 'POST',
-        path: '/accounts/{id}/status',
-        config: {
-            auth: {
-                strategy: 'simple',
-                scope: 'admin'
-            },
-            validate: {
-                payload: {
-                    status: Joi.string().required()
-                }
-            },
-            pre: [{
-                assign: 'status',
-                method: function (request, reply) {
-
-                    Status.findById(request.payload.status, (err, status) => {
-
-                        if (err) {
-                            return reply(err);
-                        }
-
-                        reply(status);
-                    });
-                }
-            }]
-        },
-        handler: function (request, reply) {
-
-            const id = request.params.id;
-            const newStatus = {
-                id: request.pre.status._id.toString(),
-                name: request.pre.status.name,
-                timeCreated: new Date(),
-                userCreated: {
-                    id: request.auth.credentials.user._id.toString(),
-                    name: request.auth.credentials.user.username
-                }
-            };
-            const update = {
-                $set: {
-                    'status.current': newStatus
-                },
-                $push: {
-                    'status.log': newStatus
-                }
-            };
-
-            Account.findByIdAndUpdate(id, update, (err, account) => {
-
-                if (err) {
-                    return reply(err);
-                }
-
-                reply(account);
             });
         }
     });
