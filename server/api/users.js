@@ -133,11 +133,7 @@ internals.applyRoutes = function (server, next) {
                 scope: 'admin'
             },
             validate: {
-                payload: {
-                    username: Joi.string().token().lowercase().required(),
-                    password: Joi.string().required(),
-                    email: Joi.string().email().lowercase().required()
-                }
+                payload: User.payload
             },
             pre: [
                 AuthPlugin.preware.ensureAdminGroup('root'),

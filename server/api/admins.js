@@ -93,9 +93,7 @@ internals.applyRoutes = function (server, next) {
                 scope: 'admin'
             },
             validate: {
-                payload: {
-                    name: Joi.string().required()
-                }
+                payload: Admin.payload
             },
             pre: [
                 AuthPlugin.preware.ensureAdminGroup('root')

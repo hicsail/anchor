@@ -45,5 +45,9 @@ AdminGroup.schema = Joi.object().keys({
     permissions: Joi.object().description('{ permission: boolean, ... }')
 });
 
+AdminGroup.payload = Joi.object().keys({
+    name: Joi.string().required()
+});
+
 
 module.exports = AdminGroup;

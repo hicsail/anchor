@@ -116,9 +116,7 @@ internals.applyRoutes = function (server, next) {
                 scope: 'admin'
             },
             validate: {
-                payload: {
-                    name: Joi.string().required()
-                }
+                payload: Account.payload
             }
         },
         handler: function (request, reply) {

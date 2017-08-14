@@ -56,6 +56,10 @@ Account.schema = Joi.object().keys({
     timeCreated: Joi.date()
 });
 
+Account.payload = Joi.object().keys({
+    name: Joi.string().required()
+});
+
 
 Account.indexes = [
     { key: { 'user.id': 1 } },

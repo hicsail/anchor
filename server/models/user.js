@@ -199,6 +199,12 @@ User.schema = Joi.object().keys({
     timeCreated: Joi.date()
 });
 
+User.payload = Joi.object().keys({
+    username: Joi.string().token().lowercase().required(),
+    password: Joi.string().required(),
+    email: Joi.string().email().lowercase().required()
+});
+
 
 User.indexes = [
     { key: { username: 1, unique: 1 } },

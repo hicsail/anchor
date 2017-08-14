@@ -134,6 +134,10 @@ Admin.schema = Joi.object().keys({
     timeCreated: Joi.date()
 });
 
+Admin.payload = Joi.object().keys({
+    name: Joi.string().required()
+});
+
 
 Admin.indexes = [
     { key: { 'user.id': 1 } },
