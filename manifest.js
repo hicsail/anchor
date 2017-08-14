@@ -44,8 +44,12 @@ const manifest = {
             plugin: {
                 register: 'visionary',
                 options: {
-                    engines: { jade: 'jade' },
-                    path: './server/web'
+                    engines: { html: 'handlebars' },
+                    path: './server/web/templates',
+                    layout: 'layout',
+                    layoutPath: './server/web/layouts',
+                    partialsPath: './server/web/partials',
+                    helpersPath: './server/web/helpers'
                 }
             }
         },
@@ -139,7 +143,7 @@ const manifest = {
             }
         },
         {
-            plugin: './server/web/index'
+            plugin: './server/web/routes/index'
         }
     ]
 };

@@ -27,7 +27,6 @@
     "hapi-mongo-models": "6.x.x",
     "hoek": "4.x.x",
     "inert": "4.x.x",
-    "jade": "1.x.x",
     "joi": "10.x.x",
     "lout": "10.x.x",
     "mongo-models": "1.x.x",

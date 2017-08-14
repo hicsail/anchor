@@ -8,7 +8,7 @@ exports.register = function (server, options, next) {
         path: '/',
         handler: function (request, reply) {
 
-            return reply.view('index');
+            return reply.view('index/index');
         }
     });
 

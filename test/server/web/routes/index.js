@@ -1,10 +1,10 @@
 'use strict';
 const Code = require('code');
-const Config = require('../../../config');
+const Config = require('../../../../config');
 const Hapi = require('hapi');
-const HomePlugin = require('../../../server/web/index');
+const HomePlugin = require('../../../../server/web/routes/index');
 const Lab = require('lab');
-const Manifest = require('../../../manifest');
+const Manifest = require('../../../../manifest');
 const Vision = require('vision');
 const Visionary = require('visionary');
 
