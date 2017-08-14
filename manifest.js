@@ -29,6 +29,9 @@ const manifest = {
             plugin: 'hapi-auth-basic'
         },
         {
+            plugin: 'hapi-auth-cookie'
+        },
+        {
             plugin: 'lout'
         },
         {

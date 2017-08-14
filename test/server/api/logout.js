@@ -5,6 +5,7 @@ const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
+const HapiAuthCookie = require('hapi-auth-cookie');
 const Hoek = require('hoek');
 const Lab = require('lab');
 const LogoutPlugin = require('../../../server/api/logout');
@@ -44,7 +45,7 @@ lab.before((done) => {
         })[0].plugin.options
     };
 
-    const plugins = [HapiAuthBasic, ModelsPlugin, AuthPlugin, LogoutPlugin];
+    const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, LogoutPlugin];
     server = new Hapi.Server();
     server.connection({ port: Config.get('/port/web') });
     server.register(plugins, (err) => {

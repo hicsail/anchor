@@ -16,7 +16,12 @@ internals.applyRoutes = function (server, next) {
         config: {
             auth: {
                 mode: 'try',
-                strategy: 'simple'
+                strategies: ['simple','session']
+            },
+            plugins: {
+                'hapi-auth-cookie': {
+                    redirectTo: false
+                }
             }
         },
         handler: function (request, reply) {

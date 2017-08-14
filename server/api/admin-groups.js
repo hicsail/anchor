@@ -17,7 +17,7 @@ internals.applyRoutes = function (server, next) {
         path: '/admin-groups',
         config: {
             auth: {
-                strategy: 'simple',
+                strategies: ['simple','session'],
                 scope: 'admin'
             },
             validate: {
@@ -57,7 +57,7 @@ internals.applyRoutes = function (server, next) {
         path: '/admin-groups/{id}',
         config: {
             auth: {
-                strategy: 'simple',
+                strategies: ['simple','session'],
                 scope: 'admin'
             },
             pre: [
@@ -87,7 +87,7 @@ internals.applyRoutes = function (server, next) {
         path: '/admin-groups',
         config: {
             auth: {
-                strategy: 'simple',
+                strategies: ['simple','session'],
                 scope: 'admin'
             },
             validate: {
@@ -118,7 +118,7 @@ internals.applyRoutes = function (server, next) {
         path: '/admin-groups/{id}',
         config: {
             auth: {
-                strategy: 'simple',
+                strategies: ['simple','session'],
                 scope: 'admin'
             },
             validate: {
@@ -163,7 +163,7 @@ internals.applyRoutes = function (server, next) {
         path: '/admin-groups/{id}/permissions',
         config: {
             auth: {
-                strategy: 'simple',
+                strategies: ['simple','session'],
                 scope: 'admin'
             },
             validate: {
@@ -204,7 +204,7 @@ internals.applyRoutes = function (server, next) {
         path: '/admin-groups/{id}',
         config: {
             auth: {
-                strategy: 'simple',
+                strategies: ['simple','session'],
                 scope: 'admin'
             },
             validate: {
