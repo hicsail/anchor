@@ -1,8 +1,7 @@
 'use strict';
-const Account = require('./account');
-const Admin = require('./admin');
 const Async = require('async');
 const Bcrypt = require('bcrypt');
+const Clinician = require('./clinician');
 const Joi = require('joi');
 const MongoModels = require('mongo-models');
 
@@ -130,46 +129,6 @@ class User extends MongoModels {
 
         return this.roles.hasOwnProperty(role);
     }
-
-    hydrateRoles(callback) {
-
-        if (!this.roles) {
-            this._roles = {};
-            return callback(null, this._roles);
-        }
-
-        if (this._roles) {
-            return callback(null, this._roles);
-        }
-
-        const self = this;
-        const tasks = {};
-
-        if (this.roles.account) {
-            tasks.account = function (done) {
-
-                Account.findById(self.roles.account.id, done);
-            };
-        }
-
-        if (this.roles.admin) {
-            tasks.admin = function (done) {
-
-                Admin.findById(self.roles.admin.id, done);
-            };
-        }
-
-        Async.auto(tasks, (err, results) => {
-
-            if (err) {
-                return callback(err);
-            }
-
-            self._roles = results;
-
-            callback(null, self._roles);
-        });
-    }
 }
 
 
@@ -183,14 +142,11 @@ User.schema = Joi.object().keys({
     password: Joi.string(),
     email: Joi.string().email().lowercase().required(),
     roles: Joi.object().keys({
-        admin: Joi.object().keys({
-            id: Joi.string().required(),
-            name: Joi.string().required()
-        }),
-        account: Joi.object().keys({
-            id: Joi.string().required(),
-            name: Joi.string().required()
-        })
+        clinician: Clinician.schema,
+        analyst: Joi.boolean().required(),
+        researcher: Joi.boolean().required(),
+        admin: Joi.boolean().required(),
+        root: Joi.boolean().required()
     }),
     resetPassword: Joi.object().keys({
         token: Joi.string().required(),

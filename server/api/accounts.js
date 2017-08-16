@@ -1,6 +1,5 @@
 'use strict';
 const Async = require('async');
-const AuthPlugin = require('../auth');
 const Boom = require('boom');
 const Joi = require('joi');
 
@@ -423,10 +422,7 @@ internals.applyRoutes = function (server, next) {
             auth: {
                 strategies: ['simple','session'],
                 scope: 'admin'
-            },
-            pre: [
-                AuthPlugin.preware.ensureAdminGroup('root')
-            ]
+            }
         },
         handler: function (request, reply) {
 

@@ -10,7 +10,6 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-    const Account = server.plugins['hapi-mongo-models'].Account;
     const Session = server.plugins['hapi-mongo-models'].Session;
     const User = server.plugins['hapi-mongo-models'].User;
 
@@ -93,43 +92,7 @@ internals.applyRoutes = function (server, next) {
 
                     User.create(username, password, email, done);
                 },
-                account: ['user', function (results, done) {
-
-                    const name = request.payload.name;
-
-                    Account.create(name, done);
-                }],
-                linkUser: ['account', function (results, done) {
-
-                    const id = results.account._id.toString();
-                    const update = {
-                        $set: {
-                            user: {
-                                id: results.user._id.toString(),
-                                name: results.user.username
-                            }
-                        }
-                    };
-
-                    Account.findByIdAndUpdate(id, update, done);
-                }],
-                linkAccount: ['account', function (results, done) {
-
-                    const id = results.user._id.toString();
-                    const update = {
-                        $set: {
-                            roles: {
-                                account: {
-                                    id: results.account._id.toString(),
-                                    name: results.account.name.first + ' ' + results.account.name.last
-                                }
-                            }
-                        }
-                    };
-
-                    User.findByIdAndUpdate(id, update, done);
-                }],
-                welcome: ['linkUser', 'linkAccount', function (results, done) {
+                welcome: ['user', function (results, done) {
 
                     const emailOptions = {
                         subject: 'Your ' + Config.get('/projectName') + ' account',
@@ -149,7 +112,7 @@ internals.applyRoutes = function (server, next) {
 
                     done();
                 }],
-                session: ['linkUser', 'linkAccount', function (results, done) {
+                session: ['user', function (results, done) {
 
                     Session.create(results.user._id.toString(), done);
                 }]
@@ -159,7 +122,7 @@ internals.applyRoutes = function (server, next) {
                     return reply(err);
                 }
 
-                const user = results.linkAccount;
+                const user = results.user;
                 const credentials = results.session._id + ':' + results.session.key;
                 const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
 

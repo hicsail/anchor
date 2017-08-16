@@ -28,14 +28,6 @@ internals.applyStrategy = function (server, next) {
 
                     User.findById(results.session.userId, done);
                 }],
-                roles: ['user', function (results, done) {
-
-                    if (!results.user) {
-                        return done();
-                    }
-
-                    results.user.hydrateRoles(done);
-                }],
                 scope: ['user', function (results, done) {
 
                     if (!results.user || !results.user.roles) {
@@ -85,14 +77,6 @@ internals.applyStrategy = function (server, next) {
 
                     User.findById(results.session.userId, done);
                 }],
-                roles: ['user', function (results, done) {
-
-                    if (!results.user) {
-                        return done();
-                    }
-
-                    results.user.hydrateRoles(done);
-                }],
                 scope: ['user', function (results, done) {
 
                     if (!results.user || !results.user.roles) {
@@ -134,29 +118,6 @@ internals.preware = {
 
             reply();
         }
-    },
-    ensureAdminGroup: function (groups) {
-
-        return {
-            assign: 'ensureAdminGroup',
-            method: function (request, reply) {
-
-                if (Object.prototype.toString.call(groups) !== '[object Array]') {
-                    groups = [groups];
-                }
-
-                const groupFound = groups.some((group) => {
-
-                    return request.auth.credentials.roles.admin.isMemberOf(group);
-                });
-
-                if (!groupFound) {
-                    return reply(Boom.notFound('Permission denied to this resource.'));
-                }
-
-                reply();
-            }
-        };
     }
 };
 
