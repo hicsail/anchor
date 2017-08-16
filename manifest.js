@@ -48,7 +48,7 @@ const manifest = {
                     path: './server/web/templates',
                     layout: 'layout',
                     layoutPath: './server/web/layouts',
-                    partialsPath: './server/web/partials',
+                    partialsPath: './server/web/partials'
                     //helpersPath: './server/web/helpers'
                 }
             }
@@ -146,7 +146,13 @@ const manifest = {
             plugin: './server/web/routes/index'
         },
         {
+            plugin: './server/web/routes/login'
+        },
+        {
             plugin: './server/web/routes/public'
+        },
+        {
+            plugin: './server/web/routes/signup'
         }
     ]
 };

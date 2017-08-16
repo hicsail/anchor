@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --inspect -e js,md,html,css server.js",
     "first-time-setup": "node first-time-setup.js",
-    "test": "lab -c -L"
+    "test": "lab -c -L --lint-fix"
   },
   "author": "Reza Akhavan <jedireza@gmail.com> (http://reza.akhavan.me/)",
   "license": "MIT",

@@ -5,7 +5,7 @@ internals.applyRoutes = function (server, next) {
 
     server.route({
         method: 'GET',
-        path: '/',
+        path: '/signup',
         config: {
             auth: {
                 mode: 'try',
@@ -19,17 +19,15 @@ internals.applyRoutes = function (server, next) {
         },
         handler: function (request, reply) {
 
-            let user = null;
             if (request.auth.isAuthenticated) {
-                user = request.auth.credentials.user;
+                return reply.redirect('/');
             }
-            return reply.view('index/index', { user });
+            return reply.view('signup/signup');
         }
     });
 
     next();
 };
-
 
 exports.register = function (server, options, next) {
 
@@ -38,7 +36,8 @@ exports.register = function (server, options, next) {
     next();
 };
 
+
 exports.register.attributes = {
-    name: 'home',
+    name: 'signup/index',
     dependencies: 'visionary'
 };

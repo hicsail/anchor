@@ -19,12 +19,21 @@ internals.applyRoutes = function (server, next) {
         method: 'POST',
         path: '/signup',
         config: {
+            auth: {
+                mode: 'try',
+                strategy: 'session'
+            },
             validate: {
                 payload: {
                     name: Joi.string().required(),
                     email: Joi.string().email().lowercase().required(),
                     username: Joi.string().token().lowercase().required(),
                     password: Joi.string().required()
+                }
+            },
+            plugins: {
+                'hapi-auth-cookie': {
+                    redirectTo: false
                 }
             },
             pre: [{
@@ -154,6 +163,7 @@ internals.applyRoutes = function (server, next) {
                 const credentials = results.session._id + ':' + results.session.key;
                 const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
 
+                request.cookieAuth.set(results.session);
                 reply({
                     user: {
                         _id: user._id,
@@ -175,7 +185,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-    server.dependency(['mailer', 'hapi-mongo-models'], internals.applyRoutes);
+    server.dependency(['auth', 'mailer', 'hapi-mongo-models'], internals.applyRoutes);
 
     next();
 };

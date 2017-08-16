@@ -8,7 +8,7 @@ const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
 const MakeMockModel = require('../../fixtures/make-mock-model');
 const Lab = require('lab');
-const IndexPlugin = require('../../../../server/web/routes/index');
+const LoginPlugin = require('../../../../server/web/routes/login');
 const Manifest = require('../../../../manifest');
 const Path = require('path');
 const Proxyquire = require('proxyquire');
@@ -58,7 +58,7 @@ let server;
 
 lab.before((done) => {
 
-    const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, IndexPlugin];
+    const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, LoginPlugin];
     server = new Hapi.Server();
     server.connection({ port: Config.get('/port/web') });
     server.register(plugins, (err) => {
@@ -72,13 +72,13 @@ lab.before((done) => {
 });
 
 
-lab.experiment('Index Page View', () => {
+lab.experiment('Login Page View', () => {
 
     lab.beforeEach((done) => {
 
         request = {
             method: 'GET',
-            url: '/'
+            url: '/login'
         };
 
         done();
@@ -96,14 +96,80 @@ lab.experiment('Index Page View', () => {
         });
     });
 
-    lab.test('it renders properly when user is authenticated', (done) => {
+    lab.test('it redirects when user is authenticated as an account', (done) => {
 
         request.credentials = AuthenticatedAccount;
 
         server.inject(request, (response) => {
 
-            Code.expect(response.statusMessage).to.match(/Ok/i);
-            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.statusCode).to.equal(302);
+            done();
+        });
+    });
+
+    lab.test('it redirects when user is authenticated as an account', (done) => {
+
+        request.credentials = AuthenticatedAccount;
+        request.url = '/login?returnUrl=/';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(302);
+            done();
+        });
+    });
+});
+
+
+lab.experiment('Logout Page View', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'GET',
+            url: '/logout'
+        };
+
+        done();
+    });
+
+
+    lab.test('it logout properly without logged in user', (done) => {
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(302);
+
+            done();
+        });
+    });
+
+    lab.test('it redirects when user is authenticated as an account', (done) => {
+
+        request.credentials = AuthenticatedAccount;
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(302);
+            done();
+        });
+    });
+
+    lab.test('it redirects when user is authenticated as an account', (done) => {
+
+        request.credentials = AuthenticatedAccount;
+
+        stub.Session.findByIdAndDelete = function () {
+
+            const args = Array.prototype.slice.call(arguments);
+            const callback = args.pop();
+
+            callback(Error('find by id and delete failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
             done();
         });
     });

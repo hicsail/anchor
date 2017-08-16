@@ -1,4 +1,5 @@
 'use strict';
+const AuthPlugin = require('../../../server/auth');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -47,7 +48,7 @@ lab.before((done) => {
         })[0].plugin.options
     };
 
-    const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, MailerPlugin, SignupPlugin];
+    const plugins = [HapiAuthBasic, HapiAuthCookie, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
     server = new Hapi.Server();
     server.connection({ port: Config.get('/port/web') });
     server.register(plugins, (err) => {
@@ -68,7 +69,6 @@ lab.after((done) => {
     done();
 });
 
-
 lab.experiment('Signup Plugin', () => {
 
     lab.beforeEach((done) => {
@@ -79,14 +79,13 @@ lab.experiment('Signup Plugin', () => {
             payload: {
                 name: 'Muddy Mudskipper',
                 username: 'muddy',
-                password: 'dirtandwater',
+                password: 'dirtandWater1',
                 email: 'mrmud@mudmail.mud'
             }
         };
 
         done();
     });
-
 
     lab.test('it returns an error when find one fails for username check', (done) => {
 
