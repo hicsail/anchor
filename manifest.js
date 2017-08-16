@@ -122,6 +122,9 @@ const manifest = {
             }
         },
         {
+            plugin: './server/web/routes/account'
+        },
+        {
             plugin: './server/web/routes/index'
         },
         {

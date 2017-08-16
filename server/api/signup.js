@@ -2,9 +2,6 @@
 const Async = require('async');
 const Boom = require('boom');
 const Config = require('../../config');
-const Joi = require('joi');
-
-
 const internals = {};
 
 
@@ -23,12 +20,7 @@ internals.applyRoutes = function (server, next) {
                 strategy: 'session'
             },
             validate: {
-                payload: {
-                    name: Joi.string().required(),
-                    email: Joi.string().email().lowercase().required(),
-                    username: Joi.string().token().lowercase().required(),
-                    password: Joi.string().required()
-                }
+                payload: User.payload
             },
             plugins: {
                 'hapi-auth-cookie': {
@@ -89,8 +81,15 @@ internals.applyRoutes = function (server, next) {
                     const username = request.payload.username;
                     const password = request.payload.password;
                     const email = request.payload.email;
+                    const name = request.payload.name;
+                    const gender = request.payload.gender;
+                    const phone = request.payload.phone;
+                    const address = request.payload.address;
+                    const dob = request.payload.dob;
+                    const height = request.payload.height;
+                    const weight = request.payload.weight;
 
-                    User.create(username, password, email, done);
+                    User.create(username, password, email, name, gender, dob, height, weight, phone, address, done);
                 },
                 welcome: ['user', function (results, done) {
 

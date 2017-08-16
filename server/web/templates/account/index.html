@@ -1,0 +1,140 @@
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">
+            {{user.name}}
+            {{#if user.isInStudy}}
+            <span class="badge badge-success">In Study</span><br>
+            {{else}}
+            <span class="badge badge-danger">Not in Study</span><br>
+            {{/if}}
+        </h4>
+        <h6 class="card-subtitle mb-2 text-muted"><b>Joined On: </b>{{user.timeCreated}}</h6>
+        <span class="badge badge-success">Patient</span>
+        {{#if user.roles.clinician}}
+        <span class="badge badge-primary">Clinician</span>
+        {{/if}}
+        {{#if user.roles.analyst}}
+        <span class="badge badge-secondary">Analyst</span>
+        {{/if}}
+        {{#if user.roles.researcher}}
+        <span class="badge badge-info">Researcher</span>
+        {{/if}}
+        {{#if user.roles.researcher}}
+        <span class="badge badge-warning">Admin</span>
+        {{/if}}
+        {{#if user.roles.root}}
+        <span class="badge badge-dark">Root</span>
+        {{/if}}
+        <p class="card-text">
+        <form id="updateForm">
+            <div class="form-group">
+                <label for="username">Username<span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="username" id="username" aria-describedby="usernameHelp"
+                       placeholder="Username" value="{{user.username}}">
+                <small id="usernameHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="name">Name<span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelp"
+                       placeholder="Name" value="{{user.name}}">
+                <small id="nameHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="name">Email<span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="email" id="email" aria-describedby="emailHelp"
+                       placeholder="Email Address" value="{{user.email}}">
+                <small id="emailHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="name">Phone</label>
+                <input type="text" class="form-control" name="phone" id="phone" aria-describedby="phoneHelp"
+                       placeholder="Phone Number" value="{{user.phone}}">
+                <small id="phoneHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <label for="name">Gender</label>
+            <div class="form-group">
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="gender" id="genderMale" value="male"> Male
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="female">
+                        Female
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="radio" name="gender" id="genderNull" value="null">
+                        Unanswered
+                    </label>
+                </div>
+                <small id="genderHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="height">Height (in)</label>
+                <input type="number" class="form-control" name="height" id="height" aria-describedby="heightHelp"
+                       placeholder="height in inches" value="{{user.height}}">
+                <small id="heightHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="weight">Weight (lbs)</label>
+                <input type="number" class="form-control" name="weight" id="weight" aria-describedby="weightHelp"
+                       placeholder="weight in pounds" value="{{user.weight}}">
+                <small id="weightHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="name">Date of Birth</label>
+                <input type="text" data-toggle="datepicker" class="form-control" name="dob" id="dob"
+                       aria-describedby="dobHelp" value="{{user.dob}}">
+                <small id="dobHelp" hidden class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea class="form-control" id="address" name="address" rows="3">{{user.address}}</textarea>
+            </div>
+            <button type="submit" id="update" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+</div>
+<script>
+    var gender = '{{user.gender}}';
+</script>
+<script>
+    $('[data-toggle="datepicker"]').datepicker();
+    $(function () {
+        switch (gender) {
+            case 'male':
+                $('#genderMale').prop("checked", true);
+                break;
+            case 'female':
+                $('#genderFemale').prop("checked", true);
+                break;
+            default:
+                $('#genderNull').prop("checked", true);
+                break;
+        }
+    });
+    $('#update').click(function(event) {
+        event.preventDefault();
+        var values = {};
+        $.each($('#updateForm').serializeArray(), function(i, field) {
+            values[field.name] = field.value;
+        });
+        values.dob = $('[data-toggle="datepicker"]').datepicker('getDate');
+        values.height = Number(values.height);
+        values.weight = Number(values.weight);
+        $.ajax({
+            type: "PUT",
+            url: '../api/users/my',
+            data: values,
+            success: function (result) {
+                window.location = '../account'
+            },
+            fail: function (result) {
+                console.error(result);
+            }
+        });
+    });
+</script>

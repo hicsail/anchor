@@ -31,7 +31,7 @@ class User extends MongoModels {
         });
     }
 
-    static create(username, password, email, callback) {
+    static create(username, password, email, name, gender, dob, height, weight, phone, address, callback) {
 
         const self = this;
 
@@ -41,9 +41,24 @@ class User extends MongoModels {
 
                 const document = {
                     isActive: true,
+                    isInStudy: true,
                     username: username.toLowerCase(),
                     password: results.passwordHash.hash,
                     email: email.toLowerCase(),
+                    name,
+                    gender,
+                    dob,
+                    height,
+                    weight,
+                    phone,
+                    address,
+                    roles: {
+                        clinician: null,
+                        analyst: null,
+                        researcher: null,
+                        admin: null,
+                        root: null
+                    },
                     timeCreated: new Date()
                 };
 
@@ -131,6 +146,12 @@ User.schema = Joi.object().keys({
     isActive: Joi.boolean().default(true),
     username: Joi.string().token().lowercase().required(),
     password: Joi.string(),
+    name: Joi.string(),
+    gender: Joi.string().allow('male','female'),
+    dob: Joi.date(),
+    address: Joi.string(),
+    phone: Joi.string(),
+    isInStudy: Joi.boolean().default(true),
     email: Joi.string().email().lowercase().required(),
     roles: Joi.object().keys({
         clinician: Clinician.schema,
@@ -149,7 +170,14 @@ User.schema = Joi.object().keys({
 User.payload = Joi.object().keys({
     username: Joi.string().token().lowercase().required(),
     password: Joi.string().required(),
-    email: Joi.string().email().lowercase().required()
+    email: Joi.string().email().lowercase().required(),
+    name: Joi.string().required(),
+    gender: Joi.string().allow('male','female'),
+    dob: Joi.date(),
+    address: Joi.string().allow('').optional(),
+    phone: Joi.string().allow('').optional(),
+    height: Joi.number(),
+    weight: Joi.number()
 });
 
 

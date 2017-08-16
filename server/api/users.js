@@ -296,7 +296,14 @@ internals.applyRoutes = function (server, next) {
             validate: {
                 payload: {
                     username: Joi.string().token().lowercase().required(),
-                    email: Joi.string().email().lowercase().required()
+                    email: Joi.string().email().lowercase().required(),
+                    name: Joi.string().required(),
+                    gender: Joi.string().allow('male','female'),
+                    dob: Joi.date(),
+                    address: Joi.string().allow('').optional(),
+                    phone: Joi.string().allow('').optional(),
+                    height: Joi.number().optional(),
+                    weight: Joi.number().optional()
                 }
             },
             pre: [
@@ -353,11 +360,18 @@ internals.applyRoutes = function (server, next) {
             const update = {
                 $set: {
                     username: request.payload.username,
-                    email: request.payload.email
+                    email: request.payload.email,
+                    name: request.payload.name,
+                    gender: request.payload.gender,
+                    dob: request.payload.dob,
+                    address: request.payload.address,
+                    phone: request.payload.phone,
+                    height: request.payload.height,
+                    weight: request.payload.weight
                 }
             };
             const findOptions = {
-                fields: User.fieldsAdapter('username email roles')
+                fields: User.fieldsAdapter('username email roles gender dob address phone height weight')
             };
 
             User.findByIdAndUpdate(id, update, findOptions, (err, user) => {

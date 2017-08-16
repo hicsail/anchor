@@ -178,7 +178,7 @@ lab.experiment('Signup Plugin', () => {
             callback();
         };
 
-        stub.User.create = function (username, password, email, callback) {
+        stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
 
             callback(Error('create failed'));
         };
@@ -199,30 +199,12 @@ lab.experiment('Signup Plugin', () => {
             callback();
         };
 
-        stub.User.create = function (username, password, email, callback) {
+        stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
 
             callback(null, { _id: 'BL4M0' });
         };
 
-        stub.Account.create = function (name, callback) {
-
-            const account = {
-                _id: 'BL4M0',
-                name: {
-                    first: 'Muddy',
-                    last: 'Mudskipper'
-                }
-            };
-
-            callback(null, account);
-        };
-
         stub.User.findByIdAndUpdate = function (id, update, callback) {
-
-            callback(null, [{}, {}]);
-        };
-
-        stub.Account.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, [{}, {}]);
         };
@@ -263,7 +245,7 @@ lab.experiment('Signup Plugin', () => {
             callback();
         };
 
-        stub.User.create = function (username, password, email, callback) {
+        stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
 
             callback(null, { _id: 'BL4M0' });
         };

@@ -293,7 +293,8 @@ lab.experiment('Users Plugin Create', () => {
             payload: {
                 username: 'muddy',
                 password: 'dirtandwater',
-                email: 'mrmud@mudmail.mud'
+                email: 'mrmud@mudmail.mud',
+                name: 'muddy test'
             },
             credentials: AuthenticatedUser
         };
@@ -607,7 +608,8 @@ lab.experiment('Users Plugin (My) Update', () => {
             url: '/users/my',
             payload: {
                 username: 'muddy',
-                email: 'mrmud@mudmail.mud'
+                email: 'mrmud@mudmail.mud',
+                name: 'my name'
             },
             credentials: AuthenticatedUser
         };
