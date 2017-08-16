@@ -120,15 +120,6 @@ class User extends MongoModels {
             enumerable: false
         });
     }
-
-    canPlayRole(role) {
-
-        if (!this.roles) {
-            return false;
-        }
-
-        return this.roles.hasOwnProperty(role);
-    }
 }
 
 

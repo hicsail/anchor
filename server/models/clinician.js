@@ -3,15 +3,15 @@ const Joi = require('joi');
 
 class Clinician {
 
-    static create(userAccess, callback) {
+    static create(userAccess) {
 
-        Joi.validate(userAccess, Clinician.schema.userAccess, callback);
+        return { userAccess };
     }
 }
 
 
 Clinician.schema = Joi.object().keys({
-    userAccess: Joi.array().items(Joi.string()).unique().required()
+    userAccess: Joi.array().items(Joi.string()).required()
 });
 
 

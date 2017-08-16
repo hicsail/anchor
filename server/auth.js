@@ -1,6 +1,5 @@
 'use strict';
 const Async = require('async');
-const Boom = require('boom');
 const Config = require('../config');
 
 
@@ -103,24 +102,6 @@ internals.applyStrategy = function (server, next) {
 
     next();
 };
-
-
-internals.preware = {
-    ensureNotRoot: {
-        assign: 'ensureNotRoot',
-        method: function (request, reply) {
-
-            if (request.auth.credentials.user.username === 'root') {
-                const message = 'Not permitted for root user.';
-
-                return reply(Boom.badRequest(message));
-            }
-
-            reply();
-        }
-    }
-};
-
 
 exports.register = function (server, options, next) {
 

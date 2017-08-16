@@ -59,9 +59,6 @@ const manifest = {
                 options: {
                     mongodb: Config.get('/hapiMongoModels/mongodb'),
                     models: {
-                        Account: './server/models/account',
-                        AdminGroup: './server/models/admin-group',
-                        Admin: './server/models/admin',
                         AuthAttempt: './server/models/auth-attempt',
                         Session: './server/models/session',
                         User: './server/models/user'
@@ -75,24 +72,6 @@ const manifest = {
         },
         {
             plugin: './server/mailer'
-        },
-        {
-            plugin: './server/api/accounts',
-            options: {
-                routes: { prefix: '/api' }
-            }
-        },
-        {
-            plugin: './server/api/admin-groups',
-            options: {
-                routes: { prefix: '/api' }
-            }
-        },
-        {
-            plugin: './server/api/admins',
-            options: {
-                routes: { prefix: '/api' }
-            }
         },
         {
             plugin: './server/api/auth-attempts',

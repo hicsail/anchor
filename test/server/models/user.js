@@ -10,13 +10,9 @@ const lab = exports.lab = Lab.script();
 const mongoUri = Config.get('/hapiMongoModels/mongodb/uri');
 const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
 const stub = {
-    Account: {},
-    Admin: {},
     bcrypt: {}
 };
 const User = Proxyquire('../../../server/models/user', {
-    './account': stub.Account,
-    './admin': stub.Admin,
     bcrypt: stub.bcrypt
 });
 
