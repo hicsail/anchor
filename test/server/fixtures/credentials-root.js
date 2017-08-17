@@ -6,7 +6,7 @@ const user = new User({
     _id: '535HOW35',
     username: 'ren',
     roles: {
-        admin: true
+        root: true
     }
 });
 

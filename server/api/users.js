@@ -590,7 +590,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }
@@ -665,7 +665,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }
@@ -721,7 +721,7 @@ internals.applyRoutes = function (server, next) {
 
             const user = request.pre.user;
 
-            if (user.roles.clinician) {
+            if (user.roles.analyst) {
                 return reply(user);
             }
 
@@ -741,7 +741,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }
@@ -816,7 +816,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }
@@ -892,7 +892,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }
@@ -967,7 +967,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }
@@ -1043,7 +1043,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }
@@ -1118,7 +1118,7 @@ internals.applyRoutes = function (server, next) {
                 reply({
                     _id: updatedUser._id,
                     username: updatedUser.username,
-                    roles: updatedUser.roles,
+                    roles: updatedUser.roles
                 });
             });
         }

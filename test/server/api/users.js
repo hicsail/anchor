@@ -1,6 +1,7 @@
 'use strict';
 const AuthPlugin = require('../../../server/auth');
 const AuthenticatedUser = require('../fixtures/credentials-admin');
+const AuthenticatedRoot = require('../fixtures/credentials-root');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -973,3 +974,1050 @@ lab.experiment('Users Plugin Delete', () => {
         });
     });
 });
+
+lab.experiment('Users Plugin Clinician Promote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'PUT',
+            url: '/users/clinician/93EP150D35',
+            credentials: AuthenticatedUser
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are promoting yourself', (done) => {
+
+        request.url = '/users/clinician/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if already role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    clinician: {}
+                }
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.clinician).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when adding role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    clinician: true
+                }
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.clinician).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+
+lab.experiment('Users Plugin Analyst Promote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'PUT',
+            url: '/users/analyst/93EP150D35',
+            credentials: AuthenticatedUser
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are promoting yourself', (done) => {
+
+        request.url = '/users/analyst/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if already role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    analyst: true
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    analyst: true
+                }
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.analyst).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when adding role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.analyst).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+
+lab.experiment('Users Plugin Researcher Promote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'PUT',
+            url: '/users/researcher/93EP150D35',
+            credentials: AuthenticatedUser
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are promoting yourself', (done) => {
+
+        request.url = '/users/researcher/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if already role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    researcher: true
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    researcher: true
+                }
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.researcher).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when adding role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.researcher).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+lab.experiment('Users Plugin Admin Promote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'PUT',
+            url: '/users/admin/93EP150D35',
+            credentials: AuthenticatedRoot
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are promoting yourself', (done) => {
+
+        request.url = '/users/admin/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if already role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    admin: true
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    admin: true
+                }
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.admin).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when adding role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.admin).to.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+
+lab.experiment('Users Plugin Clinician Demote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'DELETE',
+            url: '/users/clinician/93EP150D35',
+            credentials: AuthenticatedRoot
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are demoting yourself', (done) => {
+
+        request.url = '/users/clinician/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if role is not present', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.clinician).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when removing role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    clinician: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.clinician).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    clinician: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+
+lab.experiment('Users Plugin Analyst Demote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'DELETE',
+            url: '/users/analyst/93EP150D35',
+            credentials: AuthenticatedRoot
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are demoting yourself', (done) => {
+
+        request.url = '/users/analyst/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if role is not present', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.analyst).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when removing role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    analyst: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.analyst).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    analyst: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+lab.experiment('Users Plugin Researcher Demote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'DELETE',
+            url: '/users/researcher/93EP150D35',
+            credentials: AuthenticatedRoot
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are demoting yourself', (done) => {
+
+        request.url = '/users/researcher/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if role is not present', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.researcher).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when removing role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    researcher: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.researcher).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    researcher: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+
+lab.experiment('Users Plugin Admin Demote', () => {
+
+    lab.beforeEach((done) => {
+
+        request = {
+            method: 'DELETE',
+            url: '/users/admin/93EP150D35',
+            credentials: AuthenticatedRoot
+        };
+
+        done();
+    });
+
+
+    lab.test('it returns an error when you are demoting yourself', (done) => {
+
+        request.url = '/users/admin/535HOW35';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(409);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when findById fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when user is not found', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, null);
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(404);
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful if role is not present', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.researcher).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns successful when removing role', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    admin: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {}
+            });
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.roles.admin).to.not.exist();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an error when update fails', (done) => {
+
+        stub.User.findById = function (id, options,callback) {
+
+            callback(null, {
+                username: 'test',
+                roles: {
+                    admin: {}
+                }
+            });
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update,callback) {
+
+            callback(Error('failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+
+            done();
+        });
+    });
+});
+
+

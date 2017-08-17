@@ -4,10 +4,7 @@ const User = require('../../../server/models/user');
 const user = new User({
     username: 'stimpy',
     roles: {
-        clinician: { userAccess:['userId'] },
-        analyst: null,
-        researcher: null,
-        systemAdmin: null
+        clinician: { userAccess:['userId'] }
     }
 });
 
