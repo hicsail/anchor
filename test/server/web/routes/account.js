@@ -72,7 +72,7 @@ lab.before((done) => {
 });
 
 
-lab.experiment('Index Page View', () => {
+lab.experiment('Account Page View', () => {
 
     lab.beforeEach((done) => {
 

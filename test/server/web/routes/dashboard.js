@@ -8,7 +8,7 @@ const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
 const MakeMockModel = require('../../fixtures/make-mock-model');
 const Lab = require('lab');
-const SignUpPlugin = require('../../../../server/web/routes/signup');
+const DashboardPlugin = require('../../../../server/web/routes/dashboard');
 const Manifest = require('../../../../manifest');
 const Path = require('path');
 const Proxyquire = require('proxyquire');
@@ -58,7 +58,7 @@ let server;
 
 lab.before((done) => {
 
-    const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, SignUpPlugin];
+    const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, DashboardPlugin];
     server = new Hapi.Server();
     server.connection({ port: Config.get('/port/web') });
     server.register(plugins, (err) => {
@@ -72,37 +72,37 @@ lab.before((done) => {
 });
 
 
-lab.experiment('Signup Page View', () => {
+lab.experiment('Dashboard Page View', () => {
 
     lab.beforeEach((done) => {
 
         request = {
             method: 'GET',
-            url: '/signup'
+            url: '/dashboard'
         };
 
         done();
     });
 
 
-    lab.test('it renders properly', (done) => {
+    lab.test('it redirects when user is not logged in', (done) => {
 
         server.inject(request, (response) => {
 
-            Code.expect(response.statusMessage).to.match(/Ok/i);
-            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.statusCode).to.equal(302);
 
             done();
         });
     });
 
-    lab.test('it redirects when user is authenticated as an account', (done) => {
+    lab.test('it renders properly when user is authenticated', (done) => {
 
         request.credentials = AuthenticatedAccount;
 
         server.inject(request, (response) => {
 
-            Code.expect(response.statusCode).to.equal(302);
+            Code.expect(response.statusMessage).to.match(/Ok/i);
+            Code.expect(response.statusCode).to.equal(200);
             done();
         });
     });

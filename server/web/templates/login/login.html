@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" style="padding-top: 40px">
     <div class="row justify-content-center">
         <div class="col-xl-6 col-lg-6">
             <div class="card">
@@ -43,7 +43,7 @@
             url: '../api/login',
             data: values,
             success: function (result) {
-                window.location = '../'
+                location.reload();
             },
             fail: function (result) {
                 console.error(result);

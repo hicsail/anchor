@@ -125,6 +125,9 @@ const manifest = {
             plugin: './server/web/routes/account'
         },
         {
+            plugin: './server/web/routes/dashboard'
+        },
+        {
             plugin: './server/web/routes/index'
         },
         {
@@ -132,6 +135,9 @@ const manifest = {
         },
         {
             plugin: './server/web/routes/public'
+        },
+        {
+            plugin: './server/web/routes/roles'
         },
         {
             plugin: './server/web/routes/signup'
