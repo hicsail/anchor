@@ -107,7 +107,12 @@ lab.experiment('User Plugin Result List', () => {
             const args = Array.prototype.slice.call(arguments);
             const callback = args.pop();
 
-            callback(null, { data: [{}, {}, {}] });
+            callback(null, {
+                data: [{}, {}, {}],
+                items: {
+                    total: 3
+                }
+            });
         };
 
         server.inject(request, (response) => {
@@ -128,10 +133,42 @@ lab.experiment('User Plugin Result List', () => {
             const args = Array.prototype.slice.call(arguments);
             const callback = args.pop();
 
-            callback(null, { data: [{}, {}, {}] });
+            callback(null, {
+                data: [{}, {}, {}],
+                items: {
+                    total: 3
+                }
+            });
         };
 
-        request.url = '/users?username=ren&isActive=true&role=admin&limit=10&page=1';
+        request.url = '/users?order[0][dir]=desc&search[value]=test';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.data).to.be.an.array();
+            Code.expect(response.result.data[0]).to.be.an.object();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an array of documents successfully using filters', (done) => {
+
+        stub.User.pagedFind = function () {
+
+            const args = Array.prototype.slice.call(arguments);
+            const callback = args.pop();
+
+            callback(null, {
+                data: [{}, {}, {}],
+                items: {
+                    total: 3
+                }
+            });
+        };
+
+        request.url = '/users?order[0][dir]=asc&search[value]=test';
 
         server.inject(request, (response) => {
 

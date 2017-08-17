@@ -44,7 +44,7 @@ const manifest = {
             plugin: {
                 register: 'visionary',
                 options: {
-                    engines: { html: 'handlebars' },
+                    engines: { handlebars: 'handlebars' },
                     path: './server/web/templates',
                     layout: 'layout',
                     layoutPath: './server/web/layouts',

@@ -1,6 +1,6 @@
 'use strict';
 const AuthPlugin = require('../../../../server/auth');
-const AuthenticatedAccount = require('../../fixtures/credentials-user');
+const AuthenticatedAccount = require('../../fixtures/credentials-admin');
 const Code = require('code');
 const Config = require('../../../../config');
 const Hapi = require('hapi');

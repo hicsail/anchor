@@ -17,36 +17,22 @@ internals.applyRoutes = function (server, next) {
         config: {
             auth: {
                 strategies: ['simple','session'],
-                scope: 'admin'
+                scope: ['root','admin','researcher']
             },
             validate: {
-                query: {
-                    username: Joi.string().token().lowercase(),
-                    isActive: Joi.string(),
-                    role: Joi.string(),
-                    fields: Joi.string(),
-                    sort: Joi.string().default('_id'),
-                    limit: Joi.number().default(20),
-                    page: Joi.number().default(1)
-                }
+                query: Joi.any()
             }
         },
         handler: function (request, reply) {
 
-            const query = {};
-            if (request.query.username) {
-                query.username = new RegExp('^.*?' + request.query.username + '.*$', 'i');
-            }
-            if (request.query.isActive) {
-                query.isActive = request.query.isActive === 'true';
-            }
-            if (request.query.role) {
-                query['roles.' + request.query.role] = { $exists: true };
-            }
+            const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
+            const query = {
+                username: { $regex: request.query['search[value]'] }
+            };
             const fields = request.query.fields;
-            const sort = request.query.sort;
-            const limit = request.query.limit;
-            const page = request.query.page;
+            const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
+            const limit = Number(request.query.length);
+            const page = Math.ceil(Number(request.query.start) / limit) + 1;
 
             User.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
@@ -54,7 +40,13 @@ internals.applyRoutes = function (server, next) {
                     return reply(err);
                 }
 
-                reply(results);
+                reply({
+                    draw: request.query.draw,
+                    recordsTotal: results.items.total,
+                    recordsFiltered: results.data.length,
+                    data: results.data,
+                    error: err
+                });
             });
         }
     });

@@ -8,7 +8,8 @@ internals.applyRoutes = function (server, next) {
         path: '/roles',
         config: {
             auth: {
-                strategy: 'session'
+                strategy: 'session',
+                scope: ['root','admin','researcher']
             }
         },
         handler: function (request, reply) {
