@@ -52,13 +52,7 @@ class User extends MongoModels {
                     weight,
                     phone,
                     address,
-                    roles: {
-                        clinician: null,
-                        analyst: null,
-                        researcher: null,
-                        admin: null,
-                        root: null
-                    },
+                    roles: {},
                     timeCreated: new Date()
                 };
 
