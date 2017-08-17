@@ -19,8 +19,3 @@ jobs:
       - run:
           name: test
           command: npm test
-      - deployment:
-          staging:
-            branch: master
-              heroku:
-                appname: get-anchor
