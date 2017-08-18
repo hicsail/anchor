@@ -16,7 +16,7 @@ const Vision = require('vision');
 const Visionary = require('visionary');
 
 const stub = {
-  Session: MakeMockModel()
+    Session: MakeMockModel()
 };
 
 const proxy = {};
@@ -24,31 +24,31 @@ proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
 
 const lab = exports.lab = Lab.script();
 const ModelsPlugin = {
-  register: Proxyquire('hapi-mongo-models', proxy),
-  options: Manifest.get('/registrations').filter((reg) => {
+    register: Proxyquire('hapi-mongo-models', proxy),
+    options: Manifest.get('/registrations').filter((reg) => {
 
-    if (reg.plugin &&
+        if (reg.plugin &&
       reg.plugin.register &&
       reg.plugin.register === 'hapi-mongo-models') {
 
-      return true;
-    }
+            return true;
+        }
 
-    return false;
-  })[0].plugin.options
+        return false;
+    })[0].plugin.options
 };
 
 const VisionaryPlugin = {
-  register: Visionary,
-  options: Manifest.get('/registrations').filter((reg) => {
+    register: Visionary,
+    options: Manifest.get('/registrations').filter((reg) => {
 
-    if (reg.plugin && reg.plugin.register && reg.plugin.register === 'visionary') {
+        if (reg.plugin && reg.plugin.register && reg.plugin.register === 'visionary') {
 
-      return true;
-    }
+            return true;
+        }
 
-    return false;
-  })[0].plugin.options
+        return false;
+    })[0].plugin.options
 };
 
 
@@ -58,119 +58,119 @@ let server;
 
 lab.before((done) => {
 
-  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, LoginPlugin];
-  server = new Hapi.Server();
-  server.connection({port: Config.get('/port/web')});
-  server.register(plugins, (err) => {
+    const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, LoginPlugin];
+    server = new Hapi.Server();
+    server.connection({ port: Config.get('/port/web') });
+    server.register(plugins, (err) => {
 
-    if (err) {
-      return done(err);
-    }
+        if (err) {
+            return done(err);
+        }
 
-    server.initialize(done);
-  });
+        server.initialize(done);
+    });
 });
 
 
 lab.experiment('Login Page View', () => {
 
-  lab.beforeEach((done) => {
+    lab.beforeEach((done) => {
 
-    request = {
-      method: 'GET',
-      url: '/login'
-    };
+        request = {
+            method: 'GET',
+            url: '/login'
+        };
 
-    done();
-  });
-
-
-  lab.test('it renders properly', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusMessage).to.match(/Ok/i);
-      Code.expect(response.statusCode).to.equal(200);
-
-      done();
+        done();
     });
-  });
 
-  lab.test('it redirects when user is authenticated as an account', (done) => {
 
-    request.credentials = AuthenticatedAccount;
+    lab.test('it renders properly', (done) => {
 
-    server.inject(request, (response) => {
+        server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(302);
-      done();
+            Code.expect(response.statusMessage).to.match(/Ok/i);
+            Code.expect(response.statusCode).to.equal(200);
+
+            done();
+        });
     });
-  });
 
-  lab.test('it redirects when user is authenticated as an account', (done) => {
+    lab.test('it redirects when user is authenticated as an account', (done) => {
 
-    request.credentials = AuthenticatedAccount;
-    request.url = '/login?returnUrl=/';
+        request.credentials = AuthenticatedAccount;
 
-    server.inject(request, (response) => {
+        server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(302);
-      done();
+            Code.expect(response.statusCode).to.equal(302);
+            done();
+        });
     });
-  });
+
+    lab.test('it redirects when user is authenticated as an account', (done) => {
+
+        request.credentials = AuthenticatedAccount;
+        request.url = '/login?returnUrl=/';
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(302);
+            done();
+        });
+    });
 });
 
 
 lab.experiment('Logout Page View', () => {
 
-  lab.beforeEach((done) => {
+    lab.beforeEach((done) => {
 
-    request = {
-      method: 'GET',
-      url: '/logout'
-    };
+        request = {
+            method: 'GET',
+            url: '/logout'
+        };
 
-    done();
-  });
-
-
-  lab.test('it logout properly without logged in user', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(302);
-
-      done();
+        done();
     });
-  });
 
-  lab.test('it redirects when user is authenticated as an account', (done) => {
 
-    request.credentials = AuthenticatedAccount;
+    lab.test('it logout properly without logged in user', (done) => {
 
-    server.inject(request, (response) => {
+        server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(302);
-      done();
+            Code.expect(response.statusCode).to.equal(302);
+
+            done();
+        });
     });
-  });
 
-  lab.test('it redirects when user is authenticated as an account', (done) => {
+    lab.test('it redirects when user is authenticated as an account', (done) => {
 
-    request.credentials = AuthenticatedAccount;
+        request.credentials = AuthenticatedAccount;
 
-    stub.Session.findByIdAndDelete = function () {
+        server.inject(request, (response) => {
 
-      const args = Array.prototype.slice.call(arguments);
-      const callback = args.pop();
-
-      callback(Error('find by id and delete failed'));
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-      done();
+            Code.expect(response.statusCode).to.equal(302);
+            done();
+        });
     });
-  });
+
+    lab.test('it redirects when user is authenticated as an account', (done) => {
+
+        request.credentials = AuthenticatedAccount;
+
+        stub.Session.findByIdAndDelete = function () {
+
+            const args = Array.prototype.slice.call(arguments);
+            const callback = args.pop();
+
+            callback(Error('find by id and delete failed'));
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(500);
+            done();
+        });
+    });
 });

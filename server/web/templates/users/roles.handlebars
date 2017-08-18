@@ -190,26 +190,26 @@
         }
       }
     });
+
+    function promote(id, role) {
+      changeRole(id, role, 'PUT');
+    }
+
+    function demote(id, role) {
+      changeRole(id, role, 'DELETE');
+    }
+
+    function changeRole(id, role, method) {
+      $.ajax({
+        url: "../api/users/" + role + '/' + id,
+        type: method,
+        success: function (data) {
+          table.ajax.reload();
+        },
+        error: function (data) {
+
+        },
+      });
+    }
   });
-
-  function promote(id, role) {
-    changeRole(id, role, 'PUT');
-  }
-
-  function demote(id, role) {
-    changeRole(id, role, 'DELETE');
-  }
-
-  function changeRole(id, role, method) {
-    $.ajax({
-      url: "../api/users/" + role + '/' + id,
-      type: method,
-      success: function (data) {
-
-      },
-      error: function (data) {
-
-      },
-    });
-  }
 </script>

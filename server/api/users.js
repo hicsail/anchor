@@ -289,6 +289,49 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'PUT',
+    path: '/users/{id}/participation',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root', 'admin', 'researcher']
+      },
+      validate: {
+        params: {
+          id: Joi.string().invalid('000000000000000000000000')
+        },
+        payload: {
+          inStudy: Joi.boolean().required(),
+          studyID: Joi.number().required()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          inStudy: request.payload.inStudy,
+          studyID: request.payload.studyID
+        }
+      };
+
+      User.findByIdAndUpdate(id, update, (err, user) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!user) {
+          return reply(Boom.notFound('Document not found.'));
+        }
+
+        reply(user);
+      });
+    }
+  });
+
 
   server.route({
     method: 'PUT',

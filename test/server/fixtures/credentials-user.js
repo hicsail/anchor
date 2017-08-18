@@ -3,13 +3,13 @@ const User = require('../../../server/models/user');
 
 
 const user = new User({
-  username: 'stimpy',
-  roles: {}
+    username: 'stimpy',
+    roles: {}
 });
 
 
 module.exports = {
-  user,
-  roles: user.roles,
-  scope: Object.keys(user.roles)
+    user,
+    roles: user.roles,
+    scope: Object.keys(user.roles)
 };

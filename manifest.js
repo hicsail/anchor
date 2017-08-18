@@ -137,9 +137,6 @@ const manifest = {
       plugin: './server/web/routes/public'
     },
     {
-      plugin: './server/web/routes/roles'
-    },
-    {
       plugin: './server/web/routes/signup'
     },
     {

@@ -40,10 +40,10 @@
               <td>
                 <div class="btn-group" data-toggle="buttons">
                   <label id="inButton" class="btn btn-light">
-                    <input type="radio" name="inStudy" id="in"> In Study
+                    <input type="radio" name="inStudy" id="in" value="in"> In Study
                   </label>
-                  <label  id="outButton" class="btn btn-light">
-                    <input type="radio" name="inStudy" id="out"> Out of Study
+                  <label id="outButton" class="btn btn-light">
+                    <input type="radio" name="inStudy" id="out" value="out"> Out of Study
                   </label>
                 </div>
               </td>
@@ -59,6 +59,7 @@
   </div>
 </div>
 <script>
+  var userID = "";
   $(document).ready(function () {
     var table = $('#userTable').DataTable({
       "processing": true,
@@ -104,7 +105,7 @@
         $('#roleCard').show();
         $('#username').text(rowData.username);
         $('#studyID').val(rowData.studyID);
-        if(rowData.inStudy) {
+        if (rowData.inStudy) {
           $('#in').prop("checked", true);
           $('#inButton').addClass('active btn-primary').removeClass('btn-light');
           $('#out').prop("checked", false);
@@ -115,6 +116,7 @@
           $('#in').prop("checked", false);
           $('#inButton').addClass('btn-light').removeClass('active btn-primary');
         }
+        userID = rowData._id;
       }
     });
 
@@ -131,26 +133,32 @@
       $('#in').prop("checked", false);
       $('#inButton').addClass('btn-light').removeClass('active btn-primary');
     });
+
+    $('#update').click(function () {
+      var inStudy = true;
+      if ($("input:radio[name ='inStudy']:checked").val() == 'out') {
+        inStudy = false;
+      }
+      var data = {
+        studyID: Number($('#studyID').val()),
+        inStudy: inStudy
+      };
+      $.ajax({
+        url: "../api/users/" + userID + "/participation",
+        type: 'PUT',
+        data: data,
+        success: function (data) {
+          table.ajax.reload();
+        },
+        error: function (data) {
+
+        }
+      });
+    });
   });
 
-  function promote(id, role) {
-    changeRole(id, role, 'PUT');
-  }
 
-  function demote(id, role) {
-    changeRole(id, role, 'DELETE');
-  }
+  function updateUser(id, values) {
 
-  function changeRole(id, role, method) {
-    $.ajax({
-      url: "../api/users/" + role + '/' + id,
-      type: method,
-      success: function (data) {
-
-      },
-      error: function (data) {
-
-      },
-    });
   }
 </script>

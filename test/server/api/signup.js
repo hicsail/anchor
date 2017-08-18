@@ -22,277 +22,277 @@ let stub;
 
 lab.before((done) => {
 
-  stub = {
-    Account: MakeMockModel(),
-    Session: MakeMockModel(),
-    User: MakeMockModel()
-  };
+    stub = {
+        Account: MakeMockModel(),
+        Session: MakeMockModel(),
+        User: MakeMockModel()
+    };
 
-  const proxy = {};
-  proxy[Path.join(process.cwd(), './server/models/account')] = stub.Account;
-  proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
-  proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
+    const proxy = {};
+    proxy[Path.join(process.cwd(), './server/models/account')] = stub.Account;
+    proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
+    proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
 
-  const ModelsPlugin = {
-    register: Proxyquire('hapi-mongo-models', proxy),
-    options: Manifest.get('/registrations').filter((reg) => {
+    const ModelsPlugin = {
+        register: Proxyquire('hapi-mongo-models', proxy),
+        options: Manifest.get('/registrations').filter((reg) => {
 
-      if (reg.plugin &&
+            if (reg.plugin &&
         reg.plugin.register &&
         reg.plugin.register === 'hapi-mongo-models') {
 
-        return true;
-      }
+                return true;
+            }
 
-      return false;
-    })[0].plugin.options
-  };
+            return false;
+        })[0].plugin.options
+    };
 
-  const plugins = [HapiAuthBasic, HapiAuthCookie, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
-  server = new Hapi.Server();
-  server.connection({port: Config.get('/port/web')});
-  server.register(plugins, (err) => {
+    const plugins = [HapiAuthBasic, HapiAuthCookie, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
+    server = new Hapi.Server();
+    server.connection({ port: Config.get('/port/web') });
+    server.register(plugins, (err) => {
 
-    if (err) {
-      return done(err);
-    }
+        if (err) {
+            return done(err);
+        }
 
-    server.initialize(done);
-  });
+        server.initialize(done);
+    });
 });
 
 
 lab.after((done) => {
 
-  server.plugins['hapi-mongo-models'].MongoModels.disconnect();
+    server.plugins['hapi-mongo-models'].MongoModels.disconnect();
 
-  done();
+    done();
 });
 
 lab.experiment('Signup Plugin', () => {
 
-  lab.beforeEach((done) => {
+    lab.beforeEach((done) => {
 
-    request = {
-      method: 'POST',
-      url: '/signup',
-      payload: {
-        name: 'Muddy Mudskipper',
-        username: 'muddy',
-        password: 'dirtandWater1',
-        email: 'mrmud@mudmail.mud',
-        application: 'Test'
-      }
-    };
+        request = {
+            method: 'POST',
+            url: '/signup',
+            payload: {
+                name: 'Muddy Mudskipper',
+                username: 'muddy',
+                password: 'dirtandWater1',
+                email: 'mrmud@mudmail.mud',
+                application: 'Test'
+            }
+        };
 
-    done();
-  });
-
-  lab.test('it returns an error when find one fails for username check', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      if (conditions.username) {
-        callback(Error('find one failed'));
-      }
-      else {
-        callback();
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-
-      done();
+        done();
     });
-  });
 
+    lab.test('it returns an error when find one fails for username check', (done) => {
 
-  lab.test('it returns a conflict when find one hits for username check', (done) => {
+        stub.User.findOne = function (conditions, callback) {
 
-    stub.User.findOne = function (conditions, callback) {
+            if (conditions.username) {
+                callback(Error('find one failed'));
+            }
+            else {
+                callback();
+            }
+        };
 
-      if (conditions.username) {
-        callback(null, {});
-      }
-      else {
-        callback(Error('find one failed'));
-      }
-    };
+        server.inject(request, (response) => {
 
-    server.inject(request, (response) => {
+            Code.expect(response.statusCode).to.equal(500);
 
-      Code.expect(response.statusCode).to.equal(409);
-
-      done();
+            done();
+        });
     });
-  });
 
 
-  lab.test('it returns an error when find one fails for email check', (done) => {
+    lab.test('it returns a conflict when find one hits for username check', (done) => {
 
-    stub.User.findOne = function (conditions, callback) {
+        stub.User.findOne = function (conditions, callback) {
 
-      if (conditions.email) {
-        callback(Error('find one failed'));
-      }
-      else {
-        callback();
-      }
-    };
+            if (conditions.username) {
+                callback(null, {});
+            }
+            else {
+                callback(Error('find one failed'));
+            }
+        };
 
-    server.inject(request, (response) => {
+        server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(500);
+            Code.expect(response.statusCode).to.equal(409);
 
-      done();
+            done();
+        });
     });
-  });
 
 
-  lab.test('it returns a conflict when find one hits for email check', (done) => {
+    lab.test('it returns an error when find one fails for email check', (done) => {
 
-    stub.User.findOne = function (conditions, callback) {
+        stub.User.findOne = function (conditions, callback) {
 
-      if (conditions.email) {
-        callback(null, {});
-      }
-      else {
-        callback();
-      }
-    };
+            if (conditions.email) {
+                callback(Error('find one failed'));
+            }
+            else {
+                callback();
+            }
+        };
 
-    server.inject(request, (response) => {
+        server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(409);
+            Code.expect(response.statusCode).to.equal(500);
 
-      done();
+            done();
+        });
     });
-  });
 
 
-  lab.test('it returns an error if any critical setup step fails', (done) => {
+    lab.test('it returns a conflict when find one hits for email check', (done) => {
 
-    stub.User.findOne = function (conditions, callback) {
+        stub.User.findOne = function (conditions, callback) {
 
-      callback();
-    };
+            if (conditions.email) {
+                callback(null, {});
+            }
+            else {
+                callback();
+            }
+        };
 
-    stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+        server.inject(request, (response) => {
 
-      callback(Error('create failed'));
-    };
+            Code.expect(response.statusCode).to.equal(409);
 
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-
-      done();
+            done();
+        });
     });
-  });
 
 
-  lab.test('it finishes successfully (even if sending welcome email fails)', (done) => {
+    lab.test('it returns an error if any critical setup step fails', (done) => {
 
-    stub.User.findOne = function (conditions, callback) {
+        stub.User.findOne = function (conditions, callback) {
 
-      callback();
-    };
+            callback();
+        };
 
-    stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+        stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
 
-      callback(null, {_id: 'BL4M0'});
-    };
+            callback(Error('create failed'));
+        };
 
-    stub.User.findByIdAndUpdate = function (id, update, callback) {
+        server.inject(request, (response) => {
 
-      callback(null, [{}, {}]);
-    };
+            Code.expect(response.statusCode).to.equal(500);
 
-    const realSendEmail = server.plugins.mailer.sendEmail;
-    server.plugins.mailer.sendEmail = function (options, template, context, callback) {
-
-      callback(new Error('Whoops.'));
-    };
-
-    stub.Session.create = function (username, application, callback) {
-
-      callback(null, {});
-    };
-
-    const realWarn = console.warn;
-    console.warn = function () {
-
-      console.warn = realWarn;
-
-      done();
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
-
-      server.plugins.mailer.sendEmail = realSendEmail;
+            done();
+        });
     });
-  });
 
 
-  lab.test('it finishes successfully', (done) => {
+    lab.test('it finishes successfully (even if sending welcome email fails)', (done) => {
 
-    stub.User.findOne = function (conditions, callback) {
+        stub.User.findOne = function (conditions, callback) {
 
-      callback();
-    };
+            callback();
+        };
 
-    stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+        stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
 
-      callback(null, {_id: 'BL4M0'});
-    };
+            callback(null, { _id: 'BL4M0' });
+        };
 
-    stub.Account.create = function (name, callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
-      const account = {
-        _id: 'BL4M0',
-        name: {
-          first: 'Muddy',
-          last: 'Mudskipper'
-        }
-      };
+            callback(null, [{}, {}]);
+        };
 
-      callback(null, account);
-    };
+        const realSendEmail = server.plugins.mailer.sendEmail;
+        server.plugins.mailer.sendEmail = function (options, template, context, callback) {
 
-    stub.User.findByIdAndUpdate = function (id, update, callback) {
+            callback(new Error('Whoops.'));
+        };
 
-      callback(null, [{}, {}]);
-    };
+        stub.Session.create = function (username, application, callback) {
 
-    stub.Account.findByIdAndUpdate = function (id, update, callback) {
+            callback(null, {});
+        };
 
-      callback(null, [{}, {}]);
-    };
+        const realWarn = console.warn;
+        console.warn = function () {
 
-    const realSendEmail = server.plugins.mailer.sendEmail;
-    server.plugins.mailer.sendEmail = function (options, template, context, callback) {
+            console.warn = realWarn;
 
-      callback(null, {});
-    };
+            done();
+        };
 
-    stub.Session.create = function (username, application, callback) {
+        server.inject(request, (response) => {
 
-      callback(null, {});
-    };
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result).to.be.an.object();
 
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
-
-      server.plugins.mailer.sendEmail = realSendEmail;
-
-      done();
+            server.plugins.mailer.sendEmail = realSendEmail;
+        });
     });
-  });
+
+
+    lab.test('it finishes successfully', (done) => {
+
+        stub.User.findOne = function (conditions, callback) {
+
+            callback();
+        };
+
+        stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+
+            callback(null, { _id: 'BL4M0' });
+        };
+
+        stub.Account.create = function (name, callback) {
+
+            const account = {
+                _id: 'BL4M0',
+                name: {
+                    first: 'Muddy',
+                    last: 'Mudskipper'
+                }
+            };
+
+            callback(null, account);
+        };
+
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
+
+            callback(null, [{}, {}]);
+        };
+
+        stub.Account.findByIdAndUpdate = function (id, update, callback) {
+
+            callback(null, [{}, {}]);
+        };
+
+        const realSendEmail = server.plugins.mailer.sendEmail;
+        server.plugins.mailer.sendEmail = function (options, template, context, callback) {
+
+            callback(null, {});
+        };
+
+        stub.Session.create = function (username, application, callback) {
+
+            callback(null, {});
+        };
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result).to.be.an.object();
+
+            server.plugins.mailer.sendEmail = realSendEmail;
+
+            done();
+        });
+    });
 });

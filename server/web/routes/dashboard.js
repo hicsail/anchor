@@ -3,32 +3,32 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  server.route({
-    method: 'GET',
-    path: '/dashboard',
-    config: {
-      auth: {
-        strategy: 'session'
-      }
-    },
-    handler: function (request, reply) {
+    server.route({
+        method: 'GET',
+        path: '/dashboard',
+        config: {
+            auth: {
+                strategy: 'session'
+            }
+        },
+        handler: function (request, reply) {
 
-      return reply.view('dashboard/index', {user: request.auth.credentials.user});
-    }
-  });
+            return reply.view('dashboard/index', { user: request.auth.credentials.user });
+        }
+    });
 
-  next();
+    next();
 };
 
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth'], internals.applyRoutes);
+    server.dependency(['auth'], internals.applyRoutes);
 
-  next();
+    next();
 };
 
 exports.register.attributes = {
-  name: 'dashboard',
-  dependencies: 'visionary'
+    name: 'dashboard',
+    dependencies: 'visionary'
 };
