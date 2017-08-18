@@ -1,4 +1,4 @@
-<div class="container" style="padding-top: 40px">
+<div class="container" style="padding-top: 60px">
   <div class="card">
     <div class="card-body">
       <h4 class="card-title">
@@ -135,7 +135,7 @@
         window.location = '../account'
       },
       fail: function (result) {
-        console.error(result);
+        errorAlert(result.responseJSON.message);
       }
     });
   });

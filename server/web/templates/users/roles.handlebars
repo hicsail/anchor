@@ -2,7 +2,7 @@
   <div class="row h-100">
     {{>dashboardNav}}
     <div class="col-sm-9 col-md-10">
-      <div class="container" style="padding-top: 40px">
+      <div class="container" style="padding-top: 60px">
         <h3>Roles</h3>
         <hr>
         <p>Click on user to change permissions</p>
@@ -203,11 +203,12 @@
       $.ajax({
         url: "../api/users/" + role + '/' + id,
         type: method,
-        success: function (data) {
+        success: function (result) {
+          successAlert('User Updated');
           table.ajax.reload();
         },
-        error: function (data) {
-
+        error: function (result) {
+          errorAlert(result.responseJSON.message);
         },
       });
     }
