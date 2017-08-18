@@ -38,8 +38,8 @@ lab.before((done) => {
         options: Manifest.get('/registrations').filter((reg) => {
 
             if (reg.plugin &&
-                reg.plugin.register &&
-                reg.plugin.register === 'hapi-mongo-models') {
+        reg.plugin.register &&
+        reg.plugin.register === 'hapi-mongo-models') {
 
                 return true;
             }
@@ -1124,7 +1124,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -1139,7 +1139,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -1154,7 +1154,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
 
     lab.test('it returns successful if already role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1175,7 +1175,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
 
     lab.test('it returns successful when adding role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1183,7 +1183,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1204,7 +1204,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1212,7 +1212,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };
@@ -1255,7 +1255,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -1270,7 +1270,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -1285,7 +1285,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
 
     lab.test('it returns successful if already role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1295,7 +1295,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1316,7 +1316,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
 
     lab.test('it returns successful when adding role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1335,7 +1335,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1343,7 +1343,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };
@@ -1386,7 +1386,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -1401,7 +1401,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -1416,7 +1416,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
 
     lab.test('it returns successful if already role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1426,7 +1426,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1447,7 +1447,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
 
     lab.test('it returns successful when adding role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1466,7 +1466,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1474,7 +1474,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };
@@ -1516,7 +1516,7 @@ lab.experiment('Users Plugin Admin Promote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -1531,7 +1531,7 @@ lab.experiment('Users Plugin Admin Promote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -1546,7 +1546,7 @@ lab.experiment('Users Plugin Admin Promote', () => {
 
     lab.test('it returns successful if already role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1556,7 +1556,7 @@ lab.experiment('Users Plugin Admin Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1577,7 +1577,7 @@ lab.experiment('Users Plugin Admin Promote', () => {
 
     lab.test('it returns successful when adding role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1596,7 +1596,7 @@ lab.experiment('Users Plugin Admin Promote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1604,7 +1604,7 @@ lab.experiment('Users Plugin Admin Promote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };
@@ -1647,7 +1647,7 @@ lab.experiment('Users Plugin Clinician Demote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -1662,7 +1662,7 @@ lab.experiment('Users Plugin Clinician Demote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -1677,7 +1677,7 @@ lab.experiment('Users Plugin Clinician Demote', () => {
 
     lab.test('it returns successful if role is not present', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1696,7 +1696,7 @@ lab.experiment('Users Plugin Clinician Demote', () => {
 
     lab.test('it returns successful when removing role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1706,7 +1706,7 @@ lab.experiment('Users Plugin Clinician Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1725,7 +1725,7 @@ lab.experiment('Users Plugin Clinician Demote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1735,7 +1735,7 @@ lab.experiment('Users Plugin Clinician Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };
@@ -1778,7 +1778,7 @@ lab.experiment('Users Plugin Analyst Demote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -1793,7 +1793,7 @@ lab.experiment('Users Plugin Analyst Demote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -1808,7 +1808,7 @@ lab.experiment('Users Plugin Analyst Demote', () => {
 
     lab.test('it returns successful if role is not present', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1827,7 +1827,7 @@ lab.experiment('Users Plugin Analyst Demote', () => {
 
     lab.test('it returns successful when removing role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1837,7 +1837,7 @@ lab.experiment('Users Plugin Analyst Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1856,7 +1856,7 @@ lab.experiment('Users Plugin Analyst Demote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1866,7 +1866,7 @@ lab.experiment('Users Plugin Analyst Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };
@@ -1908,7 +1908,7 @@ lab.experiment('Users Plugin Researcher Demote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -1923,7 +1923,7 @@ lab.experiment('Users Plugin Researcher Demote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -1938,7 +1938,7 @@ lab.experiment('Users Plugin Researcher Demote', () => {
 
     lab.test('it returns successful if role is not present', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1957,7 +1957,7 @@ lab.experiment('Users Plugin Researcher Demote', () => {
 
     lab.test('it returns successful when removing role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1967,7 +1967,7 @@ lab.experiment('Users Plugin Researcher Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1986,7 +1986,7 @@ lab.experiment('Users Plugin Researcher Demote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -1996,7 +1996,7 @@ lab.experiment('Users Plugin Researcher Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };
@@ -2039,7 +2039,7 @@ lab.experiment('Users Plugin Admin Demote', () => {
 
     lab.test('it returns an error when findById fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(Error('failed'));
         };
@@ -2054,7 +2054,7 @@ lab.experiment('Users Plugin Admin Demote', () => {
 
     lab.test('it returns an error when user is not found', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, null);
         };
@@ -2069,7 +2069,7 @@ lab.experiment('Users Plugin Admin Demote', () => {
 
     lab.test('it returns successful if role is not present', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -2088,7 +2088,7 @@ lab.experiment('Users Plugin Admin Demote', () => {
 
     lab.test('it returns successful when removing role', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -2098,7 +2098,7 @@ lab.experiment('Users Plugin Admin Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(null, {
                 username: 'test',
@@ -2117,7 +2117,7 @@ lab.experiment('Users Plugin Admin Demote', () => {
 
     lab.test('it returns an error when update fails', (done) => {
 
-        stub.User.findById = function (id, options,callback) {
+        stub.User.findById = function (id, options, callback) {
 
             callback(null, {
                 username: 'test',
@@ -2127,7 +2127,7 @@ lab.experiment('Users Plugin Admin Demote', () => {
             });
         };
 
-        stub.User.findByIdAndUpdate = function (id, update,callback) {
+        stub.User.findByIdAndUpdate = function (id, update, callback) {
 
             callback(Error('failed'));
         };

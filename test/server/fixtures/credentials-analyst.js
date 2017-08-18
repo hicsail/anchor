@@ -16,7 +16,6 @@ module.exports = {
 };
 
 
-
 module.exports = {
     user,
     roles: user._roles,

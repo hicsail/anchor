@@ -87,7 +87,7 @@ internals.applyRoutes = function (server, next) {
                 assign: 'session',
                 method: function (request, reply) {
 
-                    Session.create(request.pre.user._id.toString(),request.payload.application, (err, session) => {
+                    Session.create(request.pre.user._id.toString(), request.payload.application, (err, session) => {
 
                         if (err) {
                             return reply(err);

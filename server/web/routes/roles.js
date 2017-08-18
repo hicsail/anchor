@@ -9,7 +9,7 @@ internals.applyRoutes = function (server, next) {
         config: {
             auth: {
                 strategy: 'session',
-                scope: ['root','admin','researcher']
+                scope: ['root', 'admin', 'researcher']
             }
         },
         handler: function (request, reply) {

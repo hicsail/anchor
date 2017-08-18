@@ -22,7 +22,7 @@ internals.applyRoutes = function (server, next) {
                     password: Joi.string().required(),
                     email: Joi.string().email().lowercase().required(),
                     name: Joi.string().required(),
-                    gender: Joi.string().allow('male','female'),
+                    gender: Joi.string().allow('male', 'female'),
                     dob: Joi.date(),
                     address: Joi.string().allow('').optional(),
                     phone: Joi.string().allow('').optional(),
@@ -117,7 +117,7 @@ internals.applyRoutes = function (server, next) {
                 }],
                 session: ['user', function (results, done) {
 
-                    Session.create(results.user._id.toString(),request.payload.application, done);
+                    Session.create(results.user._id.toString(), request.payload.application, done);
                 }]
             }, (err, results) => {
 

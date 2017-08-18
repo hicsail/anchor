@@ -1,206 +1,215 @@
 <div class="container-fluid h-100">
-    <div class="row h-100">
-        {{>dashboardNav}}
-        <div class="col-sm-9 col-md-10">
-            <div class="container" style="padding-top: 40px">
-                <h3>Roles</h3><hr>
-                <p>Click on user to change permissions</p>
-                <div class="card">
-                    <div class="container" style="padding-top: 20px; padding-bottom: 20px">
-                        <table id="userTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                            <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Clinician</th>
-                                <th>Analyst</th>
-                                <th>Researcher</th>
-                                <th>Admin</th>
-                                <th>Root</th>
-                            </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-                <br>
-                <div class="card" id="roleCard" style="padding: 20px">
-                    <table class="table table-striped table-bordered" cellspacing="0" width="100%">
-                        <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Clinician</th>
-                            <th>Analyst</th>
-                            <th>Researcher</th>
-                            <th>Admin</th>
-                            <th>Root</th>
-                        </tr>
-                        <tbody>
-                            <tr>
-                                <td id="username">username</td>
-                                <td><button id="clinician" class="btn btn-primary">Promote</button></td>
-                                <td><button id="analyst" class="btn btn-secondary">Promote</button></td>
-                                <td><button id="researcher" class="btn btn-info">Promote</button></td>
-                                <td><button id="admin" class="btn btn-warning">Promote</button></td>
-                                <td id="root"></td>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div class="container" style="padding-top: 40px">
+        <h3>Roles</h3>
+        <hr>
+        <p>Click on user to change permissions</p>
+        <div class="card">
+          <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+            <table id="userTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>Username</th>
+                <th>Clinician</th>
+                <th>Analyst</th>
+                <th>Researcher</th>
+                <th>Admin</th>
+                <th>Root</th>
+              </tr>
+              </thead>
+            </table>
+          </div>
         </div>
+        <br>
+        <div class="card" id="roleCard" style="padding: 20px">
+          <table class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+              <th>Username</th>
+              <th>Clinician</th>
+              <th>Analyst</th>
+              <th>Researcher</th>
+              <th>Admin</th>
+              <th>Root</th>
+            </tr>
+            <tbody>
+            <tr>
+              <td id="username">username</td>
+              <td>
+                <button id="clinician" class="btn btn-primary">Promote</button>
+              </td>
+              <td>
+                <button id="analyst" class="btn btn-secondary">Promote</button>
+              </td>
+              <td>
+                <button id="researcher" class="btn btn-info">Promote</button>
+              </td>
+              <td>
+                <button id="admin" class="btn btn-warning">Promote</button>
+              </td>
+              <td id="root"></td>
+            </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 <script>
-    $(document).ready(function() {
-        var table = $('#userTable').DataTable( {
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": "../api/users",
-                "data": function ( d ) {
-                    d.fields = "username roles";
-                }
-            },
-            "columns": [
-                {
-                    "data": "username"
-                },
-                {
-                    "data": "roles.clinician",
-                    "render": function ( data, type, row ) {
-                        if(row.roles.clinician) {
-                            return '<h4><span class="badge badge-primary">Clinician</span></h4>';
-                        }
-                        return '';
-                    },
-                },
-                {
-                    "data": "roles.analyst",
-                    "render": function ( data, type, row ) {
-                        if(row.roles.analyst) {
-                            return '<h4><span class="badge badge-secondary">Analyst</span></h4>';
-                        }
-                        return '';
-                    }
-                },
-                {
-                    "data": "roles.researcher",
-                    "render": function ( data, type, row ) {
-                        if(row.roles.researcher) {
-                            return '<h4><span class="badge badge-info">Researcher</span></h4>';
-                        }
-                        return '';
-                    }
-                },
-                {
-                    "data": "roles.admin",
-                    "render": function ( data, type, row ) {
-                        if(row.roles.admin) {
-                            return '<h4><span class="badge badge-warning">Admin</span></h4>';
-                        }
-                        return '';
-                    },
-                },
-                {
-                    "data": "roles.root",
-                    "render": function ( data, type, row ) {
-                        if(row.roles.root) {
-                            return '<h4><span class="badge badge-dark">Root</span></h4>';
-                        }
-                        return '';
-                    }
-                }
-            ]
-        });
-        $('#roleCard').hide();
-        $('#userTable tbody').on( 'click', 'tr', function () {
-            if ( $(this).hasClass('selected') ) {
-                $(this).removeClass('selected');
+  $(document).ready(function () {
+    var table = $('#userTable').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "ajax": {
+        "url": "../api/users",
+        "data": function (d) {
+          d.fields = "username roles";
+        }
+      },
+      "columns": [
+        {
+          "data": "username"
+        },
+        {
+          "data": "roles.clinician",
+          "render": function (data, type, row) {
+            if (row.roles.clinician) {
+              return '<h4><span class="badge badge-primary">Clinician</span></h4>';
             }
-            else {
-                table.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                var rowData = table.row(this).data();
-                $('#roleCard').show();
-                $('#username').text(rowData.username);
-                if(rowData.roles.clinician) {
-                    $('#clinician').addClass('btn-danger').removeClass('btn-primary');
-                    $('#clinician').text('Demote');
-                    $('#clinician').unbind('click').click(() => {
-                        demote(rowData._id,'clinician');
-                    });
-                } else {
-                    $('#clinician').addClass('btn-primary').removeClass('btn-danger');
-                    $('#clinician').text('Promote');
-                    $('#clinician').unbind('click').click(() => {
-                        promote(rowData._id,'clinician');
-                    });
-                }
-                if(rowData.roles.analyst) {
-                    $('#analyst').addClass('btn-danger').removeClass('btn-secondary');
-                    $('#analyst').text('Demote');
-                    $('#analyst').unbind('click').click(() => {
-                        demote(rowData._id,'analyst');
-                    });
-                } else {
-                    $('#analyst').addClass('btn-secondary').removeClass('btn-danger');
-                    $('#analyst').text('Promote');
-                    $('#analyst').unbind('click').click(() => {
-                        promote(rowData._id,'analyst');
-                    });
-                }
-                if(rowData.roles.researcher) {
-                    $('#researcher').addClass('btn-danger').removeClass('btn-info');
-                    $('#researcher').text('Demote');
-                    $('#researcher').unbind('click').click(() => {
-                        demote(rowData._id,'researcher');
-                    });
-                } else {
-                    $('#researcher').addClass('btn-info').removeClass('btn-danger');
-                    $('#researcher').text('Promote');
-                    $('#researcher').unbind('click').click(() => {
-                        promote(rowData._id,'researcher');
-                    });
-                }
-                if(rowData.roles.admin) {
-                    $('#admin').addClass('btn-danger').removeClass('btn-info');
-                    $('#admin').text('Demote');
-                    $('#admin').unbind('click').click(() => {
-                        demote(rowData._id,'admin');
-                    });
-                } else {
-                    $('#admin').addClass('btn-warning').removeClass('btn-danger');
-                    $('#admin').text('Promote');
-                    $('#admin').unbind('click').click(() => {
-                        promote(rowData._id,'admin');
-                    });
-                }
-                if(rowData.roles.root) {
-                    $('#root').html('<h4><span class="badge badge-dark">Root</span></h4>');
-                } else {
-                    $('#root').html('');
-                }
+            return '';
+          },
+        },
+        {
+          "data": "roles.analyst",
+          "render": function (data, type, row) {
+            if (row.roles.analyst) {
+              return '<h4><span class="badge badge-secondary">Analyst</span></h4>';
             }
-        });
+            return '';
+          }
+        },
+        {
+          "data": "roles.researcher",
+          "render": function (data, type, row) {
+            if (row.roles.researcher) {
+              return '<h4><span class="badge badge-info">Researcher</span></h4>';
+            }
+            return '';
+          }
+        },
+        {
+          "data": "roles.admin",
+          "render": function (data, type, row) {
+            if (row.roles.admin) {
+              return '<h4><span class="badge badge-warning">Admin</span></h4>';
+            }
+            return '';
+          },
+        },
+        {
+          "data": "roles.root",
+          "render": function (data, type, row) {
+            if (row.roles.root) {
+              return '<h4><span class="badge badge-dark">Root</span></h4>';
+            }
+            return '';
+          }
+        }
+      ]
     });
+    $('#roleCard').hide();
+    $('#userTable tbody').on('click', 'tr', function () {
+      if ($(this).hasClass('selected')) {
+        $(this).removeClass('selected');
+      }
+      else {
+        table.$('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+        var rowData = table.row(this).data();
+        $('#roleCard').show();
+        $('#username').text(rowData.username);
+        if (rowData.roles.clinician) {
+          $('#clinician').addClass('btn-danger').removeClass('btn-primary');
+          $('#clinician').text('Demote');
+          $('#clinician').unbind('click').click(() => {
+            demote(rowData._id, 'clinician');
+          });
+        } else {
+          $('#clinician').addClass('btn-primary').removeClass('btn-danger');
+          $('#clinician').text('Promote');
+          $('#clinician').unbind('click').click(() => {
+            promote(rowData._id, 'clinician');
+          });
+        }
+        if (rowData.roles.analyst) {
+          $('#analyst').addClass('btn-danger').removeClass('btn-secondary');
+          $('#analyst').text('Demote');
+          $('#analyst').unbind('click').click(() => {
+            demote(rowData._id, 'analyst');
+          });
+        } else {
+          $('#analyst').addClass('btn-secondary').removeClass('btn-danger');
+          $('#analyst').text('Promote');
+          $('#analyst').unbind('click').click(() => {
+            promote(rowData._id, 'analyst');
+          });
+        }
+        if (rowData.roles.researcher) {
+          $('#researcher').addClass('btn-danger').removeClass('btn-info');
+          $('#researcher').text('Demote');
+          $('#researcher').unbind('click').click(() => {
+            demote(rowData._id, 'researcher');
+          });
+        } else {
+          $('#researcher').addClass('btn-info').removeClass('btn-danger');
+          $('#researcher').text('Promote');
+          $('#researcher').unbind('click').click(() => {
+            promote(rowData._id, 'researcher');
+          });
+        }
+        if (rowData.roles.admin) {
+          $('#admin').addClass('btn-danger').removeClass('btn-info');
+          $('#admin').text('Demote');
+          $('#admin').unbind('click').click(() => {
+            demote(rowData._id, 'admin');
+          });
+        } else {
+          $('#admin').addClass('btn-warning').removeClass('btn-danger');
+          $('#admin').text('Promote');
+          $('#admin').unbind('click').click(() => {
+            promote(rowData._id, 'admin');
+          });
+        }
+        if (rowData.roles.root) {
+          $('#root').html('<h4><span class="badge badge-dark">Root</span></h4>');
+        } else {
+          $('#root').html('');
+        }
+      }
+    });
+  });
 
-    function promote(id, role) {
-        changeRole(id, role,'PUT');
-    }
+  function promote(id, role) {
+    changeRole(id, role, 'PUT');
+  }
 
-    function demote(id, role) {
-        changeRole(id, role,'DELETE');
-    }
+  function demote(id, role) {
+    changeRole(id, role, 'DELETE');
+  }
 
-    function changeRole(id, role, method) {
-        $.ajax({
-            url: "../api/users/" + role + '/' + id,
-            type: method,
-            success: function (data) {
+  function changeRole(id, role, method) {
+    $.ajax({
+      url: "../api/users/" + role + '/' + id,
+      type: method,
+      success: function (data) {
 
-            },
-            error: function (data) {
+      },
+      error: function (data) {
 
-            },
-        });
-    }
+      },
+    });
+  }
 </script>

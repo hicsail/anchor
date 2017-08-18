@@ -28,8 +28,8 @@ const ModelsPlugin = {
     options: Manifest.get('/registrations').filter((reg) => {
 
         if (reg.plugin &&
-            reg.plugin.register &&
-            reg.plugin.register === 'hapi-mongo-models') {
+      reg.plugin.register &&
+      reg.plugin.register === 'hapi-mongo-models') {
 
             return true;
         }

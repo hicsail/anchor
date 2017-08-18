@@ -4,7 +4,7 @@ const User = require('../../../server/models/user');
 const user = new User({
     username: 'stimpy',
     roles: {
-        clinician: { userAccess:['userId'] }
+        clinician: { userAccess: ['userId'] }
     }
 });
 
@@ -14,7 +14,6 @@ module.exports = {
     roles: user._roles,
     scope: Object.keys(user.roles)
 };
-
 
 
 module.exports = {

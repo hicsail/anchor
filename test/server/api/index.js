@@ -40,7 +40,6 @@ lab.experiment('Index Plugin', () => {
     });
 
 
-
     lab.test('it returns the default message', (done) => {
 
         server.inject(request, (response) => {

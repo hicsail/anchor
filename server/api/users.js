@@ -16,7 +16,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users',
         config: {
             auth: {
-                strategies: ['simple','session']
+                strategies: ['simple', 'session']
             },
             validate: {
                 query: Joi.any()
@@ -70,7 +70,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: 'admin'
             }
         },
@@ -97,7 +97,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/my',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: ['admin', 'account']
             }
         },
@@ -127,7 +127,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: 'admin'
             },
             validate: {
@@ -202,7 +202,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: 'admin'
             },
             validate: {
@@ -295,7 +295,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/my',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: ['admin', 'account']
             },
             validate: {
@@ -303,7 +303,7 @@ internals.applyRoutes = function (server, next) {
                     username: Joi.string().token().lowercase().required(),
                     email: Joi.string().email().lowercase().required(),
                     name: Joi.string().required(),
-                    gender: Joi.string().allow('male','female'),
+                    gender: Joi.string().allow('male', 'female'),
                     dob: Joi.date(),
                     address: Joi.string().allow('').optional(),
                     phone: Joi.string().allow('').optional(),
@@ -396,7 +396,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/{id}/password',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: 'admin'
             },
             validate: {
@@ -450,7 +450,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/my/password',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: ['admin', 'account']
             },
             validate: {
@@ -499,7 +499,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: 'admin'
             },
             validate: {
@@ -530,8 +530,8 @@ internals.applyRoutes = function (server, next) {
         path: '/users/clinician/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
-                scope: ['root','admin','researcher']
+                strategies: ['simple', 'session'],
+                scope: ['root', 'admin', 'researcher']
             },
             validate: {
                 params: {
@@ -548,7 +548,7 @@ internals.applyRoutes = function (server, next) {
 
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 
@@ -606,8 +606,8 @@ internals.applyRoutes = function (server, next) {
         path: '/users/clinician/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
-                scope: ['root','admin','researcher']
+                strategies: ['simple', 'session'],
+                scope: ['root', 'admin', 'researcher']
             },
             validate: {
                 params: {
@@ -623,7 +623,7 @@ internals.applyRoutes = function (server, next) {
                     }
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 
@@ -681,8 +681,8 @@ internals.applyRoutes = function (server, next) {
         path: '/users/analyst/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
-                scope: ['root','admin','researcher']
+                strategies: ['simple', 'session'],
+                scope: ['root', 'admin', 'researcher']
             },
             validate: {
                 params: {
@@ -699,7 +699,7 @@ internals.applyRoutes = function (server, next) {
 
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 
@@ -757,8 +757,8 @@ internals.applyRoutes = function (server, next) {
         path: '/users/analyst/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
-                scope: ['root','admin','researcher']
+                strategies: ['simple', 'session'],
+                scope: ['root', 'admin', 'researcher']
             },
             validate: {
                 params: {
@@ -774,7 +774,7 @@ internals.applyRoutes = function (server, next) {
                     }
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 
@@ -832,8 +832,8 @@ internals.applyRoutes = function (server, next) {
         path: '/users/researcher/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
-                scope: ['root','admin']
+                strategies: ['simple', 'session'],
+                scope: ['root', 'admin']
             },
             validate: {
                 params: {
@@ -850,7 +850,7 @@ internals.applyRoutes = function (server, next) {
 
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 
@@ -908,8 +908,8 @@ internals.applyRoutes = function (server, next) {
         path: '/users/researcher/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
-                scope: ['root','admin']
+                strategies: ['simple', 'session'],
+                scope: ['root', 'admin']
             },
             validate: {
                 params: {
@@ -925,7 +925,7 @@ internals.applyRoutes = function (server, next) {
                     }
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 
@@ -983,7 +983,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/admin/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: ['root']
             },
             validate: {
@@ -1001,7 +1001,7 @@ internals.applyRoutes = function (server, next) {
 
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 
@@ -1059,7 +1059,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users/admin/{id}',
         config: {
             auth: {
-                strategies: ['simple','session'],
+                strategies: ['simple', 'session'],
                 scope: ['root']
             },
             validate: {
@@ -1076,7 +1076,7 @@ internals.applyRoutes = function (server, next) {
                     }
                     reply(true);
                 }
-            },{
+            }, {
                 assign: 'user',
                 method: function (request, reply) {
 

@@ -53,6 +53,7 @@ class User extends MongoModels {
                     phone,
                     address,
                     roles: {},
+                    studyID: null,
                     timeCreated: new Date()
                 };
 
@@ -162,7 +163,7 @@ User.schema = Joi.object().keys({
     username: Joi.string().token().lowercase().required(),
     password: Joi.string(),
     name: Joi.string(),
-    gender: Joi.string().allow('male','female'),
+    gender: Joi.string().allow('male', 'female'),
     dob: Joi.date(),
     address: Joi.string(),
     phone: Joi.string(),
@@ -187,7 +188,7 @@ User.payload = Joi.object().keys({
     password: Joi.string().required(),
     email: Joi.string().email().lowercase().required(),
     name: Joi.string().required(),
-    gender: Joi.string().allow('male','female'),
+    gender: Joi.string().allow('male', 'female'),
     dob: Joi.date(),
     address: Joi.string().allow('').optional(),
     phone: Joi.string().allow('').optional(),
