@@ -16,8 +16,7 @@ internals.applyRoutes = function (server, next) {
         path: '/users',
         config: {
             auth: {
-                strategies: ['simple','session'],
-                scope: ['root','admin','researcher']
+                strategies: ['simple','session']
             },
             validate: {
                 query: Joi.any()
@@ -25,14 +24,28 @@ internals.applyRoutes = function (server, next) {
         },
         handler: function (request, reply) {
 
+            const accessLevel = User.highestRole(request.auth.credentials.user.roles);
             const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
-            const query = {
-                username: { $regex: request.query['search[value]'] }
-            };
-            const fields = request.query.fields;
             const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
             const limit = Number(request.query.length);
             const page = Math.ceil(Number(request.query.start) / limit) + 1;
+            let fields = request.query.fields;
+
+            const query = {
+                username: { $regex: request.query['search[value]'] }
+            };
+
+            if (accessLevel === 0) {
+                query._id = request.auth.credentials.user._id;
+            }
+            else if (accessLevel === 1) {
+                fields = 'username timeCreated';
+            }
+            else if (accessLevel === 2) {
+                query._id = {
+                    $in: request.auth.credentials.user.roles.clinician.userAccess
+                };
+            }
 
             User.pagedFind(query, fields, sort, limit, page, (err, results) => {
 

@@ -141,6 +141,9 @@ const manifest = {
         },
         {
             plugin: './server/web/routes/signup'
+        },
+        {
+            plugin: './server/web/routes/users'
         }
     ]
 };

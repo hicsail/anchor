@@ -240,4 +240,68 @@ lab.experiment('User Class Methods', () => {
             });
         });
     });
+
+    lab.test('it returns a zero if user has no roles', (done) => {
+
+        const role = User.highestRole({});
+
+        Code.expect(role).to.equal(0);
+        done();
+
+    });
+
+    lab.test('it returns a zero if user has no roles', (done) => {
+
+        const role = User.highestRole({
+            analyst: true
+        });
+
+        Code.expect(role).to.equal(1);
+        done();
+
+    });
+
+    lab.test('it returns a zero if user has no roles', (done) => {
+
+        const role = User.highestRole({
+            clinician: {}
+        });
+
+        Code.expect(role).to.equal(2);
+        done();
+
+    });
+
+    lab.test('it returns a zero if user has no roles', (done) => {
+
+        const role = User.highestRole({
+            researcher: true
+        });
+
+        Code.expect(role).to.equal(3);
+        done();
+
+    });
+
+    lab.test('it returns a zero if user has no roles', (done) => {
+
+        const role = User.highestRole({
+            admin: true
+        });
+
+        Code.expect(role).to.equal(4);
+        done();
+
+    });
+
+    lab.test('it returns a zero if user has no roles', (done) => {
+
+        const role = User.highestRole({
+            root: true
+        });
+
+        Code.expect(role).to.equal(5);
+        done();
+
+    });
 });

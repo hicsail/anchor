@@ -120,6 +120,27 @@ class User extends MongoModels {
         this.findOne(query, callback);
     }
 
+    static highestRole(roles) {
+
+        if (roles.root) {
+            return 5;
+        }
+        else if (roles.admin) {
+            return 4;
+        }
+        else if (roles.researcher) {
+            return 3;
+        }
+        else if (roles.clinician) {
+            return 2;
+        }
+        else if (roles.analyst) {
+            return 1;
+        }
+        return 0;
+
+    }
+
     constructor(attrs) {
 
         super(attrs);

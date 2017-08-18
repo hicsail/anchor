@@ -1,7 +1,10 @@
 'use strict';
 const AuthPlugin = require('../../../server/auth');
-const AuthenticatedUser = require('../fixtures/credentials-admin');
+const AuthenticatedAdmin = require('../fixtures/credentials-admin');
 const AuthenticatedRoot = require('../fixtures/credentials-root');
+const AuthenticatedClinician = require('../fixtures/credentials-clinician');
+const AuthenticatedAnalyst = require('../fixtures/credentials-analyst');
+const AuthenticatedUser = require('../fixtures/credentials-user');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -74,7 +77,7 @@ lab.experiment('User Plugin Result List', () => {
         request = {
             method: 'GET',
             url: '/users',
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -179,6 +182,87 @@ lab.experiment('User Plugin Result List', () => {
             done();
         });
     });
+
+    lab.test('it returns an array of documents successfully if user is a clinician', (done) => {
+
+        stub.User.pagedFind = function () {
+
+            const args = Array.prototype.slice.call(arguments);
+            const callback = args.pop();
+
+            callback(null, {
+                data: [{}, {}, {}],
+                items: {
+                    total: 3
+                }
+            });
+        };
+
+        request.credentials = AuthenticatedClinician;
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.data).to.be.an.array();
+            Code.expect(response.result.data[0]).to.be.an.object();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an array of documents successfully if user has no roles', (done) => {
+
+        stub.User.pagedFind = function () {
+
+            const args = Array.prototype.slice.call(arguments);
+            const callback = args.pop();
+
+            callback(null, {
+                data: [{}, {}, {}],
+                items: {
+                    total: 3
+                }
+            });
+        };
+
+        request.credentials = AuthenticatedUser;
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.data).to.be.an.array();
+            Code.expect(response.result.data[0]).to.be.an.object();
+
+            done();
+        });
+    });
+
+    lab.test('it returns an array of documents successfully if user is a analyst', (done) => {
+
+        stub.User.pagedFind = function () {
+
+            const args = Array.prototype.slice.call(arguments);
+            const callback = args.pop();
+
+            callback(null, {
+                data: [{}, {}, {}],
+                items: {
+                    total: 3
+                }
+            });
+        };
+
+        request.credentials = AuthenticatedAnalyst;
+
+        server.inject(request, (response) => {
+
+            Code.expect(response.statusCode).to.equal(200);
+            Code.expect(response.result.data).to.be.an.array();
+            Code.expect(response.result.data[0]).to.be.an.object();
+
+            done();
+        });
+    });
 });
 
 
@@ -189,7 +273,7 @@ lab.experiment('Users Plugin Read', () => {
         request = {
             method: 'GET',
             url: '/users/93EP150D35',
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -254,7 +338,7 @@ lab.experiment('Users Plugin (My) Read', () => {
         request = {
             method: 'GET',
             url: '/users/my',
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -334,7 +418,7 @@ lab.experiment('Users Plugin Create', () => {
                 email: 'mrmud@mudmail.mud',
                 name: 'muddy test'
             },
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -481,7 +565,7 @@ lab.experiment('Users Plugin Update', () => {
                 username: 'muddy',
                 email: 'mrmud@mudmail.mud'
             },
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -649,7 +733,7 @@ lab.experiment('Users Plugin (My) Update', () => {
                 email: 'mrmud@mudmail.mud',
                 name: 'my name'
             },
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -800,7 +884,7 @@ lab.experiment('Users Plugin Set Password', () => {
             payload: {
                 password: 'fromdirt'
             },
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -876,7 +960,7 @@ lab.experiment('Users Plugin (My) Set Password', () => {
             payload: {
                 password: 'fromdirt'
             },
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -955,7 +1039,7 @@ lab.experiment('Users Plugin Delete', () => {
         request = {
             method: 'DELETE',
             url: '/users/93EP150D35',
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -1019,7 +1103,7 @@ lab.experiment('Users Plugin Clinician Promote', () => {
         request = {
             method: 'PUT',
             url: '/users/clinician/93EP150D35',
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -1150,7 +1234,7 @@ lab.experiment('Users Plugin Analyst Promote', () => {
         request = {
             method: 'PUT',
             url: '/users/analyst/93EP150D35',
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
@@ -1281,7 +1365,7 @@ lab.experiment('Users Plugin Researcher Promote', () => {
         request = {
             method: 'PUT',
             url: '/users/researcher/93EP150D35',
-            credentials: AuthenticatedUser
+            credentials: AuthenticatedAdmin
         };
 
         done();
