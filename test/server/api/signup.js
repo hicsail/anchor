@@ -80,7 +80,8 @@ lab.experiment('Signup Plugin', () => {
                 name: 'Muddy Mudskipper',
                 username: 'muddy',
                 password: 'dirtandWater1',
-                email: 'mrmud@mudmail.mud'
+                email: 'mrmud@mudmail.mud',
+                application: 'Test'
             }
         };
 
@@ -215,7 +216,7 @@ lab.experiment('Signup Plugin', () => {
             callback(new Error('Whoops.'));
         };
 
-        stub.Session.create = function (username, callback) {
+        stub.Session.create = function (username, application, callback) {
 
             callback(null, {});
         };
@@ -279,7 +280,7 @@ lab.experiment('Signup Plugin', () => {
             callback(null, {});
         };
 
-        stub.Session.create = function (username, callback) {
+        stub.Session.create = function (username, application, callback) {
 
             callback(null, {});
         };

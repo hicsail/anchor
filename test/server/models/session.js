@@ -73,7 +73,7 @@ lab.experiment('Session Class Methods', () => {
 
     lab.test('it returns a new instance when create succeeds', (done) => {
 
-        Session.create('ren', (err, result) => {
+        Session.create('ren', 'test', (err, result) => {
 
             Code.expect(err).to.not.exist();
             Code.expect(result).to.be.an.instanceOf(Session);
@@ -93,7 +93,7 @@ lab.experiment('Session Class Methods', () => {
             callback(Error('insert failed'));
         };
 
-        Session.create('ren', (err, result) => {
+        Session.create('ren', 'test', (err, result) => {
 
             Code.expect(err).to.be.an.object();
             Code.expect(result).to.not.exist();
@@ -110,7 +110,7 @@ lab.experiment('Session Class Methods', () => {
         Async.auto({
             session: function (cb) {
 
-                Session.create('1D', (err, result) => {
+                Session.create('1D', 'test', (err, result) => {
 
                     Code.expect(err).to.not.exist();
                     Code.expect(result).to.be.an.instanceOf(Session);

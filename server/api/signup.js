@@ -3,6 +3,7 @@ const Async = require('async');
 const Boom = require('boom');
 const Config = require('../../config');
 const internals = {};
+const Joi = require('joi');
 
 
 internals.applyRoutes = function (server, next) {
@@ -15,16 +16,19 @@ internals.applyRoutes = function (server, next) {
         method: 'POST',
         path: '/signup',
         config: {
-            auth: {
-                mode: 'try',
-                strategy: 'session'
-            },
             validate: {
-                payload: User.payload
-            },
-            plugins: {
-                'hapi-auth-cookie': {
-                    redirectTo: false
+                payload: {
+                    username: Joi.string().token().lowercase().required(),
+                    password: Joi.string().required(),
+                    email: Joi.string().email().lowercase().required(),
+                    name: Joi.string().required(),
+                    gender: Joi.string().allow('male','female'),
+                    dob: Joi.date(),
+                    address: Joi.string().allow('').optional(),
+                    phone: Joi.string().allow('').optional(),
+                    height: Joi.number(),
+                    weight: Joi.number(),
+                    application: Joi.string().default('Web')
                 }
             },
             pre: [{
@@ -113,7 +117,7 @@ internals.applyRoutes = function (server, next) {
                 }],
                 session: ['user', function (results, done) {
 
-                    Session.create(results.user._id.toString(), done);
+                    Session.create(results.user._id.toString(),request.payload.application, done);
                 }]
             }, (err, results) => {
 

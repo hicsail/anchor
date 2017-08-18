@@ -23,7 +23,8 @@ internals.applyRoutes = function (server, next) {
             validate: {
                 payload: {
                     username: Joi.string().lowercase().required(),
-                    password: Joi.string().required()
+                    password: Joi.string().required(),
+                    application: Joi.string().default('Web')
                 }
             },
             pre: [{
@@ -86,7 +87,7 @@ internals.applyRoutes = function (server, next) {
                 assign: 'session',
                 method: function (request, reply) {
 
-                    Session.create(request.pre.user._id.toString(), (err, session) => {
+                    Session.create(request.pre.user._id.toString(),request.payload.application, (err, session) => {
 
                         if (err) {
                             return reply(err);
