@@ -6,11 +6,12 @@ const MongoModels = require('mongo-models');
 
 
 class AuthAttempt extends MongoModels {
-    static create(ip, username, callback) {
+    static create(ip, username, application, callback) {
 
         const document = {
             ip,
             username: username.toLowerCase(),
+            application,
             time: new Date()
         };
 
@@ -65,6 +66,7 @@ AuthAttempt.collection = 'authAttempts';
 AuthAttempt.schema = Joi.object().keys({
     _id: Joi.object(),
     username: Joi.string().lowercase().required(),
+    application: Joi.string().required(),
     ip: Joi.string().required(),
     time: Joi.date().required()
 });

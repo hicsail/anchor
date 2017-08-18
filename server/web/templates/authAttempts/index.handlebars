@@ -1,0 +1,66 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div class="container" style="padding-top: 60px">
+        <h3>Users</h3>
+        <hr>
+        <div class="card">
+          <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+            <table id="userTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>Username</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>StudyID</th>
+                <th>Joined Study</th>
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    var table = $('#userTable').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "ajax": {
+        "url": "../api/users",
+        "data": function (d) {
+          d.fields = "name username email studyID timeCreated";
+        }
+      },
+      "columns": [
+        {
+          "data": "name",
+          "defaultContent": ""
+        },
+        {
+          "data": "username",
+          "defaultContent": ""
+        },
+        {
+          "data": "email",
+          "defaultContent": ""
+        },
+        {
+          "data": "studyID",
+          "render": function (data, type, row) {
+            if (row.studyID > 0) {
+              return row.studyID;
+            }
+            return '';
+          }
+        },
+        {
+          "data": "timeCreated"
+        }
+      ]
+    });
+  });
+</script>

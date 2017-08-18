@@ -40,16 +40,19 @@ internals.applyRoutes = function (server, next) {
             }
             //analyst
             else if (accessLevel === 1) {
-                fields = fields.split(' ');
-                let length = fields.length;
-                for (let i = 0; i < length; i++) {
-                    if (User.PHI().indexOf(fields[i]) != -1) {
-                        fields.splice(i, 1);
-                        i--;
-                        length--;
+                if (fields) {
+                    fields = fields.split(' ');
+                    let length = fields.length;
+                    for (let i = 0; i < length; ++i) {
+                        if (User.PHI().indexOf(fields[i]) !== -1) {
+
+                            fields.splice(i, 1);
+                            i--;
+                            length--;
+                        }
                     }
+                    fields = fields.join(' ');
                 }
-                fields = fields.join(' ');
                 query.inStudy = true;
             }
             //clinician

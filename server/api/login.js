@@ -74,7 +74,7 @@ internals.applyRoutes = function (server, next) {
                     const ip = request.info.remoteAddress;
                     const username = request.payload.username;
 
-                    AuthAttempt.create(ip, username, (err, authAttempt) => {
+                    AuthAttempt.create(ip, username, request.payload.application, (err, authAttempt) => {
 
                         if (err) {
                             return reply(err);

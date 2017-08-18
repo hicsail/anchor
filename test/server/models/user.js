@@ -304,4 +304,11 @@ lab.experiment('User Class Methods', () => {
         done();
 
     });
+
+    lab.test('it returns an array of PHI fields', (done) => {
+
+        Code.expect(User.PHI()).to.exist();
+        done();
+
+    });
 });
