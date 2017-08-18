@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       let fields = request.query.fields;
 
       const query = {
-        //user: { $regex: request.query['search[value]'] }
+        userId: { $regex: request.query['search[value]'] }
       };
       //no role
       if (accessLevel === 0) {
@@ -44,7 +44,7 @@ internals.applyRoutes = function (server, next) {
           fields = fields.split(' ');
           let length = fields.length;
           for (let i = 0; i < length; ++i) {
-            if (User.PHI().push('key').indexOf(fields[i]) !== -1) {
+            if (User.PHI().concat(['key']).indexOf(fields[i]) !== -1) {
 
               fields.splice(i, 1);
               i--;

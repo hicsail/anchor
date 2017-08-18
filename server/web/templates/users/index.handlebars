@@ -10,6 +10,7 @@
             <table id="userTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
               <thead>
               <tr>
+                <th>User Id</th>
                 <th>Name</th>
                 <th>Username</th>
                 <th>Email</th>
@@ -32,10 +33,14 @@
       "ajax": {
         "url": "../api/users",
         "data": function (d) {
-          d.fields = "name username email studyID timeCreated";
+          d.fields = "_id name username email studyID timeCreated";
         }
       },
       "columns": [
+        {
+          "data": "_id",
+          "defaultContent": ""
+        },
         {
           "data": "name",
           "defaultContent": ""
