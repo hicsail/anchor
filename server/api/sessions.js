@@ -1,4 +1,5 @@
 'use strict';
+const Async = require('async');
 const Boom = require('boom');
 const Joi = require('joi');
 
@@ -31,9 +32,7 @@ internals.applyRoutes = function (server, next) {
       const page = Math.ceil(Number(request.query.start) / limit) + 1;
       let fields = request.query.fields;
 
-      const query = {
-        userId: { $regex: request.query['search[value]'] }
-      };
+      const query = {};
       //no role
       if (accessLevel === 0) {
         query.userId = request.auth.credentials.user._id.toString();
@@ -61,16 +60,52 @@ internals.applyRoutes = function (server, next) {
 
       Session.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
+        const sessions = [];
+
         if (err) {
           return reply(err);
         }
 
-        reply({
-          draw: request.query.draw,
-          recordsTotal: results.data.length,
-          recordsFiltered: results.items.total,
-          data: results.data,
-          error: err
+        Async.each(results.data, (session, callback) => {
+
+          let userFields = 'studyID username';
+
+          if (accessLevel === 1) {
+            //if analyst
+            userFields = userFields.split(' ');
+            let length = userFields.length;
+            for (let i = 0; i < length; ++i) {
+              if (User.PHI().indexOf(userFields[i]) !== -1) {
+
+                userFields.splice(i, 1);
+                i--;
+                length--;
+              }
+            }
+            userFields = userFields.join(' ');
+          }
+
+          userFields = User.fieldsAdapter(userFields);
+
+          User.findById(session.userId,userFields,(err, user) => {
+
+            if (err) {
+              callback(err);
+            }
+
+            session.user = user;
+            sessions.push(session);
+            callback(null,session);
+          });
+        }, (err) => {
+
+          reply({
+            draw: request.query.draw,
+            recordsTotal: results.data.length,
+            recordsFiltered: results.items.total,
+            data: sessions,
+            error: err
+          });
         });
       });
     }

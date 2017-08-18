@@ -10,7 +10,8 @@
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
               <thead>
               <tr>
-                <th>userId</th>
+                <th>Username</th>
+                <th>Study ID</th>
                 <th>Application</th>
                 <th>Time</th>
               </tr>
@@ -35,8 +36,17 @@
       },
       "columns": [
         {
-          "data": "userId",
+          "data": "user.username",
           "defaultContent": ""
+        },
+        {
+          "data": "user.studyID",
+          "render": function (data, type, row) {
+            if (row.user.studyID > 0) {
+              return row.user.studyID;
+            }
+            return '';
+          }
         },
         {
           "data": "application",

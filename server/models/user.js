@@ -153,7 +153,7 @@ class User extends MongoModels {
 
   static PHI() {
 
-    return ['userId', 'username', 'password', 'name', 'dob', 'address', 'phone', 'email'];
+    return ['username', 'password', 'name', 'dob', 'address', 'phone', 'email'];
   }
 }
 
