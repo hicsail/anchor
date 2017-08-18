@@ -1,0 +1,52 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div class="container" style="padding-top: 60px">
+        <h3>Session</h3>
+        <hr>
+        <div class="card">
+          <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>userId</th>
+                <th>Application</th>
+                <th>Time</th>
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    var table = $('#table').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "ajax": {
+        "url": "../api/sessions",
+        "data": function (d) {
+          d.fields = "userId application time";
+        }
+      },
+      "columns": [
+        {
+          "data": "userId",
+          "defaultContent": ""
+        },
+        {
+          "data": "application",
+          "defaultContent": ""
+        },
+        {
+          "data": "time",
+          "defaultContent": ""
+        }
+      ]
+    });
+  });
+</script>
