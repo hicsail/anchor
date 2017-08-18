@@ -4,14 +4,14 @@ const MongoModels = require('mongo-models');
 
 const MakeMockModel = function () {
 
-    const mock = {};
+  const mock = {};
 
-    Reflect.ownKeys(MongoModels).forEach((key) => {
+  Reflect.ownKeys(MongoModels).forEach((key) => {
 
-        mock[key] = MongoModels[key];
-    });
+    mock[key] = MongoModels[key];
+  });
 
-    return mock;
+  return mock;
 };
 
 

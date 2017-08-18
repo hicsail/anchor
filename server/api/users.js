@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       let fields = request.query.fields;
 
       const query = {
-        username: {$regex: request.query['search[value]']}
+        username: { $regex: request.query['search[value]'] }
       };
       //no role
       if (accessLevel === 0) {
@@ -237,7 +237,7 @@ internals.applyRoutes = function (server, next) {
 
             const conditions = {
               username: request.payload.username,
-              _id: {$ne: User._idClass(request.params.id)}
+              _id: { $ne: User._idClass(request.params.id) }
             };
 
             User.findOne(conditions, (err, user) => {
@@ -259,7 +259,7 @@ internals.applyRoutes = function (server, next) {
 
             const conditions = {
               email: request.payload.email,
-              _id: {$ne: User._idClass(request.params.id)}
+              _id: { $ne: User._idClass(request.params.id) }
             };
 
             User.findOne(conditions, (err, user) => {
@@ -376,7 +376,7 @@ internals.applyRoutes = function (server, next) {
 
             const conditions = {
               username: request.payload.username,
-              _id: {$ne: request.auth.credentials.user._id}
+              _id: { $ne: request.auth.credentials.user._id }
             };
 
             User.findOne(conditions, (err, user) => {
@@ -398,7 +398,7 @@ internals.applyRoutes = function (server, next) {
 
             const conditions = {
               email: request.payload.email,
-              _id: {$ne: request.auth.credentials.user._id}
+              _id: { $ne: request.auth.credentials.user._id }
             };
 
             User.findOne(conditions, (err, user) => {
@@ -578,7 +578,7 @@ internals.applyRoutes = function (server, next) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply({message: 'Success.'});
+        reply({ message: 'Success.' });
       });
     }
   });

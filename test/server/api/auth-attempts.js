@@ -1,7 +1,10 @@
 'use strict';
 const AuthAttemptPlugin = require('../../../server/api/auth-attempts');
 const AuthPlugin = require('../../../server/auth');
-const AuthenticatedUser = require('../fixtures/credentials-admin');
+const AuthenticatedAdmin = require('../fixtures/credentials-admin');
+const AuthenticatedClinician = require('../fixtures/credentials-clinician');
+const AuthenticatedAnalyst = require('../fixtures/credentials-analyst');
+const AuthenticatedUser = require('../fixtures/credentials-user');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -22,230 +25,307 @@ let stub;
 
 lab.before((done) => {
 
-    stub = {
-        AuthAttempt: MakeMockModel()
-    };
+  stub = {
+    AuthAttempt: MakeMockModel()
+  };
 
-    const proxy = {};
-    proxy[Path.join(process.cwd(), './server/models/auth-attempt')] = stub.AuthAttempt;
+  const proxy = {};
+  proxy[Path.join(process.cwd(), './server/models/auth-attempt')] = stub.AuthAttempt;
 
-    const ModelsPlugin = {
-        register: Proxyquire('hapi-mongo-models', proxy),
-        options: Manifest.get('/registrations').filter((reg) => {
+  const ModelsPlugin = {
+    register: Proxyquire('hapi-mongo-models', proxy),
+    options: Manifest.get('/registrations').filter((reg) => {
 
-            if (reg.plugin &&
+      if (reg.plugin &&
         reg.plugin.register &&
         reg.plugin.register === 'hapi-mongo-models') {
 
-                return true;
-            }
+        return true;
+      }
 
-            return false;
-        })[0].plugin.options
-    };
+      return false;
+    })[0].plugin.options
+  };
 
-    const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, AuthAttemptPlugin];
-    server = new Hapi.Server();
-    server.connection({ port: Config.get('/port/web') });
-    server.register(plugins, (err) => {
+  const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, AuthAttemptPlugin];
+  server = new Hapi.Server();
+  server.connection({ port: Config.get('/port/web') });
+  server.register(plugins, (err) => {
 
-        if (err) {
-            return done(err);
-        }
+    if (err) {
+      return done(err);
+    }
 
-        server.initialize(done);
-    });
+    server.initialize(done);
+  });
 });
 
 
 lab.after((done) => {
 
-    server.plugins['hapi-mongo-models'].MongoModels.disconnect();
+  server.plugins['hapi-mongo-models'].MongoModels.disconnect();
 
-    done();
+  done();
 });
 
 
 lab.experiment('Auth Attempts Plugin Result List', () => {
 
-    lab.beforeEach((done) => {
+  lab.beforeEach((done) => {
 
-        request = {
-            method: 'GET',
-            url: '/auth-attempts',
-            credentials: AuthenticatedUser
-        };
+    request = {
+      method: 'GET',
+      url: '/auth-attempts',
+      credentials: AuthenticatedAdmin
+    };
 
-        done();
+    done();
+  });
+
+  lab.test('it returns an error when paged find fails', (done) => {
+
+    stub.AuthAttempt.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('paged find failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when paged find fails', (done) => {
+  lab.test('it returns an array of documents successfully', (done) => {
 
-        stub.AuthAttempt.pagedFind = function () {
+    stub.AuthAttempt.pagedFind = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('paged find failed'));
-        };
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
 
-        server.inject(request, (response) => {
+    server.inject(request, (response) => {
 
-            Code.expect(response.statusCode).to.equal(500);
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns an array of documents successfully', (done) => {
+  lab.test('it returns an array of documents successfully using filters', (done) => {
 
-        stub.AuthAttempt.pagedFind = function () {
+    stub.AuthAttempt.pagedFind = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(null, { data: [{}, {}, {}] });
-        };
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
 
-        server.inject(request, (response) => {
+    request.url = '/auth-attempts?fields=username ip time&order[0][dir]=desc&search[value]=test';
+    request.credentials = AuthenticatedAnalyst;
 
-            Code.expect(response.statusCode).to.equal(200);
-            Code.expect(response.result.data).to.be.an.array();
-            Code.expect(response.result.data[0]).to.be.an.object();
+    server.inject(request, (response) => {
 
-            done();
-        });
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
     });
-});
+  });
 
+  lab.test('it returns an array of documents successfully using filters', (done) => {
 
-lab.experiment('Auth Attempts Plugin Read', () => {
+    stub.AuthAttempt.pagedFind = function () {
 
-    lab.beforeEach((done) => {
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-        request = {
-            method: 'GET',
-            url: '/auth-attempts/93EP150D35',
-            credentials: AuthenticatedUser
-        };
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
 
-        done();
+    request.url = '/auth-attempts?fields=username ip time&order[0][dir]=asc&search[value]=test';
+    request.credentials = AuthenticatedAnalyst;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
     });
+  });
 
+  lab.test('it returns an array of documents successfully if user is a clinician', (done) => {
 
-    lab.test('it returns an error when find by id fails', (done) => {
+    stub.AuthAttempt.pagedFind = function () {
 
-        stub.AuthAttempt.findById = function (id, callback) {
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('find by id failed'));
-        };
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
 
-        server.inject(request, (response) => {
+    request.credentials = AuthenticatedClinician;
 
-            Code.expect(response.statusCode).to.equal(500);
+    server.inject(request, (response) => {
 
-            done();
-        });
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
     });
+  });
 
+  lab.test('it returns an array of documents successfully if user has no roles', (done) => {
 
-    lab.test('it returns a not found when find by id misses', (done) => {
+    stub.AuthAttempt.pagedFind = function () {
 
-        stub.AuthAttempt.findById = function (id, callback) {
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback();
-        };
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
 
-        server.inject(request, (response) => {
+    request.credentials = AuthenticatedUser;
 
-            Code.expect(response.statusCode).to.equal(404);
-            Code.expect(response.result.message).to.match(/document not found/i);
+    server.inject(request, (response) => {
 
-            done();
-        });
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
     });
+  });
 
+  lab.test('it returns an array of documents successfully if user is a analyst', (done) => {
 
-    lab.test('it returns a document successfully', (done) => {
+    stub.AuthAttempt.pagedFind = function () {
 
-        stub.AuthAttempt.findById = function (id, callback) {
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(null, { _id: '93EP150D35' });
-        };
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
 
-        server.inject(request, (response) => {
+    request.credentials = AuthenticatedAnalyst;
 
-            Code.expect(response.statusCode).to.equal(200);
-            Code.expect(response.result).to.be.an.object();
+    server.inject(request, (response) => {
 
-            done();
-        });
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
     });
+  });
 });
 
 
 lab.experiment('Auth Attempt Plugin Delete', () => {
 
-    lab.beforeEach((done) => {
+  lab.beforeEach((done) => {
 
-        request = {
-            method: 'DELETE',
-            url: '/auth-attempts/93EP150D35',
-            credentials: AuthenticatedUser
-        };
+    request = {
+      method: 'DELETE',
+      url: '/auth-attempts/93EP150D35',
+      credentials: AuthenticatedAdmin
+    };
 
-        done();
+    done();
+  });
+
+
+  lab.test('it returns an error when delete by id fails', (done) => {
+
+    stub.AuthAttempt.findByIdAndDelete = function (id, callback) {
+
+      callback(Error('delete by id failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when delete by id fails', (done) => {
+  lab.test('it returns a not found when delete by id misses', (done) => {
 
-        stub.AuthAttempt.findByIdAndDelete = function (id, callback) {
+    stub.AuthAttempt.findByIdAndDelete = function (id, callback) {
 
-            callback(Error('delete by id failed'));
-        };
+      callback(null, undefined);
+    };
 
-        server.inject(request, (response) => {
+    server.inject(request, (response) => {
 
-            Code.expect(response.statusCode).to.equal(500);
+      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.result.message).to.match(/document not found/i);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns a not found when delete by id misses', (done) => {
+  lab.test('it deletes a document successfully', (done) => {
 
-        stub.AuthAttempt.findByIdAndDelete = function (id, callback) {
+    stub.AuthAttempt.findByIdAndDelete = function (id, callback) {
 
-            callback(null, undefined);
-        };
+      callback(null, 1);
+    };
 
-        server.inject(request, (response) => {
+    server.inject(request, (response) => {
 
-            Code.expect(response.statusCode).to.equal(404);
-            Code.expect(response.result.message).to.match(/document not found/i);
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.message).to.match(/success/i);
 
-            done();
-        });
+      done();
     });
-
-
-    lab.test('it deletes a document successfully', (done) => {
-
-        stub.AuthAttempt.findByIdAndDelete = function (id, callback) {
-
-            callback(null, 1);
-        };
-
-        server.inject(request, (response) => {
-
-            Code.expect(response.statusCode).to.equal(200);
-            Code.expect(response.result.message).to.match(/success/i);
-
-            done();
-        });
-    });
+  });
 });

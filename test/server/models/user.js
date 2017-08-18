@@ -10,305 +10,305 @@ const lab = exports.lab = Lab.script();
 const mongoUri = Config.get('/hapiMongoModels/mongodb/uri');
 const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
 const stub = {
-    bcrypt: {}
+  bcrypt: {}
 };
 const User = Proxyquire('../../../server/models/user', {
-    bcrypt: stub.bcrypt
+  bcrypt: stub.bcrypt
 });
 
 lab.experiment('User Class Methods', () => {
 
-    lab.before((done) => {
+  lab.before((done) => {
 
-        User.connect(mongoUri, mongoOptions, (err, db) => {
+    User.connect(mongoUri, mongoOptions, (err, db) => {
 
-            done(err);
-        });
+      done(err);
     });
+  });
 
 
-    lab.after((done) => {
+  lab.after((done) => {
 
-        User.deleteMany({}, (err, count) => {
+    User.deleteMany({}, (err, count) => {
 
-            User.disconnect();
+      User.disconnect();
 
-            done(err);
-        });
+      done(err);
     });
+  });
 
 
-    lab.test('it creates a password hash combination', (done) => {
+  lab.test('it creates a password hash combination', (done) => {
 
-        User.generatePasswordHash('bighouseblues', (err, result) => {
+    User.generatePasswordHash('bighouseblues', (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.be.an.object();
-            Code.expect(result.password).to.be.a.string();
-            Code.expect(result.hash).to.be.a.string();
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.object();
+      Code.expect(result.password).to.be.a.string();
+      Code.expect(result.hash).to.be.a.string();
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when password hash fails', (done) => {
+  lab.test('it returns an error when password hash fails', (done) => {
 
-        const realGenSalt = stub.bcrypt.genSalt;
-        stub.bcrypt.genSalt = function (rounds, callback) {
+    const realGenSalt = stub.bcrypt.genSalt;
+    stub.bcrypt.genSalt = function (rounds, callback) {
 
-            callback(Error('bcrypt failed'));
-        };
+      callback(Error('bcrypt failed'));
+    };
 
-        User.generatePasswordHash('bighouseblues', (err, result) => {
+    User.generatePasswordHash('bighouseblues', (err, result) => {
 
-            Code.expect(err).to.be.an.object();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-            stub.bcrypt.genSalt = realGenSalt;
+      stub.bcrypt.genSalt = realGenSalt;
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns a new instance when create succeeds', (done) => {
+  lab.test('it returns a new instance when create succeeds', (done) => {
 
-        User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
+    User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.be.an.instanceOf(User);
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.instanceOf(User);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when create fails', (done) => {
+  lab.test('it returns an error when create fails', (done) => {
 
-        const realInsertOne = User.insertOne;
-        User.insertOne = function () {
+    const realInsertOne = User.insertOne;
+    User.insertOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('insert failed'));
-        };
+      callback(Error('insert failed'));
+    };
 
-        User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
+    User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
 
-            Code.expect(err).to.be.an.object();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-            User.insertOne = realInsertOne;
+      User.insertOne = realInsertOne;
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns a result when finding by login', (done) => {
+  lab.test('it returns a result when finding by login', (done) => {
 
-        Async.auto({
-            user: function (cb) {
+    Async.auto({
+      user: function (cb) {
 
-                User.create('stimpy', 'thebigshot', 'stimpy@ren.show', 'ren house', 'male', null, null, null, null, null, cb);
-            },
-            username: ['user', function (results, cb) {
+        User.create('stimpy', 'thebigshot', 'stimpy@ren.show', 'ren house', 'male', null, null, null, null, null, cb);
+      },
+      username: ['user', function (results, cb) {
 
-                User.findByCredentials(results.user.username, results.user.password, cb);
-            }],
-            email: ['user', function (results, cb) {
+        User.findByCredentials(results.user.username, results.user.password, cb);
+      }],
+      email: ['user', function (results, cb) {
 
-                User.findByCredentials(results.user.email, results.user.password, cb);
-            }]
-        }, (err, results) => {
+        User.findByCredentials(results.user.email, results.user.password, cb);
+      }]
+    }, (err, results) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(results.user).to.be.an.instanceOf(User);
-            Code.expect(results.username).to.be.an.instanceOf(User);
-            Code.expect(results.email).to.be.an.instanceOf(User);
+      Code.expect(err).to.not.exist();
+      Code.expect(results.user).to.be.an.instanceOf(User);
+      Code.expect(results.username).to.be.an.instanceOf(User);
+      Code.expect(results.email).to.be.an.instanceOf(User);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns nothing for find by credentials when password match fails', (done) => {
+  lab.test('it returns nothing for find by credentials when password match fails', (done) => {
 
-        const realFindOne = User.findOne;
-        User.findOne = function () {
+    const realFindOne = User.findOne;
+    User.findOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(null, { username: 'toastman', password: 'letmein' });
-        };
+      callback(null, { username: 'toastman', password: 'letmein' });
+    };
 
-        const realCompare = stub.bcrypt.compare;
-        stub.bcrypt.compare = function (key, source, callback) {
+    const realCompare = stub.bcrypt.compare;
+    stub.bcrypt.compare = function (key, source, callback) {
 
-            callback(null, false);
-        };
+      callback(null, false);
+    };
 
-        User.findByCredentials('toastman', 'doorislocked', (err, result) => {
+    User.findByCredentials('toastman', 'doorislocked', (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.not.exist();
 
-            User.findOne = realFindOne;
-            stub.bcrypt.compare = realCompare;
+      User.findOne = realFindOne;
+      stub.bcrypt.compare = realCompare;
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns early when finding by login misses', (done) => {
+  lab.test('it returns early when finding by login misses', (done) => {
 
-        const realFindOne = User.findOne;
-        User.findOne = function () {
+    const realFindOne = User.findOne;
+    User.findOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback();
-        };
+      callback();
+    };
 
-        User.findByCredentials('stimpy', 'dog', (err, result) => {
+    User.findByCredentials('stimpy', 'dog', (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.not.exist();
 
-            User.findOne = realFindOne;
+      User.findOne = realFindOne;
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when finding by login fails', (done) => {
+  lab.test('it returns an error when finding by login fails', (done) => {
 
-        const realFindOne = User.findOne;
-        User.findOne = function () {
+    const realFindOne = User.findOne;
+    User.findOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('find one failed'));
-        };
+      callback(Error('find one failed'));
+    };
 
-        User.findByCredentials('stimpy', 'dog', (err, result) => {
+    User.findByCredentials('stimpy', 'dog', (err, result) => {
 
-            Code.expect(err).to.be.an.object();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-            User.findOne = realFindOne;
+      User.findOne = realFindOne;
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns a result when finding by username', (done) => {
+  lab.test('it returns a result when finding by username', (done) => {
 
-        Async.auto({
-            user: function (cb) {
+    Async.auto({
+      user: function (cb) {
 
-                User.create('horseman', 'eathay', 'horse@man.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
+        User.create('horseman', 'eathay', 'horse@man.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
 
-                    Code.expect(err).to.not.exist();
-                    Code.expect(result).to.be.an.instanceOf(User);
+          Code.expect(err).to.not.exist();
+          Code.expect(result).to.be.an.instanceOf(User);
 
-                    cb(null, result);
-                });
-            }
-        }, (err, results) => {
-
-            if (err) {
-                return done(err);
-            }
-
-            const username = results.user.username;
-
-            User.findByUsername(username, (err, result) => {
-
-                Code.expect(err).to.not.exist();
-                Code.expect(result).to.be.an.instanceOf(User);
-
-                done();
-            });
+          cb(null, result);
         });
-    });
+      }
+    }, (err, results) => {
 
-    lab.test('it returns a zero if user has no roles', (done) => {
+      if (err) {
+        return done(err);
+      }
 
-        const role = User.highestRole({});
+      const username = results.user.username;
 
-        Code.expect(role).to.equal(0);
+      User.findByUsername(username, (err, result) => {
+
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.instanceOf(User);
+
         done();
+      });
+    });
+  });
 
+  lab.test('it returns a zero if user has no roles', (done) => {
+
+    const role = User.highestRole({});
+
+    Code.expect(role).to.equal(0);
+    done();
+
+  });
+
+  lab.test('it returns a zero if user has no roles', (done) => {
+
+    const role = User.highestRole({
+      analyst: true
     });
 
-    lab.test('it returns a zero if user has no roles', (done) => {
+    Code.expect(role).to.equal(1);
+    done();
 
-        const role = User.highestRole({
-            analyst: true
-        });
+  });
 
-        Code.expect(role).to.equal(1);
-        done();
+  lab.test('it returns a zero if user has no roles', (done) => {
 
+    const role = User.highestRole({
+      clinician: {}
     });
 
-    lab.test('it returns a zero if user has no roles', (done) => {
+    Code.expect(role).to.equal(2);
+    done();
 
-        const role = User.highestRole({
-            clinician: {}
-        });
+  });
 
-        Code.expect(role).to.equal(2);
-        done();
+  lab.test('it returns a zero if user has no roles', (done) => {
 
+    const role = User.highestRole({
+      researcher: true
     });
 
-    lab.test('it returns a zero if user has no roles', (done) => {
+    Code.expect(role).to.equal(3);
+    done();
 
-        const role = User.highestRole({
-            researcher: true
-        });
+  });
 
-        Code.expect(role).to.equal(3);
-        done();
+  lab.test('it returns a zero if user has no roles', (done) => {
 
+    const role = User.highestRole({
+      admin: true
     });
 
-    lab.test('it returns a zero if user has no roles', (done) => {
+    Code.expect(role).to.equal(4);
+    done();
 
-        const role = User.highestRole({
-            admin: true
-        });
+  });
 
-        Code.expect(role).to.equal(4);
-        done();
+  lab.test('it returns a zero if user has no roles', (done) => {
 
+    const role = User.highestRole({
+      root: true
     });
 
-    lab.test('it returns a zero if user has no roles', (done) => {
+    Code.expect(role).to.equal(5);
+    done();
 
-        const role = User.highestRole({
-            root: true
-        });
+  });
 
-        Code.expect(role).to.equal(5);
-        done();
+  lab.test('it returns an array of PHI fields', (done) => {
 
-    });
+    Code.expect(User.PHI()).to.exist();
+    done();
 
-    lab.test('it returns an array of PHI fields', (done) => {
-
-        Code.expect(User.PHI()).to.exist();
-        done();
-
-    });
+  });
 });

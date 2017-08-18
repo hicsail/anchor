@@ -142,7 +142,7 @@ internals.applyRoutes = function (server, next) {
             }
 
             if (!user) {
-              return reply({message: 'Success.'}).takeover();
+              return reply({ message: 'Success.' }).takeover();
             }
 
             reply(user);
@@ -192,7 +192,7 @@ internals.applyRoutes = function (server, next) {
           return reply(err);
         }
 
-        reply({message: 'Success.'});
+        reply({ message: 'Success.' });
       });
     }
   });
@@ -215,7 +215,7 @@ internals.applyRoutes = function (server, next) {
 
           const conditions = {
             email: request.payload.email,
-            'resetPassword.expires': {$gt: Date.now()}
+            'resetPassword.expires': { $gt: Date.now() }
           };
 
           User.findOne(conditions, (err, user) => {
@@ -270,7 +270,7 @@ internals.applyRoutes = function (server, next) {
           return reply(err);
         }
 
-        reply({message: 'Success.'});
+        reply({ message: 'Success.' });
       });
     }
   });

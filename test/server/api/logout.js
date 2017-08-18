@@ -23,145 +23,145 @@ let stub;
 
 lab.before((done) => {
 
-    stub = {
-        Session: MakeMockModel()
-    };
+  stub = {
+    Session: MakeMockModel()
+  };
 
-    const proxy = {};
-    proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
+  const proxy = {};
+  proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
 
-    const ModelsPlugin = {
-        register: Proxyquire('hapi-mongo-models', proxy),
-        options: Manifest.get('/registrations').filter((reg) => {
+  const ModelsPlugin = {
+    register: Proxyquire('hapi-mongo-models', proxy),
+    options: Manifest.get('/registrations').filter((reg) => {
 
-            if (reg.plugin &&
+      if (reg.plugin &&
         reg.plugin.register &&
         reg.plugin.register === 'hapi-mongo-models') {
 
-                return true;
-            }
+        return true;
+      }
 
-            return false;
-        })[0].plugin.options
-    };
+      return false;
+    })[0].plugin.options
+  };
 
-    const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, LogoutPlugin];
-    server = new Hapi.Server();
-    server.connection({ port: Config.get('/port/web') });
-    server.register(plugins, (err) => {
+  const plugins = [HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, LogoutPlugin];
+  server = new Hapi.Server();
+  server.connection({ port: Config.get('/port/web') });
+  server.register(plugins, (err) => {
 
-        if (err) {
-            return done(err);
-        }
+    if (err) {
+      return done(err);
+    }
 
-        server.initialize(done);
-    });
+    server.initialize(done);
+  });
 });
 
 
 lab.after((done) => {
 
-    server.plugins['hapi-mongo-models'].MongoModels.disconnect();
+  server.plugins['hapi-mongo-models'].MongoModels.disconnect();
 
-    done();
+  done();
 });
 
 
 lab.experiment('Logout Plugin (Delete Session)', () => {
 
-    lab.beforeEach((done) => {
+  lab.beforeEach((done) => {
 
-        request = {
-            method: 'DELETE',
-            url: '/logout',
-            credentials: AuthenticatedUser
-        };
+    request = {
+      method: 'DELETE',
+      url: '/logout',
+      credentials: AuthenticatedUser
+    };
 
-        done();
+    done();
+  });
+
+
+  lab.test('it returns an error when delete fails', (done) => {
+
+    stub.Session.findByIdAndDelete = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('delete failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when delete fails', (done) => {
+  lab.test('it returns a not found when delete misses (no credentials)', (done) => {
 
-        stub.Session.findByIdAndDelete = function () {
+    stub.Session.findByIdAndDelete = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('delete failed'));
-        };
+      callback(null, 0);
+    };
 
-        server.inject(request, (response) => {
+    delete request.credentials;
 
-            Code.expect(response.statusCode).to.equal(500);
+    server.inject(request, (response) => {
 
-            done();
-        });
+      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.result.message).to.match(/document not found/i);
+
+      done();
     });
+  });
 
 
-    lab.test('it returns a not found when delete misses (no credentials)', (done) => {
+  lab.test('it returns a not found when delete misses (missing user from credentials)', (done) => {
 
-        stub.Session.findByIdAndDelete = function () {
+    stub.Session.deleteOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(null, 0);
-        };
+      callback(null, 0);
+    };
 
-        delete request.credentials;
+    const CorruptedAuthenticatedUser = Hoek.clone(AuthenticatedUser);
+    CorruptedAuthenticatedUser.user = undefined;
+    request.credentials = CorruptedAuthenticatedUser;
 
-        server.inject(request, (response) => {
+    server.inject(request, (response) => {
 
-            Code.expect(response.statusCode).to.equal(404);
-            Code.expect(response.result.message).to.match(/document not found/i);
+      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.result.message).to.match(/document not found/i);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns a not found when delete misses (missing user from credentials)', (done) => {
+  lab.test('it deletes the authenticated user session successfully', (done) => {
 
-        stub.Session.deleteOne = function () {
+    stub.Session.findByIdAndDelete = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(null, 0);
-        };
+      callback(null, 1);
+    };
 
-        const CorruptedAuthenticatedUser = Hoek.clone(AuthenticatedUser);
-        CorruptedAuthenticatedUser.user = undefined;
-        request.credentials = CorruptedAuthenticatedUser;
+    server.inject(request, (response) => {
 
-        server.inject(request, (response) => {
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.message).to.match(/success/i);
 
-            Code.expect(response.statusCode).to.equal(404);
-            Code.expect(response.result.message).to.match(/document not found/i);
-
-            done();
-        });
+      done();
     });
-
-
-    lab.test('it deletes the authenticated user session successfully', (done) => {
-
-        stub.Session.findByIdAndDelete = function () {
-
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
-
-            callback(null, 1);
-        };
-
-        server.inject(request, (response) => {
-
-            Code.expect(response.statusCode).to.equal(200);
-            Code.expect(response.result.message).to.match(/success/i);
-
-            done();
-        });
-    });
+  });
 });
