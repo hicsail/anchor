@@ -68,7 +68,7 @@ internals.applyRoutes = function (server, next) {
 
         Async.each(results.data, (session, callback) => {
 
-          let userFields = 'studyID username';
+          let userFields = 'studyID username inStudy';
 
           if (accessLevel === 1) {
             //if analyst
@@ -95,6 +95,11 @@ internals.applyRoutes = function (server, next) {
 
             session.user = user;
             const pattern = new RegExp(request.query['search[value]']);
+            if(accessLevel == 1) { //analyst
+              if(!user.inStudy) {
+                return callback(null,session);
+              }
+            }
             if (pattern.test(session.user.username)) {
               sessions.push(session);
             }
