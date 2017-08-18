@@ -94,8 +94,8 @@ internals.applyRoutes = function (server, next) {
             }
 
             session.user = user;
-            let pattern = new RegExp(request.query['search[value]']);
-            if(pattern.test(session.user.username)) {
+            const pattern = new RegExp(request.query['search[value]']);
+            if (pattern.test(session.user.username)) {
               sessions.push(session);
             }
             callback(null,session);
