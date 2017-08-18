@@ -3,15 +3,15 @@ const Joi = require('joi');
 
 class Clinician {
 
-  static create(userAccess) {
+    static create(userAccess) {
 
-    return {userAccess};
-  }
+        return { userAccess };
+    }
 }
 
 
 Clinician.schema = Joi.object().keys({
-  userAccess: Joi.array().items(Joi.string()).required()
+    userAccess: Joi.array().items(Joi.string()).required()
 });
 
 
