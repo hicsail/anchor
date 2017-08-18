@@ -38,7 +38,7 @@
                                 <td id="username">username</td>
                                 <td><button id="clinician" class="btn btn-primary">Promote</button></td>
                                 <td><button id="analyst" class="btn btn-secondary">Promote</button></td>
-                                <td><button id="analyst" class="btn btn-info">Promote</button></td>
+                                <td><button id="researcher" class="btn btn-info">Promote</button></td>
                                 <td><button id="admin" class="btn btn-warning">Promote</button></td>
                                 <td id="root"></td>
                             </tr>
@@ -121,7 +121,6 @@
                 $(this).addClass('selected');
                 var rowData = table.row(this).data();
                 $('#roleCard').show();
-                console.log(rowData);
                 $('#username').text(rowData.username);
                 if(rowData.roles.clinician) {
                     $('#clinician').addClass('btn-danger').removeClass('btn-primary');
@@ -163,13 +162,13 @@
                     });
                 }
                 if(rowData.roles.admin) {
-                    $('#admin').addClass('btn-warning').removeClass('btn-info');
+                    $('#admin').addClass('btn-danger').removeClass('btn-info');
                     $('#admin').text('Demote');
                     $('#admin').unbind('click').click(() => {
                         demote(rowData._id,'admin');
                     });
                 } else {
-                    $('#admin').addClass('btn-info').removeClass('btn-warning');
+                    $('#admin').addClass('btn-warning').removeClass('btn-danger');
                     $('#admin').text('Promote');
                     $('#admin').unbind('click').click(() => {
                         promote(rowData._id,'admin');
