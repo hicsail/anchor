@@ -9,13 +9,13 @@ const lab = exports.lab = Lab.script();
 
 lab.experiment('App', () => {
 
-    lab.test('it composes a server', (done) => {
+  lab.test('it composes a server', (done) => {
 
-        Composer((err, composedServer) => {
+    Composer((err, composedServer) => {
 
-            Code.expect(composedServer).to.be.an.object();
+      Code.expect(composedServer).to.be.an.object();
 
-            done(err);
-        });
+      done(err);
     });
+  });
 });

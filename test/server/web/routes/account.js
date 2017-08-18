@@ -16,7 +16,7 @@ const Vision = require('vision');
 const Visionary = require('visionary');
 
 const stub = {
-    Session: MakeMockModel()
+  Session: MakeMockModel()
 };
 
 const proxy = {};
@@ -24,31 +24,31 @@ proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
 
 const lab = exports.lab = Lab.script();
 const ModelsPlugin = {
-    register: Proxyquire('hapi-mongo-models', proxy),
-    options: Manifest.get('/registrations').filter((reg) => {
+  register: Proxyquire('hapi-mongo-models', proxy),
+  options: Manifest.get('/registrations').filter((reg) => {
 
-        if (reg.plugin &&
+    if (reg.plugin &&
       reg.plugin.register &&
       reg.plugin.register === 'hapi-mongo-models') {
 
-            return true;
-        }
+      return true;
+    }
 
-        return false;
-    })[0].plugin.options
+    return false;
+  })[0].plugin.options
 };
 
 const VisionaryPlugin = {
-    register: Visionary,
-    options: Manifest.get('/registrations').filter((reg) => {
+  register: Visionary,
+  options: Manifest.get('/registrations').filter((reg) => {
 
-        if (reg.plugin && reg.plugin.register && reg.plugin.register === 'visionary') {
+    if (reg.plugin && reg.plugin.register && reg.plugin.register === 'visionary') {
 
-            return true;
-        }
+      return true;
+    }
 
-        return false;
-    })[0].plugin.options
+    return false;
+  })[0].plugin.options
 };
 
 
@@ -58,52 +58,52 @@ let server;
 
 lab.before((done) => {
 
-    const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, AccountPlugin];
-    server = new Hapi.Server();
-    server.connection({ port: Config.get('/port/web') });
-    server.register(plugins, (err) => {
+  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, AccountPlugin];
+  server = new Hapi.Server();
+  server.connection({port: Config.get('/port/web')});
+  server.register(plugins, (err) => {
 
-        if (err) {
-            return done(err);
-        }
+    if (err) {
+      return done(err);
+    }
 
-        server.initialize(done);
-    });
+    server.initialize(done);
+  });
 });
 
 
 lab.experiment('Account Page View', () => {
 
-    lab.beforeEach((done) => {
+  lab.beforeEach((done) => {
 
-        request = {
-            method: 'GET',
-            url: '/account'
-        };
+    request = {
+      method: 'GET',
+      url: '/account'
+    };
 
-        done();
+    done();
+  });
+
+
+  lab.test('it redirects when user is not logged in', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
     });
+  });
 
+  lab.test('it renders properly when user is authenticated', (done) => {
 
-    lab.test('it redirects when user is not logged in', (done) => {
+    request.credentials = AuthenticatedAccount;
 
-        server.inject(request, (response) => {
+    server.inject(request, (response) => {
 
-            Code.expect(response.statusCode).to.equal(302);
-
-            done();
-        });
+      Code.expect(response.statusMessage).to.match(/Ok/i);
+      Code.expect(response.statusCode).to.equal(200);
+      done();
     });
-
-    lab.test('it renders properly when user is authenticated', (done) => {
-
-        request.credentials = AuthenticatedAccount;
-
-        server.inject(request, (response) => {
-
-            Code.expect(response.statusMessage).to.match(/Ok/i);
-            Code.expect(response.statusCode).to.equal(200);
-            done();
-        });
-    });
+  });
 });
