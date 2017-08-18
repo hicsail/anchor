@@ -3,78 +3,78 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-    const Session = server.plugins['hapi-mongo-models'].Session;
+  const Session = server.plugins['hapi-mongo-models'].Session;
 
-    server.route({
-        method: 'GET',
-        path: '/login',
-        config: {
-            auth: {
-                mode: 'try',
-                strategy: 'session'
-            },
-            plugins: {
-                'hapi-auth-cookie': {
-                    redirectTo: false
-                }
-            }
-        },
-        handler: function (request, reply) {
-
-            if (request.auth.isAuthenticated) {
-                if (request.query.returnUrl) {
-                    return reply.redirect(request.query.returnUrl);
-                }
-                return reply.redirect('/');
-            }
-            return reply.view('login/login');
+  server.route({
+    method: 'GET',
+    path: '/login',
+    config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
         }
-    });
+      }
+    },
+    handler: function (request, reply) {
 
-    server.route({
-        method: 'GET',
-        path: '/logout',
-        config: {
-            auth: {
-                mode: 'try',
-                strategy: 'session'
-            },
-            plugins: {
-                'hapi-auth-cookie': {
-                    redirectTo: false
-                }
-            }
-        },
-        handler: function (request, reply) {
-
-            const credentials = request.auth.credentials || { session: {} };
-            const session = credentials.session || {};
-
-            Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
-
-                if (err) {
-                    return reply(err);
-                }
-
-                request.cookieAuth.clear();
-
-                return reply.redirect('/');
-            });
+      if (request.auth.isAuthenticated) {
+        if (request.query.returnUrl) {
+          return reply.redirect(request.query.returnUrl);
         }
-    });
+        return reply.redirect('/');
+      }
+      return reply.view('login/login');
+    }
+  });
 
-    next();
+  server.route({
+    method: 'GET',
+    path: '/logout',
+    config: {
+      auth: {
+        mode: 'try',
+        strategy: 'session'
+      },
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const credentials = request.auth.credentials || {session: {}};
+      const session = credentials.session || {};
+
+      Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        request.cookieAuth.clear();
+
+        return reply.redirect('/');
+      });
+    }
+  });
+
+  next();
 };
 
 exports.register = function (server, options, next) {
 
-    server.dependency(['auth'], internals.applyRoutes);
+  server.dependency(['auth'], internals.applyRoutes);
 
-    next();
+  next();
 };
 
 
 exports.register.attributes = {
-    name: 'login/index',
-    dependencies: 'visionary'
+  name: 'login/index',
+  dependencies: 'visionary'
 };
