@@ -34,13 +34,25 @@ internals.applyRoutes = function (server, next) {
       const query = {
         username: {$regex: request.query['search[value]']}
       };
-
+      //no role
       if (accessLevel === 0) {
         query._id = request.auth.credentials.user._id;
       }
+      //analyst
       else if (accessLevel === 1) {
-        fields = 'username timeCreated';
+        fields = fields.split(' ');
+        var length = fields.length;
+        for(var i = 0; i < length; i++) {
+          if(User.PHI().indexOf(fields[i]) != -1) {
+            fields.splice(i, 1);
+            i--;
+            length--;
+          }
+        }
+        fields = fields.join(' ');
+        query.inStudy = true;
       }
+      //clinician
       else if (accessLevel === 2) {
         query._id = {
           $in: request.auth.credentials.user.roles.clinician.userAccess

@@ -139,7 +139,6 @@ class User extends MongoModels {
       return 1;
     }
     return 0;
-
   }
 
   constructor(attrs) {
@@ -150,6 +149,10 @@ class User extends MongoModels {
       writable: true,
       enumerable: false
     });
+  }
+
+  static PHI() {
+    return ['username', 'password', 'name', 'dob', 'address', 'phone', 'email'];
   }
 }
 
@@ -167,7 +170,7 @@ User.schema = Joi.object().keys({
   dob: Joi.date(),
   address: Joi.string(),
   phone: Joi.string(),
-  isInStudy: Joi.boolean().default(true),
+  inStudy: Joi.boolean().default(true),
   email: Joi.string().email().lowercase().required(),
   roles: Joi.object().keys({
     clinician: Clinician.schema,

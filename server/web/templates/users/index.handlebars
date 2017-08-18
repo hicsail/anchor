@@ -13,6 +13,7 @@
                 <th>Name</th>
                 <th>Username</th>
                 <th>Email</th>
+                <th>StudyID</th>
                 <th>Joined Study</th>
               </tr>
               </thead>
@@ -31,14 +32,34 @@
       "ajax": {
         "url": "../api/users",
         "data": function (d) {
-          d.fields = "name username email timeCreated";
+          d.fields = "name username email studyID timeCreated";
         }
       },
       "columns": [
-        {"data": "name"},
-        {"data": "username"},
-        {"data": "email"},
-        {"data": "timeCreated"}
+        {
+          "data": "name",
+          "defaultContent": ""
+        },
+        {
+          "data": "username",
+          "defaultContent": ""
+        },
+        {
+          "data": "email",
+          "defaultContent": ""
+        },
+        {
+          "data": "studyID",
+          "render": function (data, type, row) {
+            if (row.studyID > 0) {
+              return row.studyID;
+            }
+            return '';
+          }
+        },
+        {
+          "data": "timeCreated"
+        }
       ]
     });
   });
