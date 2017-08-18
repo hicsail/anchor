@@ -94,7 +94,10 @@ internals.applyRoutes = function (server, next) {
             }
 
             session.user = user;
-            sessions.push(session);
+            let pattern = new RegExp(request.query['search[value]']);
+            if(pattern.test(session.user.username)) {
+              sessions.push(session);
+            }
             callback(null,session);
           });
         }, (err) => {
