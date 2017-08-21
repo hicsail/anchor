@@ -14,6 +14,10 @@
                 <th>Application</th>
                 <th>IP</th>
                 <th>Time</th>
+                {{#if user.roles.admin}}
+                  <th>ID</th>
+                  <th>Delete</th>
+                {{/if}}
               </tr>
               </thead>
             </table>
@@ -24,8 +28,9 @@
   </div>
 </div>
 <script>
+  var table;
   $(document).ready(function () {
-    var table = $('#table').DataTable({
+    table = $('#table').DataTable({
       "processing": true,
       "serverSide": true,
       "ajax": {
@@ -50,8 +55,39 @@
         {
           "data": "time",
           "defaultContent": ""
-        }
+        },
+        {{#if user.roles.admin}}
+          {
+            "data": "_id",
+            "defaultContent": ""
+          },
+          {
+            "data": "_id",
+            "render": function (data, type, row) {
+              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+            }
+          }
+        {{/if}}
       ]
     });
   });
+
+  function deleteDoc(id) {
+    var button = $('#' + id);
+    if(button.text() === 'Delete') {
+      button.text('Are You Sure?')
+    } else {
+      $.ajax({
+        url: '../api/auth-attempts/' + id,
+        type: 'DELETE',
+        success: function (result) {
+          successAlert('Auth Attempt Deleted');
+          table.ajax.reload();
+        },
+        error: function (result) {
+          errorAlert(result.responseJSON.message);
+        }
+      });
+    }
+  }
 </script>
