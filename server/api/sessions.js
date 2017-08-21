@@ -94,9 +94,9 @@ internals.applyRoutes = function (server, next) {
             }
 
             session.user = user;
-            const pattern = new RegExp(request.query['search[value]']);
-            if(accessLevel == 1) { //analyst
-              if(!user.inStudy) {
+            const pattern = new RegExp(request.query['search[value]'].toLowerCase());
+            if (accessLevel === 1) { //analyst
+              if (!user.inStudy) {
                 return callback(null,session);
               }
             }

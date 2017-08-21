@@ -32,7 +32,7 @@ internals.applyRoutes = function (server, next) {
       let fields = request.query.fields;
 
       const query = {
-        username: { $regex: request.query['search[value]'] }
+        username: { $regex: request.query['search[value]'].toLowerCase() }
       };
       //no role
       if (accessLevel === 0) {
