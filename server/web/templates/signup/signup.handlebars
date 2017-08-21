@@ -109,7 +109,7 @@
   $('#signup').click(function(event) {
     event.preventDefault();
     if (!filled(fields)) {
-      alert('Please fill in all of the fields.');
+      errorAlert('Please fill in all of the fields.');
 
     } else if (!passwordCheck(password,confirmpassword)){
       alert('Passwords do not match!')
@@ -152,6 +152,7 @@
     return true;
   }
 
+  // Check if array of fields are filled; fields = [$(selector), $(selector), ...]
   function filled(fields) {
     for (var i = 0; i < fields.length; i++) {
       if (fields[i].val() === '') {
