@@ -75,7 +75,7 @@ lab.experiment('Auth Attempts Plugin Result List', () => {
 
     request = {
       method: 'GET',
-      url: '/auth-attempts',
+      url: '/auth-attempts?search[value]=""',
       credentials: AuthenticatedAdmin
     };
 

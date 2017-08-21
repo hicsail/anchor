@@ -1,6 +1,9 @@
 'use strict';
 const AuthPlugin = require('../../../server/auth');
-const AuthenticatedUser = require('../fixtures/credentials-admin');
+const AuthenticatedAdmin = require('../fixtures/credentials-admin');
+const AuthenticatedAnalyst = require('../fixtures/credentials-analyst');
+const AuthenticatedClinician = require('../fixtures/credentials-clinician');
+const AuthenticatedUser = require('../fixtures/credentials-user');
 const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
@@ -23,11 +26,13 @@ let stub;
 lab.before((done) => {
 
   stub = {
-    Session: MakeMockModel()
+    Session: MakeMockModel(),
+    User: MakeMockModel()
   };
 
   const proxy = {};
   proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
+  proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
 
   const ModelsPlugin = {
     register: Proxyquire('hapi-mongo-models', proxy),
@@ -72,8 +77,8 @@ lab.experiment('Session Plugin Result List', () => {
 
     request = {
       method: 'GET',
-      url: '/sessions',
-      credentials: AuthenticatedUser
+      url: '/sessions?search[value]=""',
+      credentials: AuthenticatedAdmin
     };
 
     done();
@@ -106,14 +111,217 @@ lab.experiment('Session Plugin Result List', () => {
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
 
-      callback(null, { data: [{}, {}, {}] });
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
+
+    stub.User.findById = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        username: 'test',
+        inStudy: true
+      });
     };
 
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result.data).to.be.an.array();
-      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an array of documents successfully using filters', (done) => {
+
+    stub.Session.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
+
+    stub.User.findById = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        username: 'test',
+        inStudy: true
+      });
+    };
+
+    request.url = '/sessions?fields=username studyId&order[0][dir]=desc&search[value]=test';
+    request.credentials = AuthenticatedAnalyst;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an array of documents successfully using filters', (done) => {
+
+    stub.Session.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
+
+    stub.User.findById = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        username: 'test',
+        inStudy: false
+      });
+    };
+
+    request.url = '/sessions?fields=username studyId&order[0][dir]=desc&search[value]=test';
+    request.credentials = AuthenticatedAnalyst;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an array of documents successfully using filters', (done) => {
+
+    stub.Session.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
+
+    request.url = '/sessions?order[0][dir]=asc&search[value]=test';
+    request.credentials = AuthenticatedAnalyst;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an array of documents successfully if user is a clinician', (done) => {
+
+    stub.Session.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
+
+    request.credentials = AuthenticatedClinician;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an array of documents successfully if user has no roles', (done) => {
+
+    stub.Session.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
+
+    request.credentials = AuthenticatedUser;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error if User findById fails', (done) => {
+
+    stub.Session.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {
+        data: [{}, {}, {}],
+        items: {
+          total: 3
+        }
+      });
+    };
+
+    stub.User.findById = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('failed'));
+    };
+
+    request.credentials = AuthenticatedUser;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
 
       done();
     });
@@ -128,7 +336,7 @@ lab.experiment('Session Plugin Read', () => {
     request = {
       method: 'GET',
       url: '/sessions/93EP150D35',
-      credentials: AuthenticatedUser
+      credentials: AuthenticatedAdmin
     };
 
     done();
@@ -193,7 +401,7 @@ lab.experiment('Session Plugin Delete', () => {
     request = {
       method: 'DELETE',
       url: '/sessions/93EP150D35',
-      credentials: AuthenticatedUser
+      credentials: AuthenticatedAdmin
     };
 
     done();

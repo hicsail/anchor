@@ -76,7 +76,7 @@ lab.experiment('User Plugin Result List', () => {
 
     request = {
       method: 'GET',
-      url: '/users',
+      url: '/users?search[value]=""',
       credentials: AuthenticatedAdmin
     };
 

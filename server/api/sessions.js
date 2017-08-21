@@ -90,7 +90,7 @@ internals.applyRoutes = function (server, next) {
           User.findById(session.userId,userFields,(err, user) => {
 
             if (err) {
-              callback(err);
+              return callback(err);
             }
 
             session.user = user;
