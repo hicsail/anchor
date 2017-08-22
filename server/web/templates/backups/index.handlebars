@@ -1,0 +1,105 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div class="container" style="padding-top: 60px">
+        <h3>Backup</h3>
+        <hr>
+        <div class="card">
+          <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>Backup ID</th>
+                <th>Zip</th>
+                <th>S3</th>
+                <th>Time</th>
+                {{#if user.roles.root}}
+                  <th>Delete</th>
+                {{/if}}
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var table;
+  $(document).ready(function () {
+    table = $('#table').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "scrollX": true,
+      "stateSave": true,
+      "ajax": {
+        "url": "../api/backups",
+        "data": function (d) {
+          d.fields = "backupId zip s3 time";
+        }
+      },
+      "columns": [
+        {
+          "data": "_id",
+          "defaultContent": ""
+        },
+        {
+          "data": "backupId",
+          "defaultContent": ""
+        },
+        {
+          "data": "zip",
+          "render": function (data, type, row) {
+              if(row.zip) {
+                  return '<span class="badge badge-success">Completed</span>'
+              }
+              return '<span class="badge badge-danger">Failed</span>'
+          }
+        },
+        {
+          "data": "s3",
+          "render": function (data, type, row) {
+            if(row.s3) {
+              return '<span class="badge badge-success">Completed</span>'
+            }
+            return '<span class="badge badge-danger">Failed</span>'
+          }
+        },
+        {
+          "data": "time",
+          "defaultContent": ""
+        },
+        {{#if user.roles.root}}
+          {
+            "data": "_id",
+            "render": function (data, type, row) {
+              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+            }
+          }
+        {{/if}}
+      ]
+    });
+  });
+
+  function deleteDoc(id) {
+    var button = $('#' + id);
+    if(button.text() === 'Delete') {
+      button.text('Are You Sure?')
+    } else {
+      $.ajax({
+        url: '../api/backups/' + id,
+        type: 'DELETE',
+        success: function (result) {
+          successAlert('Backup Deleted');
+          table.ajax.reload();
+        },
+        error: function (result) {
+          errorAlert(result.responseJSON.message);
+        }
+      });
+    }
+  }
+</script>

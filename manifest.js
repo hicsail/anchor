@@ -135,6 +135,9 @@ const manifest = {
       plugin: './server/web/routes/authAttempts'
     },
     {
+      plugin: './server/web/routes/backup'
+    },
+    {
       plugin: './server/web/routes/dashboard'
     },
     {
