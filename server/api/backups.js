@@ -1,4 +1,5 @@
 'use strict';
+const AdmZip = require('adm-zip');
 const Archiver = require('archiver');
 const Async = require('async');
 const Config = require('../../config');
@@ -82,6 +83,69 @@ internals.applyRoutes = function (server, next) {
 
 
   server.route({
+    method: 'PUT',
+    path: '/backups/{id}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root', 'admin']
+      }
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        backup: function (done) {
+
+          Backup.findById(request.params.id, done);
+        },
+        unzip: ['backup', function (results, done) {
+
+          const inPath = Path.join(__dirname,`../backups/${results.backup.backupId}.zip`);
+          const outPath = Path.join(__dirname,`../backups/${results.backup.backupId}/`);
+          const zip = AdmZip(inPath);
+          zip.extractAllTo(outPath, true);
+          done(null, outPath);
+        }],
+        restore: ['unzip', function (results, done) {
+
+          const databaseName = Config.get('/hapiMongoModels/mongodb/uri').split('/').pop();
+          Exec(`mongorestore --drop -d ${databaseName} '${results.unzip}/${databaseName}/'`, (error, stdout, stderr) => {
+
+            if (error) {
+              return done(error);
+            }
+
+            return done();
+          });
+        }],
+        rmDir: ['restore', function (results, done) {
+
+          Exec(`rm -r '${results.unzip}'`, (error, stdout, stderr) => {
+
+            if (error) {
+              return done(error);
+            }
+
+            return done();
+          });
+        }]
+      },(err, result) => {
+
+        if (err) {
+          return reply(err);
+        }
+        reply({ message: 'Success' });
+      });
+
+
+
+      //const backUpzip
+
+    }
+  });
+
+
+  server.route({
     method: 'DELETE',
     path: '/backups/{id}',
     config: {
@@ -97,9 +161,9 @@ internals.applyRoutes = function (server, next) {
 
           Backup.findById(request.params.id, done);
         },
-        removeZip:[ 'backup', function (results, done) {
+        removeZip:['backup', function (results, done) {
 
-          if(!results.backup) {
+          if (!results.backup) {
             return done(Error('No Backup Found'));
           }
 
@@ -108,20 +172,21 @@ internals.applyRoutes = function (server, next) {
         }],
         removeBackUp: ['removeZip', function (results, done) {
 
-          Backup.findByIdAndDelete(request.params.id, done)
+          Backup.findByIdAndDelete(request.params.id, done);
         }]
       }, (err, results) => {
 
-        if(err) {
+        if (err) {
           return reply(err);
         }
 
-        reply({message: 'success'});
+        reply({ message: 'Success' });
       });
     }
   });
 
-  function backup(request, reply) {
+  const backup =  function (request, reply) {
+
     Async.auto({
       ID: function (done) {
 
@@ -203,13 +268,16 @@ internals.applyRoutes = function (server, next) {
         Async.each(files, (file, callback) => {
 
           const id = file.split('.')[0];
-          if(id !== 'backup' && id) {
+          if (id !== 'backup' && id) {
 
             ids.push(id);
           }
           callback();
         }, (err) => {
 
+          if (err) {
+            return done(err);
+          }
           done(null, ids);
         });
       },
@@ -217,15 +285,15 @@ internals.applyRoutes = function (server, next) {
 
         Backup.find({}, (err, backups) => {
 
-          if(err) {
+          if (err) {
             return done(err);
           }
 
-          Async.each(backups, (backup, callback) => {
+          Async.each(backups, (doc, callback) => {
 
-            if(results.backupIds.indexOf(backup.backupId) === -1) {
+            if (results.backupIds.indexOf(doc.backupId) === -1) {
 
-              return Backup.findByIdAndDelete(backup._id.toString(), callback);
+              return Backup.findByIdAndDelete(doc._id.toString(), callback);
             }
             callback();
           }, done);
@@ -239,7 +307,7 @@ internals.applyRoutes = function (server, next) {
 
       reply(result.backup);
     });
-  }
+  };
 
   next();
 };

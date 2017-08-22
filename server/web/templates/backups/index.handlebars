@@ -73,13 +73,13 @@
         {
           "data": "_id",
           "render": function (data, type, row) {
-            return '<button class="btn btn-primary" id="'+row._id+'" onclick="restore(\'' + row._id + '\')">Restore</button>';
+            return '<button class="btn btn-primary" id="restore'+row._id+'" onclick="restore(\'' + row._id + '\')">Restore</button>';
           }
         },
         {
           "data": "_id",
           "render": function (data, type, row) {
-            return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+            return '<button class="btn btn-danger" id="delete'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
           }
         }
       ]
@@ -87,7 +87,7 @@
   });
 
   function restore(id) {
-    var button = $('#' + id);
+    var button = $('#restore' + id);
     if(button.text() === 'Restore') {
       button.text('Are You Sure?')
     } else {
@@ -106,7 +106,7 @@
   }
 
   function deleteDoc(id) {
-    var button = $('#' + id);
+    var button = $('#delete' + id);
     if(button.text() === 'Delete') {
       button.text('Are You Sure?')
     } else {
