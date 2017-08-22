@@ -60,6 +60,7 @@ const manifest = {
           mongodb: Config.get('/hapiMongoModels/mongodb'),
           models: {
             AuthAttempt: './server/models/auth-attempt',
+            Backup: './server/models/backup',
             Session: './server/models/session',
             User: './server/models/user'
           },
@@ -75,6 +76,12 @@ const manifest = {
     },
     {
       plugin: './server/api/auth-attempts',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
+      plugin: './server/api/backups',
       options: {
         routes: { prefix: '/api' }
       }

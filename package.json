@@ -14,9 +14,11 @@
     "node": ">=8.1.4"
   },
   "dependencies": {
+    "archiver": "2.x.x",
     "async": "2.x.x",
     "bcrypt": "1.x.x",
     "boom": "5.x.x",
+    "child_process": "^1.0.2",
     "confidence": "3.x.x",
     "dotenv": "4.x.x",
     "glue": "4.x.x",
