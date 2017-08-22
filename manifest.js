@@ -147,6 +147,12 @@ const manifest = {
     },
     {
       plugin: './server/web/routes/users'
+    },
+    {
+      plugin: './server/web/routes/resetPassword'
+    },
+    {
+      plugin: './server/web/routes/forgotPassword'
     }
   ]
 };

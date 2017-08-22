@@ -23,6 +23,7 @@
               </label>
             </div>
             <button id="login" type="submit" class="btn btn-primary">Login</button>
+            <button id="forgotPassword" type="submit" class="btn btn-warning">Forgot Password</button>
           </form>
         </div>
       </div>
@@ -53,4 +54,10 @@
       }
     });
   });
+
+  $('#forgotPassword').click(function (e) {
+    e.preventDefault();
+
+    window.location.pathname = 'forgot_password';
+  })
 </script>

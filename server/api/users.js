@@ -508,8 +508,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/my/password',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: ['admin', 'account']
+        strategies: ['simple', 'session']
       },
       validate: {
         payload: {
