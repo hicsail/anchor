@@ -5,6 +5,10 @@
       <div class="container" style="padding-top: 60px">
         <h3>Backup</h3>
         <hr>
+        <div class="row">
+          <button class="btn btn-primary" onclick="backup()">Create Backup</button>
+        </div>
+        <br>
         <div class="card">
           <div class="container" style="padding-top: 20px; padding-bottom: 20px">
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -33,6 +37,8 @@
       "processing": true,
       "serverSide": true,
       "scrollX": true,
+      "scrollY": "500px",
+      "scrollCollapse": true,
       "stateSave": true,
       "ajax": {
         "url": "../api/backups",
@@ -69,7 +75,10 @@
         },
         {
           "data": "time",
-          "defaultContent": ""
+          "render": function (data, type, row) {
+            var date = new Date(row.time);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
         },
         {
           "data": "_id",
@@ -123,5 +132,19 @@
         }
       });
     }
+  }
+
+  function backup() {
+    $.ajax({
+      url: '../api/backups',
+      type: 'POST',
+      success: function (result) {
+        successAlert('Backup Created');
+        table.ajax.reload();
+      },
+      error: function (result) {
+        errorAlert(result.responseJSON.message);
+      }
+    });
   }
 </script>

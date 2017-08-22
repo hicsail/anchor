@@ -56,7 +56,10 @@
         },
         {
           "data": "time",
-          "defaultContent": ""
+          "render": function (data, type, row) {
+            var date = new Date(row.time);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
         },
         {{#if user.roles.admin}}
           {
