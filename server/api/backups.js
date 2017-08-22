@@ -51,6 +51,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
   server.route({
     method: 'POST',
     path: '/backups/internal',
@@ -62,6 +63,7 @@ internals.applyRoutes = function (server, next) {
       backup(request, reply);
     }
   });
+
 
   server.route({
     method: 'POST',
@@ -75,6 +77,47 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       backup(request, reply);
+    }
+  });
+
+
+  server.route({
+    method: 'DELETE',
+    path: '/backups/{id}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root', 'admin']
+      }
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        backup: function (done) {
+
+          Backup.findById(request.params.id, done);
+        },
+        removeZip:[ 'backup', function (results, done) {
+
+          if(!results.backup) {
+            return done(Error('No Backup Found'));
+          }
+
+          const path = Path.join(__dirname,`../backups/${results.backup.backupId}.zip`);
+          Fs.unlink(path, done);
+        }],
+        removeBackUp: ['removeZip', function (results, done) {
+
+          Backup.findByIdAndDelete(request.params.id, done)
+        }]
+      }, (err, results) => {
+
+        if(err) {
+          return reply(err);
+        }
+
+        reply({message: 'success'});
+      });
     }
   });
 
@@ -151,6 +194,42 @@ internals.applyRoutes = function (server, next) {
       backup: ['removeDir', function (results, done) {
 
         Backup.create(results.ID,results.zip, false, done);
+      }],
+      backupIds: function (done) {
+
+        const path = Path.join(__dirname,'../backups');
+        const files = Fs.readdirSync(path);
+        const ids = [];
+        Async.each(files, (file, callback) => {
+
+          const id = file.split('.')[0];
+          if(id !== 'backup' && id) {
+
+            ids.push(id);
+          }
+          callback();
+        }, (err) => {
+
+          done(null, ids);
+        });
+      },
+      cleanBackups: ['backupIds', function (results, done) {
+
+        Backup.find({}, (err, backups) => {
+
+          if(err) {
+            return done(err);
+          }
+
+          Async.each(backups, (backup, callback) => {
+
+            if(results.backupIds.indexOf(backup.backupId) === -1) {
+
+              return Backup.findByIdAndDelete(backup._id.toString(), callback);
+            }
+            callback();
+          }, done);
+        });
       }]
     }, (err, result) => {
 

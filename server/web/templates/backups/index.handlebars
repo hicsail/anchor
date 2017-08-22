@@ -17,7 +17,6 @@
                 <th>ID</th>
                 <th>Backup ID</th>
                 <th>Zip</th>
-                <th>S3</th>
                 <th>Time</th>
                 <th>Restore</th>
                 <th>Delete</th>
@@ -62,15 +61,6 @@
                   return '<span class="badge badge-success">Completed</span>'
               }
               return '<span class="badge badge-danger">Failed</span>'
-          }
-        },
-        {
-          "data": "s3",
-          "render": function (data, type, row) {
-            if(row.s3) {
-              return '<span class="badge badge-success">Completed</span>'
-            }
-            return '<span class="badge badge-danger">Failed</span>'
           }
         },
         {
