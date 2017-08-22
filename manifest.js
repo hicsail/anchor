@@ -2,7 +2,6 @@
 const Confidence = require('confidence');
 const Config = require('./config');
 
-
 const criteria = {
   env: process.env.NODE_ENV
 };
@@ -65,6 +64,23 @@ const manifest = {
             User: './server/models/user'
           },
           autoIndex: Config.get('/hapiMongoModels/autoIndex')
+        }
+      }
+    },
+    {
+      plugin: {
+        register: 'hapi-cron',
+        options: {
+          jobs: [{
+            name: 'backup',
+            time: '0 * * * * *', //every hour
+            timezone: 'America/New_York',
+            request: {
+              method: 'POST',
+              url: '/api/backups/internal',
+              allowInternals: true
+            }
+          }]
         }
       }
     },

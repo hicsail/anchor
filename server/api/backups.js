@@ -53,6 +53,18 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'POST',
+    path: '/backups/internal',
+    config: {
+      isInternal: true
+    },
+    handler: function (request, reply) {
+
+      backup(request, reply);
+    }
+  });
+
+  server.route({
+    method: 'POST',
     path: '/backups',
     config: {
       auth: {
@@ -62,89 +74,93 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Async.auto({
-        ID: function (done) {
-
-          done(null, new Backup.ObjectID().toString());
-        },
-        mkdir: ['ID', function (results, done) {
-
-          const path = Path.join(__dirname,'../backups/', results.ID);
-          Exec(`mkdir '${path}'`, (error, stdout, stderr) => {
-
-            if (error) {
-              return done(error);
-            }
-
-            if (stderr) {
-              return done(stderr);
-            }
-
-            done(null, path);
-          });
-        }],
-        databaseDump: ['mkdir', function (results, done) {
-
-          const databaseName = Config.get('/hapiMongoModels/mongodb/uri').split('/').pop();
-          Exec(`mongodump -d ${databaseName} -o '${results.mkdir}'`, (error, stdout, stderr) => {
-
-            if (error) {
-              return done(error);
-            }
-
-            done(null, true);
-          });
-        }],
-        zip: ['databaseDump', function (results, done) {
-
-          const outputStream = Fs.createWriteStream(`${results.mkdir}.zip`);
-          const Archive = Archiver('zip', {
-            zlib: { level: 9 } // Sets the compression level.
-          });
-
-          outputStream.on('close', () => {
-
-            done(null, true);
-          });
-
-          Archive.on('error', (err) => {
-
-            done(err);
-          });
-
-          Archive.pipe(outputStream);
-
-          Archive.directory(results.mkdir, false).finalize();
-        }],
-        removeDir: ['zip', function (results, done) {
-
-          Exec(`rm -r '${results.mkdir}'`, (error, stdout, stderr) => {
-
-            if (error) {
-              return done(error);
-            }
-
-            if (stderr) {
-              return done(stderr);
-            }
-
-            done(null, true);
-          });
-        }],
-        backup: ['removeDir', function (results, done) {
-
-          Backup.create(results.ID,results.zip, false, done);
-        }]
-      }, (err, result) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply(result.backup);
-      });
+      backup(request, reply);
     }
   });
+
+  function backup(request, reply) {
+    Async.auto({
+      ID: function (done) {
+
+        done(null, new Backup.ObjectID().toString());
+      },
+      mkdir: ['ID', function (results, done) {
+
+        const path = Path.join(__dirname,'../backups/', results.ID);
+        Exec(`mkdir '${path}'`, (error, stdout, stderr) => {
+
+          if (error) {
+            return done(error);
+          }
+
+          if (stderr) {
+            return done(stderr);
+          }
+
+          done(null, path);
+        });
+      }],
+      databaseDump: ['mkdir', function (results, done) {
+
+        const databaseName = Config.get('/hapiMongoModels/mongodb/uri').split('/').pop();
+        Exec(`mongodump -d ${databaseName} -o '${results.mkdir}'`, (error, stdout, stderr) => {
+
+          if (error) {
+            return done(error);
+          }
+
+          done(null, true);
+        });
+      }],
+      zip: ['databaseDump', function (results, done) {
+
+        const outputStream = Fs.createWriteStream(`${results.mkdir}.zip`);
+        const Archive = Archiver('zip', {
+          zlib: { level: 9 } // Sets the compression level.
+        });
+
+        outputStream.on('close', () => {
+
+          done(null, true);
+        });
+
+        Archive.on('error', (err) => {
+
+          done(err);
+        });
+
+        Archive.pipe(outputStream);
+
+        Archive.directory(results.mkdir, false).finalize();
+      }],
+      removeDir: ['zip', function (results, done) {
+
+        Exec(`rm -r '${results.mkdir}'`, (error, stdout, stderr) => {
+
+          if (error) {
+            return done(error);
+          }
+
+          if (stderr) {
+            return done(stderr);
+          }
+
+          done(null, true);
+        });
+      }],
+      backup: ['removeDir', function (results, done) {
+
+        Backup.create(results.ID,results.zip, false, done);
+      }]
+    }, (err, result) => {
+
+      if (err) {
+        return reply(err);
+      }
+
+      reply(result.backup);
+    });
+  }
 
   next();
 };
@@ -152,7 +168,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'hapi-cron', 'hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

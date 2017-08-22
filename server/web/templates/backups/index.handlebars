@@ -15,9 +15,8 @@
                 <th>Zip</th>
                 <th>S3</th>
                 <th>Time</th>
-                {{#if user.roles.root}}
-                  <th>Delete</th>
-                {{/if}}
+                <th>Restore</th>
+                <th>Delete</th>
               </tr>
               </thead>
             </table>
@@ -72,17 +71,40 @@
           "data": "time",
           "defaultContent": ""
         },
-        {{#if user.roles.root}}
-          {
-            "data": "_id",
-            "render": function (data, type, row) {
-              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
-            }
+        {
+          "data": "_id",
+          "render": function (data, type, row) {
+            return '<button class="btn btn-primary" id="'+row._id+'" onclick="restore(\'' + row._id + '\')">Restore</button>';
           }
-        {{/if}}
+        },
+        {
+          "data": "_id",
+          "render": function (data, type, row) {
+            return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+          }
+        }
       ]
     });
   });
+
+  function restore(id) {
+    var button = $('#' + id);
+    if(button.text() === 'Restore') {
+      button.text('Are You Sure?')
+    } else {
+      $.ajax({
+        url: '../api/backups/' + id,
+        type: 'PUT',
+        success: function (result) {
+          successAlert('Backup Restored');
+          table.ajax.reload();
+        },
+        error: function (result) {
+          errorAlert(result.responseJSON.message);
+        }
+      });
+    }
+  }
 
   function deleteDoc(id) {
     var button = $('#' + id);

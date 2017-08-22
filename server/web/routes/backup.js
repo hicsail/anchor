@@ -8,7 +8,8 @@ internals.applyRoutes = function (server, next) {
     path: '/backups',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: ['root', 'admin']
       }
     },
     handler: function (request, reply) {

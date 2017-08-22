@@ -55,4 +55,19 @@
       </li>
     </ul>
   {{/if}}
+  {{#if user.roles.root}}
+    <ul class="nav nav-pills flex-column" style="padding-top: 20px">
+      <h6 class="text-dark">Application Settings</h6>
+      <li class="nav-item">
+        <a class="nav-link text-light" href="../backups">Backups</a>
+      </li>
+    </ul>
+  {{else if user.roles.admin}}
+    <ul class="nav nav-pills flex-column" style="padding-top: 20px">
+      <h6 class="text-dark">Application Settings</h6>
+      <li class="nav-item">
+        <a class="nav-link text-light" href="../backups">Backups</a>
+      </li>
+    </ul>
+  {{/if}}
 </nav>
