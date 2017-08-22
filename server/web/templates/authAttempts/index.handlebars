@@ -33,6 +33,8 @@
     table = $('#table').DataTable({
       "processing": true,
       "serverSide": true,
+      "scrollX": true,
+      "stateSave": true,
       "ajax": {
         "url": "../api/auth-attempts",
         "data": function (d) {

@@ -64,6 +64,8 @@
     var table = $('#userTable').DataTable({
       "processing": true,
       "serverSide": true,
+      "scrollX": true,
+      "stateSave": true,
       "ajax": {
         "url": "../api/users",
         "data": function (d) {

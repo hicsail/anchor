@@ -56,6 +56,8 @@ internals.applyStrategy = function (server, next) {
     cookie: 'AuthCookie',
     isSecure: false,
     clearInvalid: true,
+    keepAlive: true,
+    ttl: 60000 * 30, //30 Minutes
     redirectTo: '/login',
     appendNext: 'returnUrl',
     validateFunc: function (request, data, callback) {

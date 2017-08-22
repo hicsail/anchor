@@ -44,10 +44,20 @@
                 <button id="analyst" class="btn btn-secondary">Promote</button>
               </td>
               <td>
-                <button id="researcher" class="btn btn-info">Promote</button>
+                {{#if user.roles.root}}
+                  <button id="researcher" class="btn btn-info">Promote</button>
+                {{else if user.roles.admin}}
+                  <button id="researcher" class="btn btn-info">Promote</button>
+                {{else}}
+                  <button id="researcher" hidden class="btn btn-info">Promote</button>
+                {{/if}}
               </td>
               <td>
-                <button id="admin" class="btn btn-warning">Promote</button>
+                {{#if user.roles.root}}
+                  <button id="admin" class="btn btn-warning">Promote</button>
+                {{else}}
+                  <button id="admin" hidden class="btn btn-warning">Promote</button>
+                {{/if}}
               </td>
               <td id="root"></td>
             </tr>
@@ -63,6 +73,8 @@
     var table = $('#userTable').DataTable({
       "processing": true,
       "serverSide": true,
+      "scrollX": true,
+      "stateSave": true,
       "ajax": {
         "url": "../api/users",
         "data": function (d) {
