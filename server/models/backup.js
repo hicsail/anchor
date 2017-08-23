@@ -5,13 +5,13 @@ const MongoModels = require('mongo-models');
 
 class Backup extends MongoModels {
 
-  static create(backupId, zip, s3, callback) {
+  static create(backupId, zip, s3, callback, time = (new Date())) {
 
     const document = {
       backupId,
       zip,
       s3,
-      time: new Date()
+      time
     };
 
     this.insertOne(document, (err, docs) => {

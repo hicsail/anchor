@@ -185,9 +185,69 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  const findBackups = function (callback) {
+
+    Async.auto({
+
+      ls: function (done) {
+
+        const path = Path.join(__dirname, '../backups/');
+        Fs.readdir(path, done);
+      },
+      ids: ['ls', function (results, done) {
+
+        const ids = [];
+        for (const item of results.ls){
+          const file = item.split('.');
+          if (file.pop() === 'zip') {
+            ids.push(file[0]);
+          }
+        }
+        done(null, ids);
+      }],
+      backups: ['ids', function (results, done) {
+
+        const createIds = [];
+
+        Async.each(results.ids, (id, eachCallback) => {
+
+          Backup.findOne({ backupId: id }, (err, backup) => {
+
+            if (err){
+              return eachCallback(err);
+            }
+
+            if (!backup) {
+              createIds.push(id);
+            }
+
+            eachCallback();
+          });
+        },(err) => {
+
+          done(err, createIds);
+        });
+      }],
+      create: ['backups', function (results, done) {
+
+        Async.each(results.backups, (id, eachCallback) => {
+
+          const path = Path.join(__dirname, `../backups/${id}.zip`);
+          const stat = Fs.statSync(path);
+          const time = new Date(stat.ctime);
+          Backup.create(id,true,false,eachCallback,time);
+        },done);
+      }]
+    }, callback);
+  };
+
   const backup =  function (request, reply) {
 
     Async.auto({
+      findBackups: function (done) {
+
+        findBackups(done);
+      },
       ID: function (done) {
 
         done(null, new Backup.ObjectID().toString());

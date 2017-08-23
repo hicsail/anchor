@@ -73,7 +73,7 @@ const manifest = {
         options: {
           jobs: [{
             name: 'backup',
-            time: '* 0 * * * *', //every hour
+            time: '0 0 * * * *', //every hour
             timezone: 'America/New_York',
             request: {
               method: 'POST',
