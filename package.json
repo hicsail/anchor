@@ -6,7 +6,9 @@
   "scripts": {
     "start": "nodemon --inspect -e js,md,html,handlebars,css server.js",
     "first-time-setup": "node first-time-setup.js",
-    "test": "lab -c -L --lint-fix"
+    "test": "lab -c -L",
+    "lint": "lab -dL",
+    "lint-fix": "lab -dL --lint-fix"
   },
   "author": "Reza Akhavan <jedireza@gmail.com> (http://reza.akhavan.me/)",
   "license": "MIT",
@@ -47,7 +49,11 @@
     "code": "4.x.x",
     "lab": "14.x.x",
     "nodemon": "1.x.x",
+    "pre-commit": "^1.2.2",
     "promptly": "2.x.x",
     "proxyquire": "1.x.x"
-  }
+  },
+  "pre-commit": [
+    "lint"
+  ]
 }
