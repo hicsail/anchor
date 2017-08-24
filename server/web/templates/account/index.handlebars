@@ -135,7 +135,7 @@
       success: function (result) {
         window.location = '../account'
       },
-      fail: function (result) {
+      error: function (result) {
         errorAlert(result.responseJSON.message);
       }
     });
