@@ -112,8 +112,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/my',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: ['admin', 'account']
+        strategies: ['simple', 'session']
       }
     },
     handler: function (request, reply) {
@@ -143,7 +142,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: 'admin'
+        scope: ['root','admin','researcher']
       },
       validate: {
         payload: User.payload
@@ -353,8 +352,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/my',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: ['admin', 'account']
+        strategies: ['simple', 'session']
       },
       validate: {
         payload: {
@@ -508,8 +506,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/my/password',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: ['admin', 'account']
+        strategies: ['simple', 'session']
       },
       validate: {
         payload: {

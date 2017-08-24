@@ -266,6 +266,70 @@ lab.experiment('Auth Attempts Plugin Result List', () => {
 });
 
 
+lab.experiment('Auth Attempts Plugin Read', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/auth-attempts/93EP150D35',
+      credentials: AuthenticatedAdmin
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns an error when find by id fails', (done) => {
+
+    stub.AuthAttempt.findById = function (id, callback) {
+
+      callback(Error('find by id failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns a not found when find by id misses', (done) => {
+
+    stub.AuthAttempt.findById = function (id, callback) {
+
+      callback();
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.result.message).to.match(/document not found/i);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns a document successfully', (done) => {
+
+    stub.AuthAttempt.findById = function (id, callback) {
+
+      callback(null, { _id: '93EP150D35' });
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+});
+
 lab.experiment('Auth Attempt Plugin Delete', () => {
 
   lab.beforeEach((done) => {
