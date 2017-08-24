@@ -1,0 +1,83 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div class="container" style="padding-top: 60px">
+        <h3>Environment Variables</h3>
+        <hr>
+        <div class="card">
+          <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+            <form id="env">
+              {{#each env}}
+                <div class="row" id="{{@key}}row">
+                  <div class="col-4">
+                    <label class="align-middle" for="{{@key}}">{{@key}}</label>
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" id="{{@key}}" placeholder="{{this}}" value="{{this}}"
+                           name="{{@key}}">
+                  </div>
+                  <div class="col-2">
+                    <button class="btn btn-danger" onclick="deleteRow('{{@key}}')">Delete</button>
+                  </div>
+                </div>
+                <br>
+              {{/each}}
+            </form>
+            <button class="btn btn-primary" onclick="add()">Add</button>
+          </div>
+        </div>
+        <br>
+        <button class="float-right btn btn-primary" onclick="formatData()">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function deleteRow(id) {
+    $('#' + id + 'row').remove();
+  }
+
+  function add() {
+    var id = Math.floor(Math.random() * (99999 - 1 + 1)) + 1;
+    $('#env').append(
+      '<div class="row" id="' + id + 'row">\n' +
+      '<div class="col-4">\n' +
+      '<input type="text" class="form-control" id="' + id + 'label" placeholder="ENV NAME" name="' + id + '.name">' +
+      '</div>\n' +
+      '<div class="col-6">\n' +
+      '<input type="text" class="form-control" id="' + id + '" placeholder="ENV VALUE" name="' + id + '.value">' +
+      '</div>\n' +
+      '<div class="col-2">\n' +
+      '<button class="btn btn-danger" onclick="deleteRow(' + id + ')">Delete</button>\n' +
+      '</div>\n' +
+      '</div><br>\n'
+    );
+  }
+
+  function formatData() {
+    var data = $('#env').serialize().split('&');
+    var envs = {};
+    var newValues = {};
+    for (var point of data) {
+      point = point.split('=');
+      if (point[0].indexOf('.') == -1) {
+        envs[point[0]] = point[1];
+      } else {
+        point[0] = point[0].split('.');
+        var key = point[0][0];
+        if (!newValues[key]) {
+          newValues[key] = {};
+        }
+        if (point[0][1] == 'name') {
+          newValues[key]['name'] = point[1];
+        } else {
+          newValues[key]['value'] = point[1];
+        }
+      }
+    }
+    for (var key in newValues) {
+      envs[newValues[key].name] = newValues[key].value;
+    }
+  }
+</script>

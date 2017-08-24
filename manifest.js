@@ -109,6 +109,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/env',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
       plugin: './server/api/index',
       options: {
         routes: { prefix: '/api' }
@@ -155,6 +161,9 @@ const manifest = {
     },
     {
       plugin: './server/web/routes/dashboard'
+    },
+    {
+      plugin: './server/web/routes/env'
     },
     {
       plugin: './server/web/routes/index'
