@@ -18,6 +18,7 @@ const config = {
       $filter: 'env',
       test: 9090,
       production: process.env.PORT,
+      local: 9000,
       $default: 9000
     }
   },
@@ -28,6 +29,7 @@ const config = {
   cookieSecret: {
     $filter: 'env',
     production: process.env.COOKIE_SECRET,
+    local: '!k3yb04rdK4tz~4qu4~k3yb04rdd0gz!',
     $default: '!k3yb04rdK4tz~4qu4~k3yb04rdd0gz!'
   },
   hapiMongoModels: {
@@ -36,6 +38,7 @@ const config = {
         $filter: 'env',
         production: process.env.MONGODB_URI,
         test: 'mongodb://localhost:27017/frame-test',
+        local: 'mongodb://localhost:27017/frame',
         $default: 'mongodb://localhost:27017/frame'
       }
     },
@@ -46,7 +49,7 @@ const config = {
     port: 465,
     secure: true,
     auth: {
-      user: 'jedireza@gmail.com',
+      user: process.env.SMTP_USERNAME,
       pass: process.env.SMTP_PASSWORD
     }
   },

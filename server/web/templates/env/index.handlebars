@@ -79,5 +79,16 @@
     for (var key in newValues) {
       envs[newValues[key].name] = newValues[key].value;
     }
+    $.ajax({
+      type: "POST",
+      url: '../api/env',
+      data: envs,
+      success: function (result) {
+        successAlert(result.message);
+      },
+      fail: function (result) {
+        errorAlert(result.responseJSON.message);
+      }
+    });
   }
 </script>
