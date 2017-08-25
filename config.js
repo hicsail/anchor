@@ -62,6 +62,15 @@ const config = {
       name: 'Frame',
       address: 'jedireza@gmail.com'
     }
+  },
+  passwordComplexity: {
+    min: 8,
+    max: 32,
+    lowerCase: 1,
+    upperCase: 1,
+    numeric: 1,
+    symbol: 1,
+    requirementCount: 3
   }
 };
 

@@ -416,7 +416,7 @@ lab.experiment('Users Plugin Create', () => {
       url: '/users',
       payload: {
         username: 'muddy',
-        password: 'dirtandwater',
+        password: 'dirtAndwater1',
         email: 'mrmud@mudmail.mud',
         name: 'muddy test'
       },
@@ -884,7 +884,7 @@ lab.experiment('Users Plugin Set Password', () => {
       method: 'PUT',
       url: '/users/420000000000000000000000/password',
       payload: {
-        password: 'fromdirt'
+        password: 'fromDirt1'
       },
       credentials: AuthenticatedAdmin
     };
@@ -960,7 +960,7 @@ lab.experiment('Users Plugin (My) Set Password', () => {
       method: 'PUT',
       url: '/users/my/password',
       payload: {
-        password: 'fromdirt'
+        password: 'fromDirt1'
       },
       credentials: AuthenticatedAdmin
     };

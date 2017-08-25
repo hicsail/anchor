@@ -23,13 +23,11 @@ let stub;
 lab.before((done) => {
 
   stub = {
-    Account: MakeMockModel(),
     Session: MakeMockModel(),
     User: MakeMockModel()
   };
 
   const proxy = {};
-  proxy[Path.join(process.cwd(), './server/models/account')] = stub.Account;
   proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
   proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
 
@@ -171,6 +169,32 @@ lab.experiment('Signup Plugin', () => {
     });
   });
 
+  lab.test('it returns a conflict when password dont meet requirements', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      callback(null, {});
+    };
+
+    request = {
+      method: 'POST',
+      url: '/signup',
+      payload: {
+        name: 'Muddy Mudskipper',
+        username: 'muddy',
+        password: 'notagoodpassword',
+        email: 'mrmud@mudmail.mud',
+        application: 'Test'
+      }
+    };
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(409);
+
+      done();
+    });
+  });
+
 
   lab.test('it returns an error if any critical setup step fails', (done) => {
 
@@ -251,25 +275,7 @@ lab.experiment('Signup Plugin', () => {
       callback(null, { _id: 'BL4M0' });
     };
 
-    stub.Account.create = function (name, callback) {
-
-      const account = {
-        _id: 'BL4M0',
-        name: {
-          first: 'Muddy',
-          last: 'Mudskipper'
-        }
-      };
-
-      callback(null, account);
-    };
-
     stub.User.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, [{}, {}]);
-    };
-
-    stub.Account.findByIdAndUpdate = function (id, update, callback) {
 
       callback(null, [{}, {}]);
     };

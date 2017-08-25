@@ -1,8 +1,9 @@
 'use strict';
 const Boom = require('boom');
 const Clinician = require('../models/clinician');
+const Config = require('../../config');
 const Joi = require('joi');
-
+const PasswordComplexity = require('joi-password-complexity');
 
 const internals = {};
 
@@ -190,8 +191,20 @@ internals.applyRoutes = function (server, next) {
               reply(true);
             });
           }
-        }
-      ]
+        }, {
+          assign: 'passwordCheck',
+          method: function (request, reply) {
+
+            const complexityOptions = Config.get('/passwordComplexity');
+            Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions), (err, value) => {
+
+              if (err) {
+                return reply(Boom.conflict('Password does not meet complexity standards'));
+              }
+              reply(true);
+            });
+          }
+        }]
     },
     handler: function (request, reply) {
 
@@ -477,6 +490,19 @@ internals.applyRoutes = function (server, next) {
               reply(hash);
             });
           }
+        },{
+          assign: 'passwordCheck',
+          method: function (request, reply) {
+
+            const complexityOptions = Config.get('/passwordComplexity');
+            Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions), (err, value) => {
+
+              if (err) {
+                return reply(Boom.conflict(err.message));
+              }
+              reply(true);
+            });
+          }
         }
       ]
     },
@@ -524,6 +550,19 @@ internals.applyRoutes = function (server, next) {
             }
 
             reply(hash);
+          });
+        }
+      },{
+        assign: 'passwordCheck',
+        method: function (request, reply) {
+
+          const complexityOptions = Config.get('/passwordComplexity');
+          Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions), (err, value) => {
+
+            if (err) {
+              return reply(Boom.conflict('Password does not meet complexity standards'));
+            }
+            reply(true);
           });
         }
       }]

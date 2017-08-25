@@ -4,7 +4,7 @@ const Boom = require('boom');
 const Config = require('../../config');
 const internals = {};
 const Joi = require('joi');
-
+const PasswordComplexity = require('joi-password-complexity');
 
 internals.applyRoutes = function (server, next) {
 
@@ -70,6 +70,19 @@ internals.applyRoutes = function (server, next) {
               return reply(Boom.conflict('Email already in use.'));
             }
 
+            reply(true);
+          });
+        }
+      },{
+        assign: 'passwordCheck',
+        method: function (request, reply) {
+
+          const complexityOptions = Config.get('/passwordComplexity');
+          Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions), (err, value) => {
+
+            if (err) {
+              return reply(Boom.conflict('Password does not meet complexity standards'));
+            }
             reply(true);
           });
         }
@@ -144,7 +157,79 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/available',
+    config: {
+      validate: {
+        payload: {
+          email: Joi.string().email().lowercase().optional(),
+          username: Joi.string().token().lowercase().optional()
+        }
+      },
+      pre: [{
+        assign: 'vaildInput',
+        method: function (request, reply) {
 
+          const username = request.payload.username;
+          const email = request.payload.email;
+
+          if (!username && !email) {
+            return reply(Boom.badRequest('invaild submission, submit username and/or email'));
+          }
+          reply(true);
+        }
+      }]
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        usernameFind: function (done) {
+
+          const username = request.payload.username;
+
+
+          User.findOne({ username }, done);
+        },
+        username: ['usernameFind', function (results, done) {
+
+          if (request.payload.username) {
+            if (results.username) {
+              return done(null,false);
+            }
+            return done(null,true);
+
+          }
+        }],
+        emailFind: function (done) {
+
+          const email = request.payload.email;
+
+          User.findOne({ email }, done);
+        },
+        email: ['emailFind', function (results, done) {
+
+          if (request.payload.email) {
+            if (results.email) {
+              return done(null,false);
+            }
+            return done(null,true);
+
+          }
+        }]
+      }, (err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        delete results.usernameFind;
+        delete results.emailFind;
+
+        reply(results);
+      });
+    }
+  });
   next();
 };
 
