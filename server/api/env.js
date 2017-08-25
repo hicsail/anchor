@@ -59,7 +59,7 @@ internals.applyRoutes = function (server, next) {
       const path = Path.join(__dirname,'../../.env');
       Fs.writeFileSync(path,env);
 
-      Env.parse(path); //override varables
+      Env.parse(path); //override variables
       return reply({ message: 'Success' });
     }
   });

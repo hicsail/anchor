@@ -6,7 +6,12 @@
         <h3>Backup</h3>
         <hr>
         <div class="row">
-          <button class="btn btn-primary" onclick="backup()">Create Backup</button>
+          <div class="col-md-2 col-xs-6">
+            <button class="btn btn-primary" onclick="backup()">Create Backup</button>
+          </div>
+          <div class="col-md-2 col-xs-6">
+            <button class="btn btn-secondary" onclick="clean()">Sync Backups</button>
+          </div>
         </div>
         <br>
         <div class="card">
@@ -130,6 +135,20 @@
       type: 'POST',
       success: function (result) {
         successAlert('Backup Created');
+        table.ajax.reload();
+      },
+      error: function (result) {
+        errorAlert(result.responseJSON.message);
+      }
+    });
+  }
+
+  function clean() {
+    $.ajax({
+      url: '../api/backups/refresh',
+      type: 'GET',
+      success: function (result) {
+        successAlert('Backup Synced');
         table.ajax.reload();
       },
       error: function (result) {

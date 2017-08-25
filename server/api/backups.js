@@ -81,6 +81,24 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/backups/refresh',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root', 'admin']
+      }
+    },
+    handler: function (request, reply) {
+
+      findBackups();
+      clean(null);
+      reply(true);
+    }
+  });
+
+
 
   server.route({
     method: 'PUT',
@@ -136,11 +154,6 @@ internals.applyRoutes = function (server, next) {
         }
         reply({ message: 'Success' });
       });
-
-
-
-      //const backUpzip
-
     }
   });
 
@@ -320,6 +333,24 @@ internals.applyRoutes = function (server, next) {
 
         Backup.create(results.ID,results.zip, false, done);
       }],
+      clean: function (done) {
+
+        clean(done);
+      }
+
+    }, (err, result) => {
+
+      if (err) {
+        return reply(err);
+      }
+
+      reply(result.backup);
+    });
+  };
+
+  const clean = function (done) {
+
+    Async.auto({
       backupIds: function (done) {
 
         const path = Path.join(__dirname,'../backups');
@@ -341,7 +372,7 @@ internals.applyRoutes = function (server, next) {
           done(null, ids);
         });
       },
-      cleanBackups: ['backupIds', function (results, done) {
+      cleanBackups: ['backupIds', function (results, done){
 
         Backup.find({}, (err, backups) => {
 
@@ -359,14 +390,7 @@ internals.applyRoutes = function (server, next) {
           }, done);
         });
       }]
-    }, (err, result) => {
-
-      if (err) {
-        return reply(err);
-      }
-
-      reply(result.backup);
-    });
+    }, done);
   };
 
   next();
