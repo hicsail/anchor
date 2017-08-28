@@ -1,5 +1,6 @@
 'use strict';
 const internals = {};
+const Config = require('../../../config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -27,7 +28,9 @@ internals.applyRoutes = function (server, next) {
         }
         return reply.redirect('/');
       }
-      return reply.view('login/login');
+      return reply.view('login/login', {
+        projectName: Config.get('/projectName')
+      });
     }
   });
 

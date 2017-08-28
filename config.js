@@ -12,7 +12,13 @@ const criteria = {
 
 const config = {
   $meta: 'This file configures the plot device.',
-  projectName: 'Frame',
+  projectName: {
+    $filter: 'env',
+    production: process.env.PROJECT_NAME,
+    test: 'Anchor',
+    local: process.env.PROJECT_NAME,
+    $default: 'Anchor'
+  },
   port: {
     web: {
       $filter: 'env',
@@ -37,9 +43,9 @@ const config = {
       uri: {
         $filter: 'env',
         production: process.env.MONGODB_URI,
-        test: 'mongodb://localhost:27017/frame-test',
-        local: 'mongodb://localhost:27017/frame',
-        $default: 'mongodb://localhost:27017/frame'
+        test: 'mongodb://localhost:27017/anchor-test',
+        local: 'mongodb://localhost:27017/anchor',
+        $default: 'mongodb://localhost:27017/anchor'
       }
     },
     autoIndex: true
@@ -55,11 +61,11 @@ const config = {
   },
   system: {
     fromAddress: {
-      name: 'Frame',
+      name: 'Anchor',
       address: 'jedireza@gmail.com'
     },
     toAddress: {
-      name: 'Frame',
+      name: 'Anchor',
       address: 'jedireza@gmail.com'
     }
   },

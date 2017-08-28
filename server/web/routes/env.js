@@ -1,5 +1,6 @@
 'use strict';
 const internals = {};
+const Config = require('../../../config');
 const Env = require('dotenv');
 
 internals.applyRoutes = function (server, next) {
@@ -17,7 +18,8 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('env/index', {
         user: request.auth.credentials.user,
-        env: Env.config().parsed
+        env: Env.config().parsed,
+        projectName: Config.get('/projectName')
       });
     }
   });

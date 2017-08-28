@@ -1,5 +1,6 @@
 'use strict';
 const internals = {};
+const Config = require('../../../config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -23,7 +24,10 @@ internals.applyRoutes = function (server, next) {
       if (request.auth.isAuthenticated) {
         user = request.auth.credentials.user;
       }
-      return reply.view('index/index', { user });
+      return reply.view('index/index', {
+        user,
+        projectName: Config.get('/projectName')
+      });
     }
   });
 

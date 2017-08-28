@@ -1,5 +1,6 @@
 'use strict';
 const internals = {};
+const Config = require('../../../config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -28,7 +29,10 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('users/roles', { user: request.auth.credentials.user });
+      return reply.view('users/roles', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName')
+      });
     }
   });
 
@@ -43,7 +47,10 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('users/participation', { user: request.auth.credentials.user });
+      return reply.view('users/participation', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName')
+      });
     }
   });
 

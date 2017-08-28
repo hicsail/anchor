@@ -1,5 +1,6 @@
 'use strict';
 const internals = {};
+const Config = require('../../../config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -22,7 +23,9 @@ internals.applyRoutes = function (server, next) {
       if (request.auth.isAuthenticated) {
         return reply.redirect('/');
       }
-      return reply.view('signup/signup');
+      return reply.view('signup/signup',{
+        projectName: Config.get('/projectName')
+      });
     }
   });
 

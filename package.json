@@ -1,6 +1,6 @@
 {
-  "name": "frame",
-  "version": "12.2.0",
+  "name": "anchor",
+  "version": "1.0.0",
   "description": "A user system API starter",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,16 @@
     "lint": "lab -dL",
     "lint-fix": "lab -dL --lint-fix"
   },
-  "author": "Reza Akhavan <jedireza@gmail.com> (http://reza.akhavan.me/)",
+  "author": "Boston University Software & Application Innovation Lab",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hicsail/anchor/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hicsal/anchor.git"
+  },
+  "homepage": "https://github.com/hicsail/anchor#readme",
   "engines": {
     "node": ">=8.1.4"
   },

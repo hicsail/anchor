@@ -1,5 +1,6 @@
 'use strict';
 const internals = {};
+const Config = require('../../../config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -14,7 +15,10 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('backups/index', { user: request.auth.credentials.user });
+      return reply.view('backups/index', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName')
+      });
     }
   });
 
