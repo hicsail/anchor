@@ -96,6 +96,7 @@
           <textarea class="form-control" id="address" name="address" rows="3">{{user.address}}</textarea>
         </div>
         <button type="submit" id="update" class="btn btn-primary">Update</button>
+        <button type="button" id="reset_password" class="btn btn-warning">Reset Password</button>
       </form>
     </div>
   </div>
@@ -134,9 +135,14 @@
       success: function (result) {
         window.location = '../account'
       },
-      fail: function (result) {
+      error: function (result) {
         errorAlert(result.responseJSON.message);
       }
     });
   });
+  $('#reset_password').click(function (e) {
+    e.preventDefault();
+    window.location.pathname = 'reset_password'
+  })
+
 </script>
