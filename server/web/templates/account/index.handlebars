@@ -118,25 +118,44 @@
         break;
     }
   });
+
+  var fields = [$('#name'),$('#username'),$('#email'),$('#phone'),$('#height'),
+    $('#weight'),$('#dob'),$('#address')];
+
+
   $('#update').click(function (event) {
     event.preventDefault();
-    var values = {};
-    $.each($('#updateForm').serializeArray(), function (i, field) {
-      values[field.name] = field.value;
-    });
-    values.dob = $('[data-toggle="datepicker"]').datepicker('getDate');
-    values.height = Number(values.height);
-    values.weight = Number(values.weight);
-    $.ajax({
-      type: "PUT",
-      url: '../api/users/my',
-      data: values,
-      success: function (result) {
-        window.location = '../account'
-      },
-      fail: function (result) {
-        errorAlert(result.responseJSON.message);
-      }
-    });
+    if (!filled(fields)) {
+      errorAlert('Please fill in all of the fields.')
+    } else {
+      var values = {};
+      $.each($('#updateForm').serializeArray(), function (i, field) {
+        values[field.name] = field.value;
+      });
+      values.dob = $('[data-toggle="datepicker"]').datepicker('getDate');
+      values.height = Number(values.height);
+      values.weight = Number(values.weight);
+      $.ajax({
+        type: "PUT",
+        url: '../api/users/my',
+        data: values,
+        success: function (result) {
+          window.location = '../account'
+        },
+        fail: function (result) {
+          errorAlert(result.responseJSON.message);
+        }
+      });
+    }
   });
+
+  // Check if array of fields are filled; fields = [$(selector), $(selector), ...]
+  function filled(fields) {
+    for (var i = 0; i < fields.length; i++) {
+      if (fields[i].val() === '') {
+        return false;
+      }
+    }
+    return true;
+  }
 </script>
