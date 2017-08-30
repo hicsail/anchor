@@ -1,11 +1,13 @@
-$('#login').click(function (event) {
+'use strict';
+
+$('#login').click((event) => {
   event.preventDefault();
-  var values = {};
-  $.each($('#loginForm').serializeArray(), function (i, field) {
+  const values = {};
+  $.each($('#loginForm').serializeArray(), (i, field) => {
     values[field.name] = field.value;
   });
   $.ajax({
-    type: "POST",
+    type: 'POST',
     url: '../api/login',
     data: values,
     success: function (result) {

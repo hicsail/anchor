@@ -1,8 +1,11 @@
+'use strict';
+
 function deleteDoc(id) {
-  var button = $('#' + id);
-  if(button.text() === 'Delete') {
-    button.text('Are You Sure?')
-  } else {
+  const button = $('#' + id);
+  if (button.text() === 'Delete') {
+    button.text('Are You Sure?');
+  }
+  else {
     $.ajax({
       url: '../api/users/' + id,
       type: 'DELETE',

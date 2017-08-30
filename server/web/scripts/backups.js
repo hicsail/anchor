@@ -1,53 +1,55 @@
-var table;
-$(document).ready(function () {
+'use strict';
+
+let table;
+$(document).ready(() => {
   table = $('#table').DataTable({
-    "processing": true,
-    "serverSide": true,
-    "scrollX": true,
-    "scrollY": "500px",
-    "scrollCollapse": true,
-    "stateSave": true,
-    "ajax": {
-      "url": "../api/backups",
-      "data": function (d) {
-        d.fields = "backupId zip s3 time";
+    'processing': true,
+    'serverSide': true,
+    'scrollX': true,
+    'scrollY': '500px',
+    'scrollCollapse': true,
+    'stateSave': true,
+    'ajax': {
+      'url': '../api/backups',
+      'data': function (d) {
+        d.fields = 'backupId zip s3 time';
       }
     },
-    "columns": [
+    'columns': [
       {
-        "data": "_id",
-        "defaultContent": ""
+        'data': '_id',
+        'defaultContent': ''
       },
       {
-        "data": "backupId",
-        "defaultContent": ""
+        'data': 'backupId',
+        'defaultContent': ''
       },
       {
-        "data": "zip",
-        "render": function (data, type, row) {
-          if(row.zip) {
-            return '<span class="badge badge-success">Completed</span>'
+        'data': 'zip',
+        'render': function (data, type, row) {
+          if (row.zip) {
+            return '<span class="badge badge-success">Completed</span>';
           }
-          return '<span class="badge badge-danger">Failed</span>'
+          return '<span class="badge badge-danger">Failed</span>';
         }
       },
       {
-        "data": "time",
-        "render": function (data, type, row) {
-          var date = new Date(row.time);
+        'data': 'time',
+        'render': function (data, type, row) {
+          const date = new Date(row.time);
           return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
         }
       },
       {
-        "data": "_id",
-        "render": function (data, type, row) {
-          return '<button class="btn btn-primary" id="restore'+row._id+'" onclick="restore(\'' + row._id + '\')">Restore</button>';
+        'data': '_id',
+        'render': function (data, type, row) {
+          return '<button class="btn btn-primary" id="restore' + row._id + '" onclick="restore(\'' + row._id + '\')">Restore</button>';
         }
       },
       {
-        "data": "_id",
-        "render": function (data, type, row) {
-          return '<button class="btn btn-danger" id="delete'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+        'data': '_id',
+        'render': function (data, type, row) {
+          return '<button class="btn btn-danger" id="delete' + row._id + '" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
         }
       }
     ]
@@ -55,10 +57,11 @@ $(document).ready(function () {
 });
 
 function restore(id) {
-  var button = $('#restore' + id);
-  if(button.text() === 'Restore') {
-    button.text('Are You Sure?')
-  } else {
+  const button = $('#restore' + id);
+  if (button.text() === 'Restore') {
+    button.text('Are You Sure?');
+  }
+  else {
     $.ajax({
       url: '../api/backups/' + id,
       type: 'PUT',
@@ -74,10 +77,11 @@ function restore(id) {
 }
 
 function deleteDoc(id) {
-  var button = $('#delete' + id);
-  if(button.text() === 'Delete') {
-    button.text('Are You Sure?')
-  } else {
+  const button = $('#delete' + id);
+  if (button.text() === 'Delete') {
+    button.text('Are You Sure?');
+  }
+  else {
     $.ajax({
       url: '../api/backups/' + id,
       type: 'DELETE',

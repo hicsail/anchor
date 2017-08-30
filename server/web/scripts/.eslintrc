@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "hapi"
+  ],
+  "rules": {
+    "indent": ["error", 2],
+    "hapi/hapi-scope-start": "off",
+    "no-unused-vars": "off",
+    "func-style": "off"
+  }
+}

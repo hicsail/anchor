@@ -1,8 +1,10 @@
+'use strict';
+
 $('[data-toggle="datepicker"]').datepicker();
-$('#signup').click(function (event) {
+$('#signup').click((event) => {
   event.preventDefault();
-  var values = {};
-  $.each($('#signupForm').serializeArray(), function (i, field) {
+  const values = {};
+  $.each($('#signupForm').serializeArray(), (i, field) => {
     values[field.name] = field.value;
   });
   delete values.confirmpassword;
@@ -10,11 +12,11 @@ $('#signup').click(function (event) {
   values.height = Number(values.height);
   values.weight = Number(values.weight);
   $.ajax({
-    type: "POST",
+    type: 'POST',
     url: '../api/signup',
     data: values,
     success: function (result) {
-      window.location = '../'
+      window.location = '../';
     },
     fail: function (result) {
       errorAlert(result.responseJSON.message);
