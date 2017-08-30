@@ -1,8 +1,16 @@
 {
   "name": "anchor",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hicsal/anchor.git"
+  },
+  "license": "MIT",
   "scripts": {
     "postinstall": "cd server && npm install",
     "precommit": "cd server && npm run lint"
+  },
+  "devDependencies": {
+    "pre-commit": "1.x.x"
   }
 }
