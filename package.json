@@ -8,13 +8,9 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "cd server && npm install",
-    "precommit": "npm run serverLint",
-    "serverLint": "cd server && npm run lint"
+    "precommit": "cd server && npm run lint"
   },
   "devDependencies": {
     "pre-commit": "1.x.x"
-  },
-  "precommit": [
-    "precommit"
-  ]
+  }
 }
