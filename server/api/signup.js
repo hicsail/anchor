@@ -22,7 +22,6 @@ internals.applyRoutes = function (server, next) {
           password: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           name: Joi.string().required(),
-          info: Joi.object().optional(),
           application: Joi.string().default('Web')
         }
       },
@@ -94,9 +93,8 @@ internals.applyRoutes = function (server, next) {
           const password = request.payload.password;
           const email = request.payload.email;
           const name = request.payload.name;
-          const info = request.payload.info;
 
-          User.create(username, password, email, name, info, done);
+          User.create(username, password, email, name, done);
         },
         welcome: ['user', function (results, done) {
 

@@ -1,4 +1,9 @@
 'use strict';
+const loginSchema = Joi.object().keys({
+  username: Joi.string().lowercase().required(),
+  password: Joi.string().required()
+});
+joiToForm('loginFormFields',loginSchema);
 
 $('#login').click((event) => {
   event.preventDefault();

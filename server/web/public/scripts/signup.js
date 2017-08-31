@@ -1,16 +1,21 @@
 'use strict';
+const signUpSchema = Joi.object().keys({
+  name: Joi.string().required(),
+  username: Joi.string().lowercase().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+  confirmPassword: Joi.string().required()
+});
+joiToForm('signUpFormFields',signUpSchema);
 
-$('[data-toggle="datepicker"]').datepicker();
 $('#signup').click((event) => {
   event.preventDefault();
   const values = {};
   $.each($('#signupForm').serializeArray(), (i, field) => {
     values[field.name] = field.value;
   });
-  delete values.confirmpassword;
-  values.dob = $('[data-toggle="datepicker"]').datepicker('getDate');
-  values.height = Number(values.height);
-  values.weight = Number(values.weight);
+  delete values.confirmPassword;
+
   $.ajax({
     type: 'POST',
     url: '../api/signup',
@@ -18,7 +23,7 @@ $('#signup').click((event) => {
     success: function (result) {
       window.location = '../';
     },
-    fail: function (result) {
+    error: function (result) {
       errorAlert(result.responseJSON.message);
     }
   });
