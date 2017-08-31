@@ -15,7 +15,7 @@ const config = {
   projectName: {
     $filter: 'env',
     production: process.env.PROJECT_NAME,
-    test: 'Anchor',
+    test: 'Anchor-Test',
     local: process.env.PROJECT_NAME,
     $default: 'Anchor'
   },
