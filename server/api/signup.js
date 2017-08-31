@@ -22,12 +22,7 @@ internals.applyRoutes = function (server, next) {
           password: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           name: Joi.string().required(),
-          gender: Joi.string().allow('male', 'female'),
-          dob: Joi.date(),
-          address: Joi.string().allow('').optional(),
-          phone: Joi.string().allow('').optional(),
-          height: Joi.number(),
-          weight: Joi.number(),
+          info: Joi.object().optional(),
           application: Joi.string().default('Web')
         }
       },
@@ -99,14 +94,9 @@ internals.applyRoutes = function (server, next) {
           const password = request.payload.password;
           const email = request.payload.email;
           const name = request.payload.name;
-          const gender = request.payload.gender;
-          const phone = request.payload.phone;
-          const address = request.payload.address;
-          const dob = request.payload.dob;
-          const height = request.payload.height;
-          const weight = request.payload.weight;
+          const info = request.payload.info;
 
-          User.create(username, password, email, name, gender, dob, height, weight, phone, address, done);
+          User.create(username, password, email, name, info, done);
         },
         welcome: ['user', function (results, done) {
 

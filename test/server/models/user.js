@@ -74,7 +74,7 @@ lab.experiment('User Class Methods', () => {
 
   lab.test('it returns a new instance when create succeeds', (done) => {
 
-    User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
+    User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', {}, (err, result) => {
 
       Code.expect(err).to.not.exist();
       Code.expect(result).to.be.an.instanceOf(User);
@@ -95,7 +95,7 @@ lab.experiment('User Class Methods', () => {
       callback(Error('insert failed'));
     };
 
-    User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
+    User.create('ren', 'bighouseblues', 'ren@stimpy.show', 'ren house', {}, (err, result) => {
 
       Code.expect(err).to.be.an.object();
       Code.expect(result).to.not.exist();
@@ -112,7 +112,7 @@ lab.experiment('User Class Methods', () => {
     Async.auto({
       user: function (cb) {
 
-        User.create('stimpy', 'thebigshot', 'stimpy@ren.show', 'ren house', 'male', null, null, null, null, null, cb);
+        User.create('stimpy', 'thebigshot', 'stimpy@ren.show', 'ren house', {}, cb);
       },
       username: ['user', function (results, cb) {
 
@@ -215,7 +215,7 @@ lab.experiment('User Class Methods', () => {
     Async.auto({
       user: function (cb) {
 
-        User.create('horseman', 'eathay', 'horse@man.show', 'ren house', 'male', null, null, null, null, null, (err, result) => {
+        User.create('horseman', 'eathay', 'horse@man.show', 'ren house', {}, (err, result) => {
 
           Code.expect(err).to.not.exist();
           Code.expect(result).to.be.an.instanceOf(User);

@@ -203,7 +203,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+    stub.User.create = function (username, password, email, name, info, callback) {
 
       callback(Error('create failed'));
     };
@@ -224,7 +224,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+    stub.User.create = function (username, password, email, name, info, callback) {
 
       callback(null, { _id: 'BL4M0' });
     };
@@ -270,7 +270,7 @@ lab.experiment('Signup Plugin', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+    stub.User.create = function (username, password, email, name, info, callback) {
 
       callback(null, { _id: 'BL4M0' });
     };

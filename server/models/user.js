@@ -31,7 +31,7 @@ class User extends MongoModels {
     });
   }
 
-  static create(username, password, email, name, gender, dob, height, weight, phone, address, callback) {
+  static create(username, password, email, name, info, callback) {
 
     const self = this;
 
@@ -46,12 +46,7 @@ class User extends MongoModels {
           password: results.passwordHash.hash,
           email: email.toLowerCase(),
           name,
-          gender,
-          dob,
-          height,
-          weight,
-          phone,
-          address,
+          info,
           roles: {},
           studyID: null,
           timeCreated: new Date()
@@ -167,10 +162,12 @@ User.schema = Joi.object().keys({
   username: Joi.string().token().lowercase().required(),
   password: Joi.string(),
   name: Joi.string(),
-  gender: Joi.string().allow('male', 'female'),
-  dob: Joi.date(),
-  address: Joi.string(),
-  phone: Joi.string(),
+  info: Joi.object().keys({
+    gender: Joi.string().allow('male', 'female'),
+    dob: Joi.date(),
+    address: Joi.string(),
+    phone: Joi.string()
+  }),
   inStudy: Joi.boolean().default(true),
   email: Joi.string().email().lowercase().required(),
   roles: Joi.object().keys({
@@ -192,12 +189,14 @@ User.payload = Joi.object().keys({
   password: Joi.string().required(),
   email: Joi.string().email().lowercase().required(),
   name: Joi.string().required(),
-  gender: Joi.string().allow('male', 'female'),
-  dob: Joi.date(),
-  address: Joi.string().allow('').optional(),
-  phone: Joi.string().allow('').optional(),
-  height: Joi.number(),
-  weight: Joi.number()
+  info: Joi.object().keys({
+    gender: Joi.string().allow('male', 'female'),
+    dob: Joi.date(),
+    address: Joi.string(),
+    phone: Joi.string(),
+    height: Joi.number(),
+    weight: Joi.number()
+  })
 });
 
 
