@@ -45,7 +45,7 @@ const validate = function(key) {
   }
 }
 
-var camelCaseToWords = function(str){
+const camelCaseToWords = function(str){
   return str.match(/^[a-z]+|[A-Z][a-z]*/g).map(function(x){
     return x[0].toUpperCase() + x.substr(1).toLowerCase();
   }).join(' ');
@@ -64,3 +64,8 @@ $(() => {
     $(this).html(camelCaseToWords($(this).html()));
   });
 });
+
+const joiFormValue = function(key,value) {
+  $('#JoiFormInput' + key).val(value);
+  validate(key);
+}
