@@ -518,7 +518,7 @@ lab.experiment('Users Plugin Create', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(Error('create failed'));
     };
@@ -539,7 +539,7 @@ lab.experiment('Users Plugin Create', () => {
       callback();
     };
 
-    stub.User.create = function (username, password, email, callback) {
+    stub.User.create = function (username, password, email, name, callback) {
 
       callback(null, {});
     };

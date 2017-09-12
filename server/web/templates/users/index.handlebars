@@ -4,6 +4,13 @@
     <div class="col-sm-9 col-md-10">
       <div class="container" style="padding-top: 60px">
         <h3>Users</h3>
+        {{#if user.roles.root}}
+          <a class="btn btn-primary" href="../users/create">Create</a>
+        {{else if user.roles.admin}}
+          <a class="btn btn-primary" href="../users/create">Create</a>
+        {{else if user.roles.researcher}}
+          <a class="btn btn-primary" href="../users/create">Create</a>
+        {{/if}}
         <hr>
         <div class="card">
           <div class="container" style="padding-top: 20px; padding-bottom: 20px">
