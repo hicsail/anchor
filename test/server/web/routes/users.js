@@ -179,3 +179,40 @@ lab.experiment('Participation Page View', () => {
     });
   });
 });
+
+
+lab.experiment('Create User Page View', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/users/create'
+    };
+
+    done();
+  });
+
+
+  lab.test('it redirects when user is not logged in', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+
+  lab.test('it renders properly when user is authenticated', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusMessage).to.match(/Ok/i);
+      Code.expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+});
