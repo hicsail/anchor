@@ -1,6 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
+const User = require('../../models/user');
 
 internals.applyRoutes = function (server, next) {
 
@@ -68,6 +69,32 @@ internals.applyRoutes = function (server, next) {
       return reply.view('users/create', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName')
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/users/{id}',
+    config: {
+      auth: {
+        strategy: 'session',
+        scope: ['admin']
+      }
+    },
+    handler: function (request, reply) {
+
+      User.findById(request.params.id, (err, user) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        return reply.view('users/edit', {
+          user: request.auth.credentials.user,
+          projectName: Config.get('/projectName'),
+          editUser: user
+        });
       });
     }
   });

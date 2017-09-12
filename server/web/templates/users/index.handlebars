@@ -24,6 +24,7 @@
                 <th>Joined Study</th>
                 {{#if user.roles.admin}}
                   <th>ID</th>
+                  <th>Edit</th>
                   <th>Delete</th>
                 {{/if}}
               </tr>
@@ -86,7 +87,13 @@
           {
             "data": "_id",
             "render": function (data, type, row) {
-              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+              return '<button class="btn btn-secondary" id="edit'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
+            }
+          },
+          {
+            "data": "_id",
+            "render": function (data, type, row) {
+              return '<button class="btn btn-danger" id="delete'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
             }
           }
         {{/if}}

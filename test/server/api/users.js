@@ -563,7 +563,7 @@ lab.experiment('Users Plugin Update', () => {
       method: 'PUT',
       url: '/users/420000000000000000000000',
       payload: {
-        isActive: true,
+        name: 'Mr. Mud',
         username: 'muddy',
         email: 'mrmud@mudmail.mud'
       },

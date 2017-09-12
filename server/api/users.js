@@ -238,9 +238,9 @@ internals.applyRoutes = function (server, next) {
           id: Joi.string().invalid('000000000000000000000000')
         },
         payload: {
-          isActive: Joi.boolean().required(),
           username: Joi.string().token().lowercase().required(),
-          email: Joi.string().email().lowercase().required()
+          email: Joi.string().email().lowercase().required(),
+          name: Joi.string().required()
         }
       },
       pre: [
@@ -296,7 +296,7 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          isActive: request.payload.isActive,
+          name: request.payload.name,
           username: request.payload.username,
           email: request.payload.email
         }

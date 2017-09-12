@@ -1,7 +1,7 @@
 'use strict';
 
 function deleteDoc(id) {
-  const button = $('#' + id);
+  const button = $('#delete' + id);
   if (button.text() === 'Delete') {
     button.text('Are You Sure?');
   }
@@ -18,4 +18,8 @@ function deleteDoc(id) {
       }
     });
   }
+}
+
+function editDoc(id) {
+  window.location = '../users/' + id
 }
