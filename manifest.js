@@ -47,8 +47,8 @@ const manifest = {
           path: './server/web/templates',
           layout: 'layout',
           layoutPath: './server/web/layouts',
-          partialsPath: './server/web/partials'
-          //helpersPath: './server/web/helpers'
+          partialsPath: './server/web/partials',
+          helpersPath: './server/web/helpers'
         }
       }
     },
