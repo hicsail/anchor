@@ -15,7 +15,10 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('users/index', { user: request.auth.credentials.user });
+      return reply.view('users/index', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName')
+      });
     }
   });
 

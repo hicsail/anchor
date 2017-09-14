@@ -1,5 +1,6 @@
 'use strict';
 const Async = require('async');
+const Boom = require('boom');
 const Joi = require('joi');
 
 
@@ -154,6 +155,33 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply(event);
+      });
+    }
+  });
+
+
+  server.route({
+    method: 'DELETE',
+    path: '/events/{id}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: 'admin'
+      }
+    },
+    handler: function (request, reply) {
+
+      Event.findByIdAndDelete(request.params.id, (err, event) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!event) {
+          return reply(Boom.notFound('Document not found.'));
+        }
+
+        reply({ message: 'Success.' });
       });
     }
   });
