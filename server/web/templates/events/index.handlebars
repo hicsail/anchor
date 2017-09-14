@@ -1,0 +1,85 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div class="container" style="padding-top: 60px">
+        <h3>Events</h3>
+        <hr>
+        <div class="card">
+          <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>Username</th>
+                <th>Study ID</th>
+                <th>Event</th>
+                <th>Time</th>
+                {{#if user.roles.admin}}
+                  <th>Delete</th>
+                {{/if}}
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var table;
+  $(document).ready(function () {
+    table = $('#table').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "scrollX": true,
+      "stateSave": true,
+      "ajax": {
+        "url": "../api/events",
+        "data": function (d) {
+          d.fields = "username userId studyID inStudy name time";
+        }
+      },
+      "columns": [
+        {
+          "data": "user.username",
+          "defaultContent": "Nonregistered user"
+        },
+        {
+          "data": "user.studyID",
+          "render": function (data, type, row) {
+              if(row.user) {
+                if(row.user.studyID === 0) {
+                  return '';
+                } else {
+                  return row.user.studyID;
+                }
+              } else {
+                  return '';
+              }
+          }
+        },
+        {
+          "data": "name",
+          "defaultContent": ""
+        },
+        {
+          "data": "time",
+          "render": function (data, type, row) {
+            var date = new Date(row.time);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
+        },
+        {{#if user.roles.admin}}
+          {
+            "data": "_id",
+            "render": function (data, type, row) {
+              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+            }
+          }
+        {{/if}}
+      ]
+    });
+  });
+</script>
+<script type="text/javascript" src="../../public/scripts/authAttempts.js"></script>

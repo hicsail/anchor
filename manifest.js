@@ -60,6 +60,7 @@ const manifest = {
           models: {
             AuthAttempt: './server/models/auth-attempt',
             Backup: './server/models/backup',
+            Event: './server/models/event',
             Session: './server/models/session',
             User: './server/models/user'
           },
@@ -115,6 +116,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/events',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
       plugin: './server/api/index',
       options: {
         routes: { prefix: '/api' }
@@ -161,6 +168,9 @@ const manifest = {
     },
     {
       plugin: './server/web/routes/dashboard'
+    },
+    {
+      plugin: './server/web/routes/events'
     },
     {
       plugin: './server/web/routes/env'
