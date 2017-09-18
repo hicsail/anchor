@@ -61,6 +61,7 @@ const manifest = {
             AuthAttempt: './server/models/auth-attempt',
             Backup: './server/models/backup',
             Event: './server/models/event',
+            Feedback: './server/models/feedback',
             Session: './server/models/session',
             User: './server/models/user'
           },
@@ -117,6 +118,12 @@ const manifest = {
     },
     {
       plugin: './server/api/events',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
+      plugin: './server/api/feedback',
       options: {
         routes: { prefix: '/api' }
       }
