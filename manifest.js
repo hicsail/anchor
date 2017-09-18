@@ -183,6 +183,9 @@ const manifest = {
       plugin: './server/web/routes/env'
     },
     {
+      plugin: './server/web/routes/feedback'
+    },
+    {
       plugin: './server/web/routes/index'
     },
     {
