@@ -14,7 +14,7 @@
             </select>
           </div>
           <div class="col col-4">
-            <button id="eventView" class="btn btn-primary">View Event</button>
+            <button onclick="viewEvent()" id="eventName" class="btn btn-primary">View Event</button>
           </div>
         </div>
         <br>
@@ -28,6 +28,11 @@
   </div>
 </div>
 <script>
+
+  function viewEvent() {
+    window.location.href = window.location.href.split('/').slice(0,-1).join('/')+'/' + $('#eventName').val();
+  }
+
   const events = {
       labels: [],
       data:[]
@@ -82,4 +87,3 @@
     }
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/events.js"></script>

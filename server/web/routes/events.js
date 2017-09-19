@@ -16,9 +16,17 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('events/index', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+      Event.distinct('name',(err,names) => {
+
+        if (err) {
+          reply(err);
+        }
+
+        return reply.view('events/index', {
+          user: request.auth.credentials.user,
+          projectName: Config.get('/projectName'),
+          events: names
+        });
       });
     }
   });

@@ -5,6 +5,23 @@
       <div class="container" style="padding-top: 60px">
         <h3>Events</h3>
         <hr>
+        <div class="row">
+          <div class="col-6">
+            <div class="row">
+              <div class="col col-6">
+                <select class="form-control" id="eventName">
+                  {{#each events}}
+                    <option>{{this}}</option>
+                  {{/each}}
+                </select>
+              </div>
+              <div class="col col-4">
+                <button onclick="viewEvent()" id="eventName" class="btn btn-primary">View Event</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
         <div class="card">
           <div class="container" style="padding-top: 20px; padding-bottom: 20px">
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -48,15 +65,15 @@
         {
           "data": "user.studyID",
           "render": function (data, type, row) {
-              if(row.user) {
-                if(row.user.studyID === 0) {
-                  return '';
-                } else {
-                  return row.user.studyID;
-                }
+            if (row.user) {
+              if (row.user.studyID === 0) {
+                return '';
               } else {
-                  return '';
+                return row.user.studyID;
               }
+            } else {
+              return '';
+            }
           }
         },
         {
@@ -74,7 +91,7 @@
           {
             "data": "_id",
             "render": function (data, type, row) {
-              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+              return '<button class="btn btn-danger" id="' + row._id + '" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
             }
           }
         {{/if}}
