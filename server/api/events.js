@@ -159,6 +159,52 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/events/name/{name}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root','admin','researcher']
+      }
+    },
+    handler: function (request, reply) {
+
+      const fields = Event.fieldsAdapter('time');
+      Event.find({ name: request.params.name },fields,(err, events) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply(events);
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/events/user/{userId}',
+    config: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root','admin','researcher']
+      }
+    },
+    handler: function (request, reply) {
+
+      const fields = Event.fieldsAdapter('name time');
+      Event.find({ userId: request.params.userId },fields, (err, events) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply(events);
+      });
+    }
+  });
+
 
   server.route({
     method: 'DELETE',

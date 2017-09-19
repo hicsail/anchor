@@ -1,0 +1,85 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div class="container" style="padding-top: 60px">
+        <h3>{{eventName}}</h3>
+        <hr>
+        <div class="row">
+          <div class="col col-3">
+            <select class="form-control" id="eventName">
+              {{#each events}}
+                <option>{{this}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="col col-4">
+            <button id="eventView" class="btn btn-primary">View Event</button>
+          </div>
+        </div>
+        <br>
+        <div class="card">
+          <div class="container" style="padding-top: 20px; padding-bottom: 20px">
+            <canvas id="eventNameChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const events = {
+      labels: [],
+      data:[]
+  };
+  for(let event of {{{json eventData}}}) {
+      const date = new moment(event.time);
+      label = date.format('YYYY-MM-DD')
+      let index = events.labels.indexOf(label);
+      if (index === -1) {
+        events.labels.push(label);
+        index = events.labels.length -1;
+        events.data[index] = 1;
+      } else {
+        events.data[index] += 1;
+      }
+  }
+  var ctx = $("#eventNameChart");
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: events.labels,
+      datasets: [{
+        type: 'bar',
+        label: 'Events',
+        data: events.data,
+        backgroundColor: 'rgba(33,150,243,0.75)',
+        borderColor: 'rgba(33,150,243,1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true,
+            stepSize: 1
+          },
+
+        }],
+        xAxes: [{
+          barThickness : 50,
+          type: 'time',
+          distribution: 'linear',
+          time: {
+            unit: 'day'
+          }
+        }]
+      }
+    }
+  });
+</script>
+<script type="text/javascript" src="../../public/scripts/events.js"></script>
