@@ -72,6 +72,46 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/events-user/{userId}',
+    config: {
+      auth: {
+        strategy: 'session'
+      }
+    },
+    handler: function (request, reply) {
+
+      Async.auto({
+        names: function (callback) {
+
+          Event.distinct('name',callback);
+        },
+        events: function (callback) {
+
+          const fields = Event.fieldsAdapter('name time');
+          Event.find({ userId: request.params.userId },fields,callback);
+        }
+      },(err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        results.events.sort((a, b) => {
+
+          return parseFloat(a.time.getTime()) - parseFloat(b.time.getTime());
+        });
+        return reply.view('events/eventUser', {
+          user: request.auth.credentials.user,
+          projectName: Config.get('/projectName'),
+          eventData: results.events,
+          events: results.names
+        });
+      });
+    }
+  });
+
   next();
 };
 
