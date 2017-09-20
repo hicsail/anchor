@@ -32,9 +32,9 @@ const config = {
     forIp: 50,
     forIpAndUser: 7
   },
-  cookieSecret: {
+  authSecret: {
     $filter: 'env',
-    production: process.env.COOKIE_SECRET,
+    production: process.env.AUTH_SECRET,
     local: '!k3yb04rdK4tz~4qu4~k3yb04rdd0gz!',
     $default: '!k3yb04rdK4tz~4qu4~k3yb04rdd0gz!'
   },

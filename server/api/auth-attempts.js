@@ -17,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     path: '/auth-attempts',
     config: {
       auth: {
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         query: Joi.any()
@@ -83,7 +83,7 @@ internals.applyRoutes = function (server, next) {
     path: '/auth-attempts/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: 'admin'
       }
     },
@@ -110,7 +110,7 @@ internals.applyRoutes = function (server, next) {
     path: '/auth-attempts/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: 'admin'
       }
     },

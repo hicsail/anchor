@@ -5,6 +5,7 @@ const Config = require('../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
+const HapiAuthJWT = require('hapi-auth-jwt2');
 const Lab = require('lab');
 const MailerPlugin = require('../../../server/mailer');
 const MakeMockModel = require('../fixtures/make-mock-model');
@@ -46,7 +47,7 @@ lab.before((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthBasic, HapiAuthCookie, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
+  const plugins = [HapiAuthBasic, HapiAuthCookie, HapiAuthJWT, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {

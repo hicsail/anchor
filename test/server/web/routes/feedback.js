@@ -6,6 +6,7 @@ const Config = require('../../../../config');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
+const HapiAuthJWT = require('hapi-auth-jwt2');
 const MakeMockModel = require('../../fixtures/make-mock-model');
 const Lab = require('lab');
 const FeedbackPlugin = require('../../../../server/web/routes/feedback');
@@ -58,7 +59,7 @@ let server;
 
 lab.before((done) => {
 
-  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, ModelsPlugin, AuthPlugin, FeedbackPlugin];
+  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, HapiAuthJWT, ModelsPlugin, AuthPlugin, FeedbackPlugin];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {

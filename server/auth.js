@@ -9,6 +9,7 @@ const internals = {};
 internals.applyStrategy = function (server, next) {
 
   const Session = server.plugins['hapi-mongo-models'].Session;
+  const Token = server.plugins['hapi-mongo-models'].Token;
   const User = server.plugins['hapi-mongo-models'].User;
 
   server.auth.strategy('simple', 'basic', {
@@ -50,9 +51,64 @@ internals.applyStrategy = function (server, next) {
     }
   });
 
+  server.auth.strategy('jwt', 'jwt', {
+    key: Config.get('/authSecret'),
+    verifyOptions: { algorithms: ['HS256'] },
+    validateFunc: function (decoded, request, callback) {
+
+      Async.auto({
+        token: function (done) {
+
+          Token.findOne({
+            tokenId: decoded,
+            active: true
+          }, done);
+        },
+        updateToken: ['token', function (results,done) {
+
+          if (!results.token) {
+            return done();
+          }
+          Token.findByIdAndUpdate(results.token._id,{
+            $set: {
+              lastUsed: new Date()
+            }
+          },done);
+        }],
+        user: ['token', function (results, done) {
+
+          if (!results.token) {
+            return done();
+          }
+
+          User.findById(results.token.userId, done);
+        }],
+        scope: ['user', function (results, done) {
+
+          if (!results.user || !results.user.roles) {
+            return done();
+          }
+
+          done(null, Object.keys(results.user.roles));
+        }]
+      }, (err, results) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        if (!results.token) {
+          return callback(null, false);
+        }
+
+        callback(null, Boolean(results.user), results);
+      });
+    }
+  });
+
 
   server.auth.strategy('session', 'cookie', {
-    password: Config.get('/cookieSecret'),
+    password: Config.get('/authSecret'),
     cookie: 'AuthCookie',
     isSecure: false,
     clearInvalid: true,

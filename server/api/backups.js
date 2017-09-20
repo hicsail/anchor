@@ -20,7 +20,7 @@ internals.applyRoutes = function (server, next) {
     path: '/backups',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin', 'researcher']
       },
       validate: {
@@ -71,7 +71,7 @@ internals.applyRoutes = function (server, next) {
     path: '/backups',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin']
       }
     },
@@ -86,7 +86,7 @@ internals.applyRoutes = function (server, next) {
     path: '/backups/refresh',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin']
       }
     },
@@ -105,7 +105,7 @@ internals.applyRoutes = function (server, next) {
     path: '/backups/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin']
       }
     },
@@ -163,7 +163,7 @@ internals.applyRoutes = function (server, next) {
     path: '/backups/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin']
       }
     },

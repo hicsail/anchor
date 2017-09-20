@@ -17,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users',
     config: {
       auth: {
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         query: Joi.any()
@@ -86,7 +86,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: 'admin'
       }
     },
@@ -113,7 +113,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/my',
     config: {
       auth: {
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'jwt', 'session']
       }
     },
     handler: function (request, reply) {
@@ -142,7 +142,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root','admin','researcher']
       },
       validate: {
@@ -230,7 +230,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: 'admin'
       },
       validate: {
@@ -322,7 +322,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}/participation',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin', 'researcher']
       },
       validate: {
@@ -366,7 +366,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/my',
     config: {
       auth: {
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         payload: {
@@ -466,7 +466,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}/password',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: 'admin'
       },
       validate: {
@@ -533,7 +533,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/my/password',
     config: {
       auth: {
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         payload: {
@@ -594,7 +594,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: 'admin'
       },
       validate: {
@@ -625,7 +625,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/clinician/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin', 'researcher']
       },
       validate: {
@@ -701,7 +701,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/clinician/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin', 'researcher']
       },
       validate: {
@@ -776,7 +776,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/analyst/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin', 'researcher']
       },
       validate: {
@@ -852,7 +852,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/analyst/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin', 'researcher']
       },
       validate: {
@@ -927,7 +927,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/researcher/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin']
       },
       validate: {
@@ -1003,7 +1003,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/researcher/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root', 'admin']
       },
       validate: {
@@ -1078,7 +1078,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/admin/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root']
       },
       validate: {
@@ -1154,7 +1154,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/admin/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root']
       },
       validate: {

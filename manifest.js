@@ -31,6 +31,9 @@ const manifest = {
       plugin: 'hapi-auth-cookie'
     },
     {
+      plugin: 'hapi-auth-jwt2'
+    },
+    {
       plugin: 'lout'
     },
     {
@@ -63,6 +66,7 @@ const manifest = {
             Event: './server/models/event',
             Feedback: './server/models/feedback',
             Session: './server/models/session',
+            Token: './server/models/token',
             User: './server/models/user'
           },
           autoIndex: Config.get('/hapiMongoModels/autoIndex')
@@ -154,6 +158,12 @@ const manifest = {
     },
     {
       plugin: './server/api/signup',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
+      plugin: './server/api/tokens',
       options: {
         routes: { prefix: '/api' }
       }

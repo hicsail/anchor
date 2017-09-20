@@ -13,7 +13,7 @@ internals.applyRoutes = function (server, next) {
     path: '/env',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['admin','root']
       }
     },
@@ -28,7 +28,7 @@ internals.applyRoutes = function (server, next) {
     path: '/env/{name}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['admin','root']
       }
     },
@@ -43,7 +43,7 @@ internals.applyRoutes = function (server, next) {
     path: '/env',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['admin','root']
       },
       validate: {

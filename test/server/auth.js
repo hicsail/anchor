@@ -6,6 +6,7 @@ const CookieAdmin = require('./fixtures/cookie-admin');
 const Hapi = require('hapi');
 const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
+const HapiAuthJWT = require('hapi-auth-jwt2');
 const Lab = require('lab');
 const MakeMockModel = require('./fixtures/make-mock-model');
 const Manifest = require('../../manifest');
@@ -44,7 +45,7 @@ lab.beforeEach((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthCookie, HapiAuthBasic, ModelsPlugin, AuthPlugin];
+  const plugins = [HapiAuthCookie, HapiAuthBasic, HapiAuthJWT, ModelsPlugin, AuthPlugin];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {
@@ -238,7 +239,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple', 'session'],
+          strategies: ['simple', 'jwt', 'session'],
           scope: 'admin'
         }
       },
@@ -304,7 +305,7 @@ lab.experiment('Auth Plugin Basic', () => {
       path: '/',
       config: {
         auth: {
-          strategies: ['simple', 'session'],
+          strategies: ['simple', 'jwt', 'session'],
           scope: ['account', 'admin']
         }
       },

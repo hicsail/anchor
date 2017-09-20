@@ -9,12 +9,12 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Feedback = server.plugins['hapi-mongo-models'].Feedback;
+  const Token = server.plugins['hapi-mongo-models'].Token;
   const User = server.plugins['hapi-mongo-models'].User;
 
   server.route({
     method: 'GET',
-    path: '/feedback',
+    path: '/tokens',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
@@ -58,7 +58,7 @@ internals.applyRoutes = function (server, next) {
         query.username = request.auth.credentials.user.username;
       }
 
-      Feedback.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      Token.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
         const feedback = [];
 
@@ -128,18 +128,20 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'POST',
-    path: '/feedback',
+    path: '/tokens',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
       },
       validate: {
-        payload: Feedback.payload
+        payload: Joi.object().keys({
+          name: Joi.string().required()
+        })
       }
     },
     handler: function (request, reply) {
 
-      Feedback.create(request.payload.subject,request.payload.description, request.auth.credentials.user._id.toString(),(err, feedback) => {
+      Token.create(request.payload.name, request.auth.credentials.user._id.toString(),(err, feedback) => {
 
         if (err) {
           return reply(err);
@@ -150,39 +152,16 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  server.route({
-    method: 'GET',
-    path: '/feedback/unresolved',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
-      }
-    },
-    handler: function (request, reply) {
-
-      Feedback.count({ resolved: false }, (err,total) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply(total);
-      });
-    }
-  });
 
   server.route({
     method: 'PUT',
-    path: '/feedback/{id}',
+    path: '/tokens/{id}',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
       },
       validate: {
-        payload: {
-          resolved: Joi.boolean().required()
-        }
+        payload: Token.payload
       }
     },
     handler: function (request, reply) {
@@ -212,7 +191,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'DELETE',
-    path: '/feedback/{id}',
+    path: '/tokens/{id}',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
@@ -221,13 +200,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Feedback.findByIdAndDelete(request.params.id, (err, event) => {
+      Token.findByIdAndDelete(request.params.id, (err, token) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!event) {
+        if (!token) {
           return reply(Boom.notFound('Document not found.'));
         }
 
@@ -249,5 +228,5 @@ exports.register = function (server, options, next) {
 
 
 exports.register.attributes = {
-  name: 'feedback'
+  name: 'tokens'
 };

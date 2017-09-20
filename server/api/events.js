@@ -17,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     path: '/events',
     config: {
       auth: {
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         query: Joi.any()
@@ -132,7 +132,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         mode: 'try',
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'jwt', 'session']
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -164,7 +164,7 @@ internals.applyRoutes = function (server, next) {
     path: '/events/name/{name}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple','jwt','session'],
         scope: ['root','admin','researcher']
       }
     },
@@ -187,7 +187,7 @@ internals.applyRoutes = function (server, next) {
     path: '/events/user/{userId}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: ['root','admin','researcher']
       }
     },
@@ -211,7 +211,7 @@ internals.applyRoutes = function (server, next) {
     path: '/events/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['simple', 'jwt', 'session'],
         scope: 'admin'
       }
     },
