@@ -41,6 +41,14 @@
       </li>
     </ul>
   {{/role}}
+  {{#role user 'researcher'}}
+    <ul class="nav nav-pills flex-column" style="padding-top: 20px">
+      <h6 class="text-dark">API Access</h6>
+      <li class="nav-item">
+        <a class="nav-link text-light" href="../tokens">Tokens</a>
+      </li>
+    </ul>
+  {{/role}}
   {{#role user 'admin'}}
     <ul class="nav nav-pills flex-column" style="padding-top: 20px">
       <h6 class="text-dark">Application Settings</h6>

@@ -45,8 +45,7 @@ Token.schema = Joi.object().keys({
 });
 
 Token.payload = Joi.object().keys({
-  name: Joi.string().required(),
-  active: Joi.boolean().required()
+  name: Joi.string().required()
 });
 
 

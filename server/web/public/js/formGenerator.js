@@ -16,7 +16,6 @@ function joiToForm(id,schema,key='JoiFormTopLevel') {
       case 'number':
       case 'date':
         schemas[key] = schema;
-        var template = JoiToFormTemp;
         var data = {
           key,
           schema,
@@ -26,8 +25,14 @@ function joiToForm(id,schema,key='JoiFormTopLevel') {
           data.type = 'password';
         }
 
-        return Mustache.render(template, data);
-
+        return Mustache.render(JoiToFormTemp, data);
+      case 'boolean':
+        var data = {
+          key,
+          schema,
+          type: schema._type
+        };
+        return Mustache.render(JoiToFormTempBoolean,data);
     }
   }
 }
@@ -56,6 +61,12 @@ const JoiToFormTemp = '<div class="form-group">\n' +
     '<input type="{{type}}" class="form-control" id="JoiFormInput{{key}}" aria-describedby="{{key}}Help" name="{{key}}" placeholder="Enter {{key}}" onkeyup="validate(\'{{key}}\')">\n' +
     '<small id="JoiFormHelp{{key}}" class="form-text text-danger"></small>\n' +
     '</div>\n';
+
+const JoiToFormTempBoolean = '<div class="form-check">\n' +
+  '<label class="form-check-label" for="joiFormLabel{{key}}">' +
+  '<input type="checkbox" class="form-check-input" id="JoiFormInput{{key}}" name="{{key}}" value="{{key}}" checked>\n' +
+  '{{key}}</label>\n' +
+  '</div>\n';
 
 $(() => {
   $("label[for^='joiFormLabel']").each(function() {

@@ -134,9 +134,7 @@ internals.applyRoutes = function (server, next) {
         strategies: ['simple', 'jwt', 'session']
       },
       validate: {
-        payload: Joi.object().keys({
-          name: Joi.string().required()
-        })
+        payload: Token.payload
       }
     },
     handler: function (request, reply) {
@@ -169,21 +167,21 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          resolved: request.payload.resolved
+          name: request.payload.name
         }
       };
 
-      Feedback.findByIdAndUpdate(id, update, (err, feedback) => {
+      Token.findByIdAndUpdate(id, update, (err, token) => {
 
         if (err) {
           return reply(err);
         }
 
-        if (!feedback) {
+        if (!token) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(feedback);
+        reply(token);
       });
     }
   });
