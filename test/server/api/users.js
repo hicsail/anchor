@@ -553,6 +553,30 @@ lab.experiment('Users Plugin Create', () => {
       done();
     });
   });
+
+
+  lab.test('it returns an error if passwords is not complex', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      callback();
+    };
+
+    stub.User.create = function (username, password, email, name, callback) {
+
+      callback(null, {});
+    };
+
+    request.payload.password = 'password';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(409);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
 });
 
 
@@ -950,6 +974,29 @@ lab.experiment('Users Plugin Set Password', () => {
       done();
     });
   });
+
+  lab.test('it returns an error if passwords is not complex', (done) => {
+
+    stub.User.generatePasswordHash = function (password, callback) {
+
+      callback(null, { password: '', hash: '' });
+    };
+
+    stub.User.findByIdAndUpdate = function (id, update, callback) {
+
+      callback(null, {});
+    };
+
+    request.payload.password = 'password';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(409);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
 });
 
 
@@ -1028,6 +1075,33 @@ lab.experiment('Users Plugin (My) Set Password', () => {
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns an error if passwords is not complex', (done) => {
+
+    stub.User.generatePasswordHash = function (password, callback) {
+
+      callback(null, { password: '', hash: '' });
+    };
+
+    stub.User.findByIdAndUpdate = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, {});
+    };
+
+    request.payload.password = 'password';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(409);
+      Code.expect(response.result).to.be.an.object();
 
       done();
     });
