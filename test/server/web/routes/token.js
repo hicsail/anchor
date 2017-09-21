@@ -9,20 +9,20 @@ const HapiAuthCookie = require('hapi-auth-cookie');
 const HapiAuthJWT = require('hapi-auth-jwt2');
 const MakeMockModel = require('../../fixtures/make-mock-model');
 const Lab = require('lab');
-const UsersPlugin = require('../../../../server/web/routes/users');
+const TokenPlugin = require('../../../../server/web/routes/tokens');
 const Manifest = require('../../../../manifest');
 const Path = require('path');
 const Proxyquire = require('proxyquire');
-const User = require('../../../../server/models/user');
+const Token = require('../../../../server/models/token');
 const Vision = require('vision');
 const Visionary = require('visionary');
 
 const stub = {
-  User: MakeMockModel()
+  Token: MakeMockModel()
 };
 
 const proxy = {};
-proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
+proxy[Path.join(process.cwd(), './server/models/token')] = stub.Token;
 
 const lab = exports.lab = Lab.script();
 const ModelsPlugin = {
@@ -60,7 +60,7 @@ let server;
 
 lab.before((done) => {
 
-  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, HapiAuthJWT, ModelsPlugin, AuthPlugin, UsersPlugin];
+  const plugins = [Vision, VisionaryPlugin, HapiAuthBasic, HapiAuthCookie, HapiAuthJWT, ModelsPlugin, AuthPlugin, TokenPlugin];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {
@@ -74,85 +74,13 @@ lab.before((done) => {
 });
 
 
-lab.experiment('Users Page View', () => {
+lab.experiment('Token Page View', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/users'
-    };
-
-    done();
-  });
-
-
-  lab.test('it redirects when user is not logged in', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(302);
-
-      done();
-    });
-  });
-
-  lab.test('it renders properly when user is authenticated', (done) => {
-
-    request.credentials = AuthenticatedAccount;
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusMessage).to.match(/Ok/i);
-      Code.expect(response.statusCode).to.equal(200);
-      done();
-    });
-  });
-});
-
-lab.experiment('Roles Page View', () => {
-
-  lab.beforeEach((done) => {
-
-    request = {
-      method: 'GET',
-      url: '/roles'
-    };
-
-    done();
-  });
-
-
-  lab.test('it redirects when user is not logged in', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(302);
-
-      done();
-    });
-  });
-
-  lab.test('it renders properly when user is authenticated', (done) => {
-
-    request.credentials = AuthenticatedAccount;
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusMessage).to.match(/Ok/i);
-      Code.expect(response.statusCode).to.equal(200);
-      done();
-    });
-  });
-});
-
-lab.experiment('Participation Page View', () => {
-
-  lab.beforeEach((done) => {
-
-    request = {
-      method: 'GET',
-      url: '/participation'
+      url: '/tokens'
     };
 
     done();
@@ -183,13 +111,13 @@ lab.experiment('Participation Page View', () => {
 });
 
 
-lab.experiment('Create User Page View', () => {
+lab.experiment('Create Token Page View', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/users/create'
+      url: '/tokens/create'
     };
 
     done();
@@ -219,13 +147,13 @@ lab.experiment('Create User Page View', () => {
   });
 });
 
-lab.experiment('Edit User Page View', () => {
+lab.experiment('Edit Token Page View', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/users/93EP150D35'
+      url: '/tokens/93EP150D35'
     };
 
     done();
@@ -246,7 +174,7 @@ lab.experiment('Edit User Page View', () => {
 
     request.credentials = AuthenticatedAccount;
 
-    User.findById = function (id, callback) {
+    Token.findById = function (id, callback) {
 
       return callback(null,{ 'id':'93EP150D35' });
     };
@@ -263,7 +191,7 @@ lab.experiment('Edit User Page View', () => {
 
     request.credentials = AuthenticatedAccount;
 
-    User.findById = function (id, callback) {
+    Token.findById = function (id, callback) {
 
       return callback(Error('Error'));
     };

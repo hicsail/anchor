@@ -15,6 +15,7 @@ const Path = require('path');
 const Proxyquire = require('proxyquire');
 const Vision = require('vision');
 const Visionary = require('visionary');
+const Event = require('../../../../server/models/event');
 
 const stub = {
   Session: MakeMockModel()
@@ -96,9 +97,30 @@ lab.experiment('Event Page View', () => {
     });
   });
 
-  lab.test('it renders properly when user is authenticated', (done) => {
+  lab.test('it returns error when distinct fails', (done) => {
 
     request.credentials = AuthenticatedAccount;
+
+    Event.distinct = function (query, callback) {
+
+      return callback(Error('distinct failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+      done();
+    });
+  });
+
+  lab.test('it renders properly when distinct passes', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    Event.distinct = function (query, callback) {
+
+      return callback(null,{ name:'eventName' });
+    };
 
     server.inject(request, (response) => {
 
@@ -108,3 +130,132 @@ lab.experiment('Event Page View', () => {
     });
   });
 });
+
+
+
+lab.experiment('Single Event Page View', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/events-name/APP_OPEN'
+    };
+
+    done();
+  });
+
+
+  lab.test('it redirects when user is not logged in', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+
+  lab.test('it returns error when distinct fails', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    Event.distinct = function (query, callback) {
+
+      return callback(Error('distinct failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+      done();
+    });
+  });
+
+  lab.test('it renders properly when distinct passes', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    Event.distinct = function (query, callback) {
+
+      return callback(null,{ name:'eventName' });
+    };
+
+    Event.find = function (query, options, callback) {
+
+      return callback(null,[{ time: new Date() },{ time: new Date() }]);
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusMessage).to.match(/Ok/i);
+      Code.expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+});
+
+
+
+lab.experiment('User Event Page View', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/events-user/93EP150D35'
+    };
+
+    done();
+  });
+
+
+  lab.test('it redirects when user is not logged in', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+
+  lab.test('it returns error when distinct fails', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    Event.distinct = function (query, callback) {
+
+      return callback(Error('distinct failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+      done();
+    });
+  });
+
+  lab.test('it renders properly when distinct passes', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    Event.distinct = function (query, callback) {
+
+      return callback(null,{ name:'eventName' });
+    };
+
+    Event.find = function (query, options, callback) {
+
+      return callback(null,[{ time: new Date() },{ time: new Date() }]);
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusMessage).to.match(/Ok/i);
+      Code.expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+});
+

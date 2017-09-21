@@ -19,7 +19,7 @@ internals.applyRoutes = function (server, next) {
       Event.distinct('name',(err,names) => {
 
         if (err) {
-          reply(err);
+          return reply(err);
         }
 
         return reply.view('events/index', {
@@ -61,6 +61,7 @@ internals.applyRoutes = function (server, next) {
 
           return parseFloat(a.time.getTime()) - parseFloat(b.time.getTime());
         });
+
         return reply.view('events/eventView', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
