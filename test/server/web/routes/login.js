@@ -175,3 +175,76 @@ lab.experiment('Logout Page View', () => {
     });
   });
 });
+
+lab.experiment('Forgot Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/forgot'
+    };
+
+    done();
+  });
+
+  lab.test('page loads successfully', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+
+
+  lab.test('it redirect user if user is logged in', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+});
+
+
+lab.experiment('Reset Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/reset'
+    };
+
+    done();
+  });
+
+  lab.test('page loads successfully', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      done();
+    });
+  });
+
+
+  lab.test('it redirect user if user is logged in', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+});
