@@ -177,7 +177,8 @@ internals.applyRoutes = function (server, next) {
     path: '/feedback/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ['root','admin','researcher']
       },
       validate: {
         payload: {
@@ -195,6 +196,32 @@ internals.applyRoutes = function (server, next) {
       };
 
       Feedback.findByIdAndUpdate(id, update, (err, feedback) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!feedback) {
+          return reply(Boom.notFound('Document not found.'));
+        }
+
+        reply(feedback);
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/feedback/{id}',
+    config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ['root', 'admin', 'researcher']
+      }
+    },
+    handler: function (request, reply) {
+
+      Feedback.findById(request.params.id, (err, feedback) => {
 
         if (err) {
           return reply(err);
