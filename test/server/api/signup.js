@@ -170,24 +170,15 @@ lab.experiment('Signup Plugin', () => {
     });
   });
 
-  lab.test('it returns a conflict when password dont meet requirements', (done) => {
+  lab.test('it returns a conflict when password do not meet requirements', (done) => {
 
     stub.User.findOne = function (conditions, callback) {
 
-      callback(null, {});
+      callback(null, null);
     };
 
-    request = {
-      method: 'POST',
-      url: '/signup',
-      payload: {
-        name: 'Muddy Mudskipper',
-        username: 'muddy',
-        password: 'notagoodpassword',
-        email: 'mrmud@mudmail.mud',
-        application: 'Test'
-      }
-    };
+    request.payload.password = 'notagoodpassword';
+
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(409);
@@ -302,4 +293,104 @@ lab.experiment('Signup Plugin', () => {
       done();
     });
   });
+});
+
+lab.experiment('Available Plugin', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/available',
+      payload: {}
+    };
+
+    done();
+  });
+
+  lab.test('it returns an error when input is not valid', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(400);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when username is taken', (done) => {
+
+    request.payload.username = 'testUsername';
+
+    stub.User.findOne = function (conditions, callback) {
+
+      callback(null,{});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.username).to.equal(false);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when email is taken', (done) => {
+
+    request.payload.email = 'testEmail@email.email';
+
+    stub.User.findOne = function (conditions, callback) {
+
+      callback(null,{});
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.email).to.equal(false);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when find fails', (done) => {
+
+    request.payload.email = 'testEmail@email.email';
+
+    stub.User.findOne = function (conditions, callback) {
+
+      callback(Error('test error'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an successfully', (done) => {
+
+    request.payload.email = 'testEmail@email.email';
+    request.payload.username = 'username';
+
+    stub.User.findOne = function (conditions, callback) {
+
+      callback();
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.email).to.equal(true);
+      Code.expect(response.result.username).to.equal(true);
+
+      done();
+    });
+  });
+
+
 });

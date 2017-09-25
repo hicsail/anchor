@@ -182,12 +182,12 @@ internals.applyRoutes = function (server, next) {
         username: ['usernameFind', function (results, done) {
 
           if (request.payload.username) {
-            if (results.username) {
+            if (results.usernameFind) {
               return done(null,false);
             }
             return done(null,true);
-
           }
+          return done();
         }],
         emailFind: function (done) {
 
@@ -198,17 +198,25 @@ internals.applyRoutes = function (server, next) {
         email: ['emailFind', function (results, done) {
 
           if (request.payload.email) {
-            if (results.email) {
+            if (results.emailFind) {
               return done(null,false);
             }
             return done(null,true);
-
           }
+          return done();
         }]
       }, (err, results) => {
 
         if (err) {
           return reply(err);
+        }
+
+        if (results.email === undefined) {
+          delete results.email;
+        }
+
+        if (results.username === undefined) {
+          delete results.username;
         }
 
         delete results.usernameFind;
