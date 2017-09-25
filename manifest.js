@@ -208,6 +208,9 @@ const manifest = {
       plugin: './server/web/routes/sessions'
     },
     {
+      plugin: './server/web/routes/setup'
+    },
+    {
       plugin: './server/web/routes/signup'
     },
     {
