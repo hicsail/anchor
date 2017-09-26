@@ -1,0 +1,10 @@
+mongo:
+  image: mongo
+app:
+  build: .
+  links:
+    - mongo
+  ports:
+    - "9000:9000"
+  environment:
+    - NODE_ENV='local'
