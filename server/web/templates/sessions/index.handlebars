@@ -31,24 +31,31 @@
   var table;
   $(document).ready(function () {
     table = $('#table').DataTable({
-      "processing": true,
-      "serverSide": true,
-      "scrollX": true,
-      "stateSave": true,
-      "ajax": {
-        "url": "../api/sessions",
-        "data": function (d) {
+      processing: true,
+      serverSide: true,
+      scrollX: true,
+      scrollY: '500px',
+      scrollCollapse: true,
+      stateSave: true,
+      lengthChange: false,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+      ],
+      ajax: {
+        url: "../api/sessions",
+        data: function (d) {
           d.fields = "userId application time";
         }
       },
       "columns": [
         {
-          "data": "user.username",
-          "defaultContent": ""
+          data: "user.username",
+          defaultContent: ""
         },
         {
-          "data": "user.studyID",
-          "render": function (data, type, row) {
+          data: "user.studyID",
+          render: function (data, type, row) {
             if (row.user.studyID > 0) {
               return row.user.studyID;
             }
@@ -56,24 +63,24 @@
           }
         },
         {
-          "data": "application",
-          "defaultContent": ""
+          data: "application",
+          defaultContent: ""
         },
         {
-          "data": "time",
-          "render": function (data, type, row) {
+          data: "time",
+          render: function (data, type, row) {
             var date = new Date(row.time);
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
           }
         },
         {{#if user.roles.admin}}
           {
-            "data": "_id",
-            "defaultContent": ""
+            data: "_id",
+            defaultContent: ""
           },
           {
-            "data": "_id",
-            "render": function (data, type, row) {
+            data: "_id",
+            render: function (data, type, row) {
               return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
             }
           }

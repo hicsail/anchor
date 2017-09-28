@@ -2,23 +2,30 @@
 
 $(document).ready(() => {
   const table = $('#userTable').DataTable({
-    'processing': true,
-    'serverSide': true,
-    'scrollX': true,
-    'stateSave': true,
-    'ajax': {
-      'url': '../api/users',
-      'data': function (d) {
+    processing: true,
+    serverSide: true,
+    scrollX: true,
+    scrollY: '500px',
+    scrollCollapse: true,
+    stateSave: true,
+    lengthChange: false,
+    dom: 'Bfrtip',
+    buttons: [
+      'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+    ],
+    ajax: {
+      url: '../api/users',
+      data: function (d) {
         d.fields = 'username roles';
       }
     },
-    'columns': [
+    columns: [
       {
-        'data': 'username'
+        data: 'username'
       },
       {
-        'data': 'roles.clinician',
-        'render': function (data, type, row) {
+        data: 'roles.clinician',
+        render: function (data, type, row) {
           if (row.roles.clinician) {
             return '<h4><span class="badge badge-primary">Clinician</span></h4>';
           }
@@ -26,8 +33,8 @@ $(document).ready(() => {
         }
       },
       {
-        'data': 'roles.analyst',
-        'render': function (data, type, row) {
+        data: 'roles.analyst',
+        render: function (data, type, row) {
           if (row.roles.analyst) {
             return '<h4><span class="badge badge-secondary">Analyst</span></h4>';
           }
@@ -35,8 +42,8 @@ $(document).ready(() => {
         }
       },
       {
-        'data': 'roles.researcher',
-        'render': function (data, type, row) {
+        data: 'roles.researcher',
+        render: function (data, type, row) {
           if (row.roles.researcher) {
             return '<h4><span class="badge badge-info">Researcher</span></h4>';
           }
@@ -44,8 +51,8 @@ $(document).ready(() => {
         }
       },
       {
-        'data': 'roles.admin',
-        'render': function (data, type, row) {
+        data: 'roles.admin',
+        render: function (data, type, row) {
           if (row.roles.admin) {
             return '<h4><span class="badge badge-warning">Admin</span></h4>';
           }
@@ -53,8 +60,8 @@ $(document).ready(() => {
         }
       },
       {
-        'data': 'roles.root',
-        'render': function (data, type, row) {
+        data: 'roles.root',
+        render: function (data, type, row) {
           if (row.roles.root) {
             return '<h4><span class="badge badge-dark">Root</span></h4>';
           }

@@ -36,32 +36,39 @@
   var table;
   $(document).ready(function () {
     table = $('#userTable').DataTable({
-      "processing": true,
-      "serverSide": true,
-      "scrollX": true,
-      "stateSave": true,
-      "ajax": {
-        "url": "../api/users",
-        "data": function (d) {
+      processing: true,
+      serverSide: true,
+      scrollX: true,
+      scrollY: '500px',
+      scrollCollapse: true,
+      stateSave: true,
+      lengthChange: false,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+      ],
+      ajax: {
+        url: "../api/users",
+        data: function (d) {
           d.fields = "name username email studyID timeCreated";
         }
       },
       "columns": [
         {
-          "data": "name",
-          "defaultContent": ""
+          data: "name",
+          defaultContent: ""
         },
         {
-          "data": "username",
-          "defaultContent": ""
+          data: "username",
+          defaultContent: ""
         },
         {
-          "data": "email",
-          "defaultContent": ""
+          data: "email",
+          defaultContent: ""
         },
         {
-          "data": "studyID",
-          "render": function (data, type, row) {
+          data: "studyID",
+          render: function (data, type, row) {
             if (row.studyID > 0) {
               return row.studyID;
             }
@@ -69,26 +76,26 @@
           }
         },
         {
-          "data": "timeCreated",
-          "render": function (data, type, row) {
+          data: "timeCreated",
+          render: function (data, type, row) {
             var date = new Date(row.timeCreated);
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
           }
         },
         {{#if user.roles.admin}}
           {
-            "data": "_id",
-            "defaultContent": ""
+            data: "_id",
+            defaultContent: ""
           },
           {
-            "data": "_id",
-            "render": function (data, type, row) {
+            data: "_id",
+            render: function (data, type, row) {
               return '<button class="btn btn-secondary" id="edit'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
             }
           },
           {
-            "data": "_id",
-            "render": function (data, type, row) {
+            data: "_id",
+            render: function (data, type, row) {
               return '<button class="btn btn-danger" id="delete'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
             }
           }

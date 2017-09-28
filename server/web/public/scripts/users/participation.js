@@ -3,21 +3,28 @@
 let userID = '';
 $(document).ready(() => {
   const table = $('#userTable').DataTable({
-    'processing': true,
-    'serverSide': true,
-    'scrollX': true,
-    'stateSave': true,
-    'ajax': {
-      'url': '../api/users',
-      'data': function (d) {
+    processing: true,
+    serverSide: true,
+    scrollX: true,
+    scrollY: '500px',
+    scrollCollapse: true,
+    stateSave: true,
+    lengthChange: false,
+    dom: 'Bfrtip',
+    buttons: [
+      'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+    ],
+    ajax: {
+      url: '../api/users',
+      data: function (d) {
         d.fields = 'username studyID inStudy';
       }
     },
-    'columns': [
-      { 'data': 'username' },
+    columns: [
+      { data: 'username' },
       {
-        'data': 'studyID',
-        'render': function (data, type, row) {
+        data: 'studyID',
+        render: function (data, type, row) {
           if (row.studyID) {
             return row.studyID;
           }
@@ -25,8 +32,8 @@ $(document).ready(() => {
         }
       },
       {
-        'data': 'inStudy',
-        'render': function (data, type, row) {
+        data: 'inStudy',
+        render: function (data, type, row) {
           if (row.inStudy) {
             return '<h4><span class="badge badge-success">In Study</span></h4>';
           }
