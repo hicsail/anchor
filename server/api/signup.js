@@ -18,7 +18,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       validate: {
         payload: {
-          username: Joi.string().token().lowercase().required(),
+          username: Joi.string().token().lowercase().invalid('root').required(),
           password: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           name: Joi.string().required(),

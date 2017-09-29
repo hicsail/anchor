@@ -1,7 +1,7 @@
 'use strict';
 const signUpSchema = Joi.object().keys({
   name: Joi.string().required(),
-  username: Joi.string().lowercase().required(),
+  username: Joi.string().lowercase().invalid('root').required(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   confirmPassword: Joi.string().required()

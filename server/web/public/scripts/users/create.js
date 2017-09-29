@@ -3,7 +3,7 @@
 const schema = Joi.object().keys({
   name: Joi.string().required(),
   email: Joi.string().email().lowercase().required(),
-  username: Joi.string().token().lowercase().required(),
+  username: Joi.string().token().lowercase().invalid('root').required(),
   password: Joi.string().required(),
 });
 joiToForm('formFields',schema);
