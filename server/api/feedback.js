@@ -218,7 +218,8 @@ internals.applyRoutes = function (server, next) {
       },
       validate: {
         payload: {
-          resolved: Joi.boolean().required()
+          resolved: Joi.boolean().required(),
+          comment: Joi.string().required()
         }
       }
     },
@@ -227,7 +228,8 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          resolved: request.payload.resolved
+          resolved: request.payload.resolved,
+          comment: request.payload.comment
         }
       };
 

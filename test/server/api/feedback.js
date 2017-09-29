@@ -508,7 +508,8 @@ lab.experiment('Users Plugin Update', () => {
       method: 'PUT',
       url: '/feedback/420000000000000000000000',
       payload: {
-        resolved: true
+        resolved: true,
+        comment: 'test'
       },
       credentials: AuthenticatedAdmin
     };

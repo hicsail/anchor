@@ -21,10 +21,15 @@
               <hr>
               <h6 class="card-subtitle mb-2 text-muted">Message:</h6>
               <p class="card-text">{{feedback.description}}</p>
-              <button id="back" type="submit" class="btn btn-secondary">Back</button>
+              <hr>
+              <h6 class="card-subtitle mb-2 text-muted">Comments:</h6>
+              <textarea class="form-control" id="comment" rows="5">{{feedback.comment}}</textarea><br>
+              <a href="../../feedback" class="btn btn-secondary">Back</a>
               {{#if feedback.resolved}}
+                <button onclick="update('{{{feedback._id}}}',true)" type="submit" class="btn btn-secondary">Update</button>
                 <button onclick="update('{{{feedback._id}}}',false)" type="submit" class="btn btn-danger">Mark Unresolved</button>
               {{else}}
+                <button onclick="update('{{{feedback._id}}}',false)" type="submit" class="btn btn-secondary">Update</button>
                 <button onclick="update('{{{feedback._id}}}',true)" type="submit" class="btn btn-success">Mark Resolved</button>
               {{/if}}
             </div>

@@ -14,6 +14,7 @@
                 <th>Study ID</th>
                 <th>Subject</th>
                 <th>Description</th>
+                <th>Comment</th>
                 <th>Resolved</th>
                 <th>Time</th>
                 <th>Edit</th>
@@ -46,7 +47,7 @@
       ajax: {
         url: "../api/table/feedback",
         data: function (d) {
-          d.fields = "username userId studyID inStudy subject description resolved time";
+          d.fields = "username userId studyID inStudy subject description resolved time comment";
         }
       },
       columns: [
@@ -64,6 +65,10 @@
         },
         {
           data: "description",
+          defaultContent: ""
+        },
+        {
+          data: "comment",
           defaultContent: ""
         },
         {
