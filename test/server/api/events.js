@@ -15,7 +15,7 @@ const MakeMockModel = require('../fixtures/make-mock-model');
 const Manifest = require('../../../manifest');
 const Path = require('path');
 const Proxyquire = require('proxyquire');
-const TokenPlugin = require('../../../server/api/tokens');
+const EventPlugin = require('../../../server/api/events');
 
 
 const lab = exports.lab = Lab.script();
@@ -27,11 +27,11 @@ let stub;
 lab.before((done) => {
 
   stub = {
-    Token: MakeMockModel()
+    Event: MakeMockModel()
   };
 
   const proxy = {};
-  proxy[Path.join(process.cwd(), './server/models/token')] = stub.Token;
+  proxy[Path.join(process.cwd(), './server/models/event')] = stub.Event;
 
   const ModelsPlugin = {
     register: Proxyquire('hapi-mongo-models', proxy),
@@ -48,7 +48,7 @@ lab.before((done) => {
     })[0].plugin.options
   };
 
-  const plugins = [HapiAuthBasic, HapiAuthCookie, HapiAuthJWT, ModelsPlugin, AuthPlugin, TokenPlugin];
+  const plugins = [HapiAuthBasic, HapiAuthCookie, HapiAuthJWT, ModelsPlugin, AuthPlugin, EventPlugin];
   server = new Hapi.Server();
   server.connection({ port: Config.get('/port/web') });
   server.register(plugins, (err) => {
@@ -70,13 +70,13 @@ lab.after((done) => {
 });
 
 
-lab.experiment('Token Plugin Result List', () => {
+lab.experiment('Event Plugin Result List', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/tokens',
+      url: '/events',
       credentials: AuthenticatedAdmin
     };
 
@@ -86,7 +86,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an error when paged find fails', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -105,7 +105,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -125,13 +125,13 @@ lab.experiment('Token Plugin Result List', () => {
 });
 
 
-lab.experiment('Token Plugin Result List', () => {
+lab.experiment('Event Plugin Result List', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'GET',
-      url: '/table/tokens?search[value]=""',
+      url: '/table/events?search[value]=""',
       credentials: AuthenticatedAdmin
     };
 
@@ -140,7 +140,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an error when paged find fails', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -159,7 +159,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -185,7 +185,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully using filters', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -198,7 +198,7 @@ lab.experiment('Token Plugin Result List', () => {
       });
     };
 
-    request.url = '/table/tokens?fields=username ip time&order[0][dir]=desc&search[value]=test';
+    request.url = '/table/events?fields=username ip time&order[0][dir]=desc&search[value]=test';
     request.credentials = AuthenticatedAnalyst;
 
     server.inject(request, (response) => {
@@ -213,7 +213,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully using filters', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -226,7 +226,7 @@ lab.experiment('Token Plugin Result List', () => {
       });
     };
 
-    request.url = '/table/tokens?fields=username ip time&order[0][dir]=asc&search[value]=test';
+    request.url = '/table/events?fields=username ip time&order[0][dir]=asc&search[value]=test';
     request.credentials = AuthenticatedAnalyst;
 
     server.inject(request, (response) => {
@@ -241,7 +241,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user is a clinician', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -268,7 +268,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user has no roles', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -295,7 +295,7 @@ lab.experiment('Token Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user is a analyst', (done) => {
 
-    stub.Token.pagedFind = function () {
+    stub.Event.pagedFind = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -321,13 +321,13 @@ lab.experiment('Token Plugin Result List', () => {
   });
 });
 
-lab.experiment('Token Plugin Delete', () => {
+lab.experiment('Event Plugin Delete', () => {
 
   lab.beforeEach((done) => {
 
     request = {
       method: 'DELETE',
-      url: '/tokens/93EP150D35',
+      url: '/events/93EP150D35',
       credentials: AuthenticatedAdmin
     };
 
@@ -337,7 +337,7 @@ lab.experiment('Token Plugin Delete', () => {
 
   lab.test('it returns an error when delete by id fails', (done) => {
 
-    stub.Token.findByIdAndDelete = function (id, callback) {
+    stub.Event.findByIdAndDelete = function (id, callback) {
 
       callback(Error('delete by id failed'));
     };
@@ -353,7 +353,7 @@ lab.experiment('Token Plugin Delete', () => {
 
   lab.test('it returns a not found when delete by id misses', (done) => {
 
-    stub.Token.findByIdAndDelete = function (id, callback) {
+    stub.Event.findByIdAndDelete = function (id, callback) {
 
       callback(null, undefined);
     };
@@ -370,7 +370,7 @@ lab.experiment('Token Plugin Delete', () => {
 
   lab.test('it deletes a document successfully', (done) => {
 
-    stub.Token.findByIdAndDelete = function (id, callback) {
+    stub.Event.findByIdAndDelete = function (id, callback) {
 
       callback(null, 1);
     };
@@ -379,71 +379,6 @@ lab.experiment('Token Plugin Delete', () => {
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result.message).to.match(/success/i);
-
-      done();
-    });
-  });
-});
-
-lab.experiment('Token Plugin Update', () => {
-
-  lab.beforeEach((done) => {
-
-    request = {
-      method: 'PUT',
-      url: '/tokens/420000000000000000000000',
-      payload: {
-        name: 'NewName'
-      },
-      credentials: AuthenticatedAdmin
-    };
-
-    done();
-  });
-
-  lab.test('it returns an error when update fails', (done) => {
-
-    stub.Token.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(Error('update failed'));
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns not found when find by id misses', (done) => {
-
-    stub.Token.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, undefined);
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(404);
-
-      done();
-    });
-  });
-
-
-  lab.test('it updates a document successfully', (done) => {
-
-    stub.Token.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, {});
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
 
       done();
     });
