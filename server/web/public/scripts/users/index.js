@@ -23,3 +23,7 @@ function deleteDoc(id) {
 function editDoc(id) {
   window.location = '../users/' + id
 }
+
+function viewUserEvent(id) {
+  window.location = '../events-user/' + id
+}

@@ -18,6 +18,7 @@
                 <th>Email</th>
                 <th>StudyID</th>
                 <th>Joined Study</th>
+                <th>Users Events</th>
                 {{#role user 'admin'}}
                   <th>ID</th>
                   <th>Edit</th>
@@ -79,6 +80,12 @@
           render: function (data, type, row) {
             var date = new Date(row.timeCreated);
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
+        },
+        {
+          data: "_id",
+          render: function (data, type, row) {
+            return '<button class="btn btn-secondary" onclick="viewUserEvent(\'' + row._id + '\')">View Events</button>';
           }
         },
         {{#role user 'admin'}}
