@@ -77,7 +77,85 @@ lab.experiment('User Plugin Result List', () => {
 
     request = {
       method: 'GET',
-      url: '/users?search[value]=""',
+      url: '/users',
+      credentials: AuthenticatedAdmin
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns an error when paged find fails', (done) => {
+
+    stub.User.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('paged find failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns an array of documents successfully', (done) => {
+
+    stub.User.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, { data: [{}, {}, {}] });
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns an array of documents successfully using filters', (done) => {
+
+    stub.User.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, { data: [{}, {}, {}] });
+    };
+
+    request.url = '/users?limit=10&page=1';
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
+    });
+  });
+});
+
+
+lab.experiment('User Plugin Result List', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/table/users?search[value]=""',
       credentials: AuthenticatedAdmin
     };
 
@@ -145,7 +223,7 @@ lab.experiment('User Plugin Result List', () => {
       });
     };
 
-    request.url = '/users?fields=username studyId&order[0][dir]=desc&search[value]=test';
+    request.url = '/table/users?fields=username studyId&order[0][dir]=desc&search[value]=test';
     request.credentials = AuthenticatedAnalyst;
 
     server.inject(request, (response) => {
@@ -173,7 +251,7 @@ lab.experiment('User Plugin Result List', () => {
       });
     };
 
-    request.url = '/users?fields=username studyId&order[0][dir]=asc&search[value]=test';
+    request.url = '/table/users?fields=username studyId&order[0][dir]=asc&search[value]=test';
     request.credentials = AuthenticatedAnalyst;
 
     server.inject(request, (response) => {

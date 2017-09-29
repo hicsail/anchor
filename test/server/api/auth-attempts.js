@@ -69,6 +69,60 @@ lab.after((done) => {
   done();
 });
 
+lab.experiment('Auth Attempts Plugin Result List', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/auth-attempts',
+      credentials: AuthenticatedAdmin
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns an error when paged find fails', (done) => {
+
+    stub.AuthAttempt.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(Error('paged find failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+  lab.test('it returns an array of documents successfully', (done) => {
+
+    stub.AuthAttempt.pagedFind = function () {
+
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
+
+      callback(null, { data: [{}, {}, {}] });
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result.data).to.be.an.array();
+      Code.expect(response.result.data[0]).to.be.an.object();
+
+      done();
+    });
+  });
+});
+
 
 lab.experiment('Auth Attempts Plugin Result List', () => {
 
@@ -76,7 +130,7 @@ lab.experiment('Auth Attempts Plugin Result List', () => {
 
     request = {
       method: 'GET',
-      url: '/auth-attempts?search[value]=""',
+      url: '/table/auth-attempts?search[value]=""',
       credentials: AuthenticatedAdmin
     };
 
@@ -143,7 +197,7 @@ lab.experiment('Auth Attempts Plugin Result List', () => {
       });
     };
 
-    request.url = '/auth-attempts?fields=username ip time&order[0][dir]=desc&search[value]=test';
+    request.url = '/table/auth-attempts?fields=username ip time&order[0][dir]=desc&search[value]=test';
     request.credentials = AuthenticatedAnalyst;
 
     server.inject(request, (response) => {
@@ -171,7 +225,7 @@ lab.experiment('Auth Attempts Plugin Result List', () => {
       });
     };
 
-    request.url = '/auth-attempts?fields=username ip time&order[0][dir]=asc&search[value]=test';
+    request.url = '/table/auth-attempts?fields=username ip time&order[0][dir]=asc&search[value]=test';
     request.credentials = AuthenticatedAnalyst;
 
     server.inject(request, (response) => {

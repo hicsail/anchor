@@ -14,7 +14,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/auth-attempts',
+    path: '/table/auth-attempts',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
@@ -77,6 +77,41 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/auth-attempts',
+    config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ['root', 'admin', 'researcher']
+      },
+      validate: {
+        query: {
+          fields: Joi.string(),
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1)
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const query = {};
+      const fields = request.query.fields;
+      const sort = request.query.sort;
+      const limit = request.query.limit;
+      const page = request.query.page;
+
+      AuthAttempt.pagedFind(query, fields, sort, limit, page, (err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply(results);
+      });
+    }
+  });
 
   server.route({
     method: 'GET',

@@ -14,7 +14,7 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ],
     ajax: {
-      url: '../api/backups',
+      url: '../api/table/backups',
       data: function (d) {
         d.fields = 'backupId zip s3 time';
       }

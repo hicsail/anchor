@@ -14,7 +14,7 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ],
     ajax: {
-      url: '../api/users',
+      url: '../api/table/users',
       data: function (d) {
         d.fields = 'name email username roles';
       }
