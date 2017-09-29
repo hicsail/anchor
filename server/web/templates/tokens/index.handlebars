@@ -18,10 +18,10 @@
                 <th>Token</th>
                 <th>Last Used</th>
                 <th>Time</th>
-                {{#if user.roles.admin}}
+                {{#role user 'admin'}}
                   <th>Token</th>
                   <th>Delete</th>
-                {{/if}}
+                {{/role}}
               </tr>
               </thead>
             </table>
@@ -40,7 +40,6 @@
       scrollX: true,
       scrollY: '500px',
       scrollCollapse: true,
-      stateSave: true,
       lengthChange: false,
       dom: 'Bfrtip',
       buttons: [
@@ -83,20 +82,22 @@
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
           }
         },
-        {{#if user.roles.admin}}
+        {{#role user 'admin'}}
           {
             data: "_id",
             render: function (data, type, row) {
               return '<button class="btn btn-secondary" id="edit'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
-            }
+            },
+            visible: false
           },
           {
             data: "_id",
             render: function (data, type, row) {
               return '<button class="btn btn-danger" id="delete'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
-            }
+            },
+            visible: false
           }
-        {{/if}}
+        {{/role}}
       ]
     });
   });

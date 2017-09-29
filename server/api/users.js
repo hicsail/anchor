@@ -595,7 +595,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: 'admin'
+        scope: ['root','admin']
       },
       validate: {
         params: {

@@ -193,7 +193,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: 'admin'
+        scope: ['root','admin']
       }
     },
     handler: function (request, reply) {

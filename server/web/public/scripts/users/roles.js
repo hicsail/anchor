@@ -16,12 +16,18 @@ $(document).ready(() => {
     ajax: {
       url: '../api/users',
       data: function (d) {
-        d.fields = 'username roles';
+        d.fields = 'name email username roles';
       }
     },
     columns: [
       {
         data: 'username'
+      },
+      {
+        data: 'name'
+      },
+      {
+        data: 'email'
       },
       {
         data: 'roles.clinician',

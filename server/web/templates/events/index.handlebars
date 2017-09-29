@@ -31,9 +31,9 @@
                 <th>Study ID</th>
                 <th>Event</th>
                 <th>Time</th>
-                {{#if user.roles.admin}}
+                {{#role user 'admin'}}
                   <th>Delete</th>
-                {{/if}}
+                {{/role}}
               </tr>
               </thead>
             </table>
@@ -52,7 +52,6 @@
       scrollX: true,
       scrollY: '500px',
       scrollCollapse: true,
-      stateSave: true,
       lengthChange: false,
       dom: 'Bfrtip',
       buttons: [
@@ -94,14 +93,15 @@
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
           }
         },
-        {{#if user.roles.admin}}
+        {{#role user 'admin'}}
           {
             data: "_id",
             render: function (data, type, row) {
               return '<button class="btn btn-danger" id="' + row._id + '" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
-            }
+            },
+            visible: false
           }
-        {{/if}}
+        {{/role}}
       ]
     });
   });

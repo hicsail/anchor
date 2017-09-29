@@ -8,7 +8,6 @@ $(document).ready(() => {
     scrollX: true,
     scrollY: '500px',
     scrollCollapse: true,
-    stateSave: true,
     lengthChange: false,
     dom: 'Bfrtip',
     buttons: [
@@ -49,13 +48,15 @@ $(document).ready(() => {
         data: '_id',
         render: function (data, type, row) {
           return '<button class="btn btn-primary" id="restore' + row._id + '" onclick="restore(\'' + row._id + '\')">Restore</button>';
-        }
+        },
+        visible: false
       },
       {
         data: '_id',
         render: function (data, type, row) {
           return '<button class="btn btn-danger" id="delete' + row._id + '" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
-        }
+        },
+        visible: false
       }
     ]
   });
