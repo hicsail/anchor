@@ -19,3 +19,7 @@ function deleteDoc(id) {
     });
   }
 }
+
+function editDoc(id) {
+  window.location = '../feedback/' + id
+}

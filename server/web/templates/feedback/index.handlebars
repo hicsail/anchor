@@ -16,6 +16,7 @@
                 <th>Description</th>
                 <th>Resolved</th>
                 <th>Time</th>
+                <th>Edit</th>
                 {{#role user 'admin'}}
                   <th>Delete</th>
                 {{/role}}
@@ -51,21 +52,11 @@
       columns: [
         {
           data: "user.username",
-          defaultContent: "Nonregistered user"
+          defaultContent: ""
         },
         {
           data: "user.studyID",
-          render: function (data, type, row) {
-            if(row.user) {
-              if(row.user.studyID === 0) {
-                return '';
-              } else {
-                return row.user.studyID;
-              }
-            } else {
-              return '';
-            }
-          }
+          defaultContent: ""
         },
         {
           data: "subject",
@@ -78,7 +69,7 @@
         {
           data: "resolved",
           render: function (data, type, row) {
-            if(row.user.resolved) {
+            if(row.resolved) {
               return '<h5><span class="badge badge-success">Resolved</span></h5>';
             } else {
               return '<h5><span class="badge badge-danger">Unresolved</span></h5>';
@@ -90,6 +81,12 @@
           render: function (data, type, row) {
             var date = new Date(row.time);
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
+        },
+        {
+          data: "_id",
+          render: function (data, type, row) {
+            return '<button class="btn btn-secondary" id="'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
           }
         },
         {{#role user 'admin'}}
@@ -105,4 +102,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/feedback.js"></script>
+<script type="text/javascript" src="../../public/scripts/feedback/index.js"></script>
