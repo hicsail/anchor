@@ -78,6 +78,24 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
+    path: '/change-password/{id}',
+    config: {
+      auth: {
+        strategy: 'session',
+        scope: ['root', 'admin','researcher']
+      }
+    },
+    handler: function (request, reply) {
+
+      return reply.view('users/password', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName')
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
     path: '/users/{id}',
     config: {
       auth: {

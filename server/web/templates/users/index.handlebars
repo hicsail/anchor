@@ -19,6 +19,7 @@
                 <th>StudyID</th>
                 <th>Joined Study</th>
                 <th>Users Events</th>
+                <th>Password</th>
                 {{#role user 'admin'}}
                   <th>ID</th>
                   <th>Edit</th>
@@ -86,6 +87,12 @@
           data: "_id",
           render: function (data, type, row) {
             return '<button class="btn btn-secondary" onclick="viewUserEvent(\'' + row._id + '\')">View Events</button>';
+          }
+        },
+        {
+          data: "_id",
+          render: function (data, type, row) {
+            return '<button class="btn btn-secondary" onclick="viewChangePassword(\'' + row._id + '\')">Change Password</button>';
           }
         },
         {{#role user 'admin'}}
