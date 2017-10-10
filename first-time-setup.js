@@ -1,9 +1,12 @@
 'use strict';
 const Async = require('async');
+const Config = require('./config');
+const Joi = require('joi');
 const MongoModels = require('mongo-models');
 const Mongodb = require('mongodb');
 const Promptly = require('promptly');
 const User = require('./server/models/user');
+const PasswordComplexity = require('joi-password-complexity');
 
 Async.auto({
   mongodbUri: (done) => {
@@ -34,6 +37,11 @@ Async.auto({
   rootPassword: ['rootEmail', (results, done) => {
 
     Promptly.password('Root user password:', done);
+  }],
+  rootPasswordCheck: ['rootPassword', (results, done) => {
+
+    const complexityOptions = Config.get('/passwordComplexity');
+    Joi.validate(results.rootPassword, new PasswordComplexity(complexityOptions),done);
   }],
   setupRootUser: ['rootPassword', (results, done) => {
 
