@@ -42,7 +42,32 @@ Async.auto({
 
         MongoModels.connect(results.mongodbUri, {}, done);
       },
-      user: ['connect', function (dbResults, done) {
+      rootUser: ['connect', (dbResults, done) => {
+
+        User.findOne({ username: 'root' }, done);
+      }],
+      rootUserCheck: ['rootUser', (dbResults, done) => {
+
+        if (results.rootUser) {
+          return done(Error('Root User already exists'));
+        }
+        done();
+      }],
+      userEmail:['rootUserCheck', function (dbResults, done) {
+
+        User.findOne({ email: results.rootEmail }, done);
+      }],
+      emailCheck:['userEmail', function (dbResults, done) {
+
+        console.log(dbResults.userEmail);
+        if (dbResults.userEmail) {
+          done(Error('Email is in use'));
+        }
+        else {
+          done();
+        }
+      }],
+      user: ['emailCheck', function (dbResults, done) {
 
         Async.auto({
           passwordHash: function (done) {
