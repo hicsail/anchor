@@ -26,5 +26,5 @@ jobs:
                 ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
                 apt-get -qq update && apt-get -y --no-install-recommends install rsync
                 rm -rf node_modules && rsync -r ./* $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/$PROJECT_NAME/
-                ssh $SERVER_USER@$SERVER_IP 'cd /home/$SERVER_USER/$PROJECT_NAME && pwd && sudo docker-compose up -d'
+                ssh $SERVER_USER@$SERVER_IP 'cd /home/ubuntu/anchor && sudo docker-compose up -d'
               fi
