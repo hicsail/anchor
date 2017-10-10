@@ -23,8 +23,8 @@ jobs:
           name: Add ssh key to know_hosts
           command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
       - run:
-          name: install rsync
-          command: apt install rsync
+          name: update and install rsync
+          command: apt-get -qq update && apt-get -y --no-install-recommends install rsync
       - deploy:
           name: Deploy
           command: |
