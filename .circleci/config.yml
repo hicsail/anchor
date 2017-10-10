@@ -24,7 +24,7 @@ jobs:
           command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
       - run:
           name: install rsync
-          command: sudo apt install rsync
+          command: apt install rsync
       - deploy:
           name: Deploy
           command: |
