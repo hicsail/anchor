@@ -15,11 +15,13 @@
               <tr>
                 <th>Username</th>
                 <th>Name</th>
+                <th>Token Name</th>
                 <th>Token</th>
+                <th>Active</th>
                 <th>Last Used</th>
                 <th>Time</th>
+                <th>Edit</th>
                 {{#role user 'admin'}}
-                  <th>Token</th>
                   <th>Delete</th>
                 {{/role}}
               </tr>
@@ -48,7 +50,7 @@
       ajax: {
         url: "../api/table/tokens",
         data: function (d) {
-          d.fields = "username userId studyID inStudy name token lastUsed time";
+          d.fields = "name username userId studyID inStudy tokenName token lastUsed time active";
         }
       },
       columns: [
@@ -57,12 +59,27 @@
           defaultContent: "Nonregistered user"
         },
         {
+          data: "user.name",
+          defaultContent: "Nonregistered user"
+        },
+        {
           data: "name",
           defaultContent: ""
         },
         {
           data: "token",
-          defaultContent: ""
+          defaultContent: "",
+          visible: false
+        },
+        {
+          data: "active",
+          render: function (data, type, row) {
+            if(row.active) {
+              return '<h4><span class="badge badge-success">Active</span></h4>';
+            } else {
+              return '<h4><span class="badge badge-danger">Inactive</span></h4>';
+            }
+          }
         },
         {
           data: "lastUsed",
@@ -82,14 +99,14 @@
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
           }
         },
-        {{#role user 'admin'}}
-          {
-            data: "_id",
-            render: function (data, type, row) {
-              return '<button class="btn btn-secondary" id="edit'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
-            },
-            visible: false
+        {
+          data: "_id",
+          render: function (data, type, row) {
+            return '<button class="btn btn-secondary" id="edit'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
           },
+          visible: false
+        },
+        {{#role user 'admin'}}
           {
             data: "_id",
             render: function (data, type, row) {

@@ -72,7 +72,7 @@ internals.applyRoutes = function (server, next) {
 
         Async.each(results.data, (event, callback) => {
 
-          let userFields = 'studyID username';
+          let userFields = 'studyID name username';
 
           if (accessLevel === 1) {
             //if analyst
@@ -180,7 +180,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Token.create(request.payload.name, request.auth.credentials.user._id.toString(),(err, feedback) => {
+      Token.create(request.payload.tokenName, request.auth.credentials.user._id.toString(),(err, feedback) => {
 
         if (err) {
           return reply(err);
@@ -208,7 +208,8 @@ internals.applyRoutes = function (server, next) {
       const id = request.params.id;
       const update = {
         $set: {
-          name: request.payload.name
+          tokenName: request.payload.tokenName,
+          active: request.payload.active
         }
       };
 

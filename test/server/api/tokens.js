@@ -393,7 +393,8 @@ lab.experiment('Token Plugin Update', () => {
       method: 'PUT',
       url: '/tokens/420000000000000000000000',
       payload: {
-        name: 'NewName'
+        tokenName: 'NewName',
+        active: true
       },
       credentials: AuthenticatedAdmin
     };

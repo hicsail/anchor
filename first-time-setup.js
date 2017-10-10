@@ -92,6 +92,7 @@ Async.auto({
             _id: User.ObjectId('000000000000000000000000'),
             isActive: true,
             username: 'root',
+            name: 'Root',
             password: passResults.passwordHash.hash,
             email: results.rootEmail.toLowerCase(),
             roles: {

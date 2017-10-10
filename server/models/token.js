@@ -6,11 +6,11 @@ const MongoModels = require('mongo-models');
 
 class Token extends MongoModels {
 
-  static create(name, userId,callback) {
+  static create(tokenName, userId,callback) {
 
     const id = MongoModels.ObjectID().toString();
     const document = {
-      name,
+      tokenName,
       userId,
       token: JWT.sign(id,Config.get('/authSecret')),
       tokenId: id,
@@ -36,7 +36,7 @@ Token.collection = 'tokens';
 
 Token.schema = Joi.object().keys({
   _id: Joi.object(),
-  name: Joi.string().required(),
+  tokenName: Joi.string().required(),
   userId: Joi.boolean().required(),
   token: Joi.string().required(),
   time: Joi.date().required(),
@@ -45,7 +45,8 @@ Token.schema = Joi.object().keys({
 });
 
 Token.payload = Joi.object().keys({
-  name: Joi.string().required()
+  tokenName: Joi.string().required(),
+  active: Joi.boolean().default(true)
 });
 
 

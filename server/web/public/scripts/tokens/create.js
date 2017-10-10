@@ -1,7 +1,7 @@
 'use strict';
 
 const schema = Joi.object().keys({
-  name: Joi.string().required(),
+  tokenName: Joi.string().required(),
 });
 joiToForm('formFields',schema);
 

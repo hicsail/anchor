@@ -10,7 +10,7 @@ function deleteDoc(id) {
       url: '../api/tokens/' + id,
       type: 'DELETE',
       success: function (result) {
-        successAlert('User Deleted');
+        successAlert('Token Deleted');
         table.ajax.reload();
       },
       error: function (result) {
