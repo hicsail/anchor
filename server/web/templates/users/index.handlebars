@@ -19,9 +19,9 @@
                 <th>StudyID</th>
                 <th>Joined Study</th>
                 <th>Users Events</th>
-                <th>Password</th>
                 {{#role user 'admin'}}
                   <th>ID</th>
+                  <th>Update Password</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 {{/role}}
@@ -89,16 +89,17 @@
             return '<button class="btn btn-secondary" onclick="viewUserEvent(\'' + row._id + '\')">View Events</button>';
           }
         },
-        {
-          data: "_id",
-          render: function (data, type, row) {
-            return '<button class="btn btn-secondary" onclick="viewChangePassword(\'' + row._id + '\')">Change Password</button>';
-          }
-        },
         {{#role user 'admin'}}
           {
             data: "_id",
             defaultContent: "",
+            visible: false
+          },
+          {
+            data: "_id",
+            render: function (data, type, row) {
+              return '<button class="btn btn-secondary" onclick="viewChangePassword(\'' + row._id + '\')">Change Password</button>';
+            },
             visible: false
           },
           {

@@ -275,3 +275,39 @@ lab.experiment('Edit User Page View', () => {
     });
   });
 });
+
+lab.experiment('Update Users Password View', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/change-password/93EP150D35'
+    };
+
+    done();
+  });
+
+
+  lab.test('it redirects when user is not logged in', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+
+      done();
+    });
+  });
+
+  lab.test('it renders properly when user is authenticated', (done) => {
+
+    request.credentials = AuthenticatedAccount;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusMessage).to.match(/Ok/i);
+      Code.expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+});

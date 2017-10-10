@@ -1012,11 +1012,56 @@ lab.experiment('Users Plugin Set Password', () => {
   });
 
 
+  lab.test('it returns an error when find by user fails', (done) => {
+
+    stub.User.generatePasswordHash = function (password, callback) {
+
+      callback(null, { password: '', hash: '' });
+    };
+
+    stub.User.findById = function (id, callback) {
+
+      callback(Error('findByUserFailed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+  lab.test('it returns an error when scope failed', (done) => {
+
+    stub.User.generatePasswordHash = function (password, callback) {
+
+      callback(null, { password: '', hash: '' });
+    };
+
+    stub.User.findById = function (id, callback) {
+
+      callback(null, { roles: { root:true } });
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(401);
+
+      done();
+    });
+  });
+
   lab.test('it returns an error when update fails', (done) => {
 
     stub.User.generatePasswordHash = function (password, callback) {
 
       callback(null, { password: '', hash: '' });
+    };
+
+    stub.User.findById = function (id, callback) {
+
+      callback(null, { roles:{} });
     };
 
     stub.User.findByIdAndUpdate = function (id, update, callback) {

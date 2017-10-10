@@ -1,6 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
+const Joi = require('joi');
 const User = require('../../models/user');
 
 internals.applyRoutes = function (server, next) {
@@ -82,7 +83,12 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','researcher']
+        scope: ['root', 'admin']
+      },
+      validate: {
+        params: {
+          id: Joi.string().invalid('000000000000000000000000')
+        }
       }
     },
     handler: function (request, reply) {
