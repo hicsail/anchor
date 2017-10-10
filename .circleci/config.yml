@@ -19,6 +19,13 @@ jobs:
       - run:
           name: test
           command: npm test
-       - run:
+      - run:
           name: Add ssh key to know_hosts
           command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+      - deploy:
+          name: Deploy
+          command: |
+              if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                rm -rf node_modules && rsync -r ./* $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/$PROJECT_NAME/
+                ssh $SERVER_USER@$SERVER_IP 'cd /home/$SERVER_USER/$PROJECT_NAME && docker-compose build && docker-compose up -d'
+              fi
