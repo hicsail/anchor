@@ -19,51 +19,15 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-  test:
-    docker:
-      - image: node:8
-      - image: mongo:3.4.5
-    steps:
-      - checkout
       - run:
           name: Test
           command: npm test
-  deploy:
-    docker:
-      - image: node:8
-    steps:
-      - checkout
-      - run:
-          name: Add ssh key to know_hosts
-          command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-      - run:
-          name: update and install rsync
-          command: apt-get -qq update && apt-get -y --no-install-recommends install rsync
       - deploy:
           name: Deploy
           command: |
               if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+                apt-get -qq update && apt-get -y --no-install-recommends install rsync
                 rm -rf node_modules && rsync -r ./* $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/$PROJECT_NAME/
                 ssh $SERVER_USER@$SERVER_IP 'cd /home/$SERVER_USER/$PROJECT_NAME && sudo docker-compose up -d'
               fi
-
-workflows:
-  version: 2
-  test:
-    jobs:
-      - build:
-      - test:
-        requires:
-          - build
-        filters:
-          branches:
-            only: master
-  deploy:
-    jobs:
-      - deploy:
-        requires:
-          - build
-          - test
-        filters:
-          branches:
-            only: master
