@@ -25,6 +25,6 @@ jobs:
               if [ "${CIRCLE_BRANCH}" == "master" ]; then
                 ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
                 apt-get -qq update && apt-get -y --no-install-recommends install rsync
-                rm -rf node_modules && rsync -r ./* $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/$PROJECT_NAME/
-                ssh $SERVER_USER@$SERVER_IP 'cd /home/ubuntu/anchor && sudo docker-compose up -d'
+                rm -rf node_modules && rsync -r ./* $SERVER_USER@$SERVER_IP:/home/ubuntu/anchor/
+                ssh $SERVER_USER@$SERVER_IP 'cd /home/ubuntu/anchor && sudo docker-compose up --build -d'
               fi
