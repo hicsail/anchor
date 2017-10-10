@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/mern-starter
+    working_directory: ~/anchor
     docker:
       - image: node:8
       - image: mongo:3.4.5
@@ -51,8 +51,8 @@ workflows:
   version: 2
   test:
     jobs:
-      - build
-      - test
+      - build:
+      - test:
         requires:
           - build
         filters:
@@ -60,7 +60,7 @@ workflows:
             only: master
   deploy:
     jobs:
-      - deploy
+      - deploy:
         requires:
           - build
           - test
