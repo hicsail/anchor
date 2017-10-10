@@ -1,15 +1,14 @@
 'use strict';
 
 const schema = Joi.object().keys({
-  name: Joi.string().required(),
-  email: Joi.string().email().lowercase().required(),
-  username: Joi.string().token().lowercase().invalid('root').required(),
   password: Joi.string().required().min(8),
   confirmPassword: Joi.string().required().min(8)
 });
-joiToForm('formFields',schema);
+joiToForm('formFields', schema);
 
-$('#create').click((event) => {
+
+$('#change').click((event) => {
+  const userID = window.location.pathname.split('/').pop();
   event.preventDefault();
   const values = {};
   $.each($('#form').serializeArray(), (i, field) => {
@@ -18,8 +17,8 @@ $('#create').click((event) => {
   if(values['password'] === values['confirmPassword']) {
     delete values['confirmPassword'];
     $.ajax({
-      type: 'POST',
-      url: '../api/users',
+      type: 'PUT',
+      url: '../api/users/' + userID +'/password',
       data: values,
       success: function (result) {
         window.location = '../users'

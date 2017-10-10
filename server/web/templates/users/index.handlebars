@@ -21,6 +21,7 @@
                 <th>Users Events</th>
                 {{#role user 'admin'}}
                   <th>ID</th>
+                  <th>Update Password</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 {{/role}}
@@ -92,6 +93,13 @@
           {
             data: "_id",
             defaultContent: "",
+            visible: false
+          },
+          {
+            data: "_id",
+            render: function (data, type, row) {
+              return '<button class="btn btn-secondary" onclick="viewChangePassword(\'' + row._id + '\')">Change Password</button>';
+            },
             visible: false
           },
           {

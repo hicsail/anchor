@@ -503,7 +503,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: 'admin'
+        scope: ['root','admin']
       },
       validate: {
         params: {
@@ -538,6 +538,27 @@ internals.applyRoutes = function (server, next) {
                 return reply(Boom.conflict(err.message));
               }
               reply(true);
+            });
+          }
+        },{
+          assign: 'scopeCheck',
+          method: function (request, reply) {
+
+            const id = request.params.id;
+            const role = User.highestRole(request.auth.credentials.user.roles);
+            User.findById(id, (err, user) => {
+
+              if (err) {
+                return reply(err);
+              }
+
+              const userRole = User.highestRole(user.roles);
+              if (role > userRole) {
+                reply(true);
+              }
+              else {
+                return reply(Boom.unauthorized('User does not have permission to update this users password'));
+              }
             });
           }
         }

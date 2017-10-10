@@ -27,3 +27,7 @@ function editDoc(id) {
 function viewUserEvent(id) {
   window.location = '../events-user/' + id
 }
+
+function viewChangePassword(id) {
+  window.location = '../change-password/' + id
+}

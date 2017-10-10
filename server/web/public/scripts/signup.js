@@ -14,17 +14,20 @@ $('#signup').click((event) => {
   $.each($('#signupForm').serializeArray(), (i, field) => {
     values[field.name] = field.value;
   });
-  delete values.confirmPassword;
-
-  $.ajax({
-    type: 'POST',
-    url: '../api/signup',
-    data: values,
-    success: function (result) {
-      window.location = '../';
-    },
-    error: function (result) {
-      errorAlert(result.responseJSON.message);
-    }
-  });
+  if(values['password'] === values['confirmPassword']) {
+    delete values['confirmPassword'];
+    $.ajax({
+      type: 'POST',
+      url: '../api/signup',
+      data: values,
+      success: function (result) {
+        window.location = '../';
+      },
+      error: function (result) {
+        errorAlert(result.responseJSON.message);
+      }
+    });
+  } else {
+    errorAlert('Passwords do not match');
+  }
 });
