@@ -57,6 +57,10 @@ internals.applyRoutes = function (server, next) {
       else if (accessLevel === 2) {
         query.username = request.auth.credentials.user.username;
       }
+      //researcher
+      else if (accessLevel === 3) {
+        query.userId = request.auth.credentials.user._id.toString();
+      }
 
       Token.pagedFind(query, fields, sort, limit, page, (err, results) => {
 
