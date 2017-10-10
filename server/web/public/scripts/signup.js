@@ -3,8 +3,8 @@ const signUpSchema = Joi.object().keys({
   name: Joi.string().required(),
   username: Joi.string().lowercase().invalid('root').required(),
   email: Joi.string().email().required(),
-  password: Joi.string().required(),
-  confirmPassword: Joi.string().required()
+  password: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number'),
+  confirmPassword: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number')
 });
 joiToForm('signUpFormFields',signUpSchema);
 

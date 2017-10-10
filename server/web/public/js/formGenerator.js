@@ -48,6 +48,12 @@ const validate = function(key) {
     $('#JoiFormInput' + key).addClass('is-valid').removeClass('is-invalid');
     $('#JoiFormHelp' + key).text('');
   }
+  if(key == 'confirmPassword' && !error) {
+    if($('#JoiFormInputconfirmPassword').val() !== $('#JoiFormInputpassword').val()) {
+      $('#JoiFormInput' + key).addClass('is-invalid').removeClass('is-valid');
+      $('#JoiFormHelp' + key).text('Passwords do not match');
+    }
+  }
 }
 
 const camelCaseToWords = function(str){
