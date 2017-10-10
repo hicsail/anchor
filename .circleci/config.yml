@@ -1,24 +1,38 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/anchor
+    working_directory: ~/mern-starter
     docker:
       - image: node:8
       - image: mongo:3.4.5
     steps:
       - checkout
+      - run:
+          name: Update npm
+          command: 'sudo npm install -g npm@latest'
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
-          name: npm-install
+          name: Install npm
           command: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - .node_modules
+            - node_modules
+  test:
+    docker:
+      - image: node:8
+      - image: mongo:3.4.5
+    steps:
+      - checkout
       - run:
-          name: test
+          name: Test
           command: npm test
+  deploy:
+    docker:
+      - image: node:8
+    steps:
+      - checkout
       - run:
           name: Add ssh key to know_hosts
           command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
@@ -30,5 +44,26 @@ jobs:
           command: |
               if [ "${CIRCLE_BRANCH}" == "master" ]; then
                 rm -rf node_modules && rsync -r ./* $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/$PROJECT_NAME/
-                ssh $SERVER_USER@$SERVER_IP 'cd /home/$SERVER_USER/$PROJECT_NAME && docker-compose build && docker-compose up -d'
+                ssh $SERVER_USER@$SERVER_IP 'cd /home/$SERVER_USER/$PROJECT_NAME && sudo docker-compose up -d'
               fi
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build
+      - test
+        requires:
+          - build
+        filters:
+          branches:
+            only: master
+  deploy:
+    jobs:
+      - deploy
+        requires:
+          - build
+          - test
+        filters:
+          branches:
+            only: master
