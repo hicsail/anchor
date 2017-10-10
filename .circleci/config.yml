@@ -19,3 +19,6 @@ jobs:
       - run:
           name: test
           command: npm test
+       - run:
+          name: Add ssh key to know_hosts
+          command: ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
