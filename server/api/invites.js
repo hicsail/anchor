@@ -175,13 +175,42 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      Invite.create(request.payload.name,request.payload.email,request.payload.description, request.auth.credentials.user._id.toString(),(err, invite) => {
+      Async.auto({
+        invite: function (done) {
+
+          Invite.create(request.payload.name,request.payload.email,request.payload.description, request.auth.credentials.user._id.toString(), done);
+        },
+        email: ['invite', function (results, done) {
+
+          const emailOptions = {
+            subject: 'You have been invited to ' + Config.get('/projectName'),
+            to: {
+              name: request.payload.name,
+              address: request.payload.email
+            }
+          };
+          const template = 'invite';
+          const context = {
+            url: request.headers.origin + '/invite/' + invite._id.toString(),
+            name: Config.get('/projectName')
+          };
+
+          mailer.sendEmail(emailOptions, template, context, (err) => {
+
+            if (err) {
+              console.warn('sending invite email failed:', err.stack);
+            }
+          });
+
+          done();
+        }]
+      },(err, results) => {
 
         if (err) {
           return reply(err);
         }
 
-        reply(invite);
+        reply(results.invite);
       });
     }
   });
