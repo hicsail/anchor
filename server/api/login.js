@@ -263,6 +263,12 @@ internals.applyRoutes = function (server, next) {
           };
 
           User.findByIdAndUpdate(id, update, done);
+        }],
+        removeAuthAttempts: ['user', function (results, done) {
+
+          const ip = request.info.remoteAddress;
+          const username = results.user.username;
+          AuthAttempt.deleteAuthAttempts(ip, username, done);
         }]
       }, (err, results) => {
 
