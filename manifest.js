@@ -65,6 +65,7 @@ const manifest = {
             Backup: './server/models/backup',
             Event: './server/models/event',
             Feedback: './server/models/feedback',
+            Invite: './server/models/invite',
             Session: './server/models/session',
             Token: './server/models/token',
             User: './server/models/user'
@@ -139,6 +140,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/invites',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
       plugin: './server/api/login',
       options: {
         routes: { prefix: '/api' }
@@ -197,6 +204,9 @@ const manifest = {
     },
     {
       plugin: './server/web/routes/index'
+    },
+    {
+      plugin: './server/web/routes/invite'
     },
     {
       plugin: './server/web/routes/login'

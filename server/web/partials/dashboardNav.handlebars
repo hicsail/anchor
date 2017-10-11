@@ -28,6 +28,9 @@
       <a class="nav-link text-light" href="../authAttempts">Auth Attempts</a>
       <a class="nav-link text-light" href="../events">Events</a>
       <a class="nav-link text-light" href="../feedback">Feedback</a>
+      {{#role user 'researcher'}}
+        <a class="nav-link text-light" href="../invite">Invites</a>
+      {{/role}}
       <a class="nav-link text-light" href="../sessions">Sessions</a>
       <a class="nav-link text-light" href="../users">Users</a>
     </li>

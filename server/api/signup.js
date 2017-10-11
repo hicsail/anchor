@@ -10,7 +10,7 @@ internals.applyRoutes = function (server, next) {
 
   const Session = server.plugins['hapi-mongo-models'].Session;
   const User = server.plugins['hapi-mongo-models'].User;
-
+  const Invite = server.plugins['hapi-mongo-models'].Invite;
 
   server.route({
     method: 'POST',
@@ -22,7 +22,8 @@ internals.applyRoutes = function (server, next) {
           password: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           name: Joi.string().required(),
-          application: Joi.string().default('Web')
+          application: Joi.string().default('Web'),
+          invite: Joi.string().optional()
         }
       },
       pre: [{
@@ -119,6 +120,19 @@ internals.applyRoutes = function (server, next) {
         session: ['user', function (results, done) {
 
           Session.create(results.user._id.toString(), request.payload.application, done);
+        }],
+        invite: ['user', function (results, done) {
+
+          const id = request.payload.invite;
+          if (id) {
+            const update = {
+              $set: {
+                status: 'Accepted'
+              }
+            };
+            return Invite.findByIdAndUpdate(id, update, done);
+          }
+          done();
         }]
       }, (err, results) => {
 
