@@ -149,6 +149,22 @@ case 'g':
   Fs.writeFileSync(createPath,create);
   console.log('anchor\tclient side create\t' + data.name + ' Generated');
 
+
+  //---------------------------
+  //client side edit javascript
+  //---------------------------
+  const editTemp = Fs.readFileSync(Path.join(__dirname, './resources/edit.handlebars'), 'utf8');
+  const Edit = Handlebars.compile(editTemp);
+
+  //write to file
+  const edit = Edit(data);
+  const editPath = Path.join(__dirname, '../server/web/public/scripts/', data.lowercasePluralName + '/edit.js');
+  if (!Fs.existsSync(editPath)) {
+    Fs.openSync(editPath, 'wx');
+  }
+  Fs.writeFileSync(editPath,edit);
+  console.log('anchor\tclient side edit\t' + data.name + ' Generated');
+
   //fix linting issues
   console.log('Running Linting...');
   NpmRun.execSync('npm run lint-fix',null);
