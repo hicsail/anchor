@@ -33,11 +33,11 @@ internals.applyRoutes = function (server, next) {
       let fields = request.query.fields;
 
       const query = {
-        username: { $regex: request.query['search[value]'].toLowerCase() }
+        name: { $regex: request.query['search[value]'].toLowerCase() }
       };
       //no role
       if (accessLevel === 0) {
-        query.username = request.auth.credentials.user.username;
+        query.userId = request.auth.credentials.user._id.toString();
       }
       //analyst
       else if (accessLevel === 1) {
@@ -57,10 +57,10 @@ internals.applyRoutes = function (server, next) {
       }
       //clinician
       else if (accessLevel === 2) {
-        query.username = request.auth.credentials.user.username;
+        query.userId = request.auth.credentials.user._id.toString();
       }
 
-      let userFields = 'studyID username';
+      let userFields = 'studyID name username';
       if (accessLevel === 1) {
         //if analyst remove PHI
         userFields = userFields.split(' ');
@@ -75,7 +75,6 @@ internals.applyRoutes = function (server, next) {
         }
         userFields = userFields.join(' ');
       }
-      userFields = User.fieldsAdapter(userFields);
 
       Template.pagedLookupById(query,sort,limit,page,User,'user','userId',fields, userFields, (err, results) => {
 

@@ -24,9 +24,10 @@ const Generate = {
       'name',
       'userId'
     ],
-    tableVars: 'user.username user.name name time',
-    tableFields: 'username name time userId',
-    tableHeaders: ['Username', 'Name', 'Template Name']
+    tableVars: 'user.username user.name user.studyID name time',
+    tableFields: 'username name name time studyID userId',
+    tableHeaders: ['Username', 'Name', 'Study ID','Template Name'],
+    searchField: 'name'
   }
 };
 

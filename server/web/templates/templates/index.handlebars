@@ -13,6 +13,7 @@
               <tr>
                   <th>Username</th>
                   <th>Name</th>
+                  <th>Study ID</th>
                   <th>Template Name</th>
                 <th>Created At</th>
                 {{#role user 'admin'}}
@@ -45,7 +46,7 @@
       ajax: {
         url: "../api/table/templates",
         data: function (d) {
-          d.fields = "username name time userId";
+          d.fields = "username name name time studyID userId";
         }
       },
       "columns": [
@@ -55,6 +56,10 @@
           },
           {
             data: "user.name",
+            defaultContent: ""
+          },
+          {
+            data: "user.studyID",
             defaultContent: ""
           },
           {

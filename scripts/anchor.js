@@ -205,6 +205,22 @@ case 'g':
   Fs.writeFileSync(indexHtmlPath,indexHtml);
   console.log('anchor\tindex.html\t\t' + data.name + ' Generated');
 
+
+  //---------------------------
+  //client side create html
+  //---------------------------
+  const createHtmlTemp = Fs.readFileSync(Path.join(__dirname, './resources/create.html.handlebars'), 'utf8');
+  const CreateHtml = Handlebars.compile(createHtmlTemp);
+
+  //write to file
+  const createHtml = CreateHtml(data);
+  const createHtmlPath = Path.join(__dirname, '../server/web/templates/', data.lowercasePluralName + '/create.handlebars');
+  if (!Fs.existsSync(createHtmlPath)) {
+    Fs.openSync(createHtmlPath, 'wx');
+  }
+  Fs.writeFileSync(createHtmlPath,createHtml);
+  console.log('anchor\tcreate.html\t\t' + data.name + ' Generated');
+
   //fix linting issues
   console.log('Running Linting...');
   NpmRun.execSync('npm run lint-fix',null);
