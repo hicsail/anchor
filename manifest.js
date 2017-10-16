@@ -67,6 +67,7 @@ const manifest = {
             Feedback: './server/models/feedback',
             Invite: './server/models/invite',
             Session: './server/models/session',
+            Template: './server/models/template',
             Token: './server/models/token',
             User: './server/models/user'
           },

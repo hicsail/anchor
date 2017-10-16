@@ -35,8 +35,8 @@ lab.experiment('Template Class Methods', () => {
   lab.test('it returns a new instance when create succeeds', (done) => {
 
     Template.create(
-      name,
-      userId,
+      'name',
+      'userId',
       (err, result) => {
 
         Code.expect(err).to.not.exist();
@@ -59,8 +59,8 @@ lab.experiment('Template Class Methods', () => {
     };
 
     Template.create(
-      name,
-      userId,
+      'name',
+      'userId',
       (err, result) => {
 
         Code.expect(err).to.be.an.object();

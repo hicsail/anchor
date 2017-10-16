@@ -28,6 +28,7 @@ case 'g':
   data.createPayloads = [];
   data.createVariables = [];
   data.putPayloads = [];
+  data.postPayloads = [];
   data.lowercaseName = data.name.toLowerCase();
   const lines = data.schema.split('\n');
   for (let i = 2; i < lines.length - 1; ++i) {
@@ -44,11 +45,13 @@ case 'g':
       else {
         data.createPayloads.push('request.payload.' + variable.trim() + ', ');
         data.putPayloads.push(variable.trim() + ': request.payload.' + variable.trim() + ', ');
+        data.postPayloads.push(variable.trim());
       }
     }
     else {
       data.createVariables.push(variable.trim() + ': ' + data.defaultValues[variable.trim()] + ',');
     }
+
   }
 
   data.createVariables[data.createVariables.length - 1] = data.createVariables[data.createVariables.length - 1].slice(0,-1);
@@ -83,8 +86,8 @@ case 'g':
   //---------------------------
   //model test
   //---------------------------
-  const modeltestTemplate = Fs.readFileSync(Path.join(__dirname, './resources/test.model.handlebars'), 'utf8');
-  const ModelTest = Handlebars.compile(modeltestTemplate);
+  const modelTestTemplate = Fs.readFileSync(Path.join(__dirname, './resources/test.model.handlebars'), 'utf8');
+  const ModelTest = Handlebars.compile(modelTestTemplate);
 
   //write to file
   const modelTest = ModelTest(data);
@@ -95,7 +98,24 @@ case 'g':
   Fs.writeFileSync(modelTestPath,modelTest);
   console.log('anchor\tmodel test\t' + data.name + ' Generated');
 
+
+  //---------------------------
+  //api test
+  //---------------------------
+  const apiTestTemplate = Fs.readFileSync(Path.join(__dirname, './resources/test.api.handlebars'), 'utf8');
+  const ApiTest = Handlebars.compile(apiTestTemplate);
+
+  //write to file
+  const apiTest = ApiTest(data);
+  const apiTestPath = Path.join(__dirname, '../test/server/api/', data.lowercasePluralName + '.js');
+  if (!Fs.existsSync(apiTestPath)) {
+    Fs.openSync(apiTestPath, 'wx');
+  }
+  Fs.writeFileSync(apiTestPath,apiTest);
+  console.log('anchor\tapi test\t' + data.name + ' Generated');
+
   //fix linting issues
   NpmRun.execSync('npm run lint-fix',null);
   console.log('Generation Complete');
+  console.log('Please add Model to manifest.js before committing');
 }
