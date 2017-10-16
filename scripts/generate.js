@@ -18,7 +18,8 @@ const Generate = {
     indexes: '[\n' +
     '  { key: { name: 1 } },\n' +
     '  { key: { userId: 1 } }\n' +
-    '];'
+    '];',
+    user: true
   }
 };
 
