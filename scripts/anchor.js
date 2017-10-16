@@ -221,6 +221,22 @@ case 'g':
   Fs.writeFileSync(createHtmlPath,createHtml);
   console.log('anchor\tcreate.html\t\t' + data.name + ' Generated');
 
+
+  //---------------------------
+  //client side edit.html.handlebars html
+  //---------------------------
+  const editHtmlTemp = Fs.readFileSync(Path.join(__dirname, './resources/edit.html.handlebars'), 'utf8');
+  const EditHtml = Handlebars.compile(editHtmlTemp);
+
+  //write to file
+  const editHtml = EditHtml(data);
+  const editHtmlPath = Path.join(__dirname, '../server/web/templates/', data.lowercasePluralName + '/edit.handlebars');
+  if (!Fs.existsSync(editHtmlPath)) {
+    Fs.openSync(editHtmlPath, 'wx');
+  }
+  Fs.writeFileSync(editHtmlPath,editHtml);
+  console.log('anchor\tedit.html\t\t' + data.name + ' Generated');
+
   //fix linting issues
   console.log('Running Linting...');
   NpmRun.execSync('npm run lint-fix',null);

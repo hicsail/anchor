@@ -24,10 +24,13 @@ const Generate = {
       'name',
       'userId'
     ],
-    tableVars: 'user.username user.name user.studyID name time',
+    tableVars: 'user.username user.name user.studyID name',
     tableFields: 'username name name time studyID userId',
     tableHeaders: ['Username', 'Name', 'Study ID','Template Name'],
-    searchField: 'name'
+    searchField: 'name',
+    joiFormValue: [
+      'joiFormValue(\'name\', \'{{document.name}}\');'
+    ]
   }
 };
 
