@@ -165,6 +165,22 @@ case 'g':
   Fs.writeFileSync(editPath,edit);
   console.log('anchor\tclient side edit\t' + data.name + ' Generated');
 
+
+  //---------------------------
+  //client side index javascript
+  //---------------------------
+  const intexTemp = Fs.readFileSync(Path.join(__dirname, './resources/index.handlebars'), 'utf8');
+  const Index = Handlebars.compile(intexTemp);
+
+  //write to file
+  const index = Index(data);
+  const indexPath = Path.join(__dirname, '../server/web/public/scripts/', data.lowercasePluralName + '/index.js');
+  if (!Fs.existsSync(indexPath)) {
+    Fs.openSync(indexPath, 'wx');
+  }
+  Fs.writeFileSync(indexPath,index);
+  console.log('anchor\tclient side index\t' + data.name + ' Generated');
+
   //fix linting issues
   console.log('Running Linting...');
   NpmRun.execSync('npm run lint-fix',null);
