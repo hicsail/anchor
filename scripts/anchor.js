@@ -66,7 +66,7 @@ case 'g':
     Fs.openSync(modelPath, 'wx');
   }
   Fs.writeFileSync(modelPath,model);
-  console.log('anchor\tmodel\t\t' + data.name + ' Generated');
+  console.log('anchor\tmodel\t\t\t' + data.name + ' Generated');
 
   //---------------------------
   //api
@@ -81,7 +81,7 @@ case 'g':
     Fs.openSync(apiPath, 'wx');
   }
   Fs.writeFileSync(apiPath,api);
-  console.log('anchor\tapi\t\t' + data.name + ' Generated');
+  console.log('anchor\tapi\t\t\t' + data.name + ' Generated');
 
   //---------------------------
   //model test
@@ -96,7 +96,7 @@ case 'g':
     Fs.openSync(modelTestPath, 'wx');
   }
   Fs.writeFileSync(modelTestPath,modelTest);
-  console.log('anchor\tmodel test\t' + data.name + ' Generated');
+  console.log('anchor\tmodel test\t\t' + data.name + ' Generated');
 
 
   //---------------------------
@@ -112,7 +112,7 @@ case 'g':
     Fs.openSync(apiTestPath, 'wx');
   }
   Fs.writeFileSync(apiTestPath,apiTest);
-  console.log('anchor\tapi test\t' + data.name + ' Generated');
+  console.log('anchor\tapi test\t\t' + data.name + ' Generated');
 
 
   //---------------------------
@@ -128,9 +128,29 @@ case 'g':
     Fs.openSync(routePath, 'wx');
   }
   Fs.writeFileSync(routePath,route);
-  console.log('anchor\tweb route\t' + data.name + ' Generated');
+  console.log('anchor\tweb route\t\t' + data.name + ' Generated');
+
+  //---------------------------
+  //client side create javascript
+  //---------------------------
+  const createTemp = Fs.readFileSync(Path.join(__dirname, './resources/create.handlebars'), 'utf8');
+  const Create = Handlebars.compile(createTemp);
+
+  //write to file
+  const create = Create(data);
+  const dir = Path.join(__dirname, '../server/web/public/scripts/', data.lowercasePluralName);
+  const createPath = Path.join(__dirname, '../server/web/public/scripts/', data.lowercasePluralName + '/create.js');
+  if (!Fs.existsSync(dir)){
+    Fs.mkdirSync(dir);
+  }
+  if (!Fs.existsSync(createPath)) {
+    Fs.openSync(createPath, 'wx');
+  }
+  Fs.writeFileSync(createPath,create);
+  console.log('anchor\tclient side create\t' + data.name + ' Generated');
 
   //fix linting issues
+  console.log('Running Linting...');
   NpmRun.execSync('npm run lint-fix',null);
   console.log('Generation Complete');
   console.log('Please add Model to manifest.js before committing');
