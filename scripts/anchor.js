@@ -114,6 +114,22 @@ case 'g':
   Fs.writeFileSync(apiTestPath,apiTest);
   console.log('anchor\tapi test\t' + data.name + ' Generated');
 
+
+  //---------------------------
+  //web route
+  //---------------------------
+  const routeTest = Fs.readFileSync(Path.join(__dirname, './resources/route.handlebars'), 'utf8');
+  const Route = Handlebars.compile(routeTest);
+
+  //write to file
+  const route = Route(data);
+  const routePath = Path.join(__dirname, '../server/web/routes/', data.lowercasePluralName + '.js');
+  if (!Fs.existsSync(routePath)) {
+    Fs.openSync(routePath, 'wx');
+  }
+  Fs.writeFileSync(routePath,route);
+  console.log('anchor\tweb route\t' + data.name + ' Generated');
+
   //fix linting issues
   NpmRun.execSync('npm run lint-fix',null);
   console.log('Generation Complete');

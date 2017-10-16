@@ -1,0 +1,82 @@
+'use strict';
+const internals = {};
+const Config = require('../../../config');
+const {{name}} = require('../../models/{{lowercaseName}}');
+
+internals.applyRoutes = function (server, next) {
+
+  server.route({
+    method: 'GET',
+    path: '/{{lowercasePluralName}}',
+    config: {
+      auth: {
+        strategy: 'session'
+      }
+    },
+    handler: function (request, reply) {
+
+      return reply.view('{{lowercasePluralName}}/index', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName')
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/{{lowercasePluralName}}/create',
+    config: {
+      auth: {
+        strategy: 'session'
+      }
+    },
+    handler: function (request, reply) {
+
+      return reply.view('{{lowercasePluralName}}/create', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName')
+      });
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/{{lowercasePluralName}}/{id}',
+    config: {
+      auth: {
+        strategy: 'session',
+        scope: ['root','admin']
+      }
+    },
+    handler: function (request, reply) {
+
+      {{name}}.findById(request.params.id, (err, document) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        return reply.view('{{lowercasePluralName}}/edit', {
+          user: request.auth.credentials.user,
+          projectName: Config.get('/projectName'),
+          document
+        });
+      });
+    }
+  });
+
+  next();
+};
+
+
+exports.register = function (server, options, next) {
+
+  server.dependency(['auth'], internals.applyRoutes);
+
+  next();
+};
+
+exports.register.attributes = {
+  name: '{{lowercasePluralName}}List',
+  dependencies: 'visionary'
+};
