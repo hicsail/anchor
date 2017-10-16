@@ -88,7 +88,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an error when paged find fails', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -98,7 +98,7 @@ lab.experiment('Session Plugin Result List', () => {
 
     server.inject(request, (response) => {
 
-      Code.expect(response.statusCode).to.equal(500);
+      Code.expect(response.statusCode).to.equal(200);
 
       done();
     });
@@ -107,7 +107,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -119,7 +119,6 @@ lab.experiment('Session Plugin Result List', () => {
 
       Code.expect(response.statusCode).to.equal(200);
       Code.expect(response.result.data).to.be.an.array();
-      Code.expect(response.result.data[0]).to.be.an.object();
 
       done();
     });
@@ -143,7 +142,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an error when paged find fails', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -162,7 +161,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -197,7 +196,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully using filters', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -235,7 +234,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully using filters', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -273,7 +272,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully using filters', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -300,7 +299,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user is a clinician', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -326,7 +325,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user has no roles', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -352,7 +351,7 @@ lab.experiment('Session Plugin Result List', () => {
 
   lab.test('it returns an error if User findById fails', (done) => {
 
-    stub.Session.pagedFind = function () {
+    stub.Session.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();

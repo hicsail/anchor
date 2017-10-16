@@ -1,5 +1,4 @@
 'use strict';
-const Async = require('async');
 const Boom = require('boom');
 const Joi = require('joi');
 
@@ -58,62 +57,35 @@ internals.applyRoutes = function (server, next) {
         query.username = request.auth.credentials.user.username;
       }
 
-      Session.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      let userFields = 'studyID username';
+      if (accessLevel === 1) {
+        //if analyst remove PHI
+        userFields = userFields.split(' ');
+        let length = userFields.length;
+        for (let i = 0; i < length; ++i) {
+          if (User.PHI().indexOf(userFields[i]) !== -1) {
 
-        const sessions = [];
+            userFields.splice(i, 1);
+            i--;
+            length--;
+          }
+        }
+        userFields = userFields.join(' ');
+      }
+      userFields = User.fieldsAdapter(userFields);
+
+      Session.pagedLookupById(query,sort,limit,page,User,'user','userId',fields, userFields, (err, results) => {
 
         if (err) {
           return reply(err);
         }
 
-        Async.each(results.data, (session, callback) => {
-
-          let userFields = 'studyID username inStudy';
-
-          if (accessLevel === 1) {
-            //if analyst
-            userFields = userFields.split(' ');
-            let length = userFields.length;
-            for (let i = 0; i < length; ++i) {
-              if (User.PHI().indexOf(userFields[i]) !== -1) {
-
-                userFields.splice(i, 1);
-                i--;
-                length--;
-              }
-            }
-            userFields = userFields.join(' ');
-          }
-
-          userFields = User.fieldsAdapter(userFields);
-
-          User.findById(session.userId,userFields,(err, user) => {
-
-            if (err) {
-              return callback(err);
-            }
-
-            session.user = user;
-            const pattern = new RegExp(request.query['search[value]'].toLowerCase());
-            if (accessLevel === 1) { //analyst
-              if (!user.inStudy) {
-                return callback(null,session);
-              }
-            }
-            if (pattern.test(session.user.username)) {
-              sessions.push(session);
-            }
-            callback(null,session);
-          });
-        }, (err) => {
-
-          reply({
-            draw: request.query.draw,
-            recordsTotal: results.data.length,
-            recordsFiltered: results.items.total,
-            data: sessions,
-            error: err
-          });
+        reply({
+          draw: request.query.draw,
+          recordsTotal: results.data.length,
+          recordsFiltered: results.items.total,
+          data: results.data,
+          error: err
         });
       });
     }

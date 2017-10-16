@@ -140,7 +140,7 @@ lab.experiment('Event Plugin Result List', () => {
 
   lab.test('it returns an error when paged find fails', (done) => {
 
-    stub.Event.pagedFind = function () {
+    stub.Event.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -159,7 +159,7 @@ lab.experiment('Event Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully', (done) => {
 
-    stub.Event.pagedFind = function () {
+    stub.Event.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -185,7 +185,7 @@ lab.experiment('Event Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully using filters', (done) => {
 
-    stub.Event.pagedFind = function () {
+    stub.Event.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -213,7 +213,7 @@ lab.experiment('Event Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully using filters', (done) => {
 
-    stub.Event.pagedFind = function () {
+    stub.Event.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -241,7 +241,7 @@ lab.experiment('Event Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user is a clinician', (done) => {
 
-    stub.Event.pagedFind = function () {
+    stub.Event.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -268,7 +268,7 @@ lab.experiment('Event Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user has no roles', (done) => {
 
-    stub.Event.pagedFind = function () {
+    stub.Event.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();
@@ -295,7 +295,7 @@ lab.experiment('Event Plugin Result List', () => {
 
   lab.test('it returns an array of documents successfully if user is a analyst', (done) => {
 
-    stub.Event.pagedFind = function () {
+    stub.Event.pagedLookupById = function () {
 
       const args = Array.prototype.slice.call(arguments);
       const callback = args.pop();

@@ -1,5 +1,4 @@
 'use strict';
-const Async = require('async');
 const Boom = require('boom');
 const Joi = require('joi');
 
@@ -58,69 +57,35 @@ internals.applyRoutes = function (server, next) {
         query.username = request.auth.credentials.user.username;
       }
 
-      Event.pagedFind(query, fields, sort, limit, page, (err, results) => {
+      let userFields = 'studyID username';
+      if (accessLevel === 1) {
+        //if analyst remove PHI
+        userFields = userFields.split(' ');
+        let length = userFields.length;
+        for (let i = 0; i < length; ++i) {
+          if (User.PHI().indexOf(userFields[i]) !== -1) {
 
-        const events = [];
+            userFields.splice(i, 1);
+            i--;
+            length--;
+          }
+        }
+        userFields = userFields.join(' ');
+      }
+      userFields = User.fieldsAdapter(userFields);
+
+      Event.pagedLookupById(query,sort,limit,page,User,'user','userId',fields, userFields, (err, results) => {
 
         if (err) {
           return reply(err);
         }
 
-        Async.each(results.data, (event, callback) => {
-
-          let userFields = 'studyID username';
-
-          if (accessLevel === 1) {
-            //if analyst
-            userFields = userFields.split(' ');
-            let length = userFields.length;
-            for (let i = 0; i < length; ++i) {
-              if (User.PHI().indexOf(userFields[i]) !== -1) {
-
-                userFields.splice(i, 1);
-                i--;
-                length--;
-              }
-            }
-            userFields = userFields.join(' ');
-          }
-
-          if (event.userId) {
-
-            userFields = User.fieldsAdapter(userFields);
-            User.findById(event.userId,userFields,(err, user) => {
-
-              if (err) {
-                return callback(err);
-              }
-
-              event.user = user;
-              const pattern = new RegExp(request.query['search[value]'].toLowerCase());
-              if (accessLevel === 1) { //analyst
-                if (!user.inStudy) {
-                  return callback(null,event);
-                }
-              }
-              if (pattern.test(event.user.username)) {
-                events.push(event);
-              }
-              callback(null,event);
-            });
-          }
-          else {
-            events.push(event);
-            callback(null,event);
-          }
-
-        }, (err) => {
-
-          reply({
-            draw: request.query.draw,
-            recordsTotal: results.data.length,
-            recordsFiltered: results.items.total,
-            data: events,
-            error: err
-          });
+        reply({
+          draw: request.query.draw,
+          recordsTotal: results.data.length,
+          recordsFiltered: results.items.total,
+          data: results.data,
+          error: err
         });
       });
     }
