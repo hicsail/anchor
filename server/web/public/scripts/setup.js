@@ -1,8 +1,8 @@
 'use strict';
 const schema = Joi.object().keys({
   email: Joi.string().email().required(),
-  password: Joi.string().required(),
-  confirmPassword: Joi.string().required()
+  password: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number'),
+  confirmPassword: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number')
 });
 joiToForm('formFields',schema);
 
