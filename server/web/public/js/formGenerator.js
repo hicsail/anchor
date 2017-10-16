@@ -41,7 +41,14 @@ const validate = function(key) {
   let schema = schemas[key];
   let input = document.getElementById('JoiFormInput' + key).value
   const {error} = Joi.validate(input,schema);
-  if(error) {
+  if(error && key == 'password' || key == 'confirmPassword') {
+    $('#JoiFormInput' + key).addClass('is-invalid').removeClass('is-valid');
+    var message = error.message.replace('"value"',camelCaseToWords(key));
+    if(message.includes('Password with value')){
+      message = message.split('"').pop();
+    }
+    $('#JoiFormHelp' + key).text(message);
+  } else if(error) {
     $('#JoiFormInput' + key).addClass('is-invalid').removeClass('is-valid');
     $('#JoiFormHelp' + key).text(error.message.replace('"value"',camelCaseToWords(key)));
   } else {
