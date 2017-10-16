@@ -19,7 +19,11 @@ const Generate = {
     '  { key: { name: 1 } },\n' +
     '  { key: { userId: 1 } }\n' +
     '];',
-    user: true
+    user: true,
+    exampleCreate: [
+      'name',
+      'userId'
+    ]
   }
 };
 

@@ -2,6 +2,7 @@
 const Fs = require('fs');
 const Handlebars = require('handlebars');
 const Path = require('path');
+const NpmRun = require('npm-run');
 
 const command = process.argv[2];
 const name = process.argv[3];
@@ -27,6 +28,7 @@ case 'g':
   data.createPayloads = [];
   data.createVariables = [];
   data.putPayloads = [];
+  data.lowercaseName = data.name.toLowerCase();
   const lines = data.schema.split('\n');
   for (let i = 2; i < lines.length - 1; ++i) {
     const variable = lines[i].split(':')[0];
@@ -61,7 +63,7 @@ case 'g':
     Fs.openSync(modelPath, 'wx');
   }
   Fs.writeFileSync(modelPath,model);
-  console.log('anchor\tmodel\t' + data.name + ' Generated');
+  console.log('anchor\tmodel\t\t' + data.name + ' Generated');
 
   //---------------------------
   //api
@@ -76,5 +78,24 @@ case 'g':
     Fs.openSync(apiPath, 'wx');
   }
   Fs.writeFileSync(apiPath,api);
-  console.log('anchor\tapi\t' + data.name + ' Generated');
+  console.log('anchor\tapi\t\t' + data.name + ' Generated');
+
+  //---------------------------
+  //model test
+  //---------------------------
+  const modeltestTemplate = Fs.readFileSync(Path.join(__dirname, './resources/test.model.handlebars'), 'utf8');
+  const ModelTest = Handlebars.compile(modeltestTemplate);
+
+  //write to file
+  const modelTest = ModelTest(data);
+  const modelTestPath = Path.join(__dirname, '../test/server/models/', data.lowercaseName + '.js');
+  if (!Fs.existsSync(modelTestPath)) {
+    Fs.openSync(modelTestPath, 'wx');
+  }
+  Fs.writeFileSync(modelTestPath,modelTest);
+  console.log('anchor\tmodel test\t' + data.name + ' Generated');
+
+  //fix linting issues
+  NpmRun.execSync('npm run lint-fix',null);
+  console.log('Generation Complete');
 }
