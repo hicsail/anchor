@@ -30,6 +30,11 @@ case 'g':
   data.putPayloads = [];
   data.postPayloads = [];
   data.lowercaseName = data.name.toLowerCase();
+  data.dashboardNav = '{{>dashboardNav}}';
+  data.endRole = '{{/role}}';
+  data.admin = '{{#role user \'admin\'}}';
+  data.researcher = '{{#role user \'researcher\'}}';
+  data.tableVars = data.tableVars.split(' ');
   const lines = data.schema.split('\n');
   for (let i = 2; i < lines.length - 1; ++i) {
     const variable = lines[i].split(':')[0];
@@ -181,9 +186,28 @@ case 'g':
   Fs.writeFileSync(indexPath,index);
   console.log('anchor\tclient side index\t' + data.name + ' Generated');
 
+  //---------------------------
+  //client side index html
+  //---------------------------
+  const indexHtmlTemp = Fs.readFileSync(Path.join(__dirname, './resources/index.html.handlebars'), 'utf8');
+  const IndexHtml = Handlebars.compile(indexHtmlTemp);
+
+  //write to file
+  const indexHtml = IndexHtml(data);
+  const indexHtmlPath = Path.join(__dirname, '../server/web/templates/', data.lowercasePluralName + '/index.handlebars');
+  const dirTemplate = Path.join(__dirname, '../server/web/templates/', data.lowercasePluralName);
+  if (!Fs.existsSync(dirTemplate)){
+    Fs.mkdirSync(dirTemplate);
+  }
+  if (!Fs.existsSync(indexHtmlPath)) {
+    Fs.openSync(indexHtmlPath, 'wx');
+  }
+  Fs.writeFileSync(indexHtmlPath,indexHtml);
+  console.log('anchor\tindex.html\t\t' + data.name + ' Generated');
+
   //fix linting issues
   console.log('Running Linting...');
   NpmRun.execSync('npm run lint-fix',null);
   console.log('Generation Complete');
-  console.log('Please add Model to manifest.js before committing');
+  console.log('Please add Files to manifest.js before running / committing');
 }

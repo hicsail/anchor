@@ -171,6 +171,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/templates',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
       plugin: './server/api/tokens',
       options: {
         routes: { prefix: '/api' }

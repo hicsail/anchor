@@ -23,7 +23,10 @@ const Generate = {
     exampleCreate: [
       'name',
       'userId'
-    ]
+    ],
+    tableVars: 'user.username user.name name time',
+    tableFields: 'username name time userId',
+    tableHeaders: ['Username', 'Name', 'Template Name']
   }
 };
 
