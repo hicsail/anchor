@@ -80,6 +80,52 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
+  server.route({
+    method: 'GET',
+    path: '/select2/users',
+    config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session']
+      },
+      validate: {
+        query: {
+          term: Joi.string(),
+          _type: Joi.string(),
+          q: Joi.string()
+        }
+      }
+    },
+    handler: function (request, reply) {
+
+      const query = {
+        $or: [
+          { email: { $regex: request.query.term, $options: 'i' } },
+          { name: { $regex: request.query.term, $options: 'i' } }
+        ]
+
+      };
+      const fields = 'name email';
+      const limit = 25;
+      const page = 1;
+
+      User.pagedFind(query, fields, null, limit, page, (err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply({
+          results: results.data,
+          pagination: {
+            more: results.pages.hasNext
+          }
+        });
+      });
+    }
+  });
+
+
   server.route({
     method: 'GET',
     path: '/users',
