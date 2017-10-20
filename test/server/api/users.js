@@ -411,6 +411,59 @@ lab.experiment('Users Plugin Read', () => {
   });
 });
 
+lab.experiment('Users Plugin Select2', () => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/select2/users?term=root',
+      credentials: AuthenticatedAdmin
+    };
+
+    done();
+  });
+
+
+  lab.test('it returns an error when find fails', (done) => {
+
+    stub.User.pagedFind = function (query, fields, sort, limit, page, callback) {
+
+      callback(Error('find failed'));
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(500);
+
+      done();
+    });
+  });
+
+
+
+  lab.test('it returns a document successfully', (done) => {
+
+    stub.User.pagedFind = function (query, fields, sort, limit, page, callback) {
+
+      callback(null, {
+        data: [{}, {}, {}],
+        pages: {
+          hasNext: false
+        }
+      });
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      done();
+    });
+  });
+});
+
 
 lab.experiment('Users Plugin (My) Read', () => {
 

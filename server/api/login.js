@@ -13,6 +13,7 @@ internals.applyRoutes = function (server, next) {
 
   const AuthAttempt = server.plugins['hapi-mongo-models'].AuthAttempt;
   const Session = server.plugins['hapi-mongo-models'].Session;
+  const Token = server.plugins['hapi-mongo-models'].Token;
   const User = server.plugins['hapi-mongo-models'].User;
 
 
@@ -193,6 +194,96 @@ internals.applyRoutes = function (server, next) {
         }
 
         reply({ message: 'Success.' });
+      });
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/login/token',
+    config: {
+      validate: {
+        payload: {
+          token: Joi.string().required()
+        }
+      },
+      pre: [{
+        assign: 'abuseDetected',
+        method: function (request, reply) {
+
+          const ip = request.info.remoteAddress;
+          const token = request.payload.token;
+
+          AuthAttempt.abuseDetected(ip, token, (err, detected) => {
+
+            if (err) {
+              return reply(err);
+            }
+
+            if (detected) {
+              return reply(Boom.badRequest('Maximum number of auth attempts reached. Please try again later.'));
+            }
+
+            reply();
+          });
+        }
+      }, {
+        assign: 'token',
+        method: function (request, reply) {
+
+          Token.findById(request.payload.token, (err, token) => {
+
+            if (err) {
+              return reply(err);
+            }
+            reply(token);
+          });
+        }
+      }, {
+        assign: 'logAttempt',
+        method: function (request, reply) {
+
+          if (request.pre.token) {
+            return reply();
+          }
+
+          const ip = request.info.remoteAddress;
+          const token = request.payload.token;
+
+          AuthAttempt.create(ip, token, request.payload.application, (err, authAttempt) => {
+
+            if (err) {
+              return reply(err);
+            }
+
+            return reply(Boom.badRequest('Token not found or token is inactive.'));
+          });
+        }
+      }, {
+        assign: 'user',
+        method: function (request, reply) {
+
+          const token = request.pre.token;
+          User.findById(token.userId, (err, user) => {
+
+            if (err) {
+              return reply(err);
+            }
+            reply(user);
+          });
+        }
+      }]
+    },
+    handler: function (request, reply) {
+
+      reply({
+        user: {
+          _id: request.pre.user._id,
+          username: request.pre.user.username,
+          email: request.pre.user.email,
+          roles: request.pre.user.roles
+        },
+        token: request.pre.token.token
       });
     }
   });
