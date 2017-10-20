@@ -204,7 +204,8 @@ internals.applyRoutes = function (server, next) {
     config: {
       validate: {
         payload: {
-          token: Joi.string().required()
+          token: Joi.string().required(),
+          application: Joi.string().default('Web')
         }
       },
       pre: [{
@@ -243,7 +244,7 @@ internals.applyRoutes = function (server, next) {
         assign: 'logAttempt',
         method: function (request, reply) {
 
-          if (request.pre.token) {
+          if (request.pre.token && request.pre.token.active) {
             return reply();
           }
 
