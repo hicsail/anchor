@@ -8,8 +8,8 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Feedback = server.plugins['hapi-mongo-models'].Feedback;
-  const User = server.plugins['hapi-mongo-models'].User;
+  const Feedback = server.plugins['hicsail-hapi-mongo-models'].Feedback;
+  const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
   server.route({
     method: 'GET',
@@ -272,7 +272,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

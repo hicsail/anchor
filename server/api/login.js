@@ -11,10 +11,10 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const AuthAttempt = server.plugins['hapi-mongo-models'].AuthAttempt;
-  const Session = server.plugins['hapi-mongo-models'].Session;
-  const Token = server.plugins['hapi-mongo-models'].Token;
-  const User = server.plugins['hapi-mongo-models'].User;
+  const AuthAttempt = server.plugins['hicsail-hapi-mongo-models'].AuthAttempt;
+  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
+  const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
+  const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
 
   server.route({
@@ -108,6 +108,7 @@ internals.applyRoutes = function (server, next) {
       reply({
         user: {
           _id: request.pre.user._id,
+          name: request.pre.user.name,
           username: request.pre.user.username,
           email: request.pre.user.email,
           roles: request.pre.user.roles
@@ -280,6 +281,7 @@ internals.applyRoutes = function (server, next) {
       reply({
         user: {
           _id: request.pre.user._id,
+          name: request.pre.user.name,
           username: request.pre.user.username,
           email: request.pre.user.email,
           roles: request.pre.user.roles
@@ -380,7 +382,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['mailer', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['mailer', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

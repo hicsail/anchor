@@ -8,9 +8,9 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const {{name}} = server.plugins['hapi-mongo-models'].{{name}};
+  const {{name}} = server.plugins['hicsail-hapi-mongo-models'].{{name}};
   {{#if user}}
-  const User = server.plugins['hapi-mongo-models'].User;
+  const User = server.plugins['hicsail-hapi-mongo-models'].User;
   {{/if}}
 
 
@@ -258,7 +258,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

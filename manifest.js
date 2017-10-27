@@ -57,7 +57,7 @@ const manifest = {
     },
     {
       plugin: {
-        register: 'hapi-mongo-models',
+        register: 'hicsail-hapi-mongo-models',
         options: {
           mongodb: Config.get('/hapiMongoModels/mongodb'),
           models: {

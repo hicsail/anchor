@@ -1,5 +1,5 @@
 'use strict';
-const MongoModels = require('mongo-models');
+const MongoModels = require('hicsail-mongo-models');
 
 
 const MakeMockModel = function () {

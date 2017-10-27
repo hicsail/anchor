@@ -35,12 +35,12 @@ lab.before((done) => {
   proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
 
   const ModelsPlugin = {
-    register: Proxyquire('hapi-mongo-models', proxy),
+    register: Proxyquire('hicsail-hapi-mongo-models', proxy),
     options: Manifest.get('/registrations').filter((reg) => {
 
       if (reg.plugin &&
         reg.plugin.register &&
-        reg.plugin.register === 'hapi-mongo-models') {
+        reg.plugin.register === 'hicsail-hapi-mongo-models') {
 
         return true;
       }
@@ -65,7 +65,7 @@ lab.before((done) => {
 
 lab.after((done) => {
 
-  server.plugins['hapi-mongo-models'].MongoModels.disconnect();
+  server.plugins['hicsail-hapi-mongo-models'].MongoModels.disconnect();
 
   done();
 });

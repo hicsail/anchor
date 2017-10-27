@@ -9,8 +9,8 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Invite = server.plugins['hapi-mongo-models'].Invite;
-  const User = server.plugins['hapi-mongo-models'].User;
+  const Invite = server.plugins['hicsail-hapi-mongo-models'].Invite;
+  const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
   server.route({
     method: 'GET',
@@ -305,7 +305,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

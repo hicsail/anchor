@@ -2,7 +2,7 @@
 const Config = require('../../config');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
-const MongoModels = require('mongo-models');
+const MongoModels = require('hicsail-mongo-models');
 
 class Token extends MongoModels {
 

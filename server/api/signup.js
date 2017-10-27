@@ -8,9 +8,9 @@ const PasswordComplexity = require('joi-password-complexity');
 
 internals.applyRoutes = function (server, next) {
 
-  const Session = server.plugins['hapi-mongo-models'].Session;
-  const User = server.plugins['hapi-mongo-models'].User;
-  const Invite = server.plugins['hapi-mongo-models'].Invite;
+  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
+  const User = server.plugins['hicsail-hapi-mongo-models'].User;
+  const Invite = server.plugins['hicsail-hapi-mongo-models'].Invite;
 
   server.route({
     method: 'POST',
@@ -246,7 +246,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth', 'mailer', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'mailer', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

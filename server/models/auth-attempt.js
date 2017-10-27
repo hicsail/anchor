@@ -2,7 +2,7 @@
 const Async = require('async');
 const Config = require('../../config');
 const Joi = require('joi');
-const MongoModels = require('mongo-models');
+const MongoModels = require('hicsail-mongo-models');
 
 
 class AuthAttempt extends MongoModels {

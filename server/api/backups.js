@@ -13,7 +13,7 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-  const Backup = server.plugins['hapi-mongo-models'].Backup;
+  const Backup = server.plugins['hicsail-hapi-mongo-models'].Backup;
 
   server.route({
     method: 'GET',
@@ -435,7 +435,7 @@ internals.applyRoutes = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency(['auth', 'hapi-cron', 'hapi-mongo-models'], internals.applyRoutes);
+  server.dependency(['auth', 'hapi-cron', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };

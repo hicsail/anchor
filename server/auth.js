@@ -8,9 +8,9 @@ const internals = {};
 
 internals.applyStrategy = function (server, next) {
 
-  const Session = server.plugins['hapi-mongo-models'].Session;
-  const Token = server.plugins['hapi-mongo-models'].Token;
-  const User = server.plugins['hapi-mongo-models'].User;
+  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
+  const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
+  const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
   server.auth.strategy('simple', 'basic', {
     validateFunc: function (request, username, password, callback) {
@@ -163,7 +163,7 @@ internals.applyStrategy = function (server, next) {
 
 exports.register = function (server, options, next) {
 
-  server.dependency('hapi-mongo-models', internals.applyStrategy);
+  server.dependency('hicsail-hapi-mongo-models', internals.applyStrategy);
 
   next();
 };

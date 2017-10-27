@@ -4,7 +4,7 @@ const Config = require('../../../config');
 
 internals.applyRoutes = function (server, next) {
 
-  const Session = server.plugins['hapi-mongo-models'].Session;
+  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
 
   server.route({
     method: 'GET',

@@ -26,12 +26,12 @@ proxy[Path.join(process.cwd(), './server/models/token')] = stub.Token;
 
 const lab = exports.lab = Lab.script();
 const ModelsPlugin = {
-  register: Proxyquire('hapi-mongo-models', proxy),
+  register: Proxyquire('hicsail-hapi-mongo-models', proxy),
   options: Manifest.get('/registrations').filter((reg) => {
 
     if (reg.plugin &&
       reg.plugin.register &&
-      reg.plugin.register === 'hapi-mongo-models') {
+      reg.plugin.register === 'hicsail-hapi-mongo-models') {
 
       return true;
     }
