@@ -777,7 +777,7 @@ internals.applyRoutes = function (server, next) {
         return reply(user);
       }
 
-      user.roles.clinician = new Clinician([]);
+      user.roles.clinician = Clinician.create([]);
       const update = {
         $set: {
           roles: user.roles

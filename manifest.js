@@ -110,6 +110,12 @@ const manifest = {
       }
     },
     {
+      plugin: './server/api/clinician',
+      options: {
+        routes: { prefix: '/api' }
+      }
+    },
+    {
       plugin: './server/api/contact',
       options: {
         routes: { prefix: '/api' }
