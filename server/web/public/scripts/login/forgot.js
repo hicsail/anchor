@@ -12,10 +12,10 @@ $('#forgot').click((event) => {
   });
   $.ajax({
     type: 'POST',
-    url: '../api/login/forgot',
+    url: '/api/login/forgot',
     data: values,
     success: function (result) {
-      window.location = '../reset'
+      window.location = '/reset'
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

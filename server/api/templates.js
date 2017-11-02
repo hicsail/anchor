@@ -1,3 +1,4 @@
+/* $lab:coverage:off$ */
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
@@ -262,3 +263,4 @@ exports.register = function (server, options, next) {
 exports.register.attributes = {
   name: 'templates'
 };
+/* $lab:coverage:on$ */

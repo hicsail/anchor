@@ -18,8 +18,10 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('env/index', {
         user: request.auth.credentials.user,
-        env: Env.config().parsed,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Env',
+        baseUrl: Config.get('/baseUrl'),
+        env: Env.config().parsed
       });
     }
   });

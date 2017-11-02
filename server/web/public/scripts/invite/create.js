@@ -17,10 +17,10 @@ $('#create').click((event) => {
     delete values['confirmPassword'];
     $.ajax({
       type: 'POST',
-      url: '../api/invite',
+      url: '/api/invite',
       data: values,
       success: function (result) {
-        window.location = '../invite'
+        window.location = '/invite'
       },
       error: function (result) {
         errorAlert(result.responseJSON.message);

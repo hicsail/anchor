@@ -14,7 +14,7 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ],
     ajax: {
-      url: '../api/table/users',
+      url: '/api/table/users',
       data: function (d) {
         d.fields = 'name email username roles';
       }
@@ -162,7 +162,7 @@ $(document).ready(() => {
 
   function changeRole(id, role, method) {
     $.ajax({
-      url: '../api/users/' + role + '/' + id,
+      url: '/api/users/' + role + '/' + id,
       type: method,
       success: function (result) {
         successAlert('User Updated');

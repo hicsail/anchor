@@ -1,3 +1,4 @@
+/* $lab:coverage:off$ */
 'use strict';
 const internals = {};
 const Config = require('../../../config');
@@ -80,3 +81,4 @@ exports.register.attributes = {
   name: 'templatesList',
   dependencies: 'visionary'
 };
+/* $lab:coverage:on$ */

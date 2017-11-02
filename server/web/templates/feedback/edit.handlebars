@@ -24,7 +24,7 @@
               <hr>
               <h6 class="card-subtitle mb-2 text-muted">Comments:</h6>
               <textarea class="form-control" id="comment" rows="5">{{feedback.comment}}</textarea><br>
-              <a href="../../feedback" class="btn btn-secondary">Back</a>
+              <a href="/feedback" class="btn btn-secondary">Back</a>
               {{#if feedback.resolved}}
                 <button onclick="update('{{{feedback._id}}}',true)" type="submit" class="btn btn-secondary">Update</button>
                 <button onclick="update('{{{feedback._id}}}',false)" type="submit" class="btn btn-danger">Mark Unresolved</button>
@@ -39,4 +39,4 @@
     </div>
   </div>
 </div>
-<script type="text/javascript" src="../../public/scripts/feedback/edit.js"></script>
+<script type="text/javascript" src="/public/scripts/feedback/edit.js"></script>

@@ -40,7 +40,7 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: "../api/table/auth-attempts",
+        url: "/api/table/auth-attempts",
         data: function (d) {
           d.fields = "username application ip time";
         }
@@ -83,4 +83,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/authAttempts.js"></script>
+<script type="text/javascript" src="/public/scripts/authAttempts.js"></script>

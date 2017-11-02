@@ -19,7 +19,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('feedback/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Feedback',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -53,6 +55,8 @@ internals.applyRoutes = function (server, next) {
         return reply.view('feedback/edit', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Feedback',
+          baseUrl: Config.get('/baseUrl'),
           feedback: results.feedback,
           feedbackUser: results.user
         });

@@ -7,7 +7,7 @@ function deleteDoc(id) {
   }
   else {
     $.ajax({
-      url: '../api/{{lowercasePluralName}}/' + id,
+      url: '/api/{{lowercasePluralName}}/' + id,
       type: 'DELETE',
       success: function (result) {
         successAlert('{{name}} Deleted');
@@ -21,5 +21,5 @@ function deleteDoc(id) {
 }
 
 function editDoc(id) {
-  window.location = '../{{lowercasePluralName}}/' + id
+  window.location = '/{{lowercasePluralName}}/' + id
 }

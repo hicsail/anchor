@@ -5,7 +5,7 @@
       <div style="padding: 30px">
         <h3>Invite</h3>
         {{#role user 'researcher'}}
-          <a class="btn btn-primary" href="../invite/create">Create</a>
+          <a class="btn btn-primary" href="/invite/create">Create</a>
         {{/role}}
         <hr>
         <div class="card">
@@ -46,7 +46,7 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: "../api/table/invite",
+        url: "/api/table/invite",
         data: function (d) {
           d.fields = "name email description status time expiredAt";
         }
@@ -116,4 +116,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/invite/index.js"></script>
+<script type="text/javascript" src="/public/scripts/invite/index.js"></script>

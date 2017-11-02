@@ -16,10 +16,10 @@ $('#update').click((event) => {
   });
   $.ajax({
     type: 'PUT',
-    url: '../api/invite/' + inviteID,
+    url: '/api/invite/' + inviteID,
     data: values,
     success: function (result) {
-      window.location = '../invite'
+      window.location = '/invite'
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

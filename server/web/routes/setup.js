@@ -36,7 +36,9 @@ internals.applyRoutes = function (server, next) {
         return reply.view('setup/index', {
           root: rootUser,
           user: request.auth.credentials ? request.auth.credentials.user : null,
-          projectName: Config.get('/projectName')
+          projectName: Config.get('/projectName'),
+          title: 'Setup',
+          baseUrl: Config.get('/baseUrl')
         });
       });
     }

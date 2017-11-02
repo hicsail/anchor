@@ -16,7 +16,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('sessions/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Sessions',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });

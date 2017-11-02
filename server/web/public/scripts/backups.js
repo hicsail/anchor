@@ -14,7 +14,7 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ],
     ajax: {
-      url: '../api/table/backups',
+      url: '/api/table/backups',
       data: function (d) {
         d.fields = 'backupId zip s3 time';
       }
@@ -69,7 +69,7 @@ function restore(id) {
   }
   else {
     $.ajax({
-      url: '../api/backups/' + id,
+      url: '/api/backups/' + id,
       type: 'PUT',
       success: function (result) {
         successAlert('Backup Restored');
@@ -89,7 +89,7 @@ function deleteDoc(id) {
   }
   else {
     $.ajax({
-      url: '../api/backups/' + id,
+      url: '/api/backups/' + id,
       type: 'DELETE',
       success: function (result) {
         successAlert('Backup Deleted');
@@ -104,7 +104,7 @@ function deleteDoc(id) {
 
 function backup() {
   $.ajax({
-    url: '../api/backups',
+    url: '/api/backups',
     type: 'POST',
     success: function (result) {
       successAlert('Backup Created');
@@ -118,7 +118,7 @@ function backup() {
 
 function clean() {
   $.ajax({
-    url: '../api/backups/refresh',
+    url: '/api/backups/refresh',
     type: 'GET',
     success: function (result) {
       successAlert('Backup Synced');

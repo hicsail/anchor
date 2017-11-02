@@ -1,3 +1,4 @@
+/* $lab:coverage:off$ */
 'use strict';
 const Joi = require('joi');
 const MongoModels = require('hicsail-mongo-models');
@@ -47,3 +48,4 @@ Template.indexes = [
 
 
 module.exports = Template;
+/* $lab:coverage:on$ */

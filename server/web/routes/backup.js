@@ -17,7 +17,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('backups/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Backups',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });

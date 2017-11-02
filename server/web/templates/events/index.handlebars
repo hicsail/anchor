@@ -58,7 +58,7 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: "../api/table/events",
+        url: "/api/table/events",
         data: function (d) {
           d.fields = "username userId studyID inStudy name time";
         }
@@ -106,4 +106,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/events/index.js"></script>
+<script type="text/javascript" src="/public/scripts/events/index.js"></script>

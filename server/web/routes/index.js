@@ -26,7 +26,9 @@ internals.applyRoutes = function (server, next) {
       }
       return reply.view('index/index', {
         user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Home',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });

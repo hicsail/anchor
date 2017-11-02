@@ -18,10 +18,10 @@ $('#change').click((event) => {
     delete values['confirmPassword'];
     $.ajax({
       type: 'PUT',
-      url: '../api/users/' + userID +'/password',
+      url: '/api/users/' + userID +'/password',
       data: values,
       success: function (result) {
-        window.location = '../users'
+        window.location = '/users'
       },
       error: function (result) {
         errorAlert(result.responseJSON.message);

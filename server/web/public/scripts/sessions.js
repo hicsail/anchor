@@ -7,7 +7,7 @@ function deleteDoc(id) {
   }
   else {
     $.ajax({
-      url: '../api/sessions/' + id,
+      url: '/api/sessions/' + id,
       type: 'DELETE',
       success: function (result) {
         successAlert('Session Deleted');

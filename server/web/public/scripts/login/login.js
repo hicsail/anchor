@@ -13,7 +13,7 @@ $('#login').click((event) => {
   });
   $.ajax({
     type: 'POST',
-    url: '../api/login',
+    url: '/api/login',
     data: values,
     success: function (result) {
       location.reload();

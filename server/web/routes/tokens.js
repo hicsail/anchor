@@ -17,7 +17,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('tokens/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Tokens',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -35,7 +37,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('tokens/create', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Tokens',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -60,6 +64,8 @@ internals.applyRoutes = function (server, next) {
         return reply.view('tokens/edit', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Tokens',
+          baseUrl: Config.get('/baseUrl'),
           token
         });
       });

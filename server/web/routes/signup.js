@@ -24,7 +24,9 @@ internals.applyRoutes = function (server, next) {
         return reply.redirect('/');
       }
       return reply.view('signup/signup',{
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Signup',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });

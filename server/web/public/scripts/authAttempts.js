@@ -7,7 +7,7 @@ function deleteDoc(id) {
   }
   else {
     $.ajax({
-      url: '../api/auth-attempts/' + id,
+      url: '/api/auth-attempts/' + id,
       type: 'DELETE',
       success: function (result) {
         successAlert('Auth Attempt Deleted');

@@ -3,13 +3,13 @@
     {{>dashboardNav}}
     <div class="col-sm-9 col-md-10">
       <div style="padding: 30px">
-        <h3>Edit Template</h3>
+        <h3>Create RefExercise</h3>
         <hr>
         <div class="card">
           <div style="padding: 20px">
             <form id="form">
               <div id="formFields"></div>
-              <button id="update" type="submit" class="btn btn-primary">Update</button>
+              <button id="create" type="submit" class="btn btn-primary">Create</button>
             </form>
           </div>
         </div>
@@ -17,7 +17,4 @@
     </div>
   </div>
 </div>
-<script type="text/javascript" src="/public/scripts/templates/edit.js"></script>
-<script>
-  joiFormValue('name', '{{document.name}}');
-</script>
+<script type="text/javascript" src="/public/scripts/refexercises/create.js"></script>

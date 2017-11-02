@@ -15,7 +15,7 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ],
     ajax: {
-      url: '../api/table/users',
+      url: '/api/table/users',
       data: function (d) {
         d.fields = 'username studyID inStudy';
       }
@@ -95,7 +95,7 @@ $(document).ready(() => {
       inStudy
     };
     $.ajax({
-      url: '../api/users/' + userID + '/participation',
+      url: '/api/users/' + userID + '/participation',
       type: 'PUT',
       data,
       success: function (result) {

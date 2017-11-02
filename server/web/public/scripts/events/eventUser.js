@@ -1,6 +1,6 @@
 
 function viewEvent() {
-  window.location = '/' + window.location.pathname.split('/').slice(0,-2).join('/')+'events-name/' + $('#eventName').val();
+  window.location = '/' + window.location.pathname.split('/').slice(0,-2).join('/')+'events/name/' + $('#eventName').val();
 }
 
 const labels = [];

@@ -19,10 +19,10 @@ $('#accept').click((event) => {
     values['invite'] = window.location.pathname.split('/').pop();
     $.ajax({
       type: 'POST',
-      url: '../api/signup',
+      url: '/api/signup',
       data: values,
       success: function (result) {
-        window.location = '../';
+        window.location = '/';
       },
       error: function (result) {
         errorAlert(result.responseJSON.message);
@@ -38,9 +38,9 @@ $('#reject').click((event) => {
   const id = window.location.pathname.split('/').pop();
   $.ajax({
     type: 'PUT',
-    url: '../api/invite/'+ id +'/reject',
+    url: '/api/invite/'+ id +'/reject',
     success: function (result) {
-      window.location = '../';
+      window.location = '/';
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

@@ -49,7 +49,7 @@ function formatData() {
   }
   $.ajax({
     type: 'POST',
-    url: '../api/env',
+    url: '/api/env',
     data: envs,
     success: function (result) {
       successAlert(result.message);

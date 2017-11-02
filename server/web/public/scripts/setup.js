@@ -16,14 +16,14 @@ $('#setup').click((event) => {
 
   $.ajax({
     type: 'POST',
-    url: '../setup',
+    url: '/setup',
     data: values,
     success: function (result) {
       values.username = values.email;
       delete values.email;
       $.ajax({
         type: 'POST',
-        url: '../api/login',
+        url: '/api/login',
         data: values,
         success: function (result) {
           window.location.reload();

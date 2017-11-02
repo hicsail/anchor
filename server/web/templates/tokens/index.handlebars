@@ -5,7 +5,7 @@
       <div style="padding: 30px">
         <h3>Tokens</h3>
         {{#role user 'researcher'}}
-          <a class="btn btn-primary" href="../tokens/create">Create</a>
+          <a class="btn btn-primary" href="/tokens/create">Create</a>
         {{/role}}
         <hr>
         <div class="card">
@@ -48,7 +48,7 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: "../api/table/tokens",
+        url: "/api/table/tokens",
         data: function (d) {
           d.fields = "name username userId studyID inStudy tokenName token lastUsed time active";
         }
@@ -119,4 +119,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/tokens/index.js"></script>
+<script type="text/javascript" src="/public/scripts/tokens/index.js"></script>

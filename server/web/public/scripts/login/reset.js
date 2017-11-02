@@ -16,7 +16,7 @@ $('#reset').click((event) => {
   delete values.confirmPassword;
   $.ajax({
     type: 'POST',
-    url: '../api/login/reset',
+    url: '/api/login/reset',
     data: values,
     success: function (result) {
       location.reload();

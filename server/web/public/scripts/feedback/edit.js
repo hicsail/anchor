@@ -3,13 +3,13 @@ function update(id,resolved) {
   const comment = $('#comment').val();
   $.ajax({
     type: 'PUT',
-    url: '../api/feedback/' + id,
+    url: '/api/feedback/' + id,
     data: {
       resolved,
       comment
     },
     success: function (result) {
-      window.location = '../feedback'
+      window.location = '/feedback'
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

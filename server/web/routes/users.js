@@ -18,7 +18,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('users/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Users',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -36,7 +38,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('users/roles', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Users',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -54,7 +58,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('users/participation', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Users',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -72,7 +78,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('users/create', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Users',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -95,7 +103,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('users/password', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Users',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -120,6 +130,8 @@ internals.applyRoutes = function (server, next) {
         return reply.view('users/edit', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Users',
+          baseUrl: Config.get('/baseUrl'),
           editUser: user
         });
       });

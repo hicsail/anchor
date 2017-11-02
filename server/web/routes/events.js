@@ -25,6 +25,8 @@ internals.applyRoutes = function (server, next) {
         return reply.view('events/index', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Events',
+          baseUrl: Config.get('/baseUrl'),
           events: names
         });
       });
@@ -33,7 +35,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/events-name/{name}',
+    path: '/events/name/{name}',
     config: {
       auth: {
         strategy: 'session'
@@ -65,6 +67,8 @@ internals.applyRoutes = function (server, next) {
         return reply.view('events/eventView', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Feedback',
+          baseUrl: Config.get('/baseUrl'),
           eventName: request.params.name,
           eventData: results.events,
           events: results.names
@@ -75,7 +79,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
-    path: '/events-user/{userId}',
+    path: '/events/user/{userId}',
     config: {
       auth: {
         strategy: 'session'
@@ -106,6 +110,8 @@ internals.applyRoutes = function (server, next) {
         return reply.view('events/eventUser', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Feedback',
+          baseUrl: Config.get('/baseUrl'),
           eventData: results.events,
           events: results.names
         });

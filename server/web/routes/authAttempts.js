@@ -16,7 +16,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('authAttempts/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Auth Attempts',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });

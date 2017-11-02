@@ -5,7 +5,7 @@
       <div style="padding: 30px">
         <h3>Users</h3>
         {{#role user 'researcher'}}
-          <a class="btn btn-primary" href="../users/create">Create</a>
+          <a class="btn btn-primary" href="/users/create">Create</a>
         {{/role}}
         <hr>
         <div class="card">
@@ -49,7 +49,7 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: "../api/table/users",
+        url: "/api/table/users",
         data: function (d) {
           d.fields = "name username email studyID timeCreated";
         }
@@ -121,4 +121,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/users/index.js"></script>
+<script type="text/javascript" src="/public/scripts/users/index.js"></script>

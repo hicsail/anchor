@@ -17,7 +17,7 @@
     </div>
   </div>
 </div>
-<script type="text/javascript" src="../../public/scripts/users/edit.js"></script>
+<script type="text/javascript" src="/public/scripts/users/edit.js"></script>
 <script>
   joiFormValue('name', '{{editUser.name}}');
   joiFormValue('email', '{{editUser.email}}');
@@ -30,10 +30,10 @@
     });
     $.ajax({
       type: 'PUT',
-      url: '../api/users/{{editUser._id}}',
+      url: '/api/users/{{editUser._id}}',
       data: values,
       success: function (result) {
-        window.location = '../users'
+        window.location = '/users'
       },
       error: function (result) {
         errorAlert(result.responseJSON.message);

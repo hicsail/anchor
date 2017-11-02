@@ -4,7 +4,7 @@
     <div class="col-sm-9 col-md-10">
       <div style="padding: 30px">
         <h3>Templates</h3>
-        <a class="btn btn-primary" href="../templates/create">Create</a>
+        <a class="btn btn-primary" href="/templates/create">Create</a>
         <hr>
         <div class="card">
           <div style="padding: 20px">
@@ -44,7 +44,7 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: "../api/table/templates",
+        url: "/api/table/templates",
         data: function (d) {
           d.fields = "username name name time studyID userId";
         }
@@ -94,4 +94,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/templates/index.js"></script>
+<script type="text/javascript" src="/public/scripts/templates/index.js"></script>

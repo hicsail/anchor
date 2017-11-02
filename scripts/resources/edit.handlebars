@@ -12,10 +12,10 @@ $('#update').click((event) => {
   });
   $.ajax({
     type: 'PUT',
-    url: '../api/{{lowercasePluralName}}/' + documentID,
+    url: '/api/{{lowercasePluralName}}/' + documentID,
     data: values,
     success: function (result) {
-      window.location = '../{{lowercasePluralName}}'
+      window.location = '/{{lowercasePluralName}}'
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

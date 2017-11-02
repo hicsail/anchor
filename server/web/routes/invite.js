@@ -17,7 +17,9 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('invite/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Invites',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
@@ -35,14 +37,16 @@ internals.applyRoutes = function (server, next) {
 
       return reply.view('invite/create', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName')
+        projectName: Config.get('/projectName'),
+        title: 'Invites',
+        baseUrl: Config.get('/baseUrl')
       });
     }
   });
 
   server.route({
     method: 'GET',
-    path: '/invite-edit/{id}',
+    path: '/invite/edit/{id}',
     config: {
       auth: {
         strategy: 'session',
@@ -60,6 +64,8 @@ internals.applyRoutes = function (server, next) {
         return reply.view('invite/edit', {
           user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Invites',
+          baseUrl: Config.get('/baseUrl'),
           invite
         });
       });
@@ -98,7 +104,10 @@ internals.applyRoutes = function (server, next) {
           }
         }
         return reply.view('invite/view', {
+          user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
+          title: 'Invites',
+          baseUrl: Config.get('/baseUrl'),
           invite,
           valid
         });

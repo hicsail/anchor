@@ -1,10 +1,15 @@
-mongo:
-  image: mongo
-app:
-  build: .
-  links:
-    - mongo
-  ports:
-    - "9000:9000"
-  environment:
-    - NODE_ENV='local'
+version: '2'
+services:
+  mongo:
+    image: mongo
+    ports:
+    — "9000:9000"
+  anchor:
+    build: .
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - "9000:9000"
+    environment:
+      - NODE_ENV='local'

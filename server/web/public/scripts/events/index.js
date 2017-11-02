@@ -1,7 +1,7 @@
 'use strict';
 
 function viewEvent() {
-  window.location.href = window.location.href.split('/').slice(0,-1).join('/')+'/events-name/' + $('#eventName').val();
+  window.location.href = window.location.href.split('/').slice(0,-1).join('/')+'/events/name/' + $('#eventName').val();
 }
 
 function deleteDoc(id) {
@@ -11,7 +11,7 @@ function deleteDoc(id) {
   }
   else {
     $.ajax({
-      url: '../api/events/' + id,
+      url: '/api/events/' + id,
       type: 'DELETE',
       success: function (result) {
         successAlert('Event Deleted');

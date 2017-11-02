@@ -7,7 +7,7 @@ function deleteDoc(id) {
   }
   else {
     $.ajax({
-      url: '../api/invite/' + id,
+      url: '/api/invite/' + id,
       type: 'DELETE',
       success: function (result) {
         successAlert('Invite Deleted');
@@ -21,5 +21,5 @@ function deleteDoc(id) {
 }
 
 function editDoc(id) {
-  window.location = '../invite-edit/' + id
+  window.location = '/invite/edit/' + id
 }

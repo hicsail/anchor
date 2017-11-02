@@ -19,6 +19,13 @@ const config = {
     local: process.env.PROJECT_NAME,
     $default: 'Anchor'
   },
+  baseUrl: {
+    $filter: 'env',
+    production: process.env.BASE_URL,
+    test: 'localhost:9090',
+    local: process.env.BASE_URL,
+    $default: 'localhost:9000'
+  },
   port: {
     web: {
       $filter: 'env',

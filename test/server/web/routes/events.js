@@ -139,7 +139,7 @@ lab.experiment('Single Event Page View', () => {
 
     request = {
       method: 'GET',
-      url: '/events-name/APP_OPEN'
+      url: '/events/name/APP_OPEN'
     };
 
     done();
@@ -203,7 +203,7 @@ lab.experiment('User Event Page View', () => {
 
     request = {
       method: 'GET',
-      url: '/events-user/93EP150D35'
+      url: '/events/user/93EP150D35'
     };
 
     done();

@@ -11,7 +11,7 @@ $('#create').click((event) => {
   });
   $.ajax({
     type: 'POST',
-    url: '../api/{{lowercasePluralName}}',
+    url: '/api/{{lowercasePluralName}}',
     data: values,
     success: function (result) {
       window.location = '../{{lowercasePluralName}}'

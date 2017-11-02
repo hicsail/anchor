@@ -45,7 +45,7 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: "../api/table/feedback",
+        url: "/api/table/feedback",
         data: function (d) {
           d.fields = "username userId studyID inStudy subject description resolved time comment";
         }
@@ -107,4 +107,4 @@
     });
   });
 </script>
-<script type="text/javascript" src="../../public/scripts/feedback/index.js"></script>
+<script type="text/javascript" src="/public/scripts/feedback/index.js"></script>
