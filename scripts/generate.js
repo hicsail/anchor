@@ -3,13 +3,13 @@ const Generate = {
   Template: {
     name: 'Template',
     pluralName: 'Templates',
-    schema: 'Joi.object().keys({\n' +
+    schema: 'Joi.object({\n' +
       '  _id: Joi.object(),\n' +
       '  name: Joi.string().required(),\n' +
       '  userId: Joi.boolean().required(),\n' +
       '  time: Joi.date().required()\n' +
     '});',
-    payload: 'Joi.object().keys({\n' +
+    payload: 'Joi.object({\n' +
     '  name: Joi.string().required()\n' +
     '});',
     defaultValues: {
