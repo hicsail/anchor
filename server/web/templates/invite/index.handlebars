@@ -1,0 +1,119 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>Invite</h3>
+        {{#role user 'researcher'}}
+          <a class="btn btn-primary" href="/invite/create">Create</a>
+        {{/role}}
+        <hr>
+        <div class="card">
+          <div style="padding: 20px;">
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Expired At</th>
+                <th>Edit</th>
+                <th>Delete</th>
+                <th>ID</th>
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var table;
+  $(document).ready(function () {
+    table = $('#table').DataTable({
+      processing: true,
+      serverSide: true,
+      scrollX: true,
+      scrollY: '500px',
+      scrollCollapse: true,
+      lengthChange: false,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+      ],
+      ajax: {
+        url: "/api/table/invite",
+        data: function (d) {
+          d.fields = "name email description status time expiredAt";
+        }
+      },
+      columns: [
+        {
+          data: "name",
+          defaultContent: ""
+        },
+        {
+          data: "email",
+          defaultContent: ""
+        },
+        {
+          data: "description",
+          defaultContent: ""
+        },
+        {
+          data: "status",
+          render: function (data, type, row) {
+            if(new Date(row.expiredAt).getTime() < new Date().getTime()) {
+              return '<h5><span class="badge badge-secondary">Expired</span></h5>';
+            } else if(row.status == 'Pending') {
+              return '<h5><span class="badge badge-info">Pending</span></h5>';
+            } else if(row.status == 'Accepted'){
+              return '<h5><span class="badge badge-success">Accepted</span></h5>';
+            } else if(row.status == 'Rejected'){
+              return '<h5><span class="badge badge-danger">Rejected</span></h5>';
+            } else {
+              return row.status
+            }
+          }
+        },
+        {
+          data: "time",
+          render: function (data, type, row) {
+            var date = new Date(row.time);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
+        },
+        {
+          data: "expiredAt",
+          render: function (data, type, row) {
+            var date = new Date(row.expiredAt);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
+        },
+        {
+          data: "_id",
+          render: function (data, type, row) {
+            return '<button class="btn btn-secondary" id="edit'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
+          },
+          visible: false
+        },
+        {
+          data: "_id",
+          render: function (data, type, row) {
+            return '<button class="btn btn-danger" id="delete'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+          },
+          visible: false
+        },
+        {
+          data: "_id",
+          visible: false
+        }
+      ]
+    });
+  });
+</script>
+<script type="text/javascript" src="/public/scripts/invite/index.js"></script>

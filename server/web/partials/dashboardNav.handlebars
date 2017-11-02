@@ -1,0 +1,64 @@
+<nav class="col-sm-3 col-md-2 d-none d-sm-block bg-secondary sidebar" style="padding-top: 40px">
+  <ul class="nav nav-pills flex-column">
+    <h6 class="text-dark">Your Roles
+      <span class="badge badge-success">Patient</span>
+      {{#if user.roles.clinician}}
+        <span class="badge badge-primary">Clinician</span>
+      {{/if}}
+      {{#if user.roles.analyst}}
+        <span class="badge badge-light">Analyst</span>
+      {{/if}}
+      {{#if user.roles.researcher}}
+        <span class="badge badge-info">Researcher</span>
+      {{/if}}
+      {{#if user.roles.admin}}
+        <span class="badge badge-warning">Admin</span>
+      {{/if}}
+      {{#if user.roles.root}}
+        <span class="badge badge-dark">Root</span>
+      {{/if}}
+    </h6>
+    <li class="nav-item">
+      <a class="nav-link text-light" href="../dashboard">Dashboard</a>
+    </li>
+  </ul>
+  <ul class="nav nav-pills flex-column" style="padding-top: 20px">
+    <h6 class="text-dark">Collections</h6>
+    <li class="nav-item">
+      <a class="nav-link text-light" href="../authAttempts">Auth Attempts</a>
+      <a class="nav-link text-light" href="../events">Events</a>
+      <a class="nav-link text-light" href="../feedback">Feedback</a>
+      {{#role user 'researcher'}}
+        <a class="nav-link text-light" href="../invite">Invites</a>
+      {{/role}}
+      <a class="nav-link text-light" href="../sessions">Sessions</a>
+      <a class="nav-link text-light" href="../users">Users</a>
+    </li>
+  </ul>
+  {{#role user 'researcher'}}
+    <ul class="nav nav-pills flex-column" style="padding-top: 20px">
+      <h6 class="text-dark">Population Settings</h6>
+      <li class="nav-item">
+        <a class="nav-link text-light" href="../roles">Roles</a>
+        <a class="nav-link text-light" href="../participation">Participation</a>
+      </li>
+    </ul>
+  {{/role}}
+  {{#role user 'researcher'}}
+    <ul class="nav nav-pills flex-column" style="padding-top: 20px">
+      <h6 class="text-dark">API Access</h6>
+      <li class="nav-item">
+        <a class="nav-link text-light" href="../tokens">Tokens</a>
+      </li>
+    </ul>
+  {{/role}}
+  {{#role user 'admin'}}
+    <ul class="nav nav-pills flex-column" style="padding-top: 20px">
+      <h6 class="text-dark">Application Settings</h6>
+      <li class="nav-item">
+        <a class="nav-link text-light" href="../backups">Backups</a>
+        <a class="nav-link text-light" href="../env">Env</a>
+      </li>
+    </ul>
+  {{/role}}
+</nav>

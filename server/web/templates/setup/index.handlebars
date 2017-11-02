@@ -1,0 +1,29 @@
+<div class="container" style="padding-top: 60px">
+  <div class="row justify-content-center">
+    <div class="col-xl-6 col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          {{# if root}}
+            <h4 class="card-title">Setup Complete</h4>
+            <img style="margin: 0 auto; display: block; width: 50%" src="/public/images/complete.gif">
+          {{else}}
+            <h4 class="card-title">Setup Root User</h4>
+            <form id="form">
+              <div id="formFields"></div>
+              <button id="setup" type="submit" class="btn btn-primary">Sign Up</button>
+            </form>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  body {
+    background-color: #bbb;
+  }
+</style>
+<script>
+
+</script>
+<script type="text/javascript" src="/public/scripts/setup.js"></script>

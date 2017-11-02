@@ -1,33 +1,35 @@
-# Frame
+# Anchor
 
-A user system API starter. Bring your own front-end.
+[![CircleCI](https://circleci.com/gh/hicsail/anchor/tree/master.svg?style=svg)](https://circleci.com/gh/hicsail/anchor/tree/master)
+[![Build Status](https://travis-ci.org/hicsail/anchor.svg?branch=master)](https://travis-ci.org/hicsail/anchor)
+[![Dependency Status](https://img.shields.io/david/hicsail/anchor.svg)](https://david-dm.org/hicsail/hicsail-mongo-models)
+[![devDependency Status](https://img.shields.io/david/dev/hicsail/anchor.svg)](https://david-dm.org/hicsail/hicsail-mongo-models?type=dev)
+[![Coverage Status](https://coveralls.io/repos/github/hicsail/anchor/badge.svg?branch=master)](https://coveralls.io/github/hicsail/anchor?branch=master)
 
-[![Build Status](https://travis-ci.org/jedireza/frame.svg?branch=master)](https://travis-ci.org/jedireza/frame)
-[![Dependency Status](https://david-dm.org/jedireza/frame.svg?style=flat)](https://david-dm.org/jedireza/frame)
-[![devDependency Status](https://david-dm.org/jedireza/frame/dev-status.svg?style=flat)](https://david-dm.org/jedireza/frame#info=devDependencies)
-
+A user system API starter with a database administrative system. Bring your own front-end.
 
 ## Features
 
  - Login system with forgot password and reset password
  - Abusive login attempt detection
- - User roles for accounts and admins
- - Admins only notes and status history for accounts
- - Admin groups with shared permissions
- - Admin level permissions that override group permissions
+ - User roles for analysts, clinicians, researchers, admins
+ - Analyst can view anonymized information
+ - Clinician can view information of specific users
+ - Researcher can view all information
+ - Admins can view update and delete all information
+ - Auto Backups
+ - Admin UI to view Database Records
+ - Custom Event Tracking
+ - User Feedback System
+ - Email Invites
+ - API Tokens
 
 
 ## Technology
 
-Frame is built with the [hapi](https://hapijs.com/) framework. We're
-using [MongoDB](http://www.mongodb.org/) as a data store.
-
-
-## Bring your own front-end
-
-Frame is only a restful JSON API. If you'd like a ready made front-end,
-checkout [Aqua](https://github.com/jedireza/aqua). Or better yet, fork
-this repo and build one on top of Frame.
+Anchor is built with the [hapi](https://hapijs.com/) framework. We're
+using [MongoDB](http://www.mongodb.org/) as a data store. This project 
+was originally a fork from [Frame](https://github.com/jedireza/frame)
 
 
 ## Live demo
@@ -56,8 +58,8 @@ page](https://github.com/jedireza/frame/wiki/bcrypt-Installation-Trouble).
 ## Installation
 
 ```bash
-$ git clone git@github.com:jedireza/frame.git
-$ cd frame
+$ git clone git@github.com:hicsail/anchor.git
+$ cd anchor
 $ npm install
 ```
 
@@ -80,16 +82,16 @@ to your repository.__
 ## First time setup
 
 __WARNING__: This will clear all data in the following MongoDB collections if
-they exist: `accounts`, `adminGroups`, `admins`, `authAttempts`, `sessions`,
-`statuses`, and `users`.
+they exist: `authAttempts`, `backups`, `events`, `feedback`, `invite`,
+`sessions`, `tokens`, and `users`.
 
 ```bash
 $ npm run first-time-setup
 
-# > frame@0.0.0 first-time-setup /home/jedireza/projects/frame
+# > anchor@0.0.0 first-time-setup /home/hicsail/projects/anchor
 # > node first-time-setup.js
 
-# MongoDB URL: (mongodb://localhost:27017/frame)
+# MongoDB URL: (mongodb://localhost:27017/anchor)
 # Root user email: jedireza@gmail.com
 # Root user password:
 # Setup complete.
@@ -101,7 +103,7 @@ $ npm run first-time-setup
 ```bash
 $ npm start
 
-# > frame@0.0.0 start /Users/jedireza/projects/frame
+# > anchor@0.0.0 start /Users/hicsail/projects/anchor
 # > ./node_modules/nodemon/bin/nodemon.js -e js,md server
 
 # 09 Sep 03:47:15 - [nodemon] v1.10.2
@@ -135,6 +137,18 @@ these environment variables in your production environment:
  - `NPM_CONFIG_PRODUCTION=false` - This tells `$ npm install` to not skip
    installing `devDependencies`, which we may need to run the first time
    setup script.
+   
+## Running with Docker
+
+Running with [Docker](https://www.docker.com/) and 
+[Docker Compose](https://docs.docker.com/compose/) is quick and easy. Just run
+
+```bash
+$ docker-compose up --build
+```
+
+Docker compose will download MongoDB and Node.js into containers and start 
+running the application in production mode.
 
 
 ## Have a question?
@@ -157,7 +171,7 @@ use to write all of our tests.
 ```bash
 $ npm test
 
-# > frame@0.0.0 test /Users/jedireza/projects/frame
+# > anchor@0.0.0 test /Users/hicsail/projects/anchor
 # > ./node_modules/lab/bin/lab -c
 
 # ..................................................
@@ -165,10 +179,12 @@ $ npm test
 # ..................................................
 # ..................................................
 # ..................................................
-# ........
+# ..................................................
+# ..................................................
+# .........
 
-# 258 tests complete
-# Test duration: 2398 ms
+# 359 tests complete
+# Test duration: 3062 ms
 # No global variable leaks detected
 # Coverage: 100.00%
 # Linting results: No issues
@@ -177,8 +193,3 @@ $ npm test
 ## License
 
 MIT
-
-
-## Don't forget
-
-What you build with Frame is more important than Frame.

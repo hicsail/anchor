@@ -1,0 +1,24 @@
+'use strict';
+
+const schema = {{payload}}
+joiToForm('formFields',schema);
+
+$('#update').click((event) => {
+  const documentID = window.location.pathname.split('/').pop();
+  event.preventDefault();
+  const values = {};
+  $.each($('#form').serializeArray(), (i, field) => {
+    values[field.name] = field.value;
+  });
+  $.ajax({
+    type: 'PUT',
+    url: '/api/{{lowercasePluralName}}/' + documentID,
+    data: values,
+    success: function (result) {
+      window.location = '/{{lowercasePluralName}}'
+    },
+    error: function (result) {
+      errorAlert(result.responseJSON.message);
+    }
+  });
+});
