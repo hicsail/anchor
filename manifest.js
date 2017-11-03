@@ -197,6 +197,9 @@ const manifest = {
       plugin: './server/web/routes/backup'
     },
     {
+      plugin: './server/web/routes/clinician'
+    },
+    {
       plugin: './server/web/routes/dashboard'
     },
     {

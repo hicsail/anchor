@@ -1,6 +1,7 @@
 'use strict';
 const Async = require('async');
 const Boom = require('boom');
+const Config = require('../../config');
 const Joi = require('joi');
 
 
@@ -157,9 +158,10 @@ internals.applyRoutes = function (server, next) {
           };
           const template = 'invite';
           const context = {
-            url: request.headers.origin + '/invite/' + invite._id.toString(),
+            url: request.headers.origin + '/invite/' + results.invite._id.toString(),
             name: Config.get('/projectName')
           };
+          const mailer = request.server.plugins.mailer;
 
           mailer.sendEmail(emailOptions, template, context, (err) => {
 
