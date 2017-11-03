@@ -101,11 +101,12 @@ internals.applyRoutes = function (server, next) {
       const query = {
         $or: [
           { email: { $regex: request.query.term, $options: 'i' } },
-          { name: { $regex: request.query.term, $options: 'i' } }
+          { name: { $regex: request.query.term, $options: 'i' } },
+          { username: { $regex: request.query.term, $options: 'i' } }
         ]
 
       };
-      const fields = 'name email';
+      const fields = 'name email username';
       const limit = 25;
       const page = 1;
 
