@@ -24,14 +24,14 @@ const config = {
     production: process.env.BASE_URL,
     test: 'localhost:9090',
     local: process.env.BASE_URL,
-    $default: 'localhost:9000'
+    $default: 'http://localhost:9000/'
   },
   port: {
     web: {
       $filter: 'env',
       test: 9090,
       production: process.env.PORT,
-      local: 9000,
+      local: process.env.PORT,
       $default: 9000
     }
   },
@@ -42,7 +42,7 @@ const config = {
   authSecret: {
     $filter: 'env',
     production: process.env.AUTH_SECRET,
-    local: '!k3yb04rdK4tz~4qu4~k3yb04rdd0gz!',
+    local: process.env.AUTH_SECRET,
     $default: '!k3yb04rdK4tz~4qu4~k3yb04rdd0gz!'
   },
   hapiMongoModels: {
@@ -51,7 +51,7 @@ const config = {
         $filter: 'env',
         production: process.env.MONGODB_URI,
         test: 'mongodb://localhost:27017/anchor-test',
-        local: 'mongodb://localhost:27017/anchor',
+        local: process.env.MONGODB_URI,
         $default: 'mongodb://localhost:27017/anchor'
       }
     },
