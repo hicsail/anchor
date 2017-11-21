@@ -54,6 +54,7 @@
     "nodemailer-markdown": "1.x.x",
     "object-assign": "4.x.x",
     "slug": "0.9.x",
+    "useragent": "2.x.x",
     "uuid": "3.x.x",
     "vision": "4.x.x",
     "visionary": "6.x.x"

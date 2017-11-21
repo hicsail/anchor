@@ -141,6 +141,20 @@ internals.applyStrategy = function (server, next) {
           }
 
           done(null, Object.keys(results.user.roles));
+        }],
+        updateSession: ['scope', function (results, done) {
+
+          if (!results.scope) {
+            return done();
+          }
+
+          const update = {
+            $set: {
+              lastActive: new Date()
+            }
+          };
+
+          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
         }]
       }, (err, results) => {
 

@@ -22,7 +22,6 @@ internals.applyRoutes = function (server, next) {
           password: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           name: Joi.string().required(),
-          application: Joi.string().default('Web'),
           invite: Joi.string().optional()
         }
       },
@@ -119,7 +118,10 @@ internals.applyRoutes = function (server, next) {
         }],
         session: ['user', function (results, done) {
 
-          Session.create(results.user._id.toString(), request.payload.application, done);
+          const userAgent = request.headers['user-agent'];
+          const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
+
+          Session.create(results.user._id.toString(), ip, userAgent, done);
         }],
         invite: ['user', function (results, done) {
 
