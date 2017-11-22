@@ -1,0 +1,33 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>{{eventName}}</h3>
+        <hr>
+        <div class="row">
+          <div class="col col-3">
+            <select class="form-control" id="eventName">
+              {{#each events}}
+                <option>{{this}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="col col-4">
+            <button onclick="viewEvent()" id="eventName" class="btn btn-primary">View Event</button>
+          </div>
+        </div>
+        <br>
+        <div class="card">
+          <div style="padding: 20px">
+            <canvas id="eventNameChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    const data = {{{json eventData}}}
+</script>
+<script src="/public/scripts/events/eventView.js"></script>

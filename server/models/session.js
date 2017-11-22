@@ -2,108 +2,109 @@
 const Async = require('async');
 const Bcrypt = require('bcrypt');
 const Joi = require('joi');
-const MongoModels = require('mongo-models');
+const MongoModels = require('hicsail-mongo-models');
 const Useragent = require('useragent');
 const Uuid = require('uuid');
 
 
 class Session extends MongoModels {
-    static generateKeyHash(callback) {
+  static generateKeyHash(callback) {
 
-        const key = Uuid.v4();
+    const key = Uuid.v4();
 
-        Async.auto({
-            salt: function (done) {
+    Async.auto({
+      salt: function (done) {
 
-                Bcrypt.genSalt(10, done);
-            },
-            hash: ['salt', function (results, done) {
+        Bcrypt.genSalt(10, done);
+      },
+      hash: ['salt', function (results, done) {
 
-                Bcrypt.hash(key, results.salt, done);
-            }]
-        }, (err, results) => {
+        Bcrypt.hash(key, results.salt, done);
+      }]
+    }, (err, results) => {
 
-            if (err) {
-                return callback(err);
-            }
+      if (err) {
+        return callback(err);
+      }
 
-            callback(null, {
-                key,
-                hash: results.hash
-            });
-        });
-    }
+      callback(null, {
+        key,
+        hash: results.hash
+      });
+    });
+  }
 
-    static create(userId, ip, userAgent, callback) {
 
-        const self = this;
+  static create(userId, ip, userAgent, callback) {
 
-        Async.auto({
-            keyHash: this.generateKeyHash.bind(this),
-            newSession: ['keyHash', function (results, done) {
+    const self = this;
 
-                const parsedAgent = Useragent.lookup(userAgent);
-                let browser = parsedAgent.family;
+    Async.auto({
+      keyHash: this.generateKeyHash.bind(this),
+      newSession: ['keyHash', function (results, done) {
 
-                if (browser === 'Other') {
-                    browser = parsedAgent.source;
-                }
+        const parsedAgent = Useragent.lookup(userAgent);
+        let browser = parsedAgent.family;
 
-                const document = {
-                    userId,
-                    key: results.keyHash.hash,
-                    time: new Date(),
-                    lastActive: new Date(),
-                    ip,
-                    browser,
-                    os: parsedAgent.os.toString()
-                };
+        if (browser === 'Other') {
+          browser = parsedAgent.source;
+        }
 
-                self.insertOne(document, done);
-            }]
-        }, (err, results) => {
+        const document = {
+          userId,
+          key: results.keyHash.hash,
+          time: new Date(),
+          lastActive: new Date(),
+          ip,
+          browser,
+          os: parsedAgent.os.toString()
+        };
 
-            if (err) {
-                return callback(err);
-            }
+        self.insertOne(document, done);
+      }]
+    }, (err, results) => {
 
-            results.newSession[0].key = results.keyHash.key;
+      if (err) {
+        return callback(err);
+      }
 
-            callback(null, results.newSession[0]);
-        });
-    }
+      results.newSession[0].key = results.keyHash.key;
 
-    static findByCredentials(id, key, callback) {
+      callback(null, results.newSession[0]);
+    });
+  }
 
-        const self = this;
+  static findByCredentials(id, key, callback) {
 
-        Async.auto({
-            session: function (done) {
+    const self = this;
 
-                self.findById(id, done);
-            },
-            keyMatch: ['session', function (results, done) {
+    Async.auto({
+      session: function (done) {
 
-                if (!results.session) {
-                    return done(null, false);
-                }
+        self.findById(id, done);
+      },
+      keyMatch: ['session', function (results, done) {
 
-                const source = results.session.key;
-                Bcrypt.compare(key, source, done);
-            }]
-        }, (err, results) => {
+        if (!results.session) {
+          return done(null, false);
+        }
 
-            if (err) {
-                return callback(err);
-            }
+        const source = results.session.key;
+        Bcrypt.compare(key, source, done);
+      }]
+    }, (err, results) => {
 
-            if (results.keyMatch) {
-                return callback(null, results.session);
-            }
+      if (err) {
+        return callback(err);
+      }
 
-            callback();
-        });
-    }
+      if (results.keyMatch) {
+        return callback(null, results.session);
+      }
+
+      callback();
+    });
+  }
 }
 
 
@@ -111,19 +112,19 @@ Session.collection = 'sessions';
 
 
 Session.schema = Joi.object({
-    _id: Joi.object(),
-    userId: Joi.string().required(),
-    key: Joi.string().required(),
-    time: Joi.date().required(),
-    lastActive: Joi.date().required(),
-    ip: Joi.string().required(),
-    browser: Joi.string().required(),
-    os: Joi.string().required()
+  _id: Joi.object(),
+  userId: Joi.string().required(),
+  key: Joi.string().required(),
+  time: Joi.date().required(),
+  lastActive: Joi.date().required(),
+  ip: Joi.string().required(),
+  browser: Joi.string().required(),
+  os: Joi.string().required()
 });
 
 
 Session.indexes = [
-    { key: { userId: 1 } }
+  { key: { userId: 1, application: 1 } }
 ];
 
 

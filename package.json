@@ -1,33 +1,52 @@
 {
-  "name": "frame",
-  "version": "12.2.0",
+  "name": "anchor",
+  "version": "1.0.0",
   "description": "A user system API starter",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --inspect -e js,md server.js",
+    "start": "nodemon --inspect -e js,md,html,handlebars,css server.js",
     "first-time-setup": "node first-time-setup.js",
-    "test": "lab -c -L"
+    "test": "lab -c -L",
+    "lint": "lab -dL",
+    "lint-fix": "lab -dL --lint-fix",
+    "coveralls": "lab -r lcov | ./node_modules/.bin/coveralls"
   },
-  "author": "Reza Akhavan <jedireza@gmail.com> (http://reza.akhavan.me/)",
+  "author": "Boston University Software & Application Innovation Lab",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hicsail/anchor/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hicsal/anchor.git"
+  },
+  "homepage": "https://github.com/hicsail/anchor#readme",
   "engines": {
     "node": "8.x.x"
   },
   "dependencies": {
+    "adm-zip": "0.4.x",
+    "archiver": "2.x.x",
     "async": "2.x.x",
     "bcrypt": "1.x.x",
     "boom": "5.x.x",
+    "child_process": "1.x.x",
     "confidence": "3.x.x",
     "dotenv": "4.x.x",
     "glue": "4.x.x",
     "handlebars": "4.x.x",
     "hapi": "16.x.x",
     "hapi-auth-basic": "4.x.x",
-    "hapi-mongo-models": "6.x.x",
+    "hapi-auth-cookie": "7.x.x",
+    "hapi-auth-jwt2": "7.x.x",
+    "hapi-cron": "0.0.3",
+    "hicsail-hapi-mongo-models": "6.x.x",
+    "hicsail-mongo-models": "1.4.x",
     "hoek": "4.x.x",
     "inert": "4.x.x",
-    "jade": "1.x.x",
     "joi": "10.x.x",
+    "joi-password-complexity": "2.x.x",
+    "jsonwebtoken": "8.x.x",
     "lout": "10.x.x",
     "mongo-models": "1.x.x",
     "mongodb": "2.x.x",
@@ -42,9 +61,15 @@
   },
   "devDependencies": {
     "code": "4.x.x",
+    "coveralls": "3.x.x",
     "lab": "14.x.x",
     "nodemon": "1.x.x",
+    "npm-run": "^4.1.2",
+    "pre-commit": "1.x.x",
     "promptly": "2.x.x",
     "proxyquire": "1.x.x"
-  }
+  },
+  "pre-commit": [
+    "lint"
+  ]
 }

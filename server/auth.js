@@ -1,6 +1,6 @@
 'use strict';
 const Async = require('async');
-const Boom = require('boom');
+const Config = require('../config');
 
 
 const internals = {};
@@ -8,120 +8,206 @@ const internals = {};
 
 internals.applyStrategy = function (server, next) {
 
-    const Session = server.plugins['hapi-mongo-models'].Session;
-    const User = server.plugins['hapi-mongo-models'].User;
+  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
+  const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
+  const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
-    server.auth.strategy('simple', 'basic', {
-        validateFunc: function (request, username, password, callback) {
+  server.auth.strategy('simple', 'basic', {
+    validateFunc: function (request, username, password, callback) {
 
-            Async.auto({
-                session: function (done) {
+      Async.auto({
+        session: function (done) {
 
-                    Session.findByCredentials(username, password, done);
-                },
-                user: ['session', function (results, done) {
+          Session.findByCredentials(username, password, done);
+        },
+        user: ['session', function (results, done) {
 
-                    if (!results.session) {
-                        return done();
-                    }
+          if (!results.session) {
+            return done();
+          }
 
-                    User.findById(results.session.userId, done);
-                }],
-                roles: ['user', function (results, done) {
+          User.findById(results.session.userId, done);
+        }],
+        scope: ['user', function (results, done) {
 
-                    if (!results.user) {
-                        return done();
-                    }
+          if (!results.user || !results.user.roles) {
+            return done();
+          }
 
-                    results.user.hydrateRoles(done);
-                }],
-                scope: ['user', function (results, done) {
+          done(null, Object.keys(results.user.roles));
+        }],
+        updateSession: ['scope', function (results, done) {
 
-                    if (!results.user || !results.user.roles) {
-                        return done();
-                    }
+          if (!results.scope) {
+            return done();
+          }
 
-                    done(null, Object.keys(results.user.roles));
-                }],
-                updateSession: ['scope', function (results, done) {
-
-                    if (!results.scope) {
-                        return done();
-                    }
-
-                    const update = {
-                        $set: {
-                            lastActive: new Date()
-                        }
-                    };
-
-                    Session.findByIdAndUpdate(results.session._id.toString(), update, done);
-                }]
-            }, (err, results) => {
-
-                if (err) {
-                    return callback(err);
-                }
-
-                if (!results.session) {
-                    return callback(null, false);
-                }
-
-                callback(null, Boolean(results.user), results);
-            });
-        }
-    });
-
-
-    next();
-};
-
-
-internals.preware = {
-    ensureNotRoot: {
-        assign: 'ensureNotRoot',
-        method: function (request, reply) {
-
-            if (request.auth.credentials.user.username === 'root') {
-                const message = 'Not permitted for root user.';
-
-                return reply(Boom.badRequest(message));
+          const update = {
+            $set: {
+              lastActive: new Date()
             }
+          };
 
-            reply();
+          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
+        }]
+      }, (err, results) => {
+
+        if (err) {
+          return callback(err);
         }
-    },
-    ensureAdminGroup: function (groups) {
 
-        return {
-            assign: 'ensureAdminGroup',
-            method: function (request, reply) {
+        if (!results.session) {
+          return callback(null, false);
+        }
 
-                if (Object.prototype.toString.call(groups) !== '[object Array]') {
-                    groups = [groups];
-                }
-
-                const groupFound = groups.some((group) => {
-
-                    return request.auth.credentials.roles.admin.isMemberOf(group);
-                });
-
-                if (!groupFound) {
-                    return reply(Boom.notFound('Permission denied to this resource.'));
-                }
-
-                reply();
-            }
-        };
+        callback(null, Boolean(results.user), results);
+      });
     }
-};
+  });
 
+  server.auth.strategy('jwt', 'jwt', {
+    key: Config.get('/authSecret'),
+    verifyOptions: { algorithms: ['HS256'] },
+    validateFunc: function (decoded, request, callback) {
+
+      Async.auto({
+        token: function (done) {
+
+          Token.findOne({
+            tokenId: decoded,
+            active: true
+          }, done);
+        },
+        updateToken: ['token', function (results,done) {
+
+          if (!results.token) {
+            return done();
+          }
+          Token.findByIdAndUpdate(results.token._id,{
+            $set: {
+              lastUsed: new Date()
+            }
+          },done);
+        }],
+        user: ['token', function (results, done) {
+
+          if (!results.token) {
+            return done();
+          }
+
+          User.findById(results.token.userId, done);
+        }],
+        scope: ['user', function (results, done) {
+
+          if (!results.user || !results.user.roles) {
+            return done();
+          }
+
+          done(null, Object.keys(results.user.roles));
+        }],
+        updateSession: ['scope', function (results, done) {
+
+          if (!results.scope) {
+            return done();
+          }
+
+          const update = {
+            $set: {
+              lastActive: new Date()
+            }
+          };
+
+          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
+        }]
+      }, (err, results) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        if (!results.token) {
+          return callback(null, false);
+        }
+
+        callback(null, Boolean(results.user), results);
+      });
+    }
+  });
+
+
+  server.auth.strategy('session', 'cookie', {
+    password: Config.get('/authSecret'),
+    cookie: 'AuthCookie',
+    isSecure: false,
+    clearInvalid: true,
+    keepAlive: true,
+    ttl: 60000 * 30, //30 Minutes
+    redirectTo: '/login',
+    appendNext: 'returnUrl',
+    validateFunc: function (request, data, callback) {
+
+      Async.auto({
+        session: function (done) {
+
+          const id = data._id;
+          const key = data.key;
+
+          Session.findByCredentials(id, key, done);
+        },
+        user: ['session', function (results, done) {
+
+          if (!results.session) {
+            return done();
+          }
+
+          User.findById(results.session.userId, done);
+        }],
+        scope: ['user', function (results, done) {
+
+          if (!results.user || !results.user.roles) {
+            return done();
+          }
+
+          done(null, Object.keys(results.user.roles));
+        }],
+        updateSession: ['scope', function (results, done) {
+
+          if (!results.scope) {
+            return done();
+          }
+
+          const update = {
+            $set: {
+              lastActive: new Date()
+            }
+          };
+
+          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
+        }]
+      }, (err, results) => {
+
+        if (err) {
+          return callback(err);
+        }
+
+        if (!results.session) {
+          return callback(null, false);
+        }
+
+        callback(null, Boolean(results.user), results);
+      });
+    }
+  });
+
+
+  next();
+};
 
 exports.register = function (server, options, next) {
 
-    server.dependency('hapi-mongo-models', internals.applyStrategy);
+  server.dependency('hicsail-hapi-mongo-models', internals.applyStrategy);
 
-    next();
+  next();
 };
 
 
@@ -129,5 +215,5 @@ exports.preware = internals.preware;
 
 
 exports.register.attributes = {
-    name: 'auth'
+  name: 'auth'
 };

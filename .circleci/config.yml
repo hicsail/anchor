@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/anchor
+    docker:
+      - image: node:8
+      - image: mongo:3.4.5
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Test
+          command: npm test
+#      Disabling deployment for now
+#      - deploy:
+#          name: Deploy
+#          command: |
+#              if [ "${CIRCLE_BRANCH}" == "master" ]; then
+#                ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+#                apt-get -qq update && apt-get -y --no-install-recommends install rsync
+#                rm -rf node_modules && rsync -r ./* $SERVER_USER@$SERVER_IP:/home/ubuntu/anchor/
+#                ssh $SERVER_USER@$SERVER_IP 'cd /home/ubuntu/anchor && sudo docker-compose up --build -d'
+#              fi

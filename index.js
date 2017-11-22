@@ -4,7 +4,7 @@ const Manifest = require('./manifest');
 
 
 const composeOptions = {
-    relativeTo: __dirname
+  relativeTo: __dirname
 };
 
 

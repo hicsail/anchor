@@ -1,0 +1,93 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>Session</h3>
+        <hr>
+        <div class="card">
+          <div style="padding: 20px">
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>Username</th>
+                <th>Study ID</th>
+                <th>Application</th>
+                <th>Time</th>
+                {{#role user 'admin'}}
+                  <th>ID</th>
+                  <th>Delete</th>
+                {{/role}}
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var table;
+  $(document).ready(function () {
+    table = $('#table').DataTable({
+      processing: true,
+      serverSide: true,
+      scrollX: true,
+      scrollY: '500px',
+      scrollCollapse: true,
+      lengthChange: false,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+      ],
+      ajax: {
+        url: "/api/table/sessions",
+        data: function (d) {
+          d.fields = "userId application time";
+        }
+      },
+      "columns": [
+        {
+          data: "user.username",
+          defaultContent: ""
+        },
+        {
+          data: "user.studyID",
+          render: function (data, type, row) {
+            if (row.user.studyID > 0) {
+              return row.user.studyID;
+            }
+            return '';
+          }
+        },
+        {
+          data: "application",
+          defaultContent: ""
+        },
+        {
+          data: "time",
+          render: function (data, type, row) {
+            var date = new Date(row.time);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
+        },
+        {{#role user 'admin'}}
+          {
+            data: "_id",
+            defaultContent: "",
+            visible: false
+          },
+          {
+            data: "_id",
+            render: function (data, type, row) {
+              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+            },
+            visible: false
+          }
+        {{/role}}
+      ]
+    });
+  });
+</script>
+<script type="text/javascript" src="/public/scripts/sessions.js"></script>

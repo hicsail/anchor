@@ -13,157 +13,157 @@ const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
 
 lab.experiment('AuthAttempt Class Methods', () => {
 
-    lab.before((done) => {
+  lab.before((done) => {
 
-        AuthAttempt.connect(mongoUri, mongoOptions, (err, db) => {
+    AuthAttempt.connect(mongoUri, mongoOptions, (err, db) => {
 
-            done(err);
-        });
+      done(err);
     });
+  });
 
 
-    lab.after((done) => {
+  lab.after((done) => {
 
-        AuthAttempt.deleteMany({}, (err, count) => {
+    AuthAttempt.deleteMany({}, (err, count) => {
 
-            AuthAttempt.disconnect();
+      AuthAttempt.disconnect();
 
-            done(err);
-        });
+      done(err);
     });
+  });
 
 
-    lab.test('it returns a new instance when create succeeds', (done) => {
+  lab.test('it returns a new instance when create succeeds', (done) => {
 
-        AuthAttempt.create('127.0.0.1', 'ren', (err, result) => {
+    AuthAttempt.create('127.0.0.1', 'ren', 'test', (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.be.an.instanceOf(AuthAttempt);
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.be.an.instanceOf(AuthAttempt);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns an error when create fails', (done) => {
+  lab.test('it returns an error when create fails', (done) => {
 
-        const realInsertOne = AuthAttempt.insertOne;
-        AuthAttempt.insertOne = function () {
+    const realInsertOne = AuthAttempt.insertOne;
+    AuthAttempt.insertOne = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('insert failed'));
-        };
+      callback(Error('insert failed'));
+    };
 
-        AuthAttempt.create('127.0.0.1', 'ren', (err, result) => {
+    AuthAttempt.create('127.0.0.1', 'ren', 'test', (err, result) => {
 
-            Code.expect(err).to.be.an.object();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-            AuthAttempt.insertOne = realInsertOne;
+      AuthAttempt.insertOne = realInsertOne;
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns false when abuse is not detected', (done) => {
+  lab.test('it returns false when abuse is not detected', (done) => {
 
-        AuthAttempt.abuseDetected('127.0.0.1', 'ren', (err, result) => {
+    AuthAttempt.abuseDetected('127.0.0.1', 'ren', (err, result) => {
 
-            Code.expect(err).to.not.exist();
-            Code.expect(result).to.equal(false);
+      Code.expect(err).to.not.exist();
+      Code.expect(result).to.equal(false);
 
-            done();
-        });
+      done();
     });
+  });
 
 
-    lab.test('it returns true when abuse is detected for user + ip combo', (done) => {
+  lab.test('it returns true when abuse is detected for user + ip combo', (done) => {
 
-        const authAttemptsConfig = Config.get('/authAttempts');
-        const authSpam = [];
-        const authRequest = function (cb) {
+    const authAttemptsConfig = Config.get('/authAttempts');
+    const authSpam = [];
+    const authRequest = function (cb) {
 
-            AuthAttempt.create('127.0.0.1', 'stimpy', (err, result) => {
+      AuthAttempt.create('127.0.0.1', 'stimpy', 'test', (err, result) => {
 
-                Code.expect(err).to.not.exist();
-                Code.expect(result).to.be.an.object();
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.object();
 
-                cb();
-            });
-        };
+        cb();
+      });
+    };
 
-        for (let i = 0; i < authAttemptsConfig.forIpAndUser; ++i) {
-            authSpam.push(authRequest);
-        }
+    for (let i = 0; i < authAttemptsConfig.forIpAndUser; ++i) {
+      authSpam.push(authRequest);
+    }
 
-        Async.parallel(authSpam, () => {
+    Async.parallel(authSpam, () => {
 
-            AuthAttempt.abuseDetected('127.0.0.1', 'stimpy', (err, result) => {
+      AuthAttempt.abuseDetected('127.0.0.1', 'stimpy', (err, result) => {
 
-                Code.expect(err).to.not.exist();
-                Code.expect(result).to.equal(true);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.equal(true);
 
-                done();
-            });
-        });
+        done();
+      });
     });
+  });
 
 
-    lab.test('it returns true when abuse is detected for an ip and multiple users', (done) => {
+  lab.test('it returns true when abuse is detected for an ip and multiple users', (done) => {
 
-        const authAttemptsConfig = Config.get('/authAttempts');
-        const authSpam = [];
-        const authRequest = function (i, cb) {
+    const authAttemptsConfig = Config.get('/authAttempts');
+    const authSpam = [];
+    const authRequest = function (i, cb) {
 
-            const randomUsername = 'mudskipper' + i;
-            AuthAttempt.create('127.0.0.2', randomUsername, (err, result) => {
+      const randomUsername = 'mudskipper' + i;
+      AuthAttempt.create('127.0.0.2', randomUsername, 'test', (err, result) => {
 
-                Code.expect(err).to.not.exist();
-                Code.expect(result).to.be.an.object();
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.be.an.object();
 
-                cb();
-            });
-        };
+        cb();
+      });
+    };
 
-        for (let i = 0; i < authAttemptsConfig.forIp; ++i) {
-            authSpam.push(authRequest.bind(null, i));
-        }
+    for (let i = 0; i < authAttemptsConfig.forIp; ++i) {
+      authSpam.push(authRequest.bind(null, i));
+    }
 
-        Async.parallel(authSpam, () => {
+    Async.parallel(authSpam, () => {
 
-            AuthAttempt.abuseDetected('127.0.0.2', 'yak', (err, result) => {
+      AuthAttempt.abuseDetected('127.0.0.2', 'yak', (err, result) => {
 
-                Code.expect(err).to.not.exist();
-                Code.expect(result).to.equal(true);
+        Code.expect(err).to.not.exist();
+        Code.expect(result).to.equal(true);
 
-                done();
-            });
-        });
+        done();
+      });
     });
+  });
 
 
-    lab.test('it returns an error when count fails', (done) => {
+  lab.test('it returns an error when count fails', (done) => {
 
-        const realCount = AuthAttempt.count;
-        AuthAttempt.count = function () {
+    const realCount = AuthAttempt.count;
+    AuthAttempt.count = function () {
 
-            const args = Array.prototype.slice.call(arguments);
-            const callback = args.pop();
+      const args = Array.prototype.slice.call(arguments);
+      const callback = args.pop();
 
-            callback(Error('count failed'));
-        };
+      callback(Error('count failed'));
+    };
 
-        AuthAttempt.abuseDetected('127.0.0.1', 'toastman', (err, result) => {
+    AuthAttempt.abuseDetected('127.0.0.1', 'toastman', (err, result) => {
 
-            Code.expect(err).to.be.an.object();
-            Code.expect(result).to.not.exist();
+      Code.expect(err).to.be.an.object();
+      Code.expect(result).to.not.exist();
 
-            AuthAttempt.count = realCount;
+      AuthAttempt.count = realCount;
 
-            done();
-        });
+      done();
     });
+  });
 });

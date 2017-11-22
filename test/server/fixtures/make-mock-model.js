@@ -1,17 +1,17 @@
 'use strict';
-const MongoModels = require('mongo-models');
+const MongoModels = require('hicsail-mongo-models');
 
 
 const MakeMockModel = function () {
 
-    const mock = {};
+  const mock = {};
 
-    Reflect.ownKeys(MongoModels).forEach((key) => {
+  Reflect.ownKeys(MongoModels).forEach((key) => {
 
-        mock[key] = MongoModels[key];
-    });
+    mock[key] = MongoModels[key];
+  });
 
-    return mock;
+  return mock;
 };
 
 

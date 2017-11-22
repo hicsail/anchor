@@ -1,0 +1,110 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>Feedback</h3>
+        <hr>
+        <div class="card">
+          <div style="padding: 20px;">
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+              <tr>
+                <th>Username</th>
+                <th>Study ID</th>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Comment</th>
+                <th>Resolved</th>
+                <th>Time</th>
+                <th>Edit</th>
+                {{#role user 'admin'}}
+                  <th>Delete</th>
+                {{/role}}
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var table;
+  $(document).ready(function () {
+    table = $('#table').DataTable({
+      processing: true,
+      serverSide: true,
+      scrollX: true,
+      scrollY: '500px',
+      scrollCollapse: true,
+      lengthChange: false,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+      ],
+      ajax: {
+        url: "/api/table/feedback",
+        data: function (d) {
+          d.fields = "username userId studyID inStudy subject description resolved time comment";
+        }
+      },
+      columns: [
+        {
+          data: "user.username",
+          defaultContent: ""
+        },
+        {
+          data: "user.studyID",
+          defaultContent: ""
+        },
+        {
+          data: "subject",
+          defaultContent: ""
+        },
+        {
+          data: "description",
+          defaultContent: ""
+        },
+        {
+          data: "comment",
+          defaultContent: ""
+        },
+        {
+          data: "resolved",
+          render: function (data, type, row) {
+            if(row.resolved) {
+              return '<h5><span class="badge badge-success">Resolved</span></h5>';
+            } else {
+              return '<h5><span class="badge badge-danger">Unresolved</span></h5>';
+            }
+          }
+        },
+        {
+          data: "time",
+          render: function (data, type, row) {
+            var date = new Date(row.time);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
+        },
+        {
+          data: "_id",
+          render: function (data, type, row) {
+            return '<button class="btn btn-secondary" id="'+row._id+'" onclick="editDoc(\'' + row._id + '\')">Edit</button>';
+          }
+        },
+        {{#role user 'admin'}}
+          {
+            data: "_id",
+            render: function (data, type, row) {
+              return '<button class="btn btn-danger" id="'+row._id+'" onclick="deleteDoc(\'' + row._id + '\')">Delete</button>';
+            },
+            visible: false
+          }
+        {{/role}}
+      ]
+    });
+  });
+</script>
+<script type="text/javascript" src="/public/scripts/feedback/index.js"></script>
