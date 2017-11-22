@@ -22,7 +22,6 @@ internals.applyRoutes = function (server, next) {
           password: Joi.string().required(),
           email: Joi.string().email().lowercase().required(),
           name: Joi.string().required(),
-          application: Joi.string().default('Web'),
           invite: Joi.string().optional()
         }
       },
