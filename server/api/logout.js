@@ -27,7 +27,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const credentials = request.auth.credentials || { session: {} };
-      const session = credentials.session || {};
+      const session = credentials.session;
 
       Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
 

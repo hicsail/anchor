@@ -104,7 +104,6 @@ internals.applyRoutes = function (server, next) {
           }
         }
         return reply.view('invite/view', {
-          user: request.auth.credentials.user,
           projectName: Config.get('/projectName'),
           title: 'Invites',
           baseUrl: Config.get('/baseUrl'),
