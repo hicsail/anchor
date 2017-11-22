@@ -130,16 +130,85 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
+    path: '/sessions/my',
+    config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session']
+      }
+    },
+    handler: function (request, reply) {
+
+      const id = request.auth.credentials.user._id.toString();
+
+      Session.find({ userId: id }, (err, session) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!session) {
+          return reply(Boom.notFound('Document not found.'));
+        }
+
+        reply(session);
+      });
+    }
+  });
+
+
+  server.route({
+    method: 'GET',
     path: '/sessions/{id}',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: 'admin'
+        scope: ['root','admin','researcher']
       }
     },
     handler: function (request, reply) {
 
       Session.findById(request.params.id, (err, session) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        if (!session) {
+          return reply(Boom.notFound('Document not found.'));
+        }
+
+        reply(session);
+      });
+    }
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/sessions/my/{id}',
+    config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session']
+      },
+      pre: [{
+        assign: 'current',
+        method: function (request, reply) {
+
+          const currentSession = request.auth.credentials.session._id.toString();
+
+          if (currentSession === request.params.id) {
+
+            return reply(Boom.badRequest('Unable to close your current session. You can use logout instead.'));
+          }
+
+          reply(true);
+        }
+      }]
+    },
+    handler: function (request, reply) {
+
+      const id = request.params.id;
+
+      Session.findByIdAndDelete(id, (err, session) => {
 
         if (err) {
           return reply(err);

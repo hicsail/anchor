@@ -292,6 +292,50 @@ lab.experiment('Signup Plugin', () => {
       done();
     });
   });
+
+
+  lab.test('it finishes successfully with an x-forwarded-for header', (done) => {
+
+    stub.User.findOne = function (conditions, callback) {
+
+      callback();
+    };
+
+    stub.User.create = function (username, password, email, name, callback) {
+
+      callback(null, { _id: 'BL4M0' });
+    };
+
+    stub.User.findByIdAndUpdate = function (id, update, callback) {
+
+      callback(null, [{}, {}]);
+    };
+
+    const realSendEmail = server.plugins.mailer.sendEmail;
+    server.plugins.mailer.sendEmail = function (options, template, context, callback) {
+
+      callback(null, {});
+    };
+
+    stub.Session.create = function (username, ip, userAgent, callback) {
+
+      callback(null, {});
+    };
+
+    request.headers = {
+      'x-forwarded-for': '127.0.0.1'
+    };
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.be.an.object();
+
+      server.plugins.mailer.sendEmail = realSendEmail;
+
+      done();
+    });
+  });
 });
 
 lab.experiment('Available Plugin', () => {

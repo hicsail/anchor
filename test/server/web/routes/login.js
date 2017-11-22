@@ -101,6 +101,11 @@ lab.experiment('Login Page View', () => {
 
     request.credentials = AuthenticatedAccount;
 
+    stub.Session.findByIdAndDelete = function (id, callback) {
+
+      callback(null, true);
+    };
+
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(302);
