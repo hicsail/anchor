@@ -84,8 +84,7 @@ lab.experiment('Login Plugin (Create Session)', () => {
       url: '/login',
       payload: {
         username: 'ren',
-        password: 'baddog',
-        application: 'test'
+        password: 'baddog'
       }
     };
 
@@ -217,7 +216,7 @@ lab.experiment('Login Plugin (Create Session)', () => {
       callback(null, new User({ _id: '1D', username: 'ren' }));
     };
 
-    stub.Session.create = function (username, application, callback) {
+    stub.Session.create = function (username, ip, userAgent, callback) {
 
       callback(Error('create session failed'));
     };
@@ -248,7 +247,7 @@ lab.experiment('Login Plugin (Create Session)', () => {
       callback(null, new User({ _id: '1D', username: 'ren' }));
     };
 
-    stub.Session.create = function (username, application, callback) {
+    stub.Session.create = function (username, ip, userAgent, callback) {
 
       callback(null, new Session({ _id: '2D', userId: '1D' }));
     };

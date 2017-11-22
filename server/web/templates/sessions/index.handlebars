@@ -12,8 +12,11 @@
               <tr>
                 <th>Username</th>
                 <th>Study ID</th>
-                <th>Application</th>
-                <th>Time</th>
+                <th>IP</th>
+                <th>Browser</th>
+                <th>OS</th>
+                <th>Last Active</th>
+                <th>Created At</th>
                 {{#role user 'admin'}}
                   <th>ID</th>
                   <th>Delete</th>
@@ -44,7 +47,7 @@
       ajax: {
         url: "/api/table/sessions",
         data: function (d) {
-          d.fields = "userId application time";
+          d.fields = "userId ip os browser lastActive time";
         }
       },
       "columns": [
@@ -62,8 +65,23 @@
           }
         },
         {
-          data: "application",
+          data: "ip",
           defaultContent: ""
+        },
+        {
+          data: "browser",
+          defaultContent: ""
+        },
+        {
+          data: "os",
+          defaultContent: ""
+        },
+        {
+          data: "lastActive",
+          render: function (data, type, row) {
+            var date = new Date(row.lastActive);
+            return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
+          }
         },
         {
           data: "time",
