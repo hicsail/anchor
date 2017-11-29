@@ -58,6 +58,50 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'GET',
+    path: '/table/clinicians/{id}',
+    config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session']
+      },
+      validate: {
+        query: Joi.any()
+      }
+    },
+    handler: function (request, reply) {
+
+      const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
+      const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
+      const limit = Number(request.query.length);
+      const page = Math.ceil(Number(request.query.start) / limit) + 1;
+      const fields = request.query.fields;
+      const userId = MongoModels.ObjectID(request.params.id);
+
+      const query = {
+        username: { $regex: request.query['search[value]'].toLowerCase() },
+        'roles.clinician.userAccess': { $in: [userId] }
+      };
+
+
+      User.pagedFind(query, fields, sort, limit, page, (err, results) => {
+
+        if (err) {
+          return reply(err);
+        }
+
+        reply({
+          draw: request.query.draw,
+          recordsTotal: results.data.length,
+          recordsFiltered: results.items.total,
+          data: results.data,
+          error: err
+        });
+      });
+    }
+  });
+
+
+  server.route({
+    method: 'GET',
     path: '/select2/clinicians',
     config: {
       auth: {

@@ -138,6 +138,27 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+
+  server.route({
+    method: 'GET',
+    path: '/users/clinicians/{id}',
+    config: {
+      auth: {
+        strategy: 'session',
+        scope: ['root','admin']
+      }
+    },
+    handler: function (request, reply) {
+
+      return reply.view('clinician/usersClinicians', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName'),
+        title: 'User\'s Clinicians',
+        baseUrl: Config.get('/baseUrl')
+      });
+    }
+  });
+
   next();
 };
 

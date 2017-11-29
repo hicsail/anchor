@@ -31,3 +31,7 @@ function viewUserEvent(id) {
 function viewChangePassword(id) {
   window.location = '/change-password/' + id
 }
+
+function viewUserClinicians(id) {
+  window.location = '/users/clinicians/' + id
+}

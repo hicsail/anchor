@@ -20,6 +20,7 @@
                 <th>Joined Study</th>
                 <th>Users Events</th>
                 {{#role user 'admin'}}
+                  <th>Users Clinicians</th>
                   <th>ID</th>
                   <th>Update Password</th>
                   <th>Edit</th>
@@ -90,6 +91,13 @@
           }
         },
         {{#role user 'admin'}}
+          {
+            data: "_id",
+            render: function (data, type, row) {
+              return '<button class="btn btn-secondary" onclick="viewUserClinicians(\'' + row._id + '\')">Edit Clinicians</button>';
+            },
+            visible: false
+          },
           {
             data: "_id",
             defaultContent: "",
