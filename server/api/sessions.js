@@ -207,8 +207,14 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const id = request.params.id;
+      const userId = request.auth.credentials.user._id.toString();
 
-      Session.findByIdAndDelete(id, (err, session) => {
+      const filter = {
+        _id: Session.ObjectID(id),
+        userId
+      };
+
+      Session.findOneAndDelete(filter, (err, session) => {
 
         if (err) {
           return reply(err);
@@ -218,7 +224,7 @@ internals.applyRoutes = function (server, next) {
           return reply(Boom.notFound('Document not found.'));
         }
 
-        reply(session);
+        reply({ message: 'Success' });
       });
     }
   });

@@ -520,7 +520,7 @@ lab.experiment('Session Plugin Delete By User', () => {
 
     request = {
       method: 'DELETE',
-      url: '/sessions/my/93EP150D35',
+      url: '/sessions/my/59de45dab466ff2cc5c1da54',
       credentials: AuthenticatedUser
     };
 
@@ -530,7 +530,7 @@ lab.experiment('Session Plugin Delete By User', () => {
 
   lab.test('it returns an error when delete by id fails', (done) => {
 
-    stub.Session.findByIdAndDelete = function (id, callback) {
+    stub.Session.findOneAndDelete = function (id, callback) {
 
       callback(Error('update by id failed'));
     };
@@ -546,7 +546,7 @@ lab.experiment('Session Plugin Delete By User', () => {
 
   lab.test('it returns a not found when update by id misses', (done) => {
 
-    stub.Session.findByIdAndDelete = function (id, callback) {
+    stub.Session.findOneAndDelete = function (id, callback) {
 
       callback(null, undefined);
     };
@@ -563,7 +563,7 @@ lab.experiment('Session Plugin Delete By User', () => {
 
   lab.test('it updates a document successfully', (done) => {
 
-    stub.Session.findByIdAndDelete = function (id, callback) {
+    stub.Session.findOneAndDelete = function (id, callback) {
 
       callback(null, 1);
     };
@@ -579,7 +579,7 @@ lab.experiment('Session Plugin Delete By User', () => {
   lab.test('it returns an error if you delete the current session', (done) => {
 
 
-    AuthenticatedUser.session._id = '93EP150D35';
+    AuthenticatedUser.session._id = '59de45dab466ff2cc5c1da54';
 
     server.inject(request, (response) => {
 
