@@ -21,7 +21,8 @@ const manifest = {
   },
   connections: [{
     port: Config.get('/port/web'),
-    labels: ['web']
+    labels: ['web'],
+    routes: { cors: true }
   }],
   registrations: [
     {
