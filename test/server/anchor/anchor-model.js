@@ -1221,4 +1221,141 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
+
+
+  lab.test('it returns results via pagedLookup', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: id.toString()
+    };
+
+    await DummyModel.insertOne(parentDocument);
+
+    const lookup = [{
+      local: 'buddy',
+      foreign: '_id',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.pagedLookup({ name: 'Jen' }, 1, 10, lookup);
+
+    lab.expect(result.data[0]).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it returns results via pagedLookup with options', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: id.toString()
+    };
+
+    await DummyModel.insertOne(parentDocument);
+
+    const lookup = [{
+      local: 'buddy',
+      foreign: '_id',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.pagedLookup({ name: 'Jen' }, 1, 10, {}, lookup);
+
+    lab.expect(result.data[0]).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it returns results via pagedLookup with no lookup', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: id.toString()
+    };
+
+    await DummyModel.insertOne(parentDocument);
+
+    const result = await DummyModel.pagedLookup({ name: 'Jen' }, 1, 10);
+
+    lab.expect(result.data[0]).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it returns paged lookup results where begin item is less than total', async () => {
+
+    const documents = [
+      { name: 'Ren' },
+      { name: 'Stimpy' },
+      { name: 'Yak' }
+    ];
+
+    await DummyModel.insertMany(documents);
+
+    const filter = { 'role.special': { $exists: true } };
+    const limit = 2;
+    const page = 1;
+    const options = {
+      sort: { _id: -1 }
+    };
+    const lookup = [{
+      local: 'buddy',
+      foreign: '_id',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.pagedLookup(
+      filter, limit, page, options, lookup
+    );
+
+    lab.expect(result).to.be.an.object();
+  });
+
+
+  lab.test('it returns paged results where end item is less than total', async () => {
+
+    const documents = [
+      { name: 'Ren' },
+      { name: 'Stimpy' },
+      { name: 'Yak' }
+    ];
+
+    await DummyModel.insertMany(documents);
+
+    const filter = {};
+    const limit = 2;
+    const page = 1;
+    const options = {
+      sort: { _id: -1 }
+    };
+    const lookup = [{
+      local: 'buddy',
+      foreign: '_id',
+      as: 'buddy'
+    }];
+    const result = await DummyModel.pagedLookup(
+      filter, limit, page, options, lookup
+    );
+
+    lab.expect(result).to.be.an.object();
+  });
 });
