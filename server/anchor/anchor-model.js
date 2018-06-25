@@ -485,6 +485,130 @@ class AnchorModel {
   }
 
 
+  static async lookup() {
+
+    const args = argsFromArguments(arguments);
+    const filter = args.shift();
+    const lookups = args.pop();
+    const options = args.shift();
+    const lookupDefaults  = {
+      from: this,
+      localOpts: {},
+      operator: '$eq'
+    };
+
+    const localDocuments = await this.find(filter,options);
+
+    for (const doc of localDocuments) {
+      for (let lookup of lookups) {
+
+        lookup = Hoek.applyToDefaults(lookupDefaults,lookup);
+
+        const foreignFilter = {};
+        foreignFilter[lookup.foreign] = {};
+        if (lookup.foreign === '_id') {
+          foreignFilter[lookup.foreign][lookup.operator] = this.ObjectId(doc[lookup.local]);
+        }
+        else {
+          foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
+        }
+        let foreignDocs = await lookup.from.find(foreignFilter);
+        if (foreignDocs.length === 0) {
+          foreignDocs = {};
+        }
+        else if (foreignDocs.length === 1) {
+          foreignDocs = foreignDocs[0];
+        }
+        doc[lookup.as] = foreignDocs;
+
+      }
+    }
+
+    return localDocuments;
+  }
+
+
+  static async lookupById() {
+
+    const args = argsFromArguments(arguments);
+    const id = args.shift();
+    const lookups = args.pop() || [];
+    const options = args.pop() || {};
+    const filter = { _id: this._idClass(id) };
+
+    const result = await this.lookup(filter,options, lookups);
+    return result[0];
+  }
+
+
+  static async lookupOne() {
+
+    const args = argsFromArguments(arguments);
+    const filter = args.shift();
+    const lookups = args.pop() || [];
+    const options = args.pop() || {};
+
+    const result = await this.lookup(filter,options, lookups);
+    return result[0];
+  }
+
+
+  static async pagedLookup() {
+
+    const args = argsFromArguments(arguments);
+    const db = dbFromArgs(args);
+    const filter = args.shift();
+    const page = args.shift();
+    const limit = args.shift();
+    const lookups = args.pop() || [];
+    const options = args.pop() || {};
+
+    const output = {
+      data: undefined,
+      pages: {
+        current: page,
+        prev: 0,
+        hasPrev: false,
+        next: 0,
+        hasNext: false,
+        total: 0
+      },
+      items: {
+        limit,
+        begin: ((page * limit) - limit) + 1,
+        end: page * limit,
+        total: 0
+      }
+    };
+    const findOptions = Object.assign({}, options, {
+      limit,
+      skip: (page - 1) * limit
+    });
+    const [count, results] = await Promise.all([
+      this.count(db, filter),
+      this.lookup(filter, findOptions, lookups)
+    ]);
+
+    output.data = results;
+    output.items.total = count;
+    output.pages.total = Math.ceil(output.items.total / limit);
+    output.pages.next = output.pages.current + 1;
+    output.pages.hasNext = output.pages.next <= output.pages.total;
+    output.pages.prev = output.pages.current - 1;
+    output.pages.hasPrev = output.pages.prev !== 0;
+
+    if (output.items.begin > output.items.total) {
+      output.items.begin = output.items.total;
+    }
+
+    if (output.items.end > output.items.total) {
+      output.items.end = output.items.total;
+    }
+
+    return output;
+  }
+
+
   static validate(input) {
 
     return Joi.validate(input, this.schema);
@@ -533,33 +657,6 @@ class AnchorModel {
     }
 
     return db[boundFunctionsId];
-  }
-
-  static async lookupById() {
-
-    const args = argsFromArguments(arguments);
-    const id = args.shift();
-    const lookups = args.shift();
-    const local = await this.findById(id);
-    for (const lookup of lookups) {
-      const query = {};
-      query[lookup.foreign] = {};
-      if (lookup.foreign === '_id') {
-        query[lookup.foreign][lookup.operator] = this.ObjectId(local[lookup.local]);
-      }
-      else {
-        query[lookup.foreign][lookup.operator] = local[lookup.local];
-      }
-      let foreignDocs = await lookup.from.find(query);
-      if (foreignDocs.length === 0) {
-        foreignDocs = {};
-      }
-      else if (foreignDocs.length === 1) {
-        foreignDocs = foreignDocs[0];
-      }
-      local[lookup.as] = foreignDocs;
-    }
-    return local;
   }
 }
 

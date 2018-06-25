@@ -1060,10 +1060,8 @@ lab.experiment('Proxy methods', () => {
     const parentId = parentTestDocs[0]._id;
 
     const lookup = [{
-      from: DummyModel,
       local: 'buddy',
       foreign: '_id',
-      operator: '$eq',
       as: 'buddy'
     }];
 
