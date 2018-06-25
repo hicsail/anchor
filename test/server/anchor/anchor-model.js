@@ -1042,7 +1042,7 @@ lab.experiment('Proxy methods', () => {
   });
 
 
-  lab.test('it returns a single result via lookupByid', async () => {
+  lab.test('it returns a single result via lookupById', async () => {
 
     const document = {
       name: 'Ren'
@@ -1069,5 +1069,39 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
     lab.expect(result.buddy).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it returns a single result via lookupById', async () => {
+
+    const document1 = {
+      name: 'Ren'
+    };
+
+    const document2 = {
+      name: 'Ren'
+    };
+
+    await DummyModel.insertOne(document1);
+    await DummyModel.insertOne(document2);
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: 'Ren'
+    };
+
+    const parentTestDocs = await DummyModel.insertOne(parentDocument);
+    const parentId = parentTestDocs[0]._id;
+
+    const lookup = [{
+      local: 'buddy',
+      foreign: 'name',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.lookupById(parentId, lookup);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+    lab.expect(result.buddy).to.be.an.array();
   });
 });
