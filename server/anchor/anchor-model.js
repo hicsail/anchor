@@ -514,7 +514,7 @@ class AnchorModel {
         }
         let foreignDocs = await lookup.from.find(foreignFilter);
         if (foreignDocs.length === 0) {
-          foreignDocs = {};
+          foreignDocs = null;
         }
         else if (foreignDocs.length === 1) {
           foreignDocs = foreignDocs[0];

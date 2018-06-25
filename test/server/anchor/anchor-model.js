@@ -1042,7 +1042,7 @@ lab.experiment('Proxy methods', () => {
   });
 
 
-  lab.test('it returns a single result via lookupById', async () => {
+  lab.test('it returns a single result via lookupById with length of 1', async () => {
 
     const document = {
       name: 'Ren'
@@ -1072,7 +1072,7 @@ lab.experiment('Proxy methods', () => {
   });
 
 
-  lab.test('it returns a single result via lookupById', async () => {
+  lab.test('it returns a single result via lookupById with length of 2', async () => {
 
     const document1 = {
       name: 'Ren'
@@ -1103,5 +1103,122 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
     lab.expect(result.buddy).to.be.an.array();
+  });
+
+
+  lab.test('it returns a single result via lookupById with length of 0', async () => {
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: 'Ren'
+    };
+
+    const parentTestDocs = await DummyModel.insertOne(parentDocument);
+    const parentId = parentTestDocs[0]._id;
+
+    const lookup = [{
+      local: 'buddy',
+      foreign: 'name',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.lookupById(parentId,{}, lookup);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+  });
+
+  lab.test('it returns a single result via lookupById with no lookup', async () => {
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: 'Ren'
+    };
+
+    const parentTestDocs = await DummyModel.insertOne(parentDocument);
+    const parentId = parentTestDocs[0]._id;
+
+    const result = await DummyModel.lookupById(parentId);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it returns a single result via lookupOne', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: id.toString()
+    };
+
+    await DummyModel.insertOne(parentDocument);
+
+    const lookup = [{
+      local: 'buddy',
+      foreign: '_id',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.lookupOne({ name: 'Jen' }, lookup);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+    lab.expect(result.buddy).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it returns a single result via lookupOne with options', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: id.toString()
+    };
+
+    await DummyModel.insertOne(parentDocument);
+
+    const lookup = [{
+      local: 'buddy',
+      foreign: '_id',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.lookupOne({ name: 'Jen' }, {}, lookup);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+    lab.expect(result.buddy).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it returns a single result via lookupOne no lookup', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: id.toString()
+    };
+
+    await DummyModel.insertOne(parentDocument);
+
+    const result = await DummyModel.lookupOne({ name: 'Jen' });
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 });
