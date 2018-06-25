@@ -534,6 +534,33 @@ class AnchorModel {
 
     return db[boundFunctionsId];
   }
+
+  static async lookupById() {
+
+    const args = argsFromArguments(arguments);
+    const id = args.shift();
+    const lookups = args.shift();
+    const local = await this.findById(id);
+    for (const lookup of lookups) {
+      const query = {};
+      query[lookup.foreign] = {};
+      if (lookup.foreign === '_id') {
+        query[lookup.foreign][lookup.operator] = this.ObjectId(local[lookup.local]);
+      }
+      else {
+        query[lookup.foreign][lookup.operator] = local[lookup.local];
+      }
+      let foreignDocs = await lookup.from.find(query);
+      if (foreignDocs.length === 0) {
+        foreignDocs = {};
+      }
+      else if (foreignDocs.length === 1) {
+        foreignDocs = foreignDocs[0];
+      }
+      local[lookup.as] = foreignDocs;
+    }
+    return local;
+  }
 }
 
 

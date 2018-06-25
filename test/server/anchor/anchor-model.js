@@ -577,6 +577,7 @@ lab.experiment('Proxy methods', () => {
       count: Joi.number(),
       group: Joi.string(),
       isCool: Joi.boolean(),
+      buddy: Joi.string(),
       name: Joi.string().required()
     });
 
@@ -1038,5 +1039,37 @@ lab.experiment('Proxy methods', () => {
     const result = await DummyModel.deleteMany({});
 
     lab.expect(result).to.be.an.object();
+  });
+
+
+  lab.test('it returns a single result via lookupByid', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: id.toString()
+    };
+
+    const parentTestDocs = await DummyModel.insertOne(parentDocument);
+    const parentId = parentTestDocs[0]._id;
+
+    const lookup = [{
+      from: DummyModel,
+      local: 'buddy',
+      foreign: '_id',
+      operator: '$eq',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.lookupById(parentId, lookup);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+    lab.expect(result.buddy).to.be.an.instanceOf(DummyModel);
   });
 });
