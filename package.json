@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --inspect -e js,md,html,handlebars,css server.js",
     "first-time-setup": "node first-time-setup.js",
-    "test": "lab -c -L --leaks",
+    "test": "lab ./test/server/anchor/* -c -L -a code",
     "lint": "lab -dL --leaks",
     "lint-fix": "lab -dL --lint-fix",
     "coveralls": "lab -r lcov | ./node_modules/.bin/coveralls"
@@ -42,14 +42,14 @@
     "hapi-cron": "0.0.3",
     "hicsail-hapi-mongo-models": "6.x.x",
     "hicsail-mongo-models": "1.4.x",
-    "hoek": "4.x.x",
+    "hoek": "5.x.x",
     "inert": "4.x.x",
-    "joi": "10.x.x",
+    "joi": "13.x.x",
     "joi-password-complexity": "2.x.x",
     "jsonwebtoken": "8.x.x",
     "lout": "10.x.x",
     "mongo-models": "1.x.x",
-    "mongodb": "2.x.x",
+    "mongodb": "3.x.x",
     "nodemailer": "4.x.x",
     "nodemailer-markdown": "1.0.2",
     "object-assign": "4.x.x",
@@ -60,9 +60,9 @@
     "visionary": "6.x.x"
   },
   "devDependencies": {
-    "code": "4.x.x",
+    "code": "5.x.x",
     "coveralls": "3.x.x",
-    "lab": "14.x.x",
+    "lab": "15.x.x",
     "nodemon": "1.x.x",
     "npm-run": "^4.1.2",
     "pre-commit": "1.x.x",
