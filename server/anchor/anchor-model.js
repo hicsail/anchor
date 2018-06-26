@@ -28,6 +28,12 @@ const dbFromArgs = function (args) {
 
 
 class AnchorModel {
+
+  /**
+   * Create a new instance of your class
+   * @constructor
+   * @param {object} data - an object containing the fields and values of the model instance. Internally data is passed to the validate function, throwing an error if present or assigning the value (the validated value with any type conversions and other modifiers applied) to the object as properties.
+   */
   constructor(data) {
 
     const result = this.constructor.validate(data);
@@ -39,7 +45,14 @@ class AnchorModel {
     Object.assign(this, result.value);
   }
 
-
+  /**
+   * Execute an aggregation framework pipeline against the collection.
+   * @async
+   * @static
+   * @param {object[]} pipeline - an array containing all the aggregation framework commands.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.aggregate]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#aggregate} method.
+   * @returns {Array}
+   */
   static aggregate() {
 
     const args = argsFromArguments(arguments);
@@ -49,7 +62,11 @@ class AnchorModel {
     return collection.aggregate.apply(collection, args).toArray();
   }
 
-
+  /**
+   * Returns the underlying [MongoDB.Collection]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html}
+   * @static
+   * @returns {Collection}
+   */
   static collection() {
 
     const args = argsFromArguments(arguments);
@@ -58,7 +75,15 @@ class AnchorModel {
     return db.collection(this.collectionName);
   }
 
-
+  /**
+   *
+   * @param {object} connection - connection object
+   * @param {string} connection.uri - the uri of the database. [See uri string docs]{@link https://docs.mongodb.com/manual/reference/connection-string/}
+   * @param {string} connection.db - the name of the database.
+   * @param {object} [options] - an optional object passed to [MongoClient.connect]{@link https://docs.mongodb.com/manual/reference/method/connect/}.
+   * @param {string} [name=default] - an optional string to identify the connection. Used to support multiple connections along with the with(name) method.
+   * @returns {Promise}
+   */
   static async connect(connection, options = {}, name = 'default') {
 
     const client = await Mongodb.MongoClient.connect(connection.uri, options);
@@ -314,6 +339,75 @@ class AnchorModel {
   }
 
 
+  static async lookup() {
+
+    const args = argsFromArguments(arguments);
+    const filter = args.shift();
+    const lookups = args.pop();
+    const options = args.shift();
+    const lookupDefaults  = {
+      from: this,
+      options: {},
+      operator: '$eq',
+      lookups: []
+    };
+
+    const localDocuments = await this.find(filter,options);
+
+    for (const doc of localDocuments) {
+      for (let lookup of lookups) {
+
+        lookup = Hoek.applyToDefaults(lookupDefaults,lookup);
+
+        const foreignFilter = {};
+        foreignFilter[lookup.foreign] = {};
+        if (lookup.foreign === '_id') {
+          foreignFilter[lookup.foreign][lookup.operator] = this.ObjectId(doc[lookup.local]);
+        }
+        else {
+          foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
+        }
+        let foreignDocs = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
+        if (foreignDocs.length === 0) {
+          foreignDocs = null;
+        }
+        else if (foreignDocs.length === 1) {
+          foreignDocs = foreignDocs[0];
+        }
+        doc[lookup.as] = foreignDocs;
+
+      }
+    }
+
+    return localDocuments;
+  }
+
+
+  static async lookupById() {
+
+    const args = argsFromArguments(arguments);
+    const id = args.shift();
+    const lookups = args.pop() || [];
+    const options = args.pop() || {};
+    const filter = { _id: this._idClass(id) };
+
+    const result = await this.lookup(filter,options, lookups);
+    return result[0];
+  }
+
+
+  static async lookupOne() {
+
+    const args = argsFromArguments(arguments);
+    const filter = args.shift();
+    const lookups = args.pop() || [];
+    const options = args.pop() || {};
+
+    const result = await this.lookup(filter,options, lookups);
+    return result[0];
+  }
+
+
   static async pagedFind() {
 
     const args = argsFromArguments(arguments);
@@ -347,6 +441,62 @@ class AnchorModel {
     const [count, results] = await Promise.all([
       this.count(db, filter),
       this.find(db, filter, findOptions)
+    ]);
+
+    output.data = results;
+    output.items.total = count;
+    output.pages.total = Math.ceil(output.items.total / limit);
+    output.pages.next = output.pages.current + 1;
+    output.pages.hasNext = output.pages.next <= output.pages.total;
+    output.pages.prev = output.pages.current - 1;
+    output.pages.hasPrev = output.pages.prev !== 0;
+
+    if (output.items.begin > output.items.total) {
+      output.items.begin = output.items.total;
+    }
+
+    if (output.items.end > output.items.total) {
+      output.items.end = output.items.total;
+    }
+
+    return output;
+  }
+
+
+  static async pagedLookup() {
+
+    const args = argsFromArguments(arguments);
+    const db = dbFromArgs(args);
+    const filter = args.shift();
+    const page = args.shift();
+    const limit = args.shift();
+    const lookups = args.pop() || [];
+    const options = args.pop() || {};
+
+    const output = {
+      data: undefined,
+      pages: {
+        current: page,
+        prev: 0,
+        hasPrev: false,
+        next: 0,
+        hasNext: false,
+        total: 0
+      },
+      items: {
+        limit,
+        begin: ((page * limit) - limit) + 1,
+        end: page * limit,
+        total: 0
+      }
+    };
+    const findOptions = Object.assign({}, options, {
+      limit,
+      skip: (page - 1) * limit
+    });
+    const [count, results] = await Promise.all([
+      this.count(db, filter),
+      this.lookup(filter, findOptions, lookups)
     ]);
 
     output.data = results;
@@ -482,131 +632,6 @@ class AnchorModel {
     const result = await collection.updateOne.apply(collection, args);
 
     return this.resultFactory(result);
-  }
-
-
-  static async lookup() {
-
-    const args = argsFromArguments(arguments);
-    const filter = args.shift();
-    const lookups = args.pop();
-    const options = args.shift();
-    const lookupDefaults  = {
-      from: this,
-      options: {},
-      operator: '$eq',
-      lookups: []
-    };
-
-    const localDocuments = await this.find(filter,options);
-
-    for (const doc of localDocuments) {
-      for (let lookup of lookups) {
-
-        lookup = Hoek.applyToDefaults(lookupDefaults,lookup);
-
-        const foreignFilter = {};
-        foreignFilter[lookup.foreign] = {};
-        if (lookup.foreign === '_id') {
-          foreignFilter[lookup.foreign][lookup.operator] = this.ObjectId(doc[lookup.local]);
-        }
-        else {
-          foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
-        }
-        let foreignDocs = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
-        if (foreignDocs.length === 0) {
-          foreignDocs = null;
-        }
-        else if (foreignDocs.length === 1) {
-          foreignDocs = foreignDocs[0];
-        }
-        doc[lookup.as] = foreignDocs;
-
-      }
-    }
-
-    return localDocuments;
-  }
-
-
-  static async lookupById() {
-
-    const args = argsFromArguments(arguments);
-    const id = args.shift();
-    const lookups = args.pop() || [];
-    const options = args.pop() || {};
-    const filter = { _id: this._idClass(id) };
-
-    const result = await this.lookup(filter,options, lookups);
-    return result[0];
-  }
-
-
-  static async lookupOne() {
-
-    const args = argsFromArguments(arguments);
-    const filter = args.shift();
-    const lookups = args.pop() || [];
-    const options = args.pop() || {};
-
-    const result = await this.lookup(filter,options, lookups);
-    return result[0];
-  }
-
-
-  static async pagedLookup() {
-
-    const args = argsFromArguments(arguments);
-    const db = dbFromArgs(args);
-    const filter = args.shift();
-    const page = args.shift();
-    const limit = args.shift();
-    const lookups = args.pop() || [];
-    const options = args.pop() || {};
-
-    const output = {
-      data: undefined,
-      pages: {
-        current: page,
-        prev: 0,
-        hasPrev: false,
-        next: 0,
-        hasNext: false,
-        total: 0
-      },
-      items: {
-        limit,
-        begin: ((page * limit) - limit) + 1,
-        end: page * limit,
-        total: 0
-      }
-    };
-    const findOptions = Object.assign({}, options, {
-      limit,
-      skip: (page - 1) * limit
-    });
-    const [count, results] = await Promise.all([
-      this.count(db, filter),
-      this.lookup(filter, findOptions, lookups)
-    ]);
-
-    output.data = results;
-    output.items.total = count;
-    output.pages.total = Math.ceil(output.items.total / limit);
-    output.pages.next = output.pages.current + 1;
-    output.pages.hasNext = output.pages.next <= output.pages.total;
-    output.pages.prev = output.pages.current - 1;
-    output.pages.hasPrev = output.pages.prev !== 0;
-
-    if (output.items.begin > output.items.total) {
-      output.items.begin = output.items.total;
-    }
-
-    if (output.items.end > output.items.total) {
-      output.items.end = output.items.total;
-    }
-
-    return output;
   }
 
 

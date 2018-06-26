@@ -62,6 +62,7 @@
   "devDependencies": {
     "code": "5.x.x",
     "coveralls": "3.x.x",
+    "jsdoc": "^3.5.5",
     "lab": "15.x.x",
     "nodemon": "1.x.x",
     "npm-run": "^4.1.2",
