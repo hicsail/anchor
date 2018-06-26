@@ -493,8 +493,9 @@ class AnchorModel {
     const options = args.shift();
     const lookupDefaults  = {
       from: this,
-      localOpts: {},
-      operator: '$eq'
+      options: {},
+      operator: '$eq',
+      lookups: []
     };
 
     const localDocuments = await this.find(filter,options);
@@ -512,7 +513,7 @@ class AnchorModel {
         else {
           foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
         }
-        let foreignDocs = await lookup.from.find(foreignFilter);
+        let foreignDocs = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
         if (foreignDocs.length === 0) {
           foreignDocs = null;
         }
