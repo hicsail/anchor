@@ -650,7 +650,11 @@ class AnchorModel {
         findOneAndUpdate: this.findOneAndUpdate.bind(this, db),
         insertMany: this.insertMany.bind(this, db),
         insertOne: this.insertOne.bind(this, db),
+        lookup: this.lookup.bind(this, db),
+        lookupById: this.lookupById.bind(this, db),
+        lookupOne: this.lookupOne.bind(this, db),
         pagedFind: this.pagedFind.bind(this, db),
+        pagedLookup: this.pagedLookup.bind(this, db),
         replaceOne: this.replaceOne.bind(this, db),
         updateMany: this.updateMany.bind(this, db),
         updateOne: this.updateOne.bind(this, db)
