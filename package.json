@@ -9,7 +9,9 @@
     "test": "lab -c -L --leaks",
     "lint": "lab -dL --leaks",
     "lint-fix": "lab -dL --lint-fix",
-    "coveralls": "lab -r lcov | ./node_modules/.bin/coveralls"
+    "coveralls": "lab -r lcov | ./node_modules/.bin/coveralls",
+    "build": "gulp",
+    "prestart": "npm run build"
   },
   "author": "Boston University Software & Application Innovation Lab",
   "license": "MIT",
@@ -26,7 +28,6 @@
   },
   "dependencies": {
     "adm-zip": "0.4.x",
-    "ajv": "^6.5.1",
     "archiver": "2.x.x",
     "async": "2.x.x",
     "bcrypt": "1.x.x",
