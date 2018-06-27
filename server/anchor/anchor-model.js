@@ -33,6 +33,7 @@ class AnchorModel {
    * Create a new instance of your class
    * @constructor
    * @param {object} data - an object containing the fields and values of the model instance. Internally data is passed to the validate function, throwing an error if present or assigning the value (the validated value with any type conversions and other modifiers applied) to the object as properties.
+   * @return {object} returns an instance of your class
    */
   constructor(data) {
 
@@ -51,7 +52,7 @@ class AnchorModel {
    * @static
    * @param {object[]} pipeline - an array containing all the aggregation framework commands.
    * @param {object} [options] - an optional object passed to MongoDB's native [Collection.aggregate]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#aggregate} method.
-   * @returns {Array}
+   * @returns {object[]}
    */
   static aggregate() {
 
@@ -76,7 +77,9 @@ class AnchorModel {
   }
 
   /**
-   *
+   * Connects to a MongoDB server and returns the [MongoDB.Db]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Db.html}
+   * @async
+   * @static
    * @param {object} connection - connection object
    * @param {string} connection.uri - the uri of the database. [See uri string docs]{@link https://docs.mongodb.com/manual/reference/connection-string/}
    * @param {string} connection.db - the name of the database.
@@ -94,7 +97,13 @@ class AnchorModel {
     return AnchorModel.dbs[name];
   }
 
-
+  /**
+   * Returns the number of documents matching a query
+   * @static
+   * @param {object} query - a filter object used to select the documents to count.
+   * @param {object} [options] - an optional object passed to the native [Collection.count]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#count} method.
+   * @returns {Promise}
+   */
   static count() {
 
     const args = argsFromArguments(arguments);
@@ -104,7 +113,21 @@ class AnchorModel {
     return collection.count.apply(collection, args);
   }
 
-
+  /**
+   * Creates multiple indexes in the collection and returns the result
+   * @async
+   * @static
+   * @param {object[]} indexSpecs - an array of objects containing index specifications to be created. [See the index specification]{@link http://docs.mongodb.org/manual/reference/command/createIndexes/}.
+   * @param {object} [options] - an optional object passed to the native [Collection.createIndexes]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#createIndexes} method.
+   * @returns {Promise}
+   *
+   * @example
+   * // Indexes are defined as a static property on your models like:
+   * Customer.indexes = [
+   *   { key: { name: 1 } },
+   *   { key: { email: -1 } }
+   * ];
+   */
   static createIndexes() {
 
     const args = argsFromArguments(arguments);
@@ -114,7 +137,14 @@ class AnchorModel {
     return collection.createIndexes.apply(collection, args);
   }
 
-
+  /**
+   * Deletes multiple documents and returns the [Collection.deleteWriteOpResult]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#%7EdeleteWriteOpResult}
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the documents to delete.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.deleteMany]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteMany} method.
+   * @returns {Promise}
+   */
   static deleteMany() {
 
     const args = argsFromArguments(arguments);
@@ -124,7 +154,14 @@ class AnchorModel {
     return collection.deleteMany.apply(collection, args);
   }
 
-
+  /**
+   * Deletes a document and returns the [Collection.deleteWriteOpResult]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#%7EdeleteWriteOpResult}
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the document to delete.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.deleteOne]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne} method.
+   * @returns {Promise}
+   */
   static deleteOne() {
 
     const args = argsFromArguments(arguments);
@@ -134,7 +171,11 @@ class AnchorModel {
     return collection.deleteOne.apply(collection, args);
   }
 
-
+  /**
+   * Closes a specific connection by name or all connections if no name is specified.
+   * @static
+   * @param {string} [name] - Closes a specific connection by name
+   */
   static disconnect(name) {
 
     if (name === undefined) {
@@ -157,7 +198,15 @@ class AnchorModel {
     AnchorModel.clients[name].close();
   }
 
-
+  /**
+   * Returns a list of distinct values for the given key across a collection
+   * @async
+   * @static
+   * @param {string} key -  a string representing the field for which to return distinct values.
+   * @param {object} query - an optional query object used to limit the documents distinct applies to.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.distinct]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#distinct} method.
+   * @return {Promise}
+   */
   static distinct() {
 
     const args = argsFromArguments(arguments);
