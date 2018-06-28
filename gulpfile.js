@@ -6,7 +6,7 @@ Gulp.task('css', () => {
   Gulp.src([
     './node_modules/bootstrap/dist/css/bootstrap.min.css',
     './node_modules/select2/dist/css/select2.min.css'
-  ]).pipe(Gulp.dest('./server/web/public/css/'));
+  ]).pipe(Gulp.dest('./server/web/public/css/lib/'));
 });
 
 
@@ -15,7 +15,7 @@ Gulp.task('cssDatatables', () => {
   Gulp.src([
     './node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css',
     './node_modules/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css'
-  ]).pipe(Gulp.dest('./server/web/public/css/datatables/'));
+  ]).pipe(Gulp.dest('./server/web/public/css/lib/datatables/'));
 });
 
 
@@ -30,7 +30,7 @@ Gulp.task('js', () => {
     './node_modules/mustache/mustache.min.js',
     './node_modules/popper.js/dist/popper.min.js',
     './node_modules/select2/dist/js/select2.full.min.js'
-  ]).pipe(Gulp.dest('./server/web/public/js/'));
+  ]).pipe(Gulp.dest('./server/web/public/js/lib/'));
 });
 
 Gulp.task('jsDatatables', () => {
@@ -46,7 +46,7 @@ Gulp.task('jsDatatables', () => {
     './node_modules/jszip/dist/jszip.min.js',
     './node_modules/pdfmake/build/pdfmake.min.js',
     './node_modules/pdfmake/build/vfs_fonts.js'
-  ]).pipe(Gulp.dest('./server/web/public/js/datatables'));
+  ]).pipe(Gulp.dest('./server/web/public/js/lib/datatables/'));
 });
 
 const tasks = ['css', 'cssDatatables','js', 'jsDatatables'];
