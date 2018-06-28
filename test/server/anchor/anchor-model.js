@@ -1042,36 +1042,6 @@ lab.experiment('Proxy methods', () => {
   });
 
 
-  lab.test('it returns a single result via lookupById with length of 1', async () => {
-
-    const document = {
-      name: 'Ren'
-    };
-
-    const testDocs = await DummyModel.insertOne(document);
-    const id = testDocs[0]._id;
-
-    const parentDocument = {
-      name: 'Jen',
-      buddy: id.toString()
-    };
-
-    const parentTestDocs = await DummyModel.insertOne(parentDocument);
-    const parentId = parentTestDocs[0]._id;
-
-    const lookup = [{
-      local: 'buddy',
-      foreign: '_id',
-      as: 'buddy'
-    }];
-
-    const result = await DummyModel.lookupById(parentId, lookup);
-
-    lab.expect(result).to.be.an.instanceOf(DummyModel);
-    lab.expect(result.buddy).to.be.an.instanceOf(DummyModel);
-  });
-
-
   lab.test('it returns a single result via lookupById with length of 2', async () => {
 
     const document1 = {
@@ -1168,7 +1138,7 @@ lab.experiment('Proxy methods', () => {
     const result = await DummyModel.lookupOne({ name: 'Jen' }, lookup);
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
-    lab.expect(result.buddy).to.be.an.instanceOf(DummyModel);
+    lab.expect(result.buddy).to.be.an.array();
   });
 
 
@@ -1197,7 +1167,7 @@ lab.experiment('Proxy methods', () => {
     const result = await DummyModel.lookupOne({ name: 'Jen' }, {}, lookup);
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
-    lab.expect(result.buddy).to.be.an.instanceOf(DummyModel);
+    lab.expect(result.buddy).to.be.an.array();
   });
 
 

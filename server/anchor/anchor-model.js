@@ -449,15 +449,7 @@ class AnchorModel {
         else {
           foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
         }
-        let foreignDocs = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
-        if (foreignDocs.length === 0) {
-          foreignDocs = null;
-        }
-        else if (foreignDocs.length === 1) {
-          foreignDocs = foreignDocs[0];
-        }
-        doc[lookup.as] = foreignDocs;
-
+        doc[lookup.as] = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
       }
     }
 
