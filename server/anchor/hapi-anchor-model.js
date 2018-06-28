@@ -15,9 +15,47 @@ const register = async function (server, options) {
 
   const models = await readDir(Path.join(__dirname,modelPath));
 
-  console.log(models);
+  const anchorModels = models.reduce((accumulator, file) => {
+
+    const model = require(Path.join(__dirname,modelPath,file));
+    if (model.prototype instanceof AnchorModel) {
+      accumulator.push(model);
+    }
+    return accumulator;
+  },[]);
 
   server.expose('anchor-model', AnchorModel);
+
+  server.ext({
+    type: 'onPreStart',
+    method: async function (_server) {
+
+      if (options.hasOwnProperty('autoIndex') && options.autoIndex === false) {
+        return;
+      }
+
+      const indexJobs = anchorModels
+        .filter((model) => Boolean(model.indexes))
+        .map((model) => model.createIndexes.bind(model, model.indexes));
+
+      await Promise.all(indexJobs);
+
+      server.log(['info', 'mongodb'], 'HapiAnchorModels: finished processing auto indexes.');
+    }
+  });
+
+  server.ext({
+    type: 'onPostStop',
+    method: function (_server) {
+
+      AnchorModel.disconnect();
+
+      server.log(['info', 'mongodb'], 'HapiAnchorModels: closed db connection(s).');
+    }
+  });
+
+  await AnchorModel.connect(options.mongodb.connection, options.mongodb.options);
+  server.log(['info', 'mongodb'], 'HapiAnchorModels: successfully connected to the db.');
 
 };
 

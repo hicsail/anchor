@@ -22,9 +22,7 @@ const manifest = {
     plugins: [
       {
         plugin: './server/anchor/hapi-anchor-model.js',
-        options: {
-          mongodb: Config.get('/hapiAnchorModel/mongodb')
-        }
+        options: Config.get('/hapiAnchorModel')
       }
     ]
   }

@@ -71,7 +71,7 @@ class Session extends AnchorModel {
   }
 }
 
-Session.collection = 'sessions';
+Session.collectionName = 'sessions';
 
 Session.schema = Joi.object({
   _id: Joi.object(),
