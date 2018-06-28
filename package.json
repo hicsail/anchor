@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --inspect -e js,md,html,handlebars,css server.js",
     "first-time-setup": "node first-time-setup.js",
-    "test": "lab ./test/server/anchor/* -c -L -a code",
+    "test": "lab -c -L -a code",
     "lint": "lab -dL --leaks",
     "lint-fix": "lab -dL --lint-fix",
     "coveralls": "lab -r lcov | ./node_modules/.bin/coveralls",
