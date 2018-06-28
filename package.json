@@ -45,6 +45,7 @@
     "hapi-auth-cookie": "9.x.x",
     "hapi-auth-jwt2": "8.x.x",
     "hapi-cron": "1.x.x",
+    "hicsail-mongo-models": "^1.4.0",
     "hoek": "5.x.x",
     "inert": "5.x.x",
     "joi": "13.x.x",

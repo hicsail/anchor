@@ -76,7 +76,8 @@ const readDir = (path, opts = 'utf8') =>
 
 module.exports = {
   name: 'hapi-anchor-model',
-  register
+  register,
+  readDir
 };
 
 exports.register = register;
