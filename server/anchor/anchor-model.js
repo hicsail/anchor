@@ -216,7 +216,12 @@ class AnchorModel {
     return collection.distinct.apply(collection, args);
   }
 
-
+  /**
+   * A helper method to create a fields object suitable to use with MongoDB queries
+   * @static
+   * @param {string} fields - a string with space separated field names. Fields may be prefixed with - to indicate exclusion instead of inclusion.
+   * @return {object}
+   */
   static fieldsAdapter(fields) {
 
     if (Object.prototype.toString.call(fields) === '[object String]') {
@@ -240,7 +245,14 @@ class AnchorModel {
     return fields;
   }
 
-
+  /**
+   * Finds documents and returns an array of model instances
+   * @async
+   * @static
+   * @param {object} query - a query object used to select the documents.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async find() {
 
     const args = argsFromArguments(arguments);
@@ -251,7 +263,14 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds a document by _id and returns a model instance.
+   * @async
+   * @static
+   * @param {string} id - a string value of the _id to find. The id will be casted to the type of _idClass.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.findOne]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async findById() {
 
     const args = argsFromArguments(arguments);
@@ -267,7 +286,13 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds a document by _id, deletes it and returns a model instance
+   * @async
+   * @static
+   * @param {string} id - a string value of the _id to find. The id will be casted to the type of _idClass
+   * @return {Promise<AnchorModel>}
+   */
   static async findByIdAndDelete() {
 
     const args = argsFromArguments(arguments);
@@ -281,7 +306,15 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds a document by _id, updates it and returns a model instance
+   * @async
+   * @static
+   * @param {string} id - a string value of the _id to find. The id will be casted to the type of _idClass.
+   * @param {object} update - an object containing the fields/values to be updated.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.findOneAndUpdate]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async findByIdAndUpdate() {
 
     const args = argsFromArguments(arguments);

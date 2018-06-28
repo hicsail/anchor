@@ -72,7 +72,6 @@ class Session extends AnchorModel {
 }
 
 Session.collectionName = 'sessions';
-
 Session.schema = Joi.object({
   _id: Joi.object(),
   browser: Joi.string().required(),
@@ -83,11 +82,8 @@ Session.schema = Joi.object({
   userId: Joi.string().required(),
   createdAt: Joi.date().default(NewDate(), 'time of creation')
 });
-
-
 Session.indexes = [
   { key: { userId: 1 } }
 ];
-
 
 module.exports = Session;
