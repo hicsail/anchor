@@ -33,7 +33,7 @@ class AnchorModel {
    * Create a new instance of your class
    * @constructor
    * @param {object} data - an object containing the fields and values of the model instance. Internally data is passed to the validate function, throwing an error if present or assigning the value (the validated value with any type conversions and other modifiers applied) to the object as properties.
-   * @return {object} returns an instance of your class
+   * @return {AnchorModel} returns an instance of your class
    */
   constructor(data) {
 
@@ -52,7 +52,7 @@ class AnchorModel {
    * @static
    * @param {object[]} pipeline - an array containing all the aggregation framework commands.
    * @param {object} [options] - an optional object passed to MongoDB's native [Collection.aggregate]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#aggregate} method.
-   * @returns {object[]}
+   * @returns {AnchorModel[]}
    */
   static aggregate() {
 
@@ -102,7 +102,7 @@ class AnchorModel {
    * @static
    * @param {object} query - a filter object used to select the documents to count.
    * @param {object} [options] - an optional object passed to the native [Collection.count]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#count} method.
-   * @returns {Promise}
+   * @returns {Promise<Number>}
    */
   static count() {
 
@@ -205,7 +205,7 @@ class AnchorModel {
    * @param {string} key -  a string representing the field for which to return distinct values.
    * @param {object} query - an optional query object used to limit the documents distinct applies to.
    * @param {object} [options] - an optional object passed to MongoDB's native [Collection.distinct]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#distinct} method.
-   * @return {Promise}
+   * @return {Promise<AnchorModel>}
    */
   static distinct() {
 
@@ -332,7 +332,14 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds a document by _id, updates it and returns a model instance
+   * @async
+   * @static
+   * @param {object} filter -  a filter object used to select the document.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.findOne]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOne} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async findOne() {
 
     const args = argsFromArguments(arguments);
@@ -343,7 +350,14 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds one document matching a filter, deletes it and returns a model instance
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the document to delete.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.findOneAndDelete]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndDelete} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async findOneAndDelete() {
 
     const args = argsFromArguments(arguments);
@@ -354,7 +368,15 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds one document matching a filter, deletes it and returns a model instance
+   * @async
+   * @static
+   * @param {object} filter -  a filter object used to select the document to replace.
+   * @param {object} replacement -  the document replacing the matching document.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.findOneAndReplace]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndReplace} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async findOneAndReplace() {
 
     const args = argsFromArguments(arguments);
@@ -376,7 +398,15 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds one document matching a filter, deletes it and returns a model instance
+   * @async
+   * @static
+   * @param {object} filter -  a filter object used to select the document to replace.
+   * @param {object} update -  an object containing the fields/values to be updated.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.findOneAndUpdate]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndUpdate} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async findOneAndUpdate() {
 
     const args = argsFromArguments(arguments);
@@ -398,7 +428,14 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Inserts multiple documents and returns and array of model instances
+   * @async
+   * @static
+   * @param {object[]} docs -   an array of document objects to insert.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.insertMany]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertMany} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async insertMany() {
 
     const args = argsFromArguments(arguments);
@@ -409,7 +446,14 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Inserts a document and returns a model instance
+   * @async
+   * @static
+   * @param {object} doc - a document object to insert.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.insertOne]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#insertOne} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async insertOne() {
 
     const args = argsFromArguments(arguments);

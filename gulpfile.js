@@ -2,7 +2,7 @@
 const Gulp = require('gulp');
 const JsDoc = require('gulp-jsdoc3');
 
-Gulp.task('document', (cb) => {
+Gulp.task('documentation', (cb) => {
 
   const config = require('./jsdoc.json');
 
@@ -63,6 +63,6 @@ Gulp.task('jsDatatables', () => {
   ]).pipe(Gulp.dest('./server/web/public/js/lib/datatables/'));
 });
 
-const tasks = ['document', 'css', 'cssDatatables','js', 'jsDatatables'];
+const tasks = ['documentation', 'css', 'cssDatatables','js', 'jsDatatables'];
 
 Gulp.task('default', tasks);
