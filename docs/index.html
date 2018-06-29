@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cerulean.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="AnchorModel.html">AnchorModel</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>Anchor</h1><p><a href="https://circleci.com/gh/hicsail/anchor/tree/master"><img src="https://circleci.com/gh/hicsail/anchor/tree/master.svg?style=svg" alt="CircleCI"></a>
+<a href="https://travis-ci.org/hicsail/anchor"><img src="https://travis-ci.org/hicsail/anchor.svg?branch=master" alt="Build Status"></a>
+<a href="https://david-dm.org/hicsail/anchor"><img src="https://img.shields.io/david/hicsail/anchor.svg" alt="Dependency Status"></a>
+<a href="https://david-dm.org/hicsail/anchor?type=dev"><img src="https://img.shields.io/david/dev/hicsail/anchor.svg" alt="devDependency Status"></a>
+<a href="https://coveralls.io/github/hicsail/anchor?branch=master"><img src="https://coveralls.io/repos/github/hicsail/anchor/badge.svg?branch=master" alt="Coverage Status"></a></p>
+<p>A user system API starter with a database administrative system. Bring your own front-end.</p>
+<h2>Features</h2><ul>
+<li>Login system with forgot password and reset password</li>
+<li>Abusive login attempt detection</li>
+<li>User roles for analysts, clinicians, researchers, admins</li>
+<li>Analyst can view anonymized information</li>
+<li>Clinician can view information of specific users</li>
+<li>Researcher can view all information</li>
+<li>Admins can view update and delete all information</li>
+<li>Auto Backups</li>
+<li>Admin UI to view Database Records</li>
+<li>Custom Event Tracking</li>
+<li>User Feedback System</li>
+<li>Email Invites</li>
+<li>API Tokens</li>
+</ul>
+<h2>Technology</h2><p>Anchor is built with the <a href="https://hapijs.com/">hapi</a> framework. We're
+using <a href="http://www.mongodb.org/">MongoDB</a> as a data store. This project 
+was originally a fork from <a href="https://github.com/jedireza/frame">Frame</a></p>
+<h2>Live demo</h2><table>
+<thead>
+<tr>
+<th style="text-align:left">url</th>
+<th style="text-align:left">username</th>
+<th style="text-align:left">password</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://getframe.herokuapp.com/">https://getframe.herokuapp.com/</a></td>
+<td style="text-align:left">root</td>
+<td style="text-align:left">root</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://getframe.herokuapp.com/docs">https://getframe.herokuapp.com/docs</a></td>
+<td style="text-align:left">----</td>
+<td style="text-align:left">----</td>
+</tr>
+</tbody>
+</table>
+<p><a href="http://www.getpostman.com/">Postman</a> is a great tool for testing and
+developing APIs. See the wiki for details on <a href="https://github.com/jedireza/frame/wiki/How-to-login">how to
+login</a>.</p>
+<h2>Requirements</h2><p>You need <a href="http://nodejs.org/download/">Node.js</a> installed and you'll need
+<a href="http://www.mongodb.org/downloads">MongoDB</a> installed and running.</p>
+<p>We use <a href="https://github.com/ncb000gt/node.bcrypt.js"><code>bcrypt</code></a> for hashing
+secrets. If you have issues during installation related to <code>bcrypt</code> then <a href="https://github.com/jedireza/frame/wiki/bcrypt-Installation-Trouble">refer
+to this wiki
+page</a>.</p>
+<h2>Installation</h2><pre class="prettyprint source lang-bash"><code>$ git clone git@github.com:hicsail/anchor.git
+$ cd anchor
+$ npm install</code></pre><h2>Configuration</h2><p>Simply edit <code>config.js</code>. The configuration uses
+<a href="https://github.com/hapijs/confidence"><code>confidence</code></a> which makes it easy to
+manage configuration settings across environments. <strong>Don't store secrets in
+this file or commit them to your repository.</strong></p>
+<p><strong>Instead, access secrets via environment variables.</strong> We use
+<a href="https://github.com/motdotla/dotenv"><code>dotenv</code></a> to help make setting local
+environment variables easy (not to be used in production).</p>
+<p>Simply copy <code>.env-sample</code> to <code>.env</code> and edit as needed. <strong>Don't commit <code>.env</code>
+to your repository.</strong></p>
+<h2>First time setup</h2><p><strong>WARNING</strong>: This will clear all data in the following MongoDB collections if
+they exist: <code>authAttempts</code>, <code>backups</code>, <code>events</code>, <code>feedback</code>, <code>invite</code>,
+<code>sessions</code>, <code>tokens</code>, and <code>users</code>.</p>
+<pre class="prettyprint source lang-bash"><code>$ npm run first-time-setup
+
+# > anchor@0.0.0 first-time-setup /home/hicsail/projects/anchor
+# > node first-time-setup.js
+
+# MongoDB URL: (mongodb://localhost:27017/anchor)
+# Root user email: jedireza@gmail.com
+# Root user password:
+# Setup complete.</code></pre><h2>Running the app</h2><pre class="prettyprint source lang-bash"><code>$ npm start
+
+# > anchor@0.0.0 start /Users/hicsail/projects/anchor
+# > ./node_modules/nodemon/bin/nodemon.js -e js,md server
+
+# 09 Sep 03:47:15 - [nodemon] v1.10.2
+# ...</code></pre><p>Now you should be able to point your browser to http://127.0.0.1:9000/ and
+see the welcome message.</p>
+<p><a href="https://github.com/remy/nodemon"><code>nodemon</code></a> watches for changes in server
+code and restarts the app automatically.</p>
+<p>We also pass the <code>--inspect</code> flag to Node so you have a debugger available.
+Watch the output of <code>$ npm start</code> and look for the debugging URL and open it in
+Chrome. It looks something like this:</p>
+<p><code>chrome-devtools://devtools/remote/serve_file/@62cd277117e6f8ec53e31b1be58290a6f7ab42ef/inspector.html?experiments=true&amp;v8only=true&amp;ws=localhost:9229/node</code></p>
+<h2>Running in production</h2><pre class="prettyprint source lang-bash"><code>$ node server.js</code></pre><p>Unlike <code>$ npm start</code> this doesn't watch for file changes. Also be sure to set
+these environment variables in your production environment:</p>
+<ul>
+<li><code>NODE_ENV=production</code> - This is important for many different
+optimizations.</li>
+<li><code>NPM_CONFIG_PRODUCTION=false</code> - This tells <code>$ npm install</code> to not skip
+installing <code>devDependencies</code>, which we may need to run the first time
+setup script.</li>
+</ul>
+<h2>Running with Docker</h2><p>Running with <a href="https://www.docker.com/">Docker</a> and 
+<a href="https://docs.docker.com/compose/">Docker Compose</a> is quick and easy. Just run</p>
+<pre class="prettyprint source lang-bash"><code>$ docker-compose up --build</code></pre><p>Docker compose will download MongoDB and Node.js into containers and start 
+running the application in production mode.</p>
+<h2>Have a question?</h2><p>Any issues or questions (no matter how basic), open an issue. Please take the
+initiative to read relevant documentation and be pro-active with debugging.</p>
+<h2>Want to contribute?</h2><p>Contributions are welcome. If you're changing something non-trivial, you may
+want to submit an issue before creating a large pull request.</p>
+<h2>Running tests</h2><p><a href="https://github.com/hapijs/lab">Lab</a> is part of the hapi ecosystem and what we
+use to write all of our tests.</p>
+<pre class="prettyprint source lang-bash"><code>$ npm test
+
+# > anchor@0.0.0 test /Users/hicsail/projects/anchor
+# > ./node_modules/lab/bin/lab -c
+
+# ..................................................
+# ..................................................
+# ..................................................
+# ..................................................
+# ..................................................
+# ..................................................
+# ..................................................
+# .........
+
+# 359 tests complete
+# Test duration: 3062 ms
+# No global variable leaks detected
+# Coverage: 100.00%
+# Linting results: No issues</code></pre><h2>License</h2><p>MIT</p></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on June 29th 2018, 10:43:44 am
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

@@ -6,3 +6,5 @@ server/backups
 .coveralls.yml
 server/web/public/css/lib
 server/web/public/js/lib
+*~
+.DS_Store

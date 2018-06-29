@@ -1,5 +1,6 @@
 node_modules/*
 .idea/
 server/web/public/*
+docs/*
 server/web/min-js/*
 server/api/template.js
