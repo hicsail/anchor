@@ -1,16 +1,16 @@
 'use strict';
 const Gulp = require('gulp');
-var jsdoc = require('gulp-jsdoc3');
+const JsDoc = require('gulp-jsdoc3');
 
 Gulp.task('document', (cb) => {
 
-  var config = require('./jsdoc.json');
+  const config = require('./jsdoc.json');
 
   Gulp.src([
     'README.md',
     './server/*'
   ], { read: false })
-    .pipe(jsdoc(config, cb));
+    .pipe(JsDoc(config, cb));
 
 });
 

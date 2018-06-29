@@ -85,5 +85,6 @@
     "proxyquire": "1.x.x"
   },
   "pre-commit": [
+    "lint"
   ]
 }
