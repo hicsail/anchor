@@ -25,6 +25,7 @@ const register = async function (server, options) {
   },[]);
 
   server.expose('anchor-model', AnchorModel);
+  server.expose('models', anchorModels);
 
   server.ext({
     type: 'onPreStart',
