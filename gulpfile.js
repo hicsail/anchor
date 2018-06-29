@@ -1,5 +1,19 @@
 'use strict';
 const Gulp = require('gulp');
+var jsdoc = require('gulp-jsdoc3');
+
+Gulp.task('document', (cb) => {
+
+  var config = require('./jsdoc.json');
+
+  Gulp.src([
+    'README.md',
+    './server/*'
+  ], { read: false })
+    .pipe(jsdoc(config, cb));
+
+});
+
 
 Gulp.task('css', () => {
 
@@ -49,6 +63,6 @@ Gulp.task('jsDatatables', () => {
   ]).pipe(Gulp.dest('./server/web/public/js/lib/datatables/'));
 });
 
-const tasks = ['css', 'cssDatatables','js', 'jsDatatables'];
+const tasks = ['document', 'css', 'cssDatatables','js', 'jsDatatables'];
 
 Gulp.task('default', tasks);
