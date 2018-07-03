@@ -1,154 +1,94 @@
 'use strict';
-const Async = require('async');
+const Assert = require('assert');
 const Bcrypt = require('bcrypt');
-const Clinician = require('./clinician');
 const Joi = require('joi');
 const MongoModels = require('hicsail-mongo-models');
 
 
 class User extends MongoModels {
-  static generatePasswordHash(password, callback) {
 
-    Async.auto({
-      salt: function (done) {
+  static async generatePasswordHash(password) {
 
-        Bcrypt.genSalt(10, done);
-      },
-      hash: ['salt', function (results, done) {
+    Assert.ok(password, 'Missing pasword arugment.');
+    const salt = await (Bcrypt.genSalt(10));
+    const hash = await (Bcrypt.hash(password,salt));
 
-        Bcrypt.hash(password, results.salt, done);
-      }]
-    }, (err, results) => {
+    return { password, hash };
 
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, {
-        password,
-        hash: results.hash
-      });
-    });
   }
 
-  static create(username, password, email, name, callback) {
+  static async create(username, password, email, name) {
 
     const self = this;
 
-    Async.auto({
-      passwordHash: this.generatePasswordHash.bind(this, password),
-      newUser: ['passwordHash', function (results, done) {
+    Assert.ok(username, 'Missing username argument');
+    Assert.ok(password, 'Missing password argument');
+    Assert.ok(email, 'Missing email argument.');
+    Assert.ok(name, 'Missing name argument.');
 
-        const document = {
-          isActive: true,
-          inStudy: true,
-          username: username.toLowerCase(),
-          password: results.passwordHash.hash,
-          email: email.toLowerCase(),
-          name,
-          roles: {},
-          studyID: null,
-          timeCreated: new Date()
-        };
-
-        self.insertOne(document, done);
-      }]
-    }, (err, results) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      results.newUser[0].password = results.passwordHash.password;
-
-      callback(null, results.newUser[0]);
+    const passwordHash = await this.generatePasswordHash(password);
+    const document =  new this({
+      isActive: true,
+      inStudy: true,
+      username: username.toLowerCase(),
+      password: passwordHash.hash,
+      email: email.toLowerCase(),
+      name,
+      roles: {},
+      studyID: null,
+      timeCreated: new Date()
     });
+
+    const users = await self.insertOne(document);
+
+    users[0].password = passwordHash.password;
+
+    return users[0];
+
   }
 
-  static findByCredentials(username, password, callback) {
 
-    const self = this;
+  static async findByCredentials(username, password) {
 
-    Async.auto({
-      user: function (done) {
+    Assert.ok(username,'Missing username argument.');
+    Assert.ok(password,'Missing password argument.');
 
-        const query = {
-          isActive: true
-        };
+    const query = { isActive: true };
 
-        if (username.indexOf('@') > -1) {
-          query.email = username.toLowerCase();
-        }
-        else {
-          query.username = username.toLowerCase();
-        }
+    if (username.indexOf('@') > -1) {
+      query.email = username.toLowerCase();
+    }
 
-        self.findOne(query, done);
-      },
-      passwordMatch: ['user', function (results, done) {
+    else {
+      query.username = username.toLowerCase();
+    }
 
-        if (!results.user) {
-          return done(null, false);
-        }
+    const user = await this.findOne(query);
 
-        const source = results.user.password;
-        Bcrypt.compare(password, source, done);
-      }]
-    }, (err, results) => {
+    if (!user) {
+      return;
+    }
 
-      if (err) {
-        return callback(err);
-      }
+    const passwordMatch = await Bcrypt.compare(password,user.password);
 
-      if (results.passwordMatch) {
-        return callback(null, results.user);
-      }
+    if (passwordMatch) {
+      return user;
+    }
 
-      callback();
-    });
   }
 
-  static findByUsername(username, callback) {
+
+  static findByUsername(username) {
+
+    Assert.ok(username, 'Misisng username argument.');
 
     const query = { username: username.toLowerCase() };
 
-    this.findOne(query, callback);
+    return this.findOne(query);
   }
 
-  static highestRole(roles) {
 
-    if (roles.root) {
-      return 5;
-    }
-    else if (roles.admin) {
-      return 4;
-    }
-    else if (roles.researcher) {
-      return 3;
-    }
-    else if (roles.clinician) {
-      return 2;
-    }
-    else if (roles.analyst) {
-      return 1;
-    }
-    return 0;
-  }
 
-  constructor(attrs) {
-
-    super(attrs);
-
-    Object.defineProperty(this, '_roles', {
-      writable: true,
-      enumerable: false
-    });
-  }
-
-  static PHI() {
-
-    return ['username', 'password', 'name', 'email'];
-  }
 }
 
 
@@ -163,25 +103,23 @@ User.schema = Joi.object({
   name: Joi.string(),
   inStudy: Joi.boolean().default(true),
   email: Joi.string().email().lowercase().required(),
-  roles: Joi.object({
-    clinician: Clinician.schema,
-    analyst: Joi.boolean().required(),
-    researcher: Joi.boolean().required(),
-    admin: Joi.boolean().required(),
-    root: Joi.boolean().required()
-  }),
+  permissions: Joi.object(),
+  roles: Joi.array().items(Joi.string()),
   resetPassword: Joi.object({
     token: Joi.string().required(),
     expires: Joi.date().required()
   }),
-  timeCreated: Joi.date()
+  createdAt: Joi.date(),
+  updatedAt: Joi.date()
 });
 
 User.payload = Joi.object({
   username: Joi.string().token().lowercase().invalid('root').required(),
   password: Joi.string().required(),
   email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required()
+  name: Joi.string().required(),
+  permissions: Joi.object(),
+  roles: Joi.array().items(Joi.string())
 });
 
 
