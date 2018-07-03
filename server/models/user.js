@@ -1,7 +1,6 @@
 'use strict';
 const Async = require('async');
 const Bcrypt = require('bcrypt');
-const Clinician = require('./clinician');
 const Joi = require('joi');
 const MongoModels = require('hicsail-mongo-models');
 
@@ -163,25 +162,23 @@ User.schema = Joi.object({
   name: Joi.string(),
   inStudy: Joi.boolean().default(true),
   email: Joi.string().email().lowercase().required(),
-  roles: Joi.object({
-    clinician: Clinician.schema,
-    analyst: Joi.boolean().required(),
-    researcher: Joi.boolean().required(),
-    admin: Joi.boolean().required(),
-    root: Joi.boolean().required()
-  }),
+  permissions: Joi.object(),
+  roles: Joi.string().valid('clinician','analyst','researcher','admin','root'),
   resetPassword: Joi.object({
     token: Joi.string().required(),
     expires: Joi.date().required()
   }),
-  timeCreated: Joi.date()
+  createdAt: Joi.date(),
+  updatedAt: Joi.date()
 });
 
 User.payload = Joi.object({
   username: Joi.string().token().lowercase().invalid('root').required(),
   password: Joi.string().required(),
   email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required()
+  name: Joi.string().required(),
+  permission: Joi.object(),
+  roles: Joi.string().valid('clinician','analyst','researcher','admin','root')
 });
 
 
