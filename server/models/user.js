@@ -92,7 +92,7 @@ class User extends MongoModels {
 }
 
 
-User.collection = 'users';
+User.collectionName = 'users';
 
 
 User.schema = Joi.object({
