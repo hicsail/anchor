@@ -94,6 +94,15 @@ class User extends AnchorModel {
 
 User.collectionName = 'users';
 
+User.routes = {
+  get: {
+    disabled:false
+  },
+  post: {
+    disabled:false
+  }
+};
+
 
 User.schema = Joi.object({
   _id: Joi.object(),
