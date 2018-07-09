@@ -11,28 +11,25 @@ internals.applyRoutes = function (server,next) {
     method:'GET',
     path:'/api/{collectionName}',
     config: {
-      auth: {
-        strategies: ['simple','jwt','session']
-      },
       pre: [{
-        assign: 'collectionName',
+        assign: 'model',
         method: function (request,reply) {
 
-          const collectionName = server.plugin['hapi-anchor-model'].models[request.params.collectionName];
+          const model = server.plugin['hapi-anchor-model'].models[request.params.collectionName];
 
-          if (!collectionName) {
+          if (!model) {
             return reply(Boom.notFound('Model not found'));
           }
-          reply(collectionName);
+          reply(model);
 
         }
       }, {
         assign: 'enabled',
         method: function (request,reply) {
 
-          const collectionName = request.pre.collectionName;
+          const model = request.pre.model;
 
-          if (!collectionName.routes.get.disabled) {
+          if (!model.routes.get.disabled) {
             return reply(Boom.notFound('Not Found'));
           }
 
@@ -43,10 +40,20 @@ internals.applyRoutes = function (server,next) {
     },
     handler: function (request,reply) {
 
+      //request.pre.model
+
 
     }
   });
   next();
+};
+
+module.exports = {
+  name: 'Anchor',
+  dependencies: [
+    'hapi-anchor-models'
+  ],
+  internals
 };
 
 
