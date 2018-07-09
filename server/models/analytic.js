@@ -7,7 +7,6 @@ class Analytic extends AnchorModel {
 
   static async create(event,name,data,userId) {
 
-    const self = this;
 
     Assert.ok(event, 'Missing event argument');
     Assert.ok(name, 'Missing name argument');
@@ -23,7 +22,7 @@ class Analytic extends AnchorModel {
 
     });
 
-    const analytics = await self.insertOne(document);
+    const analytics = await this.insertOne(document);
 
     return analytics[0];
 
@@ -50,7 +49,8 @@ Analytic.payload = Joi.object({
 });
 
 Analytic.indexes = [
-  { key: { userId: 1 } }
+  { key: { event: 1 } },
+  { key : { email: 1 } }
 ];
 
 module.exports = Analytic;
