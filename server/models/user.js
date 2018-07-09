@@ -2,10 +2,10 @@
 const Assert = require('assert');
 const Bcrypt = require('bcrypt');
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
 
-class User extends MongoModels {
+class User extends AnchorModel {
 
   static async generatePasswordHash(password) {
 

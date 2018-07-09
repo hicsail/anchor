@@ -1,9 +1,9 @@
 'use strict';
 const Joi = require('joi');
 const Assert = require('assert');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
-class Analytic extends MongoModels {
+class Analytic extends AnchorModel {
 
   static async create(event,name,data,userId) {
 
