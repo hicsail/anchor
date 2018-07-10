@@ -6,7 +6,49 @@ const internals = {};
 
 
 
-internals.applyRoutes = function (server,next) {
+const register = function (server,serverOptions) {
+
+  server.route({
+    method: 'POST',
+    path:'/api/{collectionName}',
+    config: {
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            return Boom.notFound('Model not found');
+          }
+
+          return model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.dsiabled) {
+            return (Boom.notFound('Permission Denied: Route Disabled'));
+          }
+
+          return (true);
+        },
+        assign: 'payload',
+        method: function (request,h) {
+
+          //const model = request.pre.model;
+        }
+      }]
+    },
+    handler: async function (request,reply) {
+
+      return await request.pre.model.create(request.payload);
+    }
+
+
+  });
 
 
   server.route({
@@ -16,55 +58,51 @@ internals.applyRoutes = function (server,next) {
     config: {
       validate: {
         query: {
-          fields: Joi.string(),
-          sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
           page: Joi.number().default(1)
         }
       },
       pre: [{
         assign: 'model',
-        method: function (request,reply) {
+        method: function (request,h) {
 
-          const model = server.plugin['hapi-anchor-model'].models[request.params.collectionName];
-
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
-            return reply(Boom.notFound('Model not found'));
+            return (Boom.notFound('Model not found'));
           }
-          reply(model);
+          return model;
 
         }
       }, {
         assign: 'enabled',
-        method: function (request,reply) {
+        method: function (request,h) {
 
           const model = request.pre.model;
 
-          if (!model.routes.get.disabled) {
-            return reply(Boom.notFound('Not Found'));
+          if (model.routes.get.disabled) {
+            return (Boom.notFound('Permission Denied: Route Disabled'));
           }
 
-          reply(true);
+          return (true);
         }
       }]
 
     },
-    handler: function (request,reply) {
-      
+    handler: async function (request,reply) {
+
       const query = {};
-      const fields = request.query.fields;
-      const sort = request.query.sort;
       const limit = request.query.limit;
       const page = request.query.page;
 
-      request.pre.model.pagedFind(query,fields,sort,limit,page, (err,results) => {
+      return await request.pre.model.pagedFind(query,limit,page);
 
-      })
+
 
 
     }
+
+
   });
-  next();
 };
 
 
@@ -72,13 +110,10 @@ internals.applyRoutes = function (server,next) {
 module.exports = {
   name: 'anchor-api',
   dependencies: [
-    'hapi-anchor-models'
+    'hapi-anchor-model'
   ],
-  internals
+  register
 };
 
-exports.register.attributes = {
-  name: 'anchor-api'
-};
 
 

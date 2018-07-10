@@ -17,23 +17,23 @@ class User extends AnchorModel {
 
   }
 
-  static async create(username, password, email, name) {
+  static async create(document) {
 
     const self = this;
 
-    Assert.ok(username, 'Missing username argument');
-    Assert.ok(password, 'Missing password argument');
-    Assert.ok(email, 'Missing email argument.');
-    Assert.ok(name, 'Missing name argument.');
+    Assert.ok(document.username, 'Missing username argument');
+    Assert.ok(document.password, 'Missing password argument');
+    Assert.ok(document.email, 'Missing email argument.');
+    Assert.ok(document.name, 'Missing name argument.');
 
-    const passwordHash = await this.generatePasswordHash(password);
-    const document =  new this({
+    const passwordHash = await this.generatePasswordHash(document.password);
+    document =  new this({
       isActive: true,
       inStudy: true,
-      username: username.toLowerCase(),
+      username: document.username.toLowerCase(),
       password: passwordHash.hash,
-      email: email.toLowerCase(),
-      name,
+      email: document.email.toLowerCase(),
+      name: document.name,
       roles: {},
       studyID: null,
       timeCreated: new Date()
@@ -99,7 +99,8 @@ User.routes = {
     disabled:false
   },
   create: {
-    disabled:false
+    disabled:false,
+    payload: User.payload
   }
 };
 
