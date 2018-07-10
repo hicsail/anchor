@@ -70,7 +70,7 @@ lab.experiment('Plugin', () => {
 
     Code.expect(server.plugins['hapi-anchor-model']).to.be.an.object();
 
-    server.plugins['hapi-anchor-model']['anchor-model'].disconnect();
+    server.plugins['hapi-anchor-model'].anchorModel.disconnect();
 
     await server.stop();
   });
@@ -93,7 +93,7 @@ lab.experiment('Plugin', () => {
 
     Code.expect(server.plugins['hapi-anchor-model']).to.be.an.object();
 
-    server.plugins['hapi-anchor-model']['anchor-model'].disconnect();
+    server.plugins['hapi-anchor-model'].anchorModel.disconnect();
 
     await server.stop();
   });
@@ -116,7 +116,7 @@ lab.experiment('Plugin', () => {
 
     Code.expect(server.plugins['hapi-anchor-model']).to.be.an.object();
 
-    server.plugins['hapi-anchor-model']['anchor-model'].disconnect();
+    server.plugins['hapi-anchor-model'].anchorModel.disconnect();
 
     await server.stop();
   });

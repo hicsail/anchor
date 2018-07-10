@@ -1,10 +1,6 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-const internals = {};
-
-
-
 
 const register = function (server,serverOptions) {
 
