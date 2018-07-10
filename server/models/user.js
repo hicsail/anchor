@@ -17,26 +17,25 @@ class User extends AnchorModel {
 
   }
 
-  static async create(username, password, email, name) {
+  static async create(document) {
 
     const self = this;
 
-    Assert.ok(username, 'Missing username argument');
-    Assert.ok(password, 'Missing password argument');
-    Assert.ok(email, 'Missing email argument.');
-    Assert.ok(name, 'Missing name argument.');
+    Assert.ok(document.username, 'Missing username argument');
+    Assert.ok(document.password, 'Missing password argument');
+    Assert.ok(document.email, 'Missing email argument.');
+    Assert.ok(document.name, 'Missing name argument.');
 
-    const passwordHash = await this.generatePasswordHash(password);
-    const document =  new this({
+    const passwordHash = await this.generatePasswordHash(document.password);
+    document =  new this({
       isActive: true,
       inStudy: true,
-      username: username.toLowerCase(),
+      username: document.username.toLowerCase(),
       password: passwordHash.hash,
-      email: email.toLowerCase(),
-      name,
-      roles: {},
-      studyID: null,
-      timeCreated: new Date()
+      email: document.email.toLowerCase(),
+      name: document.name,
+      roles: [],
+      createdAt: new Date()
     });
 
     const users = await self.insertOne(document);
@@ -95,6 +94,8 @@ class User extends AnchorModel {
 User.collectionName = 'users';
 
 
+
+
 User.schema = Joi.object({
   _id: Joi.object(),
   isActive: Joi.boolean().default(true),
@@ -122,6 +123,15 @@ User.payload = Joi.object({
   roles: Joi.array().items(Joi.string())
 });
 
+User.routes = {
+  get: {
+    disabled:false
+  },
+  create: {
+    disabled:false,
+    payload: User.payload
+  }
+};
 
 User.indexes = [
   { key: { username: 1, unique: 1 } },

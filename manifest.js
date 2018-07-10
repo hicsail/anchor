@@ -23,6 +23,9 @@ const manifest = {
       {
         plugin: './server/anchor/hapi-anchor-model.js',
         options: Config.get('/hapiAnchorModel')
+      },
+      {
+        plugin: './server/anchor/anchor-api'
       }
     ]
   }

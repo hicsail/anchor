@@ -50,7 +50,7 @@ Analytic.payload = Joi.object({
 
 Analytic.indexes = [
   { key: { event: 1 } },
-  { key : { email: 1 } }
+  { key : { name: 1 } }
 ];
 
 module.exports = Analytic;
