@@ -98,7 +98,7 @@ User.routes = {
   get: {
     disabled:false
   },
-  post: {
+  create: {
     disabled:false
   }
 };

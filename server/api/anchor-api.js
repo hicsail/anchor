@@ -1,6 +1,8 @@
 'use strict';
 const Boom = require('boom');
+const Joi = require('joi');
 const internals = {};
+
 
 
 
@@ -8,9 +10,18 @@ internals.applyRoutes = function (server,next) {
 
 
   server.route({
+    //paged find
     method:'GET',
     path:'/api/{collectionName}',
     config: {
+      validate: {
+        query: {
+          fields: Joi.string(),
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1)
+        }
+      },
       pre: [{
         assign: 'model',
         method: function (request,reply) {
@@ -39,8 +50,16 @@ internals.applyRoutes = function (server,next) {
 
     },
     handler: function (request,reply) {
+      
+      const query = {};
+      const fields = request.query.fields;
+      const sort = request.query.sort;
+      const limit = request.query.limit;
+      const page = request.query.page;
 
-      //request.pre.model
+      request.pre.model.pagedFind(query,fields,sort,limit,page, (err,results) => {
+
+      })
 
 
     }
@@ -48,12 +67,18 @@ internals.applyRoutes = function (server,next) {
   next();
 };
 
+
+
 module.exports = {
-  name: 'Anchor',
+  name: 'anchor-api',
   dependencies: [
     'hapi-anchor-models'
   ],
   internals
+};
+
+exports.register.attributes = {
+  name: 'anchor-api'
 };
 
 
