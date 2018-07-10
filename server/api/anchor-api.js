@@ -29,7 +29,7 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.create.dsiabled) {
+          if (model.routes.create.disabled) {
             return (Boom.notFound('Permission Denied: Route Disabled'));
           }
 
@@ -38,13 +38,18 @@ const register = function (server,serverOptions) {
         assign: 'payload',
         method: function (request,h) {
 
-          //const model = request.pre.model;
+          const model = request.pre.model;
+          return Joi.validate(request.payload,model.routes.create.payload);
+
         }
       }]
     },
-    handler: async function (request,reply) {
+    handler: async function (request,h) {
 
-      return await request.pre.model.create(request.payload);
+      const model = request.pre.model;
+      const payload = request.payload;
+
+      return await model.create(payload);
     }
 
 

@@ -34,9 +34,8 @@ class User extends AnchorModel {
       password: passwordHash.hash,
       email: document.email.toLowerCase(),
       name: document.name,
-      roles: {},
-      studyID: null,
-      timeCreated: new Date()
+      roles: [],
+      createdAt: new Date()
     });
 
     const users = await self.insertOne(document);
@@ -94,15 +93,7 @@ class User extends AnchorModel {
 
 User.collectionName = 'users';
 
-User.routes = {
-  get: {
-    disabled:false
-  },
-  create: {
-    disabled:false,
-    payload: User.payload
-  }
-};
+
 
 
 User.schema = Joi.object({
@@ -132,6 +123,15 @@ User.payload = Joi.object({
   roles: Joi.array().items(Joi.string())
 });
 
+User.routes = {
+  get: {
+    disabled:false
+  },
+  create: {
+    disabled:false,
+    payload: User.payload
+  }
+};
 
 User.indexes = [
   { key: { username: 1, unique: 1 } },
