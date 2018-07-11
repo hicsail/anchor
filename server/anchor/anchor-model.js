@@ -439,6 +439,10 @@ class AnchorModel {
   static async insertMany() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      args[0].createdAt = new Date();
+      args[0].updatedAt = new Date();
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const result = await collection.insertMany.apply(collection, args);
@@ -457,6 +461,10 @@ class AnchorModel {
   static async insertOne() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      args[0].createdAt = new Date();
+      args[0].updatedAt = new Date();
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const result = await collection.insertOne.apply(collection, args);
@@ -810,23 +818,6 @@ class AnchorModel {
 
 
 AnchorModel._idClass = Mongodb.ObjectID;
-AnchorModel.routes = {
-  auth: true,
-  disable: false,
-  create: {
-    auth: true,
-    disable: false,
-    payload: null,
-    query: null
-  },
-  get: {
-    disable: false,
-    payload: null,
-    query: null,
-    auth: true
-  }
-};
-AnchorModel.timestamps = true;
 AnchorModel.ObjectId = AnchorModel.ObjectID = Mongodb.ObjectID;
 AnchorModel.clients = {};
 AnchorModel.dbs = {};
