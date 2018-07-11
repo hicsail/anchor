@@ -1,8 +1,9 @@
 'use strict';
+const AnchorModel = require('../anchor/anchor-model');
 const Assert = require('assert');
 const Bcrypt = require('bcrypt');
+const Hoek = require('hoek');
 const Joi = require('joi');
-const AnchorModel = require('../anchor/anchor-model');
 
 
 class User extends AnchorModel {
@@ -85,16 +86,10 @@ class User extends AnchorModel {
 
     return this.findOne(query);
   }
-
-
-
 }
 
 
 User.collectionName = 'users';
-
-
-
 
 User.schema = Joi.object({
   _id: Joi.object(),
@@ -123,20 +118,15 @@ User.payload = Joi.object({
   roles: Joi.array().items(Joi.string())
 });
 
-User.routes = {
-  get: {
-    disabled:false
-  },
+User.routes = Hoek.applyToDefaults({
   create: {
-    disabled:false,
     payload: User.payload
   }
-};
+}, AnchorModel.routes);
 
 User.indexes = [
   { key: { username: 1, unique: 1 } },
   { key: { email: 1, unique: 1 } }
 ];
-
 
 module.exports = User;

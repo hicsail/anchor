@@ -810,6 +810,23 @@ class AnchorModel {
 
 
 AnchorModel._idClass = Mongodb.ObjectID;
+AnchorModel.routes = {
+  auth: true,
+  disable: false,
+  create: {
+    auth: true,
+    disable: false,
+    payload: null,
+    query: null
+  },
+  get: {
+    disable: false,
+    payload: null,
+    query: null,
+    auth: true
+  }
+};
+AnchorModel.timestamps = true;
 AnchorModel.ObjectId = AnchorModel.ObjectID = Mongodb.ObjectID;
 AnchorModel.clients = {};
 AnchorModel.dbs = {};
