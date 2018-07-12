@@ -44,8 +44,13 @@ Feedback.schema = Joi.object({
   description: Joi.string().required(),
   userId: Joi.string().required(),
   resolved: Joi.boolean().default(false),
-  createdAt: Joi.date().required(),
-  comments: Joi.object()
+  createdAt: Joi.date(),
+  updatedAt: Joi.date(),
+  comments: Joi.object({
+    message: Joi.string().required(),
+    userId: Joi.string().required(),
+    createdAt: Joi.date().required()
+  })
 
 
 });
@@ -54,9 +59,19 @@ Feedback.schema = Joi.object({
 Feedback.payload = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().required(),
-  resolved: Joi.boolean().required()
+  resolved: Joi.boolean().required(),
+  comments: Joi.object({
+    message: Joi.string().required(),
+    userId: Joi.string().required(),
+    createdAt: Joi.date().required()
+
+  })
 
 });
+
+Feedback.indexes = [
+  { key: { title: 1 } }
+];
 
 
 
