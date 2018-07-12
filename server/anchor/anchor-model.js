@@ -318,9 +318,6 @@ class AnchorModel {
   static async findByIdAndUpdate() {
 
     const args = argsFromArguments(arguments);
-    if (this.timestamps) {
-      args[0].updatedAt = new Date();
-    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const id = args.shift();
@@ -328,6 +325,9 @@ class AnchorModel {
     const defaultOptions = {
       returnOriginal: false
     };
+    if (this.timestamps) {
+      update.updatedAt = new Date();
+    }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
     const filter = { _id: this._idClass(id) };
     const result = await collection.findOneAndUpdate(filter, update, options);
@@ -413,9 +413,6 @@ class AnchorModel {
   static async findOneAndUpdate() {
 
     const args = argsFromArguments(arguments);
-    if (this.timestamps) {
-      args[0].updatedAt = new Date();
-    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
@@ -423,6 +420,9 @@ class AnchorModel {
     const defaultOptions = {
       returnOriginal: false
     };
+    if (this.timestamps) {
+      doc.updatedAt = new Date();
+    }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
 
     args.push(filter);
@@ -446,7 +446,9 @@ class AnchorModel {
 
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
-      args[0].createdAt = new Date();
+      for (const doc of args[0]) {
+        doc.createdAt = new Date();
+      }
     }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
@@ -730,15 +732,14 @@ class AnchorModel {
   static async updateMany() {
 
     const args = argsFromArguments(arguments);
-    if (this.timestamps) {
-      args[0].updatedAt = new Date();
-    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
     const update = args.shift();
     const options = Hoek.applyToDefaults({}, args.pop() || {});
-
+    if (this.timestamps) {
+      update.$set.updatedAt = new Date();
+    }
     args.push(filter);
     args.push(update);
     args.push(options);
@@ -752,13 +753,13 @@ class AnchorModel {
   static async updateOne() {
 
     const args = argsFromArguments(arguments);
-    if (this.timestamps) {
-      args[0].updatedAt = new Date();
-    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
     const update = args.shift();
+    if (this.timestamps) {
+      update.$set.updatedAt = new Date();
+    }
     const options = Hoek.applyToDefaults({}, args.pop() || {});
 
     args.push(filter);
@@ -827,7 +828,7 @@ class AnchorModel {
 }
 
 AnchorModel.routes = {
-
+  auth: true,
   disable: false,
   create: {
     auth: true,

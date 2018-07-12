@@ -114,6 +114,8 @@ lab.experiment('Instance construction', () => {
 
     DummyModel.schema = Joi.object().keys({
       name: Joi.string().required(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date(),
       stuff: Joi.object().keys({
         foo: Joi.string().default('foozball'),
         bar: Joi.string().default('barzball'),
@@ -159,7 +161,9 @@ lab.experiment('Instance construction', () => {
     };
 
     DummyModel.schema = Joi.object().keys({
-      name: Joi.string().required()
+      name: Joi.string().required(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date()
     });
 
     const blamo = function () {
@@ -186,7 +190,9 @@ lab.experiment('Validation', () => {
     };
 
     DummyModel.schema = Joi.object().keys({
-      name: Joi.string().required()
+      name: Joi.string().required(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date()
     });
 
     lab.expect(DummyModel.validate()).to.be.an.object();
@@ -199,7 +205,9 @@ lab.experiment('Validation', () => {
     };
 
     DummyModel.schema = Joi.object().keys({
-      name: Joi.string().required()
+      name: Joi.string().required(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date()
     });
 
     const dummy = new DummyModel({ name: 'Stimpy' });
@@ -221,7 +229,9 @@ lab.experiment('Result factory', () => {
 
     DummyModel.schema = Joi.object().keys({
       _id: Joi.string(),
-      name: Joi.string().required()
+      name: Joi.string().required(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date()
     });
   });
 
@@ -425,7 +435,9 @@ lab.experiment('Paged find', () => {
 
     DummyModel.schema = Joi.object().keys({
       _id: Joi.object(),
-      name: Joi.string().required()
+      name: Joi.string().required(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date()
     });
 
     DummyModel.collectionName = 'dummies';
@@ -491,6 +503,34 @@ lab.experiment('Paged find', () => {
     );
 
     lab.expect(result).to.be.an.object();
+  });
+
+
+  lab.test('it returns paged results without timestamps', async () => {
+
+    const documents = [
+      { name: 'Ren' },
+      { name: 'Stimpy' },
+      { name: 'Yak' }
+    ];
+
+    DummyModel.timestamps = false;
+
+    await DummyModel.insertMany(documents);
+
+    const filter = {};
+    const limit = 10;
+    const page = 1;
+    const options = {
+      sort: { _id: -1 }
+    };
+    const result = await DummyModel.pagedFind(
+      filter, limit, page, options
+    );
+
+    lab.expect(result).to.be.an.object();
+
+    DummyModel.timestamps = true;
   });
 
   lab.test('it returns paged results with no options', async () => {
@@ -578,7 +618,9 @@ lab.experiment('Proxy methods', () => {
       group: Joi.string(),
       isCool: Joi.boolean(),
       buddy: Joi.string(),
-      name: Joi.string().required()
+      name: Joi.string().required(),
+      createdAt: Joi.date(),
+      updatedAt: Joi.date()
     });
 
     DummyModel.collectionName = 'dummies';
@@ -633,7 +675,7 @@ lab.experiment('Proxy methods', () => {
     ];
     const testDocs = await DummyModel.insertMany(documents);
     const filter = {
-      _id: testDocs[0]._id
+      _id: testDocs[1]._id
     };
     const update = {
       $set: { isCool: true }
@@ -641,6 +683,31 @@ lab.experiment('Proxy methods', () => {
     const result = await DummyModel.updateOne(filter, update);
 
     lab.expect(result).to.be.an.object();
+  });
+
+
+  lab.test('it updates a document and returns the results without timestamps', async () => {
+
+    const documents = [
+      { name: 'Ren' },
+      { name: 'Stimpy' },
+      { name: 'Yak' }
+    ];
+
+    DummyModel.timestamps = false;
+
+    const testDocs = await DummyModel.insertMany(documents);
+    const filter = {
+      _id: testDocs[1]._id
+    };
+    const update = {
+      $set: { isCool: true }
+    };
+    const result = await DummyModel.updateOne(filter, update);
+
+    lab.expect(result).to.be.an.object();
+
+    DummyModel.timestamps = true;
   });
 
 
@@ -680,6 +747,28 @@ lab.experiment('Proxy methods', () => {
     const result = await DummyModel.updateMany(filter, update);
 
     lab.expect(result).to.be.an.object();
+  });
+
+
+  lab.test('it updates many documents and returns the results without timestamps', async () => {
+
+    const documents = [
+      { name: 'Ren' },
+      { name: 'Stimpy' },
+      { name: 'Yak' }
+    ];
+
+    DummyModel.timestamps = false;
+
+    await DummyModel.insertMany(documents);
+
+    const filter = {};
+    const update = { $set: { isCool: true } };
+    const result = await DummyModel.updateMany(filter, update);
+
+    lab.expect(result).to.be.an.object();
+
+    DummyModel.timestamps = true;
   });
 
 
@@ -820,6 +909,26 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
+  lab.test('it updates a single document via findByIdAndUpdate without timestamps', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    DummyModel.timestamps = false;
+
+    const testDocs = await DummyModel.insertOne(document);
+    const id = testDocs[0]._id;
+    const update = {
+      name: 'New Name'
+    };
+    const result = await DummyModel.findByIdAndUpdate(id, update);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+
+    DummyModel.timestamps = true;
+  });
+
 
   lab.test('it updates a single document via id (with options)', async () => {
 
@@ -853,6 +962,26 @@ lab.experiment('Proxy methods', () => {
     const result = await DummyModel.findOneAndUpdate(filter, update);
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
+  });
+
+
+  lab.test('it updates a single document via findOneAndUpdate without timestamps', async () => {
+
+    const document = {
+      name: 'Ren'
+    };
+
+    DummyModel.timestamps = false;
+
+    await DummyModel.insertOne(document);
+
+    const filter = { name: 'Ren' };
+    const update = { name: 'New Name' };
+    const result = await DummyModel.findOneAndUpdate(filter, update);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+
+    DummyModel.timestamps = true;
   });
 
 
