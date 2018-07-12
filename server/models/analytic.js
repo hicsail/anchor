@@ -5,26 +5,22 @@ const AnchorModel = require('../anchor/anchor-model');
 
 class Analytic extends AnchorModel {
 
-  static async create(event,name,data,userId) {
+  static async create(document) {
 
 
-    Assert.ok(event, 'Missing event argument');
-    Assert.ok(name, 'Missing name argument');
-    Assert.ok(data, 'Missing data arugment');
-    Assert.ok(userId, 'Missing userId argument');
+    Assert.ok(document.event, 'Missing event argument');
+    Assert.ok(document.name, 'Missing name argument');
 
-    const document = new this({
-      event,
-      name,
-      data,
-      userId,
-      createdAt: new Date()
-
+    document = new this({
+      event: document.event,
+      name: document.name,
+      data: document.data,
+      userId: document.userId
     });
 
-    const analytics = await this.insertOne(document);
+    const analytic = await this.insertOne(document);
 
-    return analytics[0];
+    return analytic[0];
 
   }
 }
@@ -35,16 +31,15 @@ Analytic.schema = Joi.object({
   _id: Joi.object(),
   event: Joi.string().required(),
   name: Joi.string().required(),
-  data: Joi.object().required(),
-  userId: Joi.string().required(),
-  createdAt: new Date()
-
-
+  data: Joi.object(),
+  userId: Joi.string(),
+  createdAt: Joi.date(),
+  updatedAt: Joi.date()
 });
 
 Analytic.payload = Joi.object({
-  event: Joi.string(),
-  name: Joi.string(),
+  event: Joi.string().required(),
+  name: Joi.string().required(),
   data: Joi.object()
 });
 

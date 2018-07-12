@@ -326,7 +326,12 @@ class AnchorModel {
       returnOriginal: false
     };
     if (this.timestamps) {
-      update.updatedAt = new Date();
+      if (update.$set) {
+        update.$set.updatedAt = new Date();
+      }
+      else {
+        update.updatedAt = new Date();
+      }
     }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
     const filter = { _id: this._idClass(id) };

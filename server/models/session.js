@@ -80,7 +80,8 @@ Session.schema = Joi.object({
   lastActive: Joi.date().default(NewDate(), 'time of last activity'),
   os: Joi.string().required(),
   userId: Joi.string().required(),
-  createdAt: Joi.date().default(NewDate(), 'time of creation')
+  createdAt: Joi.date().default(NewDate(), 'time of creation'),
+  updatedAt: Joi.date().default(NewDate(), 'time of document updated')
 });
 Session.indexes = [
   { key: { userId: 1 } }
