@@ -318,6 +318,9 @@ class AnchorModel {
   static async findByIdAndUpdate() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      args[0].updatedAt = new Date();
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const id = args.shift();
@@ -410,6 +413,9 @@ class AnchorModel {
   static async findOneAndUpdate() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      args[0].updatedAt = new Date();
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
@@ -441,7 +447,6 @@ class AnchorModel {
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
       args[0].createdAt = new Date();
-      args[0].updatedAt = new Date();
     }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
@@ -463,7 +468,6 @@ class AnchorModel {
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
       args[0].createdAt = new Date();
-      args[0].updatedAt = new Date();
     }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
@@ -726,6 +730,9 @@ class AnchorModel {
   static async updateMany() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      args[0].updatedAt = new Date();
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
@@ -745,6 +752,9 @@ class AnchorModel {
   static async updateOne() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      args[0].updatedAt = new Date();
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
@@ -815,6 +825,24 @@ class AnchorModel {
     return db[boundFunctionsId];
   }
 }
+
+AnchorModel.routes = {
+
+  disable: false,
+  create: {
+    auth: true,
+    disable: false,
+    payload: null,
+    query: null
+  },
+  get: {
+    disable: false,
+    payload: null,
+    query: null,
+    auth: true
+  }
+};
+AnchorModel.timestamps = true;
 
 
 AnchorModel._idClass = Mongodb.ObjectID;
