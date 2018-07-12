@@ -5,24 +5,14 @@ const AnchorModel = require('../anchor/anchor-model');
 
 
 class Backup extends AnchorModel {
-  static async create(filename,local,s3){
 
-    Assert.ok(filename, 'Missing filename');
-    Assert.ok(local, 'Missing local flag');
-    Assert.ok(s3, 'Missing s3 flag');
+  static async create(document){
 
-    const document = {
-      filename,
-      local,
-      s3,
-      createdAt:new Date()
-    };
+    Assert.ok(document.filename, 'Missing filename');
 
     const backup = await this.insertOne(document);
 
-
     return backup[0];
-
   }
 }
 
