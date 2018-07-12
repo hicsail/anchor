@@ -1,55 +1,75 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const Assert = require('assert');
+const AnchorModel = require('../anchor/anchor-model');
 
+class Feedback extends AnchorModel {
 
-class Feedback extends MongoModels {
+  static async create(title,description,userId,resolved,comments,message){
 
-  static create(subject,description, userId, callback) {
+    Assert.ok(title,'Missing title');
+    Assert.ok(description, 'Missing description');
+    Assert.ok(userId,'Missing userid');
 
-    const document = {
-      subject,
+    const document =  {
+      title,
       description,
       userId,
       resolved: false,
-      time: new Date()
-    };
-
-    this.insertOne(document, (err, docs) => {
-
-      if (err) {
-        return callback(err);
+      createdAt: new Date(),
+      comments:  {
+        message,
+        userId,
+        createdAt: new Date()
       }
 
-      callback(null, docs[0]);
-    });
+    };
+
+
+    const feedback =  await this.insert(document);
+
+    return feedback[0];
   }
+
 }
 
 
-Feedback.collection = 'feedback';
+Feedback.collectionName = 'feedbacks';
 
 
 Feedback.schema = Joi.object({
+
   _id: Joi.object(),
-  subject: Joi.string().required(),
+  title: Joi.string().required(),
   description: Joi.string().required(),
   userId: Joi.string().required(),
-  resolved: Joi.boolean().required(),
-  time: Joi.date().required()
+  resolved: Joi.boolean().default(false),
+  createdAt: Joi.date().required(),
+  comments: Joi.object()
+
+
 });
+
 
 Feedback.payload = Joi.object({
-  subject: Joi.string().required(),
-  description: Joi.string().required()
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+  resolved: Joi.boolean().required()
+
 });
 
 
-Feedback.indexes = [
-  { key: { name: 1 } },
-  { key: { time: 1 } },
-  { key: { userId: 1 } }
-];
+
 
 
 module.exports = Feedback;
+
+
+
+
+
+
+
+
+
+
