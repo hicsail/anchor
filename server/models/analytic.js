@@ -33,10 +33,10 @@ Analytic.collectionName = 'analytics';
 
 Analytic.schema = Joi.object({
   _id: Joi.object(),
-  event: Joi.string(),
-  name: Joi.string(),
-  data: Joi.object(),
-  userId: Joi.string(),
+  event: Joi.string().required(),
+  name: Joi.string().required(),
+  data: Joi.object().required(),
+  userId: Joi.string().required(),
   createdAt: new Date()
 
 
