@@ -325,6 +325,9 @@ class AnchorModel {
     const defaultOptions = {
       returnOriginal: false
     };
+    if (this.timestamps) {
+      update.updatedAt = new Date();
+    }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
     const filter = { _id: this._idClass(id) };
     const result = await collection.findOneAndUpdate(filter, update, options);
@@ -417,6 +420,9 @@ class AnchorModel {
     const defaultOptions = {
       returnOriginal: false
     };
+    if (this.timestamps) {
+      doc.updatedAt = new Date();
+    }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
 
     args.push(filter);
@@ -439,6 +445,11 @@ class AnchorModel {
   static async insertMany() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      for (const doc of args[0]) {
+        doc.createdAt = new Date();
+      }
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const result = await collection.insertMany.apply(collection, args);
@@ -457,6 +468,9 @@ class AnchorModel {
   static async insertOne() {
 
     const args = argsFromArguments(arguments);
+    if (this.timestamps) {
+      args[0].createdAt = new Date();
+    }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const result = await collection.insertOne.apply(collection, args);
@@ -723,7 +737,9 @@ class AnchorModel {
     const filter = args.shift();
     const update = args.shift();
     const options = Hoek.applyToDefaults({}, args.pop() || {});
-
+    if (this.timestamps) {
+      update.$set.updatedAt = new Date();
+    }
     args.push(filter);
     args.push(update);
     args.push(options);
@@ -741,6 +757,9 @@ class AnchorModel {
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
     const update = args.shift();
+    if (this.timestamps) {
+      update.$set.updatedAt = new Date();
+    }
     const options = Hoek.applyToDefaults({}, args.pop() || {});
 
     args.push(filter);
@@ -808,8 +827,6 @@ class AnchorModel {
   }
 }
 
-
-AnchorModel._idClass = Mongodb.ObjectID;
 AnchorModel.routes = {
   auth: true,
   disable: false,
@@ -827,6 +844,9 @@ AnchorModel.routes = {
   }
 };
 AnchorModel.timestamps = true;
+
+
+AnchorModel._idClass = Mongodb.ObjectID;
 AnchorModel.ObjectId = AnchorModel.ObjectID = Mongodb.ObjectID;
 AnchorModel.clients = {};
 AnchorModel.dbs = {};
