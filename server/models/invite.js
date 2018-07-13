@@ -1,56 +1,54 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
-const User = require('./user');
+const Assert = require('assert');
+const AnchorModel = require('../anchor/anchor-model');
 
-class Invite extends MongoModels {
+class Invite extends AnchorModel {
+  static async create(email,status) {
 
-  static create(name, email, description, userId, callback) {
+
+    Assert.ok(email, 'Email missing');
+    Assert.ok(status,'Status missing');
 
     const document = {
-      name,
       email,
-      description,
-      userId,
-      status: 'Pending',
-      time: new Date(),
-      expiredAt: new Date(new Date().getTime() + 1000 * 86400 * 7) //7 days
+      status,
+      createdAt: new Date(),
+      status
+
     };
 
-    this.insertOne(document, (err, docs) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    const invite = await this.insertOne(document);
+    return invite[0];
   }
+
+
+
 }
 
 
-Invite.collection = 'invite';
-
-
 Invite.schema = Joi.object({
-  _id: Joi.object(),
-  user: User.payload,
+  _id: Joi.string(),
+  email: Joi.string().required(),
   userId: Joi.string().required(),
-  status: Joi.boolean().required(),
-  time: Joi.date().required()
+  createdAt: Joi.date().required(),
+  updatedAt: Joi.date().required(),
+  expiredAt: Joi.date().required(),
+  status: Joi.string().valid('Pending','Accepted','Declined','Expired')
 });
+
+
 
 Invite.payload = Joi.object({
-  email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required(),
-  description: Joi.string().optional()
+  email: Joi.string().required(),
+  status: Joi.string().valid('Pending','Accepted','Declined','Expired')
+
 });
 
-
 Invite.indexes = [
-  { key: { userId: 1 } },
-  { key: { status: 1 } }
+  { key: { email: 1 }  }
 ];
 
 
-module.exports = Invite;
+module.exports = 'Invite';
+
