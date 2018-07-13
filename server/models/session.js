@@ -9,21 +9,21 @@ const UUID = require('uuid/v4');
 
 class Session extends AnchorModel {
 
-  static async create(userId, ip, userAgent) {
+  static async create(document) {
 
-    Assert.ok(userId, 'Missing userId argument.');
-    Assert.ok(ip, 'Missing ip argument.');
-    Assert.ok(userAgent, 'Missing userAgent argument.');
+    Assert.ok(document.userId, 'Missing userId argument.');
+    Assert.ok(document.ip, 'Missing ip argument.');
+    Assert.ok(document.userAgent, 'Missing userAgent argument.');
 
     const keyHash = await this.generateKeyHash();
-    const agentInfo = UserAgent.lookup(userAgent);
+    const agentInfo = UserAgent.lookup(document.userAgent);
     const browser = agentInfo.family;
-    const document = new this({
+    document = new this({
       browser,
-      ip,
+      ip: document.ip,
       key: keyHash.hash,
       os: agentInfo.os.toString(),
-      userId
+      userId: document.userId
     });
     const sessions = await this.insertOne(document);
 

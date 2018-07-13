@@ -8,20 +8,20 @@ const UserAgent = require('useragent');
 
 class AuthAttempt extends AnchorModel {
 
-  static async create(ip, username, userAgent) {
+  static async create(document) {
 
-    Assert.ok(ip, 'Missing ip argument.');
-    Assert.ok(username, 'Missing username argument.');
-    Assert.ok(userAgent, 'Missing userAgent argument.');
+    Assert.ok(document.ip, 'Missing ip argument.');
+    Assert.ok(document.username, 'Missing username argument.');
+    Assert.ok(document.userAgent, 'Missing userAgent argument.');
 
-    const agentInfo = UserAgent.lookup(userAgent);
+    const agentInfo = UserAgent.lookup(document.userAgent);
     const browser = agentInfo.family;
 
-    const document = new this({
+    document = new this({
       browser,
-      ip,
+      ip: document.ip,
       os: agentInfo.os.toString(),
-      username
+      username: document.username
     });
 
     const authAttempts = await this.insertOne(document);

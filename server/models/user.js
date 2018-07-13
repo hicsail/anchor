@@ -86,6 +86,16 @@ class User extends AnchorModel {
 
     return this.findOne(query);
   }
+
+
+  static findByEmail(email) {
+
+    Assert.ok(email, 'Misisng email argument.');
+
+    const query = { email: email.toLowerCase() };
+
+    return this.findOne(query);
+  }
 }
 
 

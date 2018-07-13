@@ -3,34 +3,27 @@ const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 
+
 class Feedback extends AnchorModel {
 
-  static async create(title,description,userId,resolved,comments,message){
+  static async create(document){
 
-    Assert.ok(title,'Missing title');
-    Assert.ok(description, 'Missing description');
-    Assert.ok(userId,'Missing userid');
+    Assert.ok(document.title,'Missing title');
+    Assert.ok(document.description, 'Missing description');
+    Assert.ok(document.userId,'Missing userid');
 
-    const document =  {
-      title,
-      description,
-      userId,
+    document =  {
+      title: document.title,
+      description: document.description,
+      userId: document.userId,
       resolved: false,
-      createdAt: new Date(),
-      comments:  {
-        message,
-        userId,
-        createdAt: new Date()
-      }
-
+      comments: []
     };
 
-
-    const feedback =  await this.insert(document);
+    const feedback =  await this.insertOne(document);
 
     return feedback[0];
   }
-
 }
 
 
@@ -38,7 +31,6 @@ Feedback.collectionName = 'feedbacks';
 
 
 Feedback.schema = Joi.object({
-
   _id: Joi.object(),
   title: Joi.string().required(),
   description: Joi.string().required(),
@@ -46,27 +38,17 @@ Feedback.schema = Joi.object({
   resolved: Joi.boolean().default(false),
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
-  comments: Joi.object({
+  comments: Joi.array().items(Joi.object({
     message: Joi.string().required(),
     userId: Joi.string().required(),
     createdAt: Joi.date().required()
-  })
-
-
+  }))
 });
 
 
 Feedback.payload = Joi.object({
   title: Joi.string().required(),
-  description: Joi.string().required(),
-  resolved: Joi.boolean().required(),
-  comments: Joi.object({
-    message: Joi.string().required(),
-    userId: Joi.string().required(),
-    createdAt: Joi.date().required()
-
-  })
-
+  description: Joi.string().required()
 });
 
 Feedback.indexes = [
