@@ -28,7 +28,7 @@ class Invite extends AnchorModel {
 
 
 Invite.schema = Joi.object({
-  _id: Joi.string(),
+  _id: Joi.object(),
   email: Joi.string().required(),
   userId: Joi.string().required(),
   createdAt: Joi.date().required(),
