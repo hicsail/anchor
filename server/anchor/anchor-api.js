@@ -59,6 +59,7 @@ const register = function (server,serverOptions) {
     config: {
       validate: {
         query: {
+          sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
           page: Joi.number().default(1)
         }
@@ -91,18 +92,17 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,reply) {
 
+      const model = request.pre.model;
+
       const query = {};
       const limit = request.query.limit;
       const page = request.query.page;
+      const options = {
+        sort: model.sortAdapter(request.query.sort)
+      };
 
-      return await request.pre.model.pagedFind(query,limit,page);
-
-
-
-
+      return await model.pagedFind(query, page, limit, options);
     }
-
-
   });
 };
 
