@@ -25,7 +25,19 @@ const manifest = {
         options: Config.get('/hapiAnchorModel')
       },
       {
+        plugin: 'hapi-auth-cookie'
+      },
+      {
+        plugin: 'hapi-remote-address'
+      },
+      {
+        plugin: './server/auth.js'
+      },
+      {
         plugin: './server/anchor/anchor-api'
+      },
+      {
+        plugin: './server/api/login.js'
       }
     ]
   }

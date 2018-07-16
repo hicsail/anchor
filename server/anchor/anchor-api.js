@@ -111,6 +111,7 @@ const register = function (server,serverOptions) {
 module.exports = {
   name: 'anchor-api',
   dependencies: [
+    'auth',
     'hapi-anchor-model'
   ],
   register
