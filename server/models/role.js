@@ -5,17 +5,16 @@ const AnchorModel = require('../anchor/anchor-model');
 
 class Role extends AnchorModel {
 
-  static async create(name,permissions,filter) {
+  static async create(document) {
 
-    Assert.ok(name, 'Missing name');
-    Assert.ok(permissions, 'Missing permissions');
-    Assert.ok(filter, 'Missing filter');
+    Assert.ok(document.name, 'Missing name');
+    Assert.ok(document.permissions, 'Missing permissions');
+    Assert.ok(document.filter, 'Missing filter');
 
-    const document = {
-      name,
-      permissions,
-      filter,
-      createdAt: new Date()
+    document = {
+      name: document.name,
+      permissions: document.permissions,
+      filter: document.filter
     };
 
     const role = await this.insertOne(document);
@@ -25,7 +24,7 @@ class Role extends AnchorModel {
   }
 }
 
-Role.collectionName = 'role';
+Role.collectionName = 'roles';
 
 
 Role.schema = Joi.object({
@@ -37,9 +36,7 @@ Role.schema = Joi.object({
   }),
   filter: Joi.array().items(Joi.object({
     placeholder: Joi.string()
-  })),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().required()
+  }))
 
 });
 
