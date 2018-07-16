@@ -4,17 +4,15 @@ const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 
 class Invite extends AnchorModel {
-  static async create(email,status) {
+  static async create(document) {
 
 
-    Assert.ok(email, 'Email missing');
-    Assert.ok(status,'Status missing');
+    Assert.ok(document.email, 'Email missing');
+    Assert.ok(document.status,'Status missing');
 
-    const document = {
-      email,
-      status,
-      createdAt: new Date(),
-      status
+    document = {
+      email: document.email,
+      status: document.status
 
     };
 
@@ -31,8 +29,6 @@ Invite.schema = Joi.object({
   _id: Joi.object(),
   email: Joi.string().required(),
   userId: Joi.string().required(),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().required(),
   expiredAt: Joi.date().required(),
   status: Joi.string().valid('Pending','Accepted','Declined','Expired')
 });
