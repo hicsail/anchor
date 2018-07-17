@@ -13,7 +13,6 @@ class Invite extends AnchorModel {
     document = {
       email: document.email,
       status: document.status
-
     };
 
     const invite = await this.insertOne(document);
@@ -24,13 +23,17 @@ class Invite extends AnchorModel {
 
 }
 
+Invite.collectionName = 'invites';
+
 
 Invite.schema = Joi.object({
   _id: Joi.object(),
   email: Joi.string().required(),
-  userId: Joi.string().required(),
-  expiredAt: Joi.date().required(),
-  status: Joi.string().valid('Pending','Accepted','Declined','Expired')
+  userId: Joi.string(),
+  expiredAt: Joi.date(),
+  status: Joi.string().valid('Pending','Accepted','Declined','Expired'),
+  createdAt: Joi.date(),
+  updatedAt: Joi.date()
 });
 
 
@@ -46,5 +49,5 @@ Invite.indexes = [
 ];
 
 
-module.exports = 'Invite';
+module.exports = Invite;
 

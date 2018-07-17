@@ -7,44 +7,42 @@ class Notification extends AnchorModel {
 
   static async create(document) {
 
-    Assert.ok(document.oneSignalId,'Missing onesignal id');
-    Assert.ok(document.PlayerIds, 'Missing playerids');
+    Assert.ok(document.onesignalId,'Missing onesignalId');
+    Assert.ok(document.playerIds, 'Missing playerIds');
     Assert.ok(document.title,'Missing title');
     Assert.ok(document.subtitle,'Missing subtitle');
     Assert.ok(document.message,'Missing message');
-    Assert.ok(document.increaseBageNumber, 'Missing increase bage number');
 
     document = {
-      oneSignalId: document.oneSignalId,
-      PlayerIds: document.PlayerIds,
+      onesignalId: document.onesignalId,
+      playerIds: document.playerIds,
       title: document.title,
       subtitle: document.subtitle,
       message: document.message,
-      increaseBageNumber: document.increaseBageNumber,
-      deliveryAt: null,
-      deliveredAt: null
+      increaseBadgeNumber: document.increaseBadgeNumber
     };
 
     const notification = await this.insertOne(document);
 
     return notification[0];
   }
-
 }
+
+Notification.collectionName = 'notfications';
 
 Notification.schema = Joi.object({
   _id: Joi.object(),
-  oneSignalId: Joi.string().required(),
-  PlayerIds: Joi.array().items(Joi.string().required()),
+  onesignalId: Joi.string().required(),
+  playerIds: Joi.array().items(Joi.string().required()),
   title: Joi.string(),
   subtitle: Joi.string().required(),
   message: Joi.string().required(),
-  increaseBageNumber: Joi.number().integer().required(),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().required(),
-  deliveryAt: Joi.date().required(),
-  deliveredAt: Joi.date().required(),
-  openedAt: Joi.date().required()
+  increaseBadgeNumber: Joi.number().integer().required(),
+  createdAt: Joi.date(),
+  updatedAt: Joi.date(),
+  deliveryAt: Joi.date(),
+  deliveredAt: Joi.date(),
+  openedAt: Joi.date()
 });
 
 Notification.payload = Joi.object({
@@ -53,7 +51,7 @@ Notification.payload = Joi.object({
   title: Joi.string().required(),
   subtitle: Joi.string().required(),
   message: Joi.string().required(),
-  increaseBageNumber: Joi.number().integer().required()
+  increaseBadgeNumber: Joi.number().integer().required()
 
 });
 
