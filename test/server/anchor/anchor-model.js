@@ -669,6 +669,21 @@ lab.experiment('Proxy methods', () => {
 
   });
 
+  lab.test('it inserts many documents without createdAt being passed in and returns the result', async () => {
+
+    const date = new Date();
+    const documents = [
+      { name: 'Timon', createdAt: date },
+      { name: 'Pumba', createdAt: date }
+    ];
+
+    const results = await DummyModel.insertMany(documents);
+    lab.expect(results).to.be.an.array();
+    lab.expect(results[0].createdAt).to.equal(date);
+    lab.expect(results[1].createdAt).to.equal(date);
+    lab.expect(results.length).to.equal(2);
+  });
+
 
   lab.test('it inserts many documents and returns the results', async () => {
 

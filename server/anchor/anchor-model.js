@@ -478,8 +478,7 @@ class AnchorModel {
 
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
-      if (!this.createdAt){
-        console.log(args[0]);
+      if (!args[0].createdAt){
         args[0].createdAt = new Date();
       }
     }
