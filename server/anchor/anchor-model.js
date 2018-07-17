@@ -452,7 +452,10 @@ class AnchorModel {
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
       for (const doc of args[0]) {
-        doc.createdAt = new Date();
+        if (!this.document.createdAt) {
+          doc.createdAt = new Date();
+
+        }
       }
     }
     const db = dbFromArgs(args);
@@ -474,7 +477,9 @@ class AnchorModel {
 
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
-      args[0].createdAt = new Date();
+      if (!this.document.createdAt){
+        args[0].createdAt = new Date();
+      }
     }
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
