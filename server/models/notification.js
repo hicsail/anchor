@@ -5,25 +5,24 @@ const AnchorModel = require('../anchor/anchor-model');
 
 class Notification extends AnchorModel {
 
-  static async create(oneSignalId,PlayerIds,title,subtitle,message,increaseBageNumber,deliveryAt,deliveredAt) {
+  static async create(document) {
 
-    Assert.ok(oneSignalId,'Missing onesignal id');
-    Assert.ok(PlayerIds, 'Missing playerids');
-    Assert.ok(title,'Missing title');
-    Assert.ok(subtitle,'Missing subtitle');
-    Assert.ok(message,'Missing message');
-    Assert.ok(increaseBageNumber, 'Missing increase bage number');
+    Assert.ok(document.oneSignalId,'Missing onesignal id');
+    Assert.ok(document.PlayerIds, 'Missing playerids');
+    Assert.ok(document.title,'Missing title');
+    Assert.ok(document.subtitle,'Missing subtitle');
+    Assert.ok(document.message,'Missing message');
+    Assert.ok(document.increaseBageNumber, 'Missing increase bage number');
 
-    const document = {
-      oneSignalId,
-      PlayerIds,
-      title,
-      subtitle,
-      message,
-      increaseBageNumber,
+    document = {
+      oneSignalId: document.oneSignalId,
+      PlayerIds: document.PlayerIds,
+      title: document.title,
+      subtitle: document.subtitle,
+      message: document.message,
+      increaseBageNumber: document.increaseBageNumber,
       deliveryAt: null,
-      deliveredAt: new Date(),
-      createdAt: new Date()
+      deliveredAt: null
     };
 
     const notification = await this.insertOne(document);
