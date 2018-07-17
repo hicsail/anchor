@@ -6,9 +6,6 @@ const Session = require('../models/session');
 const User = require('../models/user');
 
 
-const internals = {};
-
-
 const register = function (server, serverOptions) {
 
 
