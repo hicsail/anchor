@@ -4,14 +4,18 @@ const Hoek = require('hoek');
 const Fs = require('fs');
 const Path = require('path');
 
-const modelPath = '../models/';
-
 const register = async function (server, options) {
 
   Hoek.assert(options.mongodb, 'options.mongodb is required');
   Hoek.assert(options.mongodb.connection, 'options.mongodb.connection is required');
   Hoek.assert(options.mongodb.connection.uri, 'options.mongodb.connection.uri is required');
   Hoek.assert(options.mongodb.connection.db, 'options.mongodb.connection.db is required');
+
+  let modelPath = '../models/';
+
+  if (options.path) {
+    modelPath = options.path;
+  }
 
   const models = await readDir(Path.join(__dirname,modelPath));
 

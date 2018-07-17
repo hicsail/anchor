@@ -76,6 +76,30 @@ lab.experiment('Plugin', () => {
   });
 
 
+  lab.test('it successfuly connects and exposes the plugin without any anchorModels', async () => {
+
+    const server = Hapi.Server();
+
+    config.path = '../../test/server/models/';
+
+    const plugin = {
+      plugin: HapiAnchorModel,
+      options: config
+    };
+
+    await server.register(plugin);
+    await server.start();
+
+
+
+    Code.expect(server.plugins['hapi-anchor-model']).to.be.an.object();
+
+    server.plugins['hapi-anchor-model'].anchorModel.disconnect();
+
+    await server.stop();
+  });
+
+
   lab.test('it connects to the db and creates indexes during pre-start (autoIndex set manually)', async () => {
 
     const configClone = JSON.parse(JSON.stringify(config));
