@@ -452,7 +452,8 @@ class AnchorModel {
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
       for (const doc of args[0]) {
-        if (!this.document.createdAt) {
+        if (!doc.createdAt) {
+          console.log(doc);
           doc.createdAt = new Date();
 
         }
@@ -477,7 +478,8 @@ class AnchorModel {
 
     const args = argsFromArguments(arguments);
     if (this.timestamps) {
-      if (!this.document.createdAt){
+      if (!this.createdAt){
+        console.log(args[0]);
         args[0].createdAt = new Date();
       }
     }

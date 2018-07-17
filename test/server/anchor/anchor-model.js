@@ -380,6 +380,8 @@ lab.experiment('Helpers', () => {
   });
 
 
+
+
   lab.test('it creates a sort document from a string', () => {
 
     const sort = AnchorModel.sortAdapter('one -two three');
@@ -650,6 +652,21 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(results).to.be.an.array();
     lab.expect(results.length).to.equal(1);
+  });
+
+  lab.test('it inserts one document without createdAt being passed in and returns the result', async () => {
+
+    const date = new Date();
+    const document = {
+      name: 'Pony',
+      createdAt: date
+    };
+
+    const results = await DummyModel.insertOne(document);
+    lab.expect(results).to.be.an.array();
+    lab.expect(results[0].createdAt).to.equal(date);
+    lab.expect(results.length).to.equal(1);
+
   });
 
 
