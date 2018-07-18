@@ -28,7 +28,7 @@ lab.before(async () => {
       return entry;
     });
 
-  plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins')[0].options });
+  plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
   plugins.push(Auth);
   plugins.push(Login);
 
