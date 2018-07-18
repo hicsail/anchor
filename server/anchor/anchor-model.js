@@ -852,6 +852,17 @@ AnchorModel.routes = {
     auth: true
   }
 };
+
+AnchorModel.routeMap = {
+  create: {
+    method: 'POST',
+    path: '/api/'
+  },
+  get: {
+    method: 'GET',
+    path: '/api/'
+  }
+};
 AnchorModel.timestamps = true;
 
 
