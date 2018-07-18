@@ -88,7 +88,7 @@ const register = function (server, serverOptions) {
 module.exports = {
   name: 'api-signup',
   dependencies: [
-    'hapi-mongo-models',
+    'hapi-anchor-model',
     'hapi-remote-address'
   ],
   register
