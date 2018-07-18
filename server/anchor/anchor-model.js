@@ -453,7 +453,6 @@ class AnchorModel {
     if (this.timestamps) {
       for (const doc of args[0]) {
         if (!doc.createdAt) {
-          console.log(doc);
           doc.createdAt = new Date();
 
         }

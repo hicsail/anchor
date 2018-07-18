@@ -6,6 +6,38 @@ const Config = require('../config');
 
 const register = function (server, options) {
 
+  server.auth.strategy('simple','basic', {
+    validate: async function (request, sessionId, key, h) {
+
+      const session = await Session.findByCredentials(sessionId,key);
+
+      if (!session) {
+        return { valid: false };
+      }
+
+      const user = await User.findById(session.userId);
+
+      if (!user) {
+        return { valid: false };
+      }
+
+      if (!user.isActive) {
+        return { valid: false };
+
+      }
+
+      const credentials = {
+
+        scope: Object.keys(user.roles),
+        session,
+        user
+      };
+
+      return { credentials, valid: true };
+
+    }
+  });
+
   server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
     cookie: 'sid',
@@ -46,6 +78,7 @@ const register = function (server, options) {
 module.exports = {
   name: 'auth',
   dependencies: [
+    'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-anchor-model'
   ],
