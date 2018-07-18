@@ -28,6 +28,9 @@ const manifest = {
         plugin: 'hapi-auth-cookie'
       },
       {
+        plugin: 'hapi-auth-basic'
+      },
+      {
         plugin: 'hapi-remote-address'
       },
       {

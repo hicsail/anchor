@@ -41,7 +41,7 @@
     "glue": "5.x.x",
     "handlebars": "4.x.x",
     "hapi": "17.x.x",
-    "hapi-auth-basic": "5.x.x",
+    "hapi-auth-basic": "^5.0.0",
     "hapi-auth-cookie": "^9.0.0",
     "hapi-auth-jwt2": "8.x.x",
     "hapi-cron": "1.x.x",

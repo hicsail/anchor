@@ -39,18 +39,6 @@ lab.experiment('User Model', () => {
     Code.expect(user).to.be.an.instanceOf(User);
   });
 
-  lab.test('it returns an instance when finding by id', async () => {
-
-    const user = await User.create({
-      username: 'ren',
-      password: 'bighouseblues',
-      email: 'ren@stimpy.show',
-      name: 'Ren'
-    });
-    const newUser = await User.findById(user._id);
-    Code.expect(newUser._id).to.equal(user._id);
-
-  });
 
 
   lab.test('it returns undefined when finding by credentials user misses', async () => {
