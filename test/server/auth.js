@@ -4,7 +4,7 @@ const Code = require('code');
 const Hapi = require('hapi');
 const Fixtures = require('./fixtures');
 const Lab = require('lab');
-const Config = ('../../../config');
+const Manifest = require('../../manifest');
 const lab = exports.lab = Lab.script();
 const User = require('../../server/models/user');
 const Session = require('../../server/models/session');
@@ -16,19 +16,73 @@ lab.experiment('Auth', () => {
 
     server = Hapi.Server();
 
-    await Auth.connect(config.connection,config.options);
+    const plugins = Manifest.get('/register/plugins')
+      .filter((entry) => Auth.dependencies.includes(entry.plugin))
+      .map((entry) => {
+
+        entry.plugin = require(entry.plugin);
+
+        return entry;
+
+      });
+
+    plugins.push(Auth);
+
+    await server.register(plugins);
+    await server.start();
     await Fixtures.Db.removeAllData();
+
+    server.route({
+      method: 'GET',
+      path: '/',
+      options: {
+        auth: false
+      },
+      handler: async function (request,h) {
+
+        try {
+          await request.server.auth.test('simple',request);
+          return { valid:true };
+        }
+
+        catch (err) {
+          return { valid: true };
+        }
+      }
+    });
   });
 
   lab.after(async () => {
 
     await Fixtures.Db.removeAllData();
-
-    Auth.disconnect();
+    await server.stop();
   });
 
-  lab.test();
+  lab.experiment('Simple Auth Strategy', () => {
 
+    lab.test('it returns as invalid without authentication provided', async () => {
 
+      const request = {
+        mehotd: 'GET',
+        url: '/'
+      };
+
+      const response = await server.inject(request);
+
+      Code.expect(response.statusCode).to.equal(200);
+
+      Code.expect(response.result.isValid).to.equal(false);
+    });
+  });
 
 });
+
+
+
+
+
+
+
+
+
+
