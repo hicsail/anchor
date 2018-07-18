@@ -27,6 +27,7 @@ lab.experiment('Auth', () => {
       });
 
     plugins.push(Auth);
+    plugins.push({ plugin: require('../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins')[0].options });
 
     await server.register(plugins);
     await server.start();
@@ -46,7 +47,7 @@ lab.experiment('Auth', () => {
         }
 
         catch (err) {
-          return { valid: true };
+          return { valid: false };
         }
       }
     });
@@ -63,7 +64,7 @@ lab.experiment('Auth', () => {
     lab.test('it returns as invalid without authentication provided', async () => {
 
       const request = {
-        mehotd: 'GET',
+        method: 'GET',
         url: '/'
       };
 
@@ -71,7 +72,7 @@ lab.experiment('Auth', () => {
 
       Code.expect(response.statusCode).to.equal(200);
 
-      Code.expect(response.result.isValid).to.equal(false);
+      Code.expect(response.result.valid).to.equal(false);
     });
   });
 
