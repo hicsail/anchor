@@ -87,11 +87,15 @@ class User extends AnchorModel {
     return this.findOne(query);
   }
 
-  static findById(_id) {
+  static findById(id) {
 
-    Assert.ok(_id, 'Missing id argument');
+    console.log('find');
+    console.log(id);
 
-    const query =  { id: _id };
+
+    Assert.ok(id, 'Missing id argument');
+
+    const query =  { _id: id };
 
     return this.findOne(query);
   }
