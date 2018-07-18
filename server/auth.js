@@ -27,8 +27,6 @@ const register = function (server, options) {
       }
 
       const credentials = {
-
-        scope: Object.keys(user.roles),
         session,
         user
       };
