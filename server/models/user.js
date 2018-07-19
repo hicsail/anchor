@@ -88,6 +88,8 @@ class User extends AnchorModel {
   }
 
 
+
+
   static findByEmail(email) {
 
     Assert.ok(email, 'Misisng email argument.');

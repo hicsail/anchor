@@ -1,10 +1,39 @@
 'use strict';
+const Config = require('../config');
 const Session = require('./models/session');
 const User = require('./models/user');
-const Config = require('../config');
 
 
 const register = function (server, options) {
+
+  server.auth.strategy('simple', 'basic', {
+    validate: async function (request, sessionId, key, h) {
+
+      const session = await Session.findByCredentials(sessionId, key);
+
+      if (!session) {
+        return { isValid: false };
+      }
+
+      const user = await User.findById(session.userId);
+
+      if (!user) {
+        return { isValid: false };
+      }
+
+      if (!user.isActive) {
+        return { isValid: false };
+      }
+
+      const credentials = {
+        session,
+        user
+      };
+
+      return { credentials, isValid: true };
+    }
+  });
+
 
   server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
@@ -46,6 +75,7 @@ const register = function (server, options) {
 module.exports = {
   name: 'auth',
   dependencies: [
+    'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-anchor-model'
   ],

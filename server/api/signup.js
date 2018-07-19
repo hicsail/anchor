@@ -45,7 +45,7 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       // create and link account and user documents
-      const user = User.create(request.payload);
+      const user = await User.create(request.payload);
 
       const emailOptions = {
         subject: `Your ${Config.get('/projectName')} account`,

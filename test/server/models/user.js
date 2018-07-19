@@ -40,6 +40,7 @@ lab.experiment('User Model', () => {
   });
 
 
+
   lab.test('it returns undefined when finding by credentials user misses', async () => {
 
     const user = await User.findByCredentials('steve', '123456');
