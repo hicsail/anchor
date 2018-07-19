@@ -23,7 +23,7 @@ const register = function (server, serverOptions) {
               const method = AnchorModel.routeMap[route].method.toUpperCase();
               const path = AnchorModel.routeMap[route].path + model.collectionName;
               const tag = model.collectionName;
-              permissions.push({ method, path, tag, key: method + path });
+              permissions.push({ method, path, tag, key: method + path.split('/').join('-') });
             }
           }
         }
@@ -35,7 +35,7 @@ const register = function (server, serverOptions) {
           const method = route.method.toUpperCase();
           const path = route.path;
           const tag = path.split('/')[2];
-          permissions.push({ method, path, tag, key: method + path });
+          permissions.push({ method, path, tag, key: method + path.split('/').join('-') });
         }
       });
 
@@ -50,6 +50,18 @@ const register = function (server, serverOptions) {
     config: {
       auth: false,
       pre: [{
+        assign: 'roleValidation',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload, Role.payload);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }, {
         assign: 'permissions',
         method: async function (request,h) {
 
@@ -68,11 +80,11 @@ const register = function (server, serverOptions) {
         assign: 'schema',
         method: function (request,h) {
 
-          return Joi.object().keys(request.pre.permissions.reduce((v, a) => {
+          return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
 
             a[v.key] = Joi.boolean().required();
             return a;
-          }));
+          }, {}));
         }
       }, {
         assign: 'validate',
