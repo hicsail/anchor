@@ -63,6 +63,6 @@ Gulp.task('jsDatatables', () => {
   ]).pipe(Gulp.dest('./server/web/public/js/lib/datatables/'));
 });
 
-const tasks = ['documentation', 'css', 'cssDatatables','js', 'jsDatatables'];
+const tasks = ['css', 'cssDatatables','js', 'jsDatatables'];
 
 Gulp.task('default', tasks);

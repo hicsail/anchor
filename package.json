@@ -11,7 +11,9 @@
     "lint-fix": "lab -dL --lint-fix",
     "coveralls": "lab -r lcov | ./node_modules/.bin/coveralls",
     "build": "gulp",
-    "prestart": "npm run build"
+    "prestart": "npm run build",
+    "postinstall": "npm run docs",
+    "docs": "gulp documentation"
   },
   "author": "Boston University Software & Application Innovation Lab",
   "license": "MIT",
