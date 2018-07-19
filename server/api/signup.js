@@ -66,7 +66,7 @@ const register = function (server, serverOptions) {
 
       const userAgent = request.headers['user-agent'];
       const ip = request.remoteAddress;
-      const session = await Session.create(`${user._id}`, ip, userAgent);
+      const session = await Session.create({ userId: `${user._id}`, ip, userAgent });
 
       // create auth header
 
