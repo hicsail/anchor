@@ -77,7 +77,7 @@ lab.experiment('Auth', () => {
   });
 
 
-  lab.test('it returns as invalid because the session does not exist', async () => {
+  lab.test('it returns as invalid when the session query misses', async () => {
 
     const sessionId = '000000000000000000000001';
     const sessionKey = '01010101-0101-0101-0101-010101010101';
@@ -85,7 +85,7 @@ lab.experiment('Auth', () => {
       method: 'GET',
       url: '/',
       headers: {
-        authorization: Fixtures.creds.authHeader(sessionId,sessionKey)
+        authorization: Fixtures.Creds.authHeader(sessionId,sessionKey)
       }
     };
 
@@ -95,6 +95,48 @@ lab.experiment('Auth', () => {
     Code.expect(response.result.valid).to.equal(false);
 
   });
+
+
+  lab.test('it returns as invalid when the user query misses', async () => {
+
+    const session = await Session.create({
+      userId: 'ren',
+      ip: 'ip',
+      userAgent: 'userAgent'
+    });
+    const request = {
+      method: 'GET',
+      url: '/',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id,session.key)
+      }
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.valid).to.equal(false);
+
+
+  });
+
+  lab.test('it returns as invalid because the user is inactive', async () => {
+
+    const request = {
+      method: 'GET',
+      url: '/',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id,session.key);
+
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.valid).to.equal(false);
+  }
+
+
 
 
 
