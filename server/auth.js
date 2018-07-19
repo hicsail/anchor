@@ -10,12 +10,17 @@ const register = function (server, options) {
     validate: async function (request, sessionId, key, h) {
 
       const session = await Session.findByCredentials(sessionId,key);
+      console.log(session);
+      console.log(sessionId);
+      console.log(key);
 
       if (!session) {
         return { valid: false };
       }
 
       const user = await User.findById(session.userId);
+      console.log(user);
+      console.log(session);
 
       if (!user) {
         return { valid: false };
@@ -70,7 +75,10 @@ const register = function (server, options) {
       return { credentials, valid: true };
     }
   });
+  server.auth.default('simple');
+
 };
+
 
 
 module.exports = {

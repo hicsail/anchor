@@ -8,7 +8,7 @@ const Manifest = require('../../manifest');
 const lab = exports.lab = Lab.script();
 const User = require('../../server/models/user');
 const Session = require('../../server/models/session');
-let server; 
+let server;
 
 lab.experiment('Auth', () => {
 
@@ -121,28 +121,67 @@ lab.experiment('Auth', () => {
 
   lab.test('it returns as invalid because the user is inactive', async () => {
 
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+
+
+    const session = await Session.create({
+      userId: `${user._id}`,
+      ip: 'ip',
+      userAgent: 'userAgent'
+    });
+
+    const update = {
+      $set: {
+        isActive: false
+      }
+    };
+
+    await User.findByIdAndUpdate(user.id,update);
+
     const request = {
       method: 'GET',
       url: '/',
       headers: {
-        authorization: Fixtures.Creds.authHeader(session._id,session.key);
+        authorization: Fixtures.Creds.authHeader(session._id,session.key)
+
+      }
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.valid).to.equal(false);
+  });
+
+
+  lab.test('it returns as valid because the user active and the session is created', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const session = await Session.create({
+      userId: `${user._id}`,
+      ip: 'ip',
+      userAgent: 'userAgent'
+    });
+    console.log(session.key);
+    console.log('found it');
+
+    const request = {
+      method: 'GET',
+      url: '/',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id,session.key)
 
       }
     };
 
     const response = await server.inject(request);
 
+
     Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result.valid).to.equal(false);
-  }
+    Code.expect(response.result.valid).to.equal(true);
 
-
-
-
+  });
 
 });
-
-
 
 
 

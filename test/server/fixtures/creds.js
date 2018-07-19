@@ -14,11 +14,20 @@ class Credentials {
 
   };
 
-  static async createUser(name,username,password,email) {
+  static async createUser(username,password,email,name) {
 
-    const user = await User.create(name,username,password,email);
+    const user = await User.create({
+      username,
+      password,
+      email,
+      name
+    });
 
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
+    const session = await Session.create({
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    });
 
     return {
       user,
