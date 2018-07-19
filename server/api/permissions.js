@@ -10,9 +10,7 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/permissions/available',
     options: {
-      auth: {
-        strategies: ['session']
-      }
+      auth: false
     },
     handler: function (request, h) {
 
@@ -50,9 +48,7 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path:'/api/permissions/role',
     config: {
-      auth: {
-        strategies: ['session']
-      },
+      auth: false,
       pre: [{
         assign: 'permissions',
         method: async function (request,h) {
@@ -72,7 +68,7 @@ const register = function (server, serverOptions) {
         assign: 'schema',
         method: function (request,h) {
 
-          return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
+          return Joi.object().keys(request.pre.permissions.reduce((v, a) => {
 
             a[v.key] = Joi.boolean().required();
             return a;
@@ -95,7 +91,7 @@ const register = function (server, serverOptions) {
     handler: async function (request,h) {
 
       request.payload.filter = [];
-      request.payload.userId = request.auth.credentials.user._id.toString();
+      request.payload.userId = '0000'; //request.auth.credentials.user._id.toString();
 
       return await Role.create(request.payload);
     }
