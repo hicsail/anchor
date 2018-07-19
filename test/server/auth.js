@@ -26,10 +26,7 @@ lab.before(async () => {
     });
 
   plugins.push(Auth);
-  plugins.push({
-    plugin: require('../../server/anchor/hapi-anchor-model'),
-    options: Manifest.get('/register/plugins')[0].options
-  });
+  plugins.push({ plugin: require('../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
 
   await server.register(plugins);
   await server.start();
@@ -45,11 +42,11 @@ lab.before(async () => {
 
       try {
         await request.server.auth.test('simple', request);
-        return { valid: true };
+        return { isValid: true };
       }
 
       catch (err) {
-        return { valid: false };
+        return { isValid: false };
       }
     }
   });
@@ -69,12 +66,10 @@ lab.experiment('Simple Auth Strategy', () => {
       method: 'GET',
       url: '/'
     };
-
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
-
-    Code.expect(response.result.valid).to.equal(false);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
@@ -93,18 +88,13 @@ lab.experiment('Simple Auth Strategy', () => {
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result.valid).to.equal(false);
-
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
   lab.test('it returns as invalid when the user query misses', async () => {
 
-    const session = await Session.create({
-      userId: 'ren',
-      ip: 'ip',
-      userAgent: 'userAgent'
-    });
+    const session = await Session.create({ userId: '000000000000000000000000', ip: '127.0.0.1', userAgent: 'Lab' });
     const request = {
       method: 'GET',
       url: '/',
@@ -115,62 +105,55 @@ lab.experiment('Simple Auth Strategy', () => {
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result.valid).to.equal(false);
-
-
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
-  lab.test('it returns as invalid because the user is inactive', async () => {
 
-    const { user } = await Fixtures.Creds.createUser('Ren', '321!abc', 'ren@stimpy.show', 'Stimpy');
+  lab.test('it returns as invalid when the user is not active', async () => {
 
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
 
-    const session = await Session.create({
-      userId: `${user._id}`,
-      ip: 'ip',
-      userAgent: 'userAgent'
-    });
-
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
     const update = {
       $set: {
         isActive: false
       }
     };
 
-    await User.findByIdAndUpdate(user.id, update);
+    await User.findByIdAndUpdate(user._id, update);
 
     const request = {
       method: 'GET',
       url: '/',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
-
       }
     };
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result.valid).to.equal(false);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it returns as valid because the user active and the session is created', async () => {
+  lab.test('it returns as valid when all is well', async () => {
 
-    const { session } = await Fixtures.Creds.createUser('Ren', '321!abc', 'ren@stimpy.show', 'Stimpy');
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
 
     const request = {
       method: 'GET',
       url: '/',
       headers: {
-        authorization: Fixtures.Creds.authHeader(session._id.toString(), session.key)
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
     };
 
     const response = await server.inject(request);
 
-
     Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result.valid).to.equal(true);
-
+    Code.expect(response.result.isValid).to.equal(true);
   });
 });

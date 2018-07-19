@@ -454,7 +454,6 @@ class AnchorModel {
       for (const doc of args[0]) {
         if (!doc.createdAt) {
           doc.createdAt = new Date();
-
         }
       }
     }
@@ -851,6 +850,17 @@ AnchorModel.routes = {
     payload: null,
     query: null,
     auth: true
+  }
+};
+
+AnchorModel.routeMap = {
+  create: {
+    method: 'POST',
+    path: '/api/'
+  },
+  get: {
+    method: 'GET',
+    path: '/api/'
   }
 };
 AnchorModel.timestamps = true;

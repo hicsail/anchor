@@ -33,12 +33,8 @@ Role.schema = Joi.object({
   _id: Joi.object(),
   name: Joi.string().required(),
   userId: Joi.string().required(),
-  permissions: Joi.object({
-    placeholder:Joi.string()
-  }),
-  filter: Joi.array().items(Joi.object({
-    placeholder: Joi.string()
-  })),
+  permissions: Joi.object().required(),
+  filter: Joi.array(),
   createdAt: Joi.date(),
   updatedAt: Joi.date()
 });
@@ -46,18 +42,13 @@ Role.schema = Joi.object({
 
 Role.payload = Joi.object({
   name: Joi.string().required(),
-  userId: Joi.string().required(),
-  permissions: Joi.object({
-    placeholder: Joi.string()
-  }),
-  filter: Joi.array().items(Joi.object({
-    placeholder: Joi.string()
-  }))
-
+  permissions: Joi.object().required(),
+  filter: Joi.array()
 });
 
 Role.indexes = [
-  { key: { name: 1 }  }];
+  { key: { name: 1, unique: 1 } }
+];
 
 
 module.exports = Role;

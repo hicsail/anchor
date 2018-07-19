@@ -21,10 +21,6 @@ const manifest = {
   register: {
     plugins: [
       {
-        plugin: './server/anchor/hapi-anchor-model.js',
-        options: Config.get('/hapiAnchorModel')
-      },
-      {
         plugin: 'hapi-auth-cookie'
       },
       {
@@ -34,13 +30,17 @@ const manifest = {
         plugin: 'hapi-remote-address'
       },
       {
+        plugin: './server/anchor/hapi-anchor-model.js',
+        options: Config.get('/hapiAnchorModel')
+      },
+      {
         plugin: './server/auth.js'
       },
       {
-        plugin: './server/anchor/anchor-api'
+        plugin: './server/anchor/hapi-anchor-api'
       },
       {
-        plugin: './server/api/login.js'
+        plugin: './server/anchor/anchor-api'
       }
     ]
   }

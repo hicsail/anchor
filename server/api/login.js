@@ -1,12 +1,12 @@
 'use strict';
 const AuthAttempt = require('../models/auth-attempt');
+const Bcrypt = require('bcrypt');
 const Boom = require('boom');
+const Config = require('../../config');
 const Joi = require('joi');
+const Mailer = require('../mailer');
 const Session = require('../models/session');
 const User = require('../models/user');
-
-
-const internals = {};
 
 
 const register = function (server, serverOptions) {
@@ -16,12 +16,6 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/login',
     options: {
-      auth: false,
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
-      },
       validate: {
         payload: {
           username: Joi.string().lowercase().required(),
@@ -87,6 +81,127 @@ const register = function (server, serverOptions) {
     }
   });
 
+
+  server.route({
+    method: 'POST',
+    path: '/api/login/forgot',
+    options: {
+      auth: false,
+      validate: {
+        payload: {
+          email: Joi.string().email().lowercase().required()
+        }
+      },
+      pre: [{
+        assign: 'user',
+        method: async function (request, h) {
+
+          const query = { email: request.payload.email };
+          const user = await User.findOne(query);
+
+          if (!user) {
+            const response = h.response({ message: 'Success.' });
+
+            return response.takeover();
+          }
+
+          return user;
+        }
+      }]
+    },
+    handler: async function (request, h) {
+
+      // set reset token
+
+      const keyHash = await Session.generateKeyHash();
+      const update = {
+        $set: {
+          resetPassword: {
+            token: keyHash.hash,
+            expires: Date.now() + 10000000
+          }
+        }
+      };
+
+      await User.findByIdAndUpdate(request.pre.user._id, update);
+
+      // send email
+
+      const projectName = Config.get('/projectName');
+      const emailOptions = {
+        subject: `Reset your ${projectName} password`,
+        to: request.payload.email
+      };
+      const template = 'forgot-password';
+      const context = { key: keyHash.key };
+
+      await Mailer.sendEmail(emailOptions, template, context);
+
+      return { message: 'Success.' };
+    }
+  });
+
+
+  server.route({
+    method: 'POST',
+    path: '/api/login/reset',
+    options: {
+      auth: false,
+      validate: {
+        payload: {
+          email: Joi.string().email().lowercase().required(),
+          key: Joi.string().required(),
+          password: Joi.string().required()
+        }
+      },
+      pre: [{
+        assign: 'user',
+        method: async function (request, h) {
+
+          const query = {
+            email: request.payload.email,
+            'resetPassword.expires': { $gt: Date.now() }
+          };
+          const user = await User.findOne(query);
+
+          if (!user) {
+            throw Boom.badRequest('Invalid email or key.');
+          }
+
+          return user;
+        }
+      }]
+    },
+    handler: async function (request, h) {
+
+      // validate reset token
+
+      const key = request.payload.key;
+      const token = request.pre.user.resetPassword.token;
+      const keyMatch = await Bcrypt.compare(key, token);
+
+      if (!keyMatch) {
+        throw Boom.badRequest('Invalid email or key.');
+      }
+
+      // update user
+
+      const password = request.payload.password;
+      const passwordHash = await User.generatePasswordHash(password);
+      const update = {
+        $set: {
+          password: passwordHash.hash
+        },
+        $unset: {
+          resetPassword: undefined
+        }
+      };
+
+      await User.findByIdAndUpdate(request.pre.user._id, update);
+
+      return { message: 'Success.' };
+    }
+  });
 };
 
 
