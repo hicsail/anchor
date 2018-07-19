@@ -1,8 +1,6 @@
 'use strict';
 const Session = require('./models/session');
 const User = require('./models/user');
-const Config = require('../config');
-
 
 const register = function (server, options) {
 
@@ -10,17 +8,12 @@ const register = function (server, options) {
     validate: async function (request, sessionId, key, h) {
 
       const session = await Session.findByCredentials(sessionId,key);
-      console.log(session);
-      console.log(sessionId);
-      console.log(key);
 
       if (!session) {
         return { valid: false };
       }
 
       const user = await User.findById(session.userId);
-      console.log(user);
-      console.log(session);
 
       if (!user) {
         return { valid: false };
@@ -40,7 +33,7 @@ const register = function (server, options) {
 
     }
   });
-
+  /*
   server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
     cookie: 'sid',
@@ -75,6 +68,7 @@ const register = function (server, options) {
       return { credentials, valid: true };
     }
   });
+  */
   server.auth.default('simple');
 
 };

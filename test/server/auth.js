@@ -8,72 +8,73 @@ const Manifest = require('../../manifest');
 const lab = exports.lab = Lab.script();
 const User = require('../../server/models/user');
 const Session = require('../../server/models/session');
+
 let server;
 
-lab.experiment('Auth', () => {
+lab.before(async () => {
 
-  lab.before(async () => {
+  server = Hapi.Server();
 
-    server = Hapi.Server();
+  const plugins = Manifest.get('/register/plugins')
+    .filter((entry) => Auth.dependencies.includes(entry.plugin))
+    .map((entry) => {
 
-    const plugins = Manifest.get('/register/plugins')
-      .filter((entry) => Auth.dependencies.includes(entry.plugin))
-      .map((entry) => {
+      entry.plugin = require(entry.plugin);
 
-        entry.plugin = require(entry.plugin);
+      return entry;
 
-        return entry;
+    });
 
-      });
+  plugins.push(Auth);
+  plugins.push({
+    plugin: require('../../server/anchor/hapi-anchor-model'),
+    options: Manifest.get('/register/plugins')[0].options
+  });
 
-    plugins.push(Auth);
-    plugins.push({ plugin: require('../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins')[0].options });
+  await server.register(plugins);
+  await server.start();
+  await Fixtures.Db.removeAllData();
 
-    await server.register(plugins);
-    await server.start();
-    await Fixtures.Db.removeAllData();
+  server.route({
+    method: 'GET',
+    path: '/',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
 
-    server.route({
-      method: 'GET',
-      path: '/',
-      options: {
-        auth: false
-      },
-      handler: async function (request,h) {
-
-        try {
-          await request.server.auth.test('simple',request);
-          return { valid:true };
-        }
-
-        catch (err) {
-          return { valid: false };
-        }
+      try {
+        await request.server.auth.test('simple', request);
+        return { valid: true };
       }
-    });
+
+      catch (err) {
+        return { valid: false };
+      }
+    }
   });
+});
 
-  lab.after(async () => {
+lab.after(async () => {
 
-    await Fixtures.Db.removeAllData();
-    await server.stop();
-  });
+  await Fixtures.Db.removeAllData();
+  await server.stop();
+});
 
-  lab.experiment('Simple Auth Strategy', () => {
+lab.experiment('Simple Auth Strategy', () => {
 
-    lab.test('it returns as invalid without authentication provided', async () => {
+  lab.test('it returns as invalid without authentication provided', async () => {
 
-      const request = {
-        method: 'GET',
-        url: '/'
-      };
+    const request = {
+      method: 'GET',
+      url: '/'
+    };
 
-      const response = await server.inject(request);
+    const response = await server.inject(request);
 
-      Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.statusCode).to.equal(200);
 
-      Code.expect(response.result.valid).to.equal(false);
-    });
+    Code.expect(response.result.valid).to.equal(false);
   });
 
 
@@ -85,7 +86,7 @@ lab.experiment('Auth', () => {
       method: 'GET',
       url: '/',
       headers: {
-        authorization: Fixtures.Creds.authHeader(sessionId,sessionKey)
+        authorization: Fixtures.Creds.authHeader(sessionId, sessionKey)
       }
     };
 
@@ -108,7 +109,7 @@ lab.experiment('Auth', () => {
       method: 'GET',
       url: '/',
       headers: {
-        authorization: Fixtures.Creds.authHeader(session._id,session.key)
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
     };
     const response = await server.inject(request);
@@ -121,7 +122,7 @@ lab.experiment('Auth', () => {
 
   lab.test('it returns as invalid because the user is inactive', async () => {
 
-    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const { user } = await Fixtures.Creds.createUser('Ren', '321!abc', 'ren@stimpy.show', 'Stimpy');
 
 
     const session = await Session.create({
@@ -136,13 +137,13 @@ lab.experiment('Auth', () => {
       }
     };
 
-    await User.findByIdAndUpdate(user.id,update);
+    await User.findByIdAndUpdate(user.id, update);
 
     const request = {
       method: 'GET',
       url: '/',
       headers: {
-        authorization: Fixtures.Creds.authHeader(session._id,session.key)
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
 
       }
     };
@@ -155,21 +156,13 @@ lab.experiment('Auth', () => {
 
   lab.test('it returns as valid because the user active and the session is created', async () => {
 
-    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
-    const session = await Session.create({
-      userId: `${user._id}`,
-      ip: 'ip',
-      userAgent: 'userAgent'
-    });
-    console.log(session.key);
-    console.log('found it');
+    const { session } = await Fixtures.Creds.createUser('Ren', '321!abc', 'ren@stimpy.show', 'Stimpy');
 
     const request = {
       method: 'GET',
       url: '/',
       headers: {
-        authorization: Fixtures.Creds.authHeader(session._id,session.key)
-
+        authorization: Fixtures.Creds.authHeader(session._id.toString(), session.key)
       }
     };
 
@@ -180,13 +173,4 @@ lab.experiment('Auth', () => {
     Code.expect(response.result.valid).to.equal(true);
 
   });
-
 });
-
-
-
-
-
-
-
-
