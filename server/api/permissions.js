@@ -1,5 +1,8 @@
 'use strict';
 const AnchorModel = require('../anchor/anchor-model');
+const Boom = require('boom');
+const Joi = require('joi');
+const Role = require('../models/role');
 
 const register = function (server, serverOptions) {
 
@@ -7,13 +10,13 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/permissions/available',
     options: {
-      auth: false
+      auth: {
+        strategies: ['session']
+      }
     },
     handler: function (request, h) {
 
       const permissions = [];
-
-      //Model Permissions
       server.plugins['hapi-anchor-model'].modelsArray.forEach((model) => {
 
         if (!model.routes.disable) {
@@ -42,6 +45,61 @@ const register = function (server, serverOptions) {
     }
   });
 
+
+  server.route({
+    method: 'POST',
+    path:'/api/permissions/role',
+    config: {
+      auth: {
+        strategies: ['session']
+      },
+      pre: [{
+        assign: 'permissions',
+        method: async function (request,h) {
+
+          const result = await server.inject({
+            method: 'GET',
+            url: '/api/permissions/available'
+          });
+
+          if (result.statusCode !== 200) {
+            throw Boom.badData(result.message);
+          }
+
+          return result.result;
+        }
+      }, {
+        assign: 'schema',
+        method: function (request,h) {
+
+          return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
+
+            a[v.key] = Joi.boolean().required();
+            return a;
+          }));
+        }
+      }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      request.payload.filter = [];
+      request.payload.userId = request.auth.credentials.user._id.toString();
+
+      return await Role.create(request.payload);
+    }
+  });
 };
 
 
