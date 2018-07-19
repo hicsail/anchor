@@ -76,6 +76,28 @@ lab.experiment('Auth', () => {
     });
   });
 
+
+  lab.test('it returns as invalid because the session does not exist', async () => {
+
+    const sessionId = '000000000000000000000001';
+    const sessionKey = '01010101-0101-0101-0101-010101010101';
+    const request = {
+      method: 'GET',
+      url: '/',
+      headers: {
+        authorization: Fixtures.creds.authHeader(sessionId,sessionKey)
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.valid).to.equal(false);
+
+  });
+
+
+
 });
 
 
