@@ -21,7 +21,8 @@ const register = function (server, serverOptions) {
             if (!model.routes[route].disable) {
               const method = AnchorModel.routeMap[route].method.toUpperCase();
               const path = AnchorModel.routeMap[route].path + model.collectionName;
-              permissions.push({ method, path, key: method + path });
+              const tag = model.collectionName;
+              permissions.push({ method, path, tag, key: method + path });
             }
           }
         }
@@ -32,7 +33,8 @@ const register = function (server, serverOptions) {
         if (route.path !== '/api/{collectionName}') {
           const method = route.method.toUpperCase();
           const path = route.path;
-          permissions.push({ method, path, key: method + path });
+          const tag = path.split('/')[2];
+          permissions.push({ method, path, tag, key: method + path });
         }
       });
 
