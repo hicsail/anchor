@@ -16,6 +16,12 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/login',
     options: {
+      auth: false,
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      },
       validate: {
         payload: {
           username: Joi.string().lowercase().required(),
