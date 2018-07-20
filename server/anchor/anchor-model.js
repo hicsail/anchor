@@ -850,6 +850,11 @@ AnchorModel.routes = {
     payload: null,
     query: null,
     auth: true
+  },
+  update: {
+    disable: false,
+    payload: null,
+    query: null
   }
 };
 

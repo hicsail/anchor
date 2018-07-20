@@ -51,6 +51,57 @@ const register = function (server,serverOptions) {
 
   });
 
+  server.route({
+    method:'PUT',
+    path: '/api/{collectionName}/{id}',
+    config: {
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            return Boom.notFound('Model not found');
+          }
+
+          return model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.update.disabled) {
+            return (Boom.notFound('Permission Denied: Route Disabled'));
+          }
+
+          return (true);
+        },
+        assign: 'payload',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          return Joi.validate(request.payload,model.routes.update.payload);
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const model = request.pre.model;
+      const id = request.params.id;
+      const payload = request.payload;
+      const update = {
+        $set: {
+          payload
+        }
+      };
+
+      return await model.findByIdAndUpdate(id,update);
+    }
+  });
+
+
 
   server.route({
     //paged find
