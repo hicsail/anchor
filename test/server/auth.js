@@ -34,7 +34,7 @@ lab.before(async () => {
 
   server.route({
     method: 'GET',
-    path: '/',
+    path: '/simple',
     options: {
       auth: false
     },
@@ -48,6 +48,81 @@ lab.before(async () => {
       catch (err) {
         return { isValid: false };
       }
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/session',
+    options: {
+      auth: false,
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
+        }
+      }
+    },
+    handler: async function (request, h) {
+
+      try {
+        await request.server.auth.test('session', request);
+
+        return { isValid: true };
+      }
+      catch (err) {
+        // console.log(err);
+
+        return { isValid: false };
+      }
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/login',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
+
+      const userCreds = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+
+      if (request.query && request.query.badSession) {
+        userCreds.session.key = 'blamo';
+      }
+
+      if (request.query && request.query.badUser) {
+        const sessionUpdate = {
+          $set: {
+            userId: '555555555555555555555555'
+          }
+        };
+
+        await Session.findByIdAndUpdate(userCreds.session._id, sessionUpdate);
+      }
+
+      if (request.query && request.query.notActive) {
+        const userUpdate = {
+          $set: {
+            isActive: false
+          }
+        };
+
+        await User.findByIdAndUpdate(userCreds.user._id, userUpdate);
+      }
+
+      const creds = {
+        user: {
+          _id: userCreds.user._id,
+          username: userCreds.user.username,
+          email: userCreds.user.email
+        },
+        session: userCreds.session
+      };
+
+      request.cookieAuth.set(creds);
+
+      return creds;
     }
   });
 });
@@ -64,7 +139,7 @@ lab.experiment('Simple Auth Strategy', () => {
 
     const request = {
       method: 'GET',
-      url: '/'
+      url: '/simple'
     };
     const response = await server.inject(request);
 
@@ -79,7 +154,7 @@ lab.experiment('Simple Auth Strategy', () => {
     const sessionKey = '01010101-0101-0101-0101-010101010101';
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
         authorization: Fixtures.Creds.authHeader(sessionId, sessionKey)
       }
@@ -97,7 +172,7 @@ lab.experiment('Simple Auth Strategy', () => {
     const session = await Session.create({ userId: '000000000000000000000000', ip: '127.0.0.1', userAgent: 'Lab' });
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -124,7 +199,7 @@ lab.experiment('Simple Auth Strategy', () => {
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -145,9 +220,122 @@ lab.experiment('Simple Auth Strategy', () => {
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
+  });
+});
+
+lab.experiment('Session Auth Strategy', () => {
+
+  lab.afterEach(async () => {
+
+    await Fixtures.Db.removeAllData();
+  });
+
+
+  lab.test('it returns as invalid without authentication provided', async () => {
+
+    const request = {
+      method: 'GET',
+      url: '/session'
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the session query misses', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login?badSession=1'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the user query misses', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login?badUser=1'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the user is not active', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login?notActive=1'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as valid when all is well', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
       }
     };
 
