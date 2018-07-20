@@ -94,8 +94,7 @@ const register = function (server,serverOptions) {
       const update = {
         $set:
           payload
-      };   
-
+      };
       return await model.findByIdAndUpdate(id,update);
     }
   });
