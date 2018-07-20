@@ -855,6 +855,11 @@ AnchorModel.routes = {
     disable: false,
     payload: null,
     query: null
+  },
+  delete: {
+    disable: false,
+    payload: null,
+    query: null
   }
 };
 

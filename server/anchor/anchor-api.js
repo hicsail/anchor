@@ -52,6 +52,42 @@ const register = function (server,serverOptions) {
   });
 
   server.route({
+    method: 'DELETE',
+    path: '/api/{collectionName}/{id}',
+    config: {
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            return Boom.notFound('Model not found');
+          }
+
+          return model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.delete.disabled) {
+            return Boom.notFound('Permission Denied: Route Disabled');
+          }
+          return true;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const model = request.pre.model;
+      const id = request.params.id;
+      return await model.findByIdAndDelete(id);
+    }
+  });
+
+  server.route({
     method:'PUT',
     path: '/api/{collectionName}/{id}',
     config: {
