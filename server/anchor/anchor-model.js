@@ -866,6 +866,10 @@ AnchorModel.routeMap = {
   get: {
     method: 'GET',
     path: '/api/'
+  },
+  update: {
+    method: 'PUT',
+    path: '/api'
   }
 };
 AnchorModel.timestamps = true;

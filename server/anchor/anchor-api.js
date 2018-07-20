@@ -92,10 +92,9 @@ const register = function (server,serverOptions) {
       const id = request.params.id;
       const payload = request.payload;
       const update = {
-        $set: {
+        $set:
           payload
-        }
-      };
+      };   
 
       return await model.findByIdAndUpdate(id,update);
     }
