@@ -868,6 +868,10 @@ AnchorModel.routeMap = {
     method: 'POST',
     path: '/api/'
   },
+  delete: {
+    method: 'DELETE',
+    path: '/api/'
+  },
   get: {
     method: 'GET',
     path: '/api/'
