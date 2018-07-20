@@ -10,7 +10,9 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/permissions/available',
     options: {
-      auth: false
+      auth: {
+        strategies: ['session','simple']
+      }
     },
     handler: function (request, h) {
 
@@ -48,7 +50,9 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path:'/api/permissions/role',
     config: {
-      auth: false,
+      auth: {
+        strategies: ['session','simple']
+      },
       pre: [{
         assign: 'roleValidation',
         method: function (request,h) {
@@ -114,6 +118,7 @@ const register = function (server, serverOptions) {
 module.exports = {
   name: 'api-permissions',
   dependencies: [
+    'auth',
     'hapi-auth-cookie',
     'hapi-anchor-model',
     'hapi-remote-address'

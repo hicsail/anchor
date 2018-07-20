@@ -37,7 +37,7 @@ const register = function (server, options) {
 
   server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
-    cookie: 'sid',
+    cookie: 'anchor-auth',
     isSecure: false,
     redirectTo: '/login',
     appendNext: 'returnUrl',
@@ -69,6 +69,8 @@ const register = function (server, options) {
       return { credentials, valid: true };
     }
   });
+
+  server.auth.default('session');
 };
 
 
