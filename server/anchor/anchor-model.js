@@ -850,6 +850,11 @@ AnchorModel.routes = {
     payload: null,
     query: null,
     auth: true
+  },
+  update: {
+    disable: false,
+    payload: null,
+    query: null
   }
 };
 
@@ -860,6 +865,10 @@ AnchorModel.routeMap = {
   },
   get: {
     method: 'GET',
+    path: '/api/'
+  },
+  update: {
+    method: 'PUT',
     path: '/api/'
   }
 };

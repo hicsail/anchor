@@ -133,6 +133,9 @@ User.payload = Joi.object({
 User.routes = Hoek.applyToDefaults({
   create: {
     payload: User.payload
+  },
+  update: {
+    payload: User.payload
   }
 }, AnchorModel.routes);
 
