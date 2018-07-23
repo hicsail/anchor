@@ -860,6 +860,11 @@ AnchorModel.routes = {
     disable: false,
     payload: null,
     query: null
+  },
+  getid: {
+    disable: false,
+    payload: null,
+    query: null
   }
 };
 
