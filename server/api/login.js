@@ -8,9 +8,7 @@ const Mailer = require('../mailer');
 const Session = require('../models/session');
 const User = require('../models/user');
 
-
 const register = function (server, serverOptions) {
-
 
   server.route({
     method: 'POST',
