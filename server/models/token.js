@@ -1,34 +1,25 @@
 'use strict';
 const AnchorModel = require('../anchor/anchor-model');
-const Bcrypt = require('bcrypt');
+const Crypto = require('../crypto');
 const Hoek = require('hoek');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
-const UUID = require('uuid/v4');
 
 
 class Token extends AnchorModel {
 
-  static async generateKeyHash() {
-
-    const key = JWT.sign({ key: UUID() }, 'secret');
-    const salt = await Bcrypt.genSalt(10);
-    const hash = await Bcrypt.hash(key,salt);
-
-    const signedKeyHash = JWT.sign({ key:hash },'secret');
-
-
-    return (signedKeyHash);
-  }
 
   static async create(document) {
 
-    const keyHash = await this.generateKeyHash();
+    const keyHash = await Crypto.generateKeyHash();
+    keyHash.key = JWT.sign({ key: keyHash.key }, 'secret');
+    const signedKeyHash = JWT.sign({ key : keyHash.hash }, 'secret');
+
     document = {
       description: document.description,
       active: true,
       createdAt: new Date(),
-      token:keyHash,
+      token:signedKeyHash,
       userId: document.userId
 
 

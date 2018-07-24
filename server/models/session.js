@@ -1,12 +1,12 @@
 'use strict';
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
+const Crypto = require('../crypto');
 const Bcrypt = require('bcrypt');
 const Joi = require('joi');
 const Hoek = require('hoek');
 const NewDate = require('joistick/new-date');
 const UserAgent = require('useragent');
-const UUID = require('uuid/v4');
 
 class Session extends AnchorModel {
 
@@ -16,7 +16,7 @@ class Session extends AnchorModel {
     Assert.ok(document.ip, 'Missing ip argument.');
     Assert.ok(document.userAgent, 'Missing userAgent argument.');
 
-    const keyHash = await this.generateKeyHash();
+    const keyHash = await Crypto.generateKeyHash();
     const agentInfo = UserAgent.lookup(document.userAgent);
     const browser = agentInfo.family;
     document = new this({
@@ -33,14 +33,6 @@ class Session extends AnchorModel {
     return sessions[0];
   }
 
-  static async generateKeyHash() {
-
-    const key = UUID();
-    const salt = await Bcrypt.genSalt(10);
-    const hash = await Bcrypt.hash(key,salt);
-
-    return { key, hash };
-  }
 
   static async findByCredentials(id, key) {
 

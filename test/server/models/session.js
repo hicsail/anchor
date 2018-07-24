@@ -1,6 +1,7 @@
 'use strict';
 const Code = require('code');
 const Config = require('../../../config');
+const Crypto = require('../../../server/crypto');
 const Fixtures = require('../fixtures');
 const Lab = require('lab');
 const Session = require('../../../server/models/session');
@@ -42,7 +43,7 @@ lab.experiment('Session Model', () => {
   lab.test('it returns undefined when finding by credentials session misses', async () => {
 
     const id = '555555555555555555555555';
-    const keyHash = await Session.generateKeyHash();
+    const keyHash = await Crypto.generateKeyHash();
     const session = await Session.findByCredentials(id, keyHash.key);
 
     Code.expect(session).to.be.undefined();
@@ -98,7 +99,7 @@ lab.experiment('Session Model', () => {
 
   lab.test('it creates a key hash combination', async () => {
 
-    const result = await Session.generateKeyHash();
+    const result = await Crypto.generateKeyHash();
 
     Code.expect(result).to.be.an.object();
     Code.expect(result.key).to.be.a.string();
