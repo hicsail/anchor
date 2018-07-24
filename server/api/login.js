@@ -73,6 +73,7 @@ const register = function (server, serverOptions) {
     handler: function (request, h) {
 
       delete request.pre.user.password;
+      delete request.pre.user.resetPassword;
 
       const creds = {
         user: request.pre.user,
