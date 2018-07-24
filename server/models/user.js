@@ -87,8 +87,6 @@ class User extends AnchorModel {
   }
 
 
-
-
   static findByEmail(email) {
 
     Assert.ok(email, 'Misisng email argument.');
@@ -129,14 +127,14 @@ User.payload = Joi.object({
   roles: Joi.array().items(Joi.string())
 });
 
-User.routes = Hoek.applyToDefaults({
+User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: User.payload
+    disabled: true
   },
   update: {
     payload: User.payload
   }
-}, AnchorModel.routes);
+});
 
 User.indexes = [
   { key: { username: 1, unique: 1 } },

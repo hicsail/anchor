@@ -17,19 +17,17 @@ const register = function (server, serverOptions) {
     handler: function (request, h) {
 
       const permissions = [];
-      server.plugins['hapi-anchor-model'].modelsArray.forEach((model) => {
 
-        if (!model.routes.disable) {
-          for (const route in AnchorModel.routeMap) {
-            if (!model.routes[route].disable) {
-              const method = AnchorModel.routeMap[route].method.toUpperCase();
-              const path = AnchorModel.routeMap[route].path.replace(/{collectionName}/g,model.collectionName);
-              const tag = model.collectionName;
-              permissions.push({ method, path, tag, key: method + path.replace(/{/g,'').replace(/}/g,'').split('/').join('-') });
-            }
+      for (const model of  server.plugins['hapi-anchor-model'].modelsArray) {
+        for (const route in AnchorModel.routeMap) {
+          if (!model.routes[route].disabled) {
+            const method = AnchorModel.routeMap[route].method.toUpperCase();
+            const path = AnchorModel.routeMap[route].path.replace(/{collectionName}/g,model.collectionName);
+            const tag = model.collectionName;
+            permissions.push({ method, path, tag, key: method + path.replace(/{/g,'').replace(/}/g,'').split('/').join('-') });
           }
         }
-      });
+      }
 
       server.table().forEach((route) => {
 
