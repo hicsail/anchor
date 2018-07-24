@@ -3,6 +3,7 @@ const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 const Bcrypt = require('bcrypt');
 const Joi = require('joi');
+const Hoek = require('hoek');
 const NewDate = require('joistick/new-date');
 const UserAgent = require('useragent');
 const UUID = require('uuid/v4');
@@ -72,6 +73,7 @@ class Session extends AnchorModel {
 }
 
 Session.collectionName = 'sessions';
+
 Session.schema = Joi.object({
   _id: Joi.object(),
   browser: Joi.string().required(),
@@ -83,6 +85,19 @@ Session.schema = Joi.object({
   createdAt: Joi.date().default(NewDate(), 'time of creation'),
   updatedAt: Joi.date().default(NewDate(), 'time of document updated')
 });
+
+Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: true
+  },
+  update: {
+    disabled: true
+  },
+  delete: {
+    disabled: true
+  }
+});
+
 Session.indexes = [
   { key: { userId: 1 } }
 ];

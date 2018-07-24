@@ -911,31 +911,31 @@ class AnchorModel {
 
 AnchorModel.routes = {
   auth: true,
-  disable: false,
+  disabled: false,
   create: {
     auth: true,
-    disable: false,
+    disabled: false,
     payload: null,
     query: null
   },
   get: {
-    disable: false,
+    disabled: false,
     payload: null,
     query: null,
     auth: true
   },
   update: {
-    disable: false,
+    disabled: false,
     payload: null,
     query: null
   },
   delete: {
-    disable: false,
+    disabled: false,
     payload: null,
     query: null
   },
   getId: {
-    disable: false,
+    disabled: false,
     payload: null,
     query: null
   }

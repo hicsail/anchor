@@ -1,13 +1,13 @@
 'use strict';
+const AnchorModel = require('../anchor/anchor-model');
+const Bcrypt = require('bcrypt');
+const Hoek = require('hoek');
 const Joi = require('joi');
-const AnchorModels = require('../anchor/anchor-model');
 const JWT = require('jsonwebtoken');
 const UUID = require('uuid/v4');
-const Bcrypt = require('bcrypt');
 
 
-
-class Token extends AnchorModels {
+class Token extends AnchorModel {
 
   static async generateKeyHash() {
 
@@ -36,21 +36,15 @@ class Token extends AnchorModels {
 
 
 
+
     };
 
     const token = await this.insertOne(document);
     token[0].key = keyHash.key;
 
-
     return token[0];
 
   }
-
-
-
-
-
-
 }
 
 Token.collectionName = 'tokens';
@@ -66,9 +60,6 @@ Token.schema = Joi.object({
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),
   permission: Joi.object()
-
-
-
 });
 
 Token.payload = Joi.object({
@@ -78,13 +69,17 @@ Token.payload = Joi.object({
   permission: Joi.object()
 });
 
+Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: true
+  },
+  update: {
+    payload: Token.payload
+  }
+});
 
 Token.indexes = [
   { key: { userId: 1 } }
 ];
-
-
-
-
 
 module.exports = Token;
