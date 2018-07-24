@@ -11,11 +11,12 @@ class Token extends AnchorModel {
 
   static async generateKeyHash() {
 
-    const key = JWT.sign(UUID());
-    const salt = await Bcrypt.gensalt(10);
+    const key = JWT.sign({ key: UUID() }, 'secret');
+    const salt = await Bcrypt.genSalt(10);
     const hash = await Bcrypt.hash(key,salt);
 
-    const signedKeyHash = JWT.sign({ key:hash });
+    const signedKeyHash = JWT.sign({ key:hash },'secret');
+
 
     return (signedKeyHash);
   }
@@ -27,7 +28,15 @@ class Token extends AnchorModel {
       description: document.description,
       active: true,
       createdAt: new Date(),
-      token:keyHash
+      token:keyHash,
+      userId: document.userId
+
+
+
+
+
+
+
     };
 
     const token = await this.insertOne(document);
@@ -42,10 +51,11 @@ Token.collectionName = 'tokens';
 
 Token.schema = Joi.object({
   _id: Joi.object(),
+  token: Joi.string().required(),
   userId: Joi.string().required(),
   description: Joi.string().required(),
   active: Joi.boolean().default(true),
-  key: Joi.string().required(),
+
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),
