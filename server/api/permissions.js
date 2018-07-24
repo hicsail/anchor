@@ -23,9 +23,9 @@ const register = function (server, serverOptions) {
           for (const route in AnchorModel.routeMap) {
             if (!model.routes[route].disable) {
               const method = AnchorModel.routeMap[route].method.toUpperCase();
-              const path = AnchorModel.routeMap[route].path + model.collectionName;
+              const path = AnchorModel.routeMap[route].path.replace(/{collectionName}/g,model.collectionName);
               const tag = model.collectionName;
-              permissions.push({ method, path, tag, key: method + path.split('/').join('-') });
+              permissions.push({ method, path, tag, key: method + path.replace(/{/g,'').replace(/}/g,'').split('/').join('-') });
             }
           }
         }
@@ -33,7 +33,7 @@ const register = function (server, serverOptions) {
 
       server.table().forEach((route) => {
 
-        if (route.path !== '/api/{collectionName}') {
+        if (route.path.indexOf('{collectionName}') === -1) {
           const method = route.method.toUpperCase();
           const path = route.path;
           const tag = path.split('/')[2];

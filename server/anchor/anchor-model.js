@@ -934,7 +934,7 @@ AnchorModel.routes = {
     payload: null,
     query: null
   },
-  getid: {
+  getId: {
     disable: false,
     payload: null,
     query: null
@@ -944,19 +944,23 @@ AnchorModel.routes = {
 AnchorModel.routeMap = {
   create: {
     method: 'POST',
-    path: '/api/'
-  },
-  delete: {
-    method: 'DELETE',
-    path: '/api/'
+    path: '/api/{collectionName}'
   },
   get: {
     method: 'GET',
-    path: '/api/'
+    path: '/api/{collectionName}'
+  },
+  getId: {
+    method: 'GET',
+    path: '/api/{collectionName}/{id}'
   },
   update: {
     method: 'PUT',
-    path: '/api/'
+    path: '/api/{collectionName}'
+  },
+  delete: {
+    method: 'DELETE',
+    path: '/api/{collectionName}'
   }
 };
 AnchorModel.timestamps = true;
