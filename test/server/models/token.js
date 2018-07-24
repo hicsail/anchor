@@ -1,6 +1,6 @@
 'use strict';
 const Token = require('../../../server/models/token');
-const Code = require('Code');
+const Code = require('code');
 const Config = require('../../../config');
 const Fixtures = require('../fixtures');
 const Lab = require('lab');
