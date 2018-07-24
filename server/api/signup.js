@@ -74,6 +74,7 @@ const register = function (server, serverOptions) {
       const authHeader = `Basic ${new Buffer(credentials).toString('base64')}`;
 
       delete user.password;
+      delete user.resetPassword;
 
       return {
         user,

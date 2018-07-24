@@ -73,7 +73,7 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.getid.disabled) {
+          if (model.routes.getId.disabled) {
             return Boom.notFound('Permission Denied: Route Disabled');
           }
 

@@ -17,6 +17,7 @@ class Token extends AnchorModels {
 
     const signedKeyHash = JWT.sign({ key:hash },'secret');
 
+
     return (signedKeyHash);
   }
 
@@ -29,6 +30,7 @@ class Token extends AnchorModels {
       createdAt: new Date(),
       token:keyHash,
       userId: document.userId
+
 
 
 
@@ -59,6 +61,7 @@ Token.schema = Joi.object({
   userId: Joi.string().required(),
   description: Joi.string().required(),
   active: Joi.boolean().default(true),
+
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),

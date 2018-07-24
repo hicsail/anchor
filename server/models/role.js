@@ -26,6 +26,8 @@ class Role extends AnchorModel {
   }
 }
 
+
+
 Role.collectionName = 'roles';
 
 

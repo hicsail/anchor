@@ -487,7 +487,19 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Finds documents and returns an array of model instances with references to multiple collections
+   * @param {object} filter - a query object used to select the documents.
+   * @param {object[]} lookups - an array of lookup objects.
+   * @param {AnchorModel} [lookups[].from] - the collection object to reference.
+   * @param {string} lookups[].foreign - the field name on the from's collection to join upon.
+   * @param {string} lookups[].local - the field name on this collection to join upon.
+   * @param {string} lookups[].as - the field name on where to put the associated from objects.
+   * @param {object[]} [lookups[].lookups] - additional lookups to be added to the from's collection.
+   * @param {object} [lookups[].options] - an optional object passed to MongoDB's native on the from's [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async lookup() {
 
     const args = argsFromArguments(arguments);
@@ -523,7 +535,19 @@ class AnchorModel {
     return localDocuments;
   }
 
-
+  /**
+   * Finds a document by _id and returns an array of model instances with references to multiple collections
+   * @param {string} id - a query object used to select the documents.
+   * @param {object[]} lookups - an array of lookup objects.
+   * @param {AnchorModel} [lookups[].from] - the collection object to reference.
+   * @param {string} lookups[].foreign - the field name on the from's collection to join upon.
+   * @param {string} lookups[].local - the field name on this collection to join upon.
+   * @param {string} lookups[].as - the field name on where to put the associated from objects.
+   * @param {object[]} [lookups[].lookups] - additional lookups to be added to the from's collection.
+   * @param {object} [lookups[].options] - an optional object passed to MongoDB's native on the from's [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async lookupById() {
 
     const args = argsFromArguments(arguments);
@@ -536,7 +560,19 @@ class AnchorModel {
     return result[0];
   }
 
-
+  /**
+   * Finds one document matching the query and returns an array of model instances with references to multiple collections
+   * @param {object} query - a query object used to select the document.
+   * @param {object[]} lookups - an array of lookup objects.
+   * @param {AnchorModel} [lookups[].from] - the collection object to reference.
+   * @param {string} lookups[].foreign - the field name on the from's collection to join upon.
+   * @param {string} lookups[].local - the field name on this collection to join upon.
+   * @param {string} lookups[].as - the field name on where to put the associated from objects.
+   * @param {object[]} [lookups[].lookups] - additional lookups to be added to the from's collection.
+   * @param {object} [lookups[].options] - an optional object passed to MongoDB's native on the from's [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async lookupOne() {
 
     const args = argsFromArguments(arguments);
@@ -548,7 +584,16 @@ class AnchorModel {
     return result[0];
   }
 
-
+  /**
+   * Finds documents and returns the results of a given size and page
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the documents.
+   * @param {number} page - a number indicating the current page.
+   * @param {number} limit - a number indicating how many results should be returned.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async pagedFind() {
 
     const args = argsFromArguments(arguments);
@@ -659,7 +704,15 @@ class AnchorModel {
     return output;
   }
 
-
+  /**
+   * replaces a document and returns a [Collection.updateWriteOpResult]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#%7EupdateWriteOpResult}
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the document to replace.
+   * @param {object} doc -  the document that replaces the matching document.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.replaceOne]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#replaceOne} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async replaceOne() {
 
     const args = argsFromArguments(arguments);
@@ -713,7 +766,11 @@ class AnchorModel {
     return result;
   }
 
-
+  /**
+   * A helper method to create a sort object suitable to use with MongoDB queries where:
+   * @param {string} sorts - a string with space separated field names. Fields may be prefixed with - to indicate decending sort order.
+   * @return {object}
+   */
   static sortAdapter(sorts) {
 
     if (Object.prototype.toString.call(sorts) === '[object String]') {
@@ -737,7 +794,15 @@ class AnchorModel {
     return sorts;
   }
 
-
+  /**
+   * Updates multiple documents and returns a [Collection.updateWriteOpResult]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#%7EupdateWriteOpResult}
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the documents to update.
+   * @param {object} update -  the update operations object.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.updateMany]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateMany} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async updateMany() {
 
     const args = argsFromArguments(arguments);
@@ -758,7 +823,15 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
+  /**
+   * Updates a document and returns a [Collection.updateWriteOpResult]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#%7EupdateWriteOpResult}
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the document to update.
+   * @param {object} update -  the update operations object.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.updateMany]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#updateMany} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async updateOne() {
 
     const args = argsFromArguments(arguments);
@@ -861,7 +934,7 @@ AnchorModel.routes = {
     payload: null,
     query: null
   },
-  getid: {
+  getId: {
     disable: false,
     payload: null,
     query: null
@@ -871,19 +944,23 @@ AnchorModel.routes = {
 AnchorModel.routeMap = {
   create: {
     method: 'POST',
-    path: '/api/'
-  },
-  delete: {
-    method: 'DELETE',
-    path: '/api/'
+    path: '/api/{collectionName}'
   },
   get: {
     method: 'GET',
-    path: '/api/'
+    path: '/api/{collectionName}'
+  },
+  getId: {
+    method: 'GET',
+    path: '/api/{collectionName}/{id}'
   },
   update: {
     method: 'PUT',
-    path: '/api/'
+    path: '/api/{collectionName}'
+  },
+  delete: {
+    method: 'DELETE',
+    path: '/api/{collectionName}'
   }
 };
 AnchorModel.timestamps = true;

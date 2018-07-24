@@ -35,8 +35,7 @@ class User extends AnchorModel {
       password: passwordHash.hash,
       email: document.email.toLowerCase(),
       name: document.name,
-      roles: [],
-      createdAt: new Date()
+      roles: []
     });
 
     const users = await self.insertOne(document);
