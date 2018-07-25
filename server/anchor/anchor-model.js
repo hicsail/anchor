@@ -916,27 +916,69 @@ AnchorModel.routes = {
     auth: true,
     disabled: false,
     payload: null,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const payload = request.payload;
+      return await model.create(payload);
+    },
     query: null
   },
-  get: {
+  getAll: {
     disabled: false,
-    payload: null,
     query: null,
+    handler: async (request,h) => {
+
+
+      const model = request.pre.model;
+
+      const query = {};
+      const limit = request.query.limit;
+      const page = request.query.page;
+      const options = {
+        sort: model.sortAdapter(request.query.sort)
+      };
+
+      return await model.pagedFind(query, page, limit, options);
+    },
     auth: true
   },
   update: {
     disabled: false,
     payload: null,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const id = request.params.id;
+      const update = {
+        $set: request.payload
+
+      };
+
+      return await model.findByIdAndUpdate(id,update);
+    },
     query: null
   },
   delete: {
     disabled: false,
     payload: null,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const id = request.params.id;
+
+      return await model.findByIdAndDelete(id);
+    },
     query: null
   },
   getId: {
     disabled: false,
-    payload: null,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const id = request.params.id;
+      return await model.findById(id);
+    },
     query: null
   }
 };
@@ -946,7 +988,7 @@ AnchorModel.routeMap = {
     method: 'POST',
     path: '/api/{collectionName}'
   },
-  get: {
+  getAll: {
     method: 'GET',
     path: '/api/{collectionName}'
   },

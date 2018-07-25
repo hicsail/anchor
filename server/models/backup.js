@@ -2,7 +2,7 @@
 const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
-
+const Hoek = require('hoek');
 
 class Backup extends AnchorModel {
 
@@ -33,6 +33,21 @@ Backup.payload = Joi.object({
   filename: Joi.string().required(),
   local: Joi.boolean().required(),
   s3: Joi.boolean().required()
+});
+
+Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Backup.payload
+  },
+  update: {
+    disabled: false,
+    payload: Backup.payload
+  },
+  delete: {
+    disabled: false,
+    payload: Backup.payload
+  }
 });
 
 

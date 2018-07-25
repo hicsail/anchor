@@ -42,10 +42,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      const model = request.pre.model;
-      const payload = request.payload;
-
-      return await model.create(payload);
+      return await request.pre.model.routes.create.handler(request,h);
     }
 
 
@@ -83,10 +80,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      const model = request.pre.model;
-      const id = request.params.id;
-
-      return await model.findById(id);
+      return await request.pre.model.routes.getId.handler(request,h);
     }
   });
 
@@ -121,9 +115,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      const model = request.pre.model;
-      const id = request.params.id;
-      return await model.findByIdAndDelete(id);
+      return await request.pre.model.routes.delete.handler(request,h);
     }
   });
 
@@ -164,14 +156,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      const model = request.pre.model;
-      const id = request.params.id;
-      const payload = request.payload;
-      const update = {
-        $set:
-          payload
-      };
-      return await model.findByIdAndUpdate(id,update);
+      return await request.pre.model.routes.update.handler(request,h);
     }
   });
 
@@ -215,18 +200,9 @@ const register = function (server,serverOptions) {
       }]
 
     },
-    handler: async function (request,reply) {
+    handler: async function (request,h) {
 
-      const model = request.pre.model;
-
-      const query = {};
-      const limit = request.query.limit;
-      const page = request.query.page;
-      const options = {
-        sort: model.sortAdapter(request.query.sort)
-      };
-
-      return await model.pagedFind(query, page, limit, options);
+      return await request.pre.model.routes.getAll.handler(request,h);
     }
   });
 };

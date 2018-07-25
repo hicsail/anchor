@@ -5,6 +5,7 @@ const Config = require('../../config');
 const Joi = require('joi');
 const NewDate = require('joistick/new-date');
 const UserAgent = require('useragent');
+const Hoek = require('hoek');
 
 class AuthAttempt extends AnchorModel {
 
@@ -55,6 +56,21 @@ AuthAttempt.schema = Joi.object({
   username: Joi.string().lowercase().required(),
   createdAt: Joi.date().default(NewDate(), 'time of creation')
 });
+
+AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: AuthAttempt.paylaod
+  },
+  update: {
+    disabled: false,
+    payload: AuthAttempt.payload
+  },
+  delete: {
+    disabled: false
+  }
+});
+
 AuthAttempt.indexes = [
   { key: { ip: 1, username: 1 } },
   { key: { username: 1 } }

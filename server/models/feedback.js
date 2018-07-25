@@ -2,7 +2,7 @@
 const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
-
+const Hoek = require('hoek');
 
 class Feedback extends AnchorModel {
 
@@ -43,6 +43,18 @@ Feedback.schema = Joi.object({
     userId: Joi.string().required(),
     createdAt: Joi.date().required()
   }))
+});
+
+Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Feedback.payload
+  },
+  update: {
+    disabled: false,
+    payload: Feedback.payload
+  }
+
 });
 
 

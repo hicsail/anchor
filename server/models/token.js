@@ -62,10 +62,14 @@ Token.payload = Joi.object({
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: true
+    disabled: false,
+    payload: Token.payload
   },
   update: {
     payload: Token.payload
+  },
+  delete: {
+    disabled: false
   }
 });
 

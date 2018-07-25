@@ -2,7 +2,7 @@
 const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
-
+const Hoek = require('hoek');
 class Analytic extends AnchorModel {
 
   static async create(document) {
@@ -37,10 +37,26 @@ Analytic.schema = Joi.object({
   updatedAt: Joi.date()
 });
 
+
+
 Analytic.payload = Joi.object({
   event: Joi.string().required(),
   name: Joi.string().required(),
   data: Joi.object()
+});
+
+Analytic.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Analytic.payload
+  },
+  update: {
+    disabled: false,
+    payload: Analytic.payload
+  },
+  delete: {
+    disabled: false
+  }
 });
 
 Analytic.indexes = [

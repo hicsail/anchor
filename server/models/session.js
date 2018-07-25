@@ -80,13 +80,15 @@ Session.schema = Joi.object({
 
 Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: true
+    disabled: false,
+    payload: Session.payload
   },
   update: {
-    disabled: true
+    disabled: false,
+    payload: Session.payload
   },
   delete: {
-    disabled: true
+    disabled: false
   }
 });
 
