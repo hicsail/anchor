@@ -70,7 +70,7 @@ const register = function (server, options) {
     }
   });
 
-  server.auth.default('session');
+  //server.auth.default('session');
 };
 
 

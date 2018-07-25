@@ -926,11 +926,12 @@ AnchorModel.routes = {
   },
   get: {
     disabled: false,
-    payload: null,
     query: null,
     handler: async (request,h) => {
 
+
       const model = request.pre.model;
+
       const query = {};
       const limit = request.query.limit;
       const page = request.query.page;
@@ -938,7 +939,7 @@ AnchorModel.routes = {
         sort: model.sortAdapter(request.query.sort)
       };
 
-      return await model.pagedFind(query,page,limit,options);
+      return await model.pagedFind(query, page, limit, options);
     },
     auth: true
   },
@@ -948,14 +949,13 @@ AnchorModel.routes = {
     handler: async (request,h) => {
 
       const model = request.pre.model;
-      const id = request.id;
-      const payload = request.payload;
+      const id = request.params.id;
       const update = {
-        $set: payload
+        $set: request.payload
 
       };
 
-      return await model.findByIdAndUpdate(update,id);
+      return await model.findByIdAndUpdate(id,update);
     },
     query: null
   },
@@ -973,7 +973,6 @@ AnchorModel.routes = {
   },
   getId: {
     disabled: false,
-    payload: null,
     handler: async (request,h) => {
 
       const model = request.pre.model;

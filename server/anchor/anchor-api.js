@@ -42,8 +42,6 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      console.log(request.pre.model.routes.create);
-
       return await request.pre.model.routes.create.handler(request,h);
     }
 
@@ -82,7 +80,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      return await request.pre.model.routes.getid.handler(request,h);
+      return await request.pre.model.routes.getId.handler(request,h);
     }
   });
 
@@ -202,9 +200,18 @@ const register = function (server,serverOptions) {
       }]
 
     },
-    handler: async function (request,h) {
+    handler: async function (request,reply) {
 
-      return await request.pre.model.routes.get.handler(request,h);
+      const model = request.pre.model;
+
+      const query = {};
+      const limit = request.query.limit;
+      const page = request.query.page;
+      const options = {
+        sort: model.sortAdapter(request.query.sort)
+      };
+
+      return await model.pagedFind(query, page, limit, options);
     }
   });
 };
