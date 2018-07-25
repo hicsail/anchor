@@ -35,7 +35,7 @@ lab.experiment('Notification Model', () => {
       title: 'Hello',
       subtitle: 'World',
       message: 'Message',
-      increaseBadgeNumber: 0
+      increaseBadgeNumber: 1
     };
 
     const notification = await Notification.create(document);
@@ -46,7 +46,7 @@ lab.experiment('Notification Model', () => {
     Code.expect(notification.title).to.equal('Hello');
     Code.expect(notification.subtitle).to.equal('World');
     Code.expect(notification.message).to.equal('Message');
-    Code.expect(notification.increaseBadgeNumber).to.equal(0);
+    Code.expect(notification.increaseBadgeNumber).to.equal(1);
 
   });
 });

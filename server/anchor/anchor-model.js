@@ -924,7 +924,7 @@ AnchorModel.routes = {
     },
     query: null
   },
-  get: {
+  getAll: {
     disabled: false,
     query: null,
     handler: async (request,h) => {
@@ -988,7 +988,7 @@ AnchorModel.routeMap = {
     method: 'POST',
     path: '/api/{collectionName}'
   },
-  get: {
+  getAll: {
     method: 'GET',
     path: '/api/{collectionName}'
   },

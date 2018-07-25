@@ -2,6 +2,7 @@
 const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
+const Hoek = require('hoek');
 
 class Notification extends AnchorModel {
 
@@ -12,6 +13,7 @@ class Notification extends AnchorModel {
     Assert.ok(document.title,'Missing title');
     Assert.ok(document.subtitle,'Missing subtitle');
     Assert.ok(document.message,'Missing message');
+    Assert.ok(document.increaseBadgeNumber, 'Missing badge number');
 
     document = {
       onesignalId: document.onesignalId,
@@ -53,6 +55,20 @@ Notification.payload = Joi.object({
   message: Joi.string().required(),
   increaseBadgeNumber: Joi.number().integer().required()
 
+});
+
+Notification.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Notification.payload
+  },
+  update: {
+    disabled: false,
+    payload: Notification.payload
+  },
+  delete: {
+    disabled: false
+  }
 });
 
 Notification.indexes = [

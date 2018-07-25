@@ -2,6 +2,7 @@
 const Joi  = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
+const Hoek = require('hoek');
 
 class Role extends AnchorModel {
 
@@ -39,6 +40,20 @@ Role.schema = Joi.object({
   filter: Joi.array(),
   createdAt: Joi.date(),
   updatedAt: Joi.date()
+});
+
+Role.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Role.payload
+  },
+  update: {
+    disabled: false,
+    payload: Role.payload
+  },
+  delete: {
+    dsiabled:false
+  }
 });
 
 

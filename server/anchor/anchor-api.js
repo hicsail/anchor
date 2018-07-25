@@ -200,18 +200,9 @@ const register = function (server,serverOptions) {
       }]
 
     },
-    handler: async function (request,reply) {
+    handler: async function (request,h) {
 
-      const model = request.pre.model;
-
-      const query = {};
-      const limit = request.query.limit;
-      const page = request.query.page;
-      const options = {
-        sort: model.sortAdapter(request.query.sort)
-      };
-
-      return await model.pagedFind(query, page, limit, options);
+      return await request.pre.model.routes.getAll.handler(request,h);
     }
   });
 };

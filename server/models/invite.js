@@ -2,7 +2,7 @@
 const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
-
+const Hoek = require('hoek');
 class Invite extends AnchorModel {
   static async create(document) {
 
@@ -42,6 +42,20 @@ Invite.payload = Joi.object({
   email: Joi.string().required(),
   status: Joi.string().valid('Pending','Accepted','Declined','Expired')
 
+});
+
+Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Invite.payload
+  },
+  update: {
+    disabled: false,
+    payload: Invite.payload
+  },
+  delete: {
+    disabled: false
+  }
 });
 
 Invite.indexes = [
