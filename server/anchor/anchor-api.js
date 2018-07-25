@@ -42,7 +42,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-   
+      console.log(request.pre.model.routes.create);
 
       return await request.pre.model.routes.create.handler(request,h);
     }
@@ -82,7 +82,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-     return await request.pre.model.routes.getid.handler(request,h);
+      return await request.pre.model.routes.getid.handler(request,h);
     }
   });
 
@@ -159,7 +159,7 @@ const register = function (server,serverOptions) {
     handler: async function (request,h) {
 
       return await request.pre.model.routes.update.handler(request,h);
-    };
+    }
   });
 
 
