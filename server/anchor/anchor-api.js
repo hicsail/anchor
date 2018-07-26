@@ -1,8 +1,55 @@
 'use strict';
 const Boom = require('boom');
+const Auth = require('../auth');
 const Joi = require('joi');
 
 const register = function (server,serverOptions) {
+
+
+  server.route({
+    method: 'GET',
+    path: '/simple',
+    options: {
+      auth: false
+    },
+    handler: async function (request,h) {
+
+      try {
+        await request.server.auth.test('simple',request);
+        return { isValid: true };
+      }
+      catch (err) {
+        return { isValid: false };
+      }
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/session',
+    options: {
+      auth: false,
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo:false
+        }
+      }
+    },
+    handler: async function (request,h) {
+
+      try {
+        await request.server.auth.test('session',request);
+
+        return { isvalid: true };
+
+      }
+
+      catch (err) {
+
+        return { isValid: false };
+      }
+    }
+  });
 
   server.route({
     method: 'POST',
@@ -12,6 +59,7 @@ const register = function (server,serverOptions) {
         assign: 'model',
         method: function (request,h) {
 
+          console.log(server);
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
 
           if (!model) {
@@ -30,6 +78,29 @@ const register = function (server,serverOptions) {
           }
 
           return (true);
+        },
+        assign: 'auth',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.auth) {
+
+            const req = {
+              method: 'GET',
+              url: '/simple'
+
+            };
+
+            const response = await server.inject(req);
+
+            if (!response.result.isValid) {
+              return Boom.notFound('Authentication Invalid');
+            }
+
+            return true;
+
+
+          }
         },
         assign: 'payload',
         method: function (request,h) {
