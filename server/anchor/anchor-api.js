@@ -1,6 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
+const Util = require('util');
 
 const register = function (server,serverOptions) {
 
@@ -81,6 +82,33 @@ const register = function (server,serverOptions) {
     handler: async function (request,h) {
 
       return await request.pre.model.routes.getId.handler(request,h);
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/{collectionName}/routes',
+    config: {
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            return Boom.notFound('Model not found');
+          }
+
+          return model;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      console.log(request.pre.model.routes);
+
+      return await util.inspect(request.pre.model.routes);
+
     }
   });
 
