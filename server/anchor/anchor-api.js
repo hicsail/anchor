@@ -107,7 +107,7 @@ const register = function (server,serverOptions) {
 
       console.log(request.pre.model.routes);
 
-      return await util.inspect(request.pre.model.routes);
+      return await Util.inspect(request.pre.model.routes);
 
     }
   });
