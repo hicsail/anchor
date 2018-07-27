@@ -1,6 +1,5 @@
 'use strict';
 const Boom = require('boom');
-const Auth = require('../auth');
 const Joi = require('joi');
 
 const register = function (server,serverOptions) {
@@ -59,7 +58,7 @@ const register = function (server,serverOptions) {
         assign: 'model',
         method: function (request,h) {
 
-          console.log(server);
+          console.log('hello');
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
 
           if (!model) {
@@ -72,6 +71,7 @@ const register = function (server,serverOptions) {
         assign: 'enabled',
         method: function (request,h) {
 
+          console.log('step two');
           const model = request.pre.model;
           if (model.routes.create.disabled) {
             return (Boom.notFound('Permission Denied: Route Disabled'));
@@ -83,6 +83,7 @@ const register = function (server,serverOptions) {
         method: async function (request,h) {
 
           const model = request.pre.model;
+          console.log(model.routes.create.auth);
           if (model.routes.create.auth) {
 
             const req = {
@@ -92,7 +93,8 @@ const register = function (server,serverOptions) {
             };
 
             const response = await server.inject(req);
-
+            console.log('HELLO');
+            console.log(response.result.isValid);
             if (!response.result.isValid) {
               return Boom.notFound('Authentication Invalid');
             }
