@@ -44,7 +44,7 @@ const register = function (server,serverOptions) {
           return Joi.validate(request.payload,model.routes.create.payload);
         }
       }, {
-        assign: 'authc',
+        assign: 'basic',
         method: async function (request,h) {
 
           const model = request.pre.model;
@@ -55,14 +55,37 @@ const register = function (server,serverOptions) {
 
           return h.continue;
         }
-      }]
+      },
+      {
+        assign: 'cookie',
+        method:  function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.auth) {
+            return h.continue;
+          }
+
+          return h.continue;
+        }
+      },
+      {
+        assign: 'credentials',
+        method: function (request,h) {
+
+          console.log('credentials');
+          if (request.pre.basic === null && request.pre.cookie === null) {
+            throw Boom.notFound('Authorization failed');
+          }
+          return request.pre.basic || request.pre.cookie;
+
+        }
+      }
+      ]
     },
     handler: async function (request,h) {
 
       return await request.pre.model.routes.create.handler(request,h);
     }
-
-
   });
 
   server.route({
