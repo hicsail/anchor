@@ -5,50 +5,6 @@ const Joi = require('joi');
 const register = function (server,serverOptions) {
 
 
-  server.route({
-    method: 'GET',
-    path: '/simple',
-    options: {
-      auth: false
-    },
-    handler: async function (request,h) {
-
-      try {
-        await request.server.auth.test('simple',request);
-        return { isValid: true };
-      }
-      catch (err) {
-        return { isValid: false };
-      }
-    }
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/session',
-    options: {
-      auth: false,
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo:false
-        }
-      }
-    },
-    handler: async function (request,h) {
-
-      try {
-        await request.server.auth.test('session',request);
-
-        return { isvalid: true };
-
-      }
-
-      catch (err) {
-
-        return { isValid: false };
-      }
-    }
-  });
 
   server.route({
     method: 'POST',
@@ -94,21 +50,7 @@ const register = function (server,serverOptions) {
           const model = request.pre.model;
           if (model.routes.create.auth) {
 
-            const req = {
-              method: 'GET',
-              url: '/simple'
-
-            };
-
-            const response = await server.inject(req);
-            console.log(response.result.isValid);
-            if (!response.result.isValid) {
-              throw Boom.notFound('Authentication Invalid');
-            }
-
-            return h.continue;
-
-
+            return await server.auth.test('simple',request);
           }
 
           return h.continue;
