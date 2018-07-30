@@ -1,7 +1,6 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-const Util = require('util');
 
 const register = function (server,serverOptions) {
 
@@ -105,9 +104,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      console.log(request.pre.model.routes);
-
-      return await Util.inspect(request.pre.model.routes);
+      return await JSONStringify(request.pre.model.routes);
 
     }
   });
@@ -233,6 +230,27 @@ const register = function (server,serverOptions) {
       return await request.pre.model.routes.getAll.handler(request,h);
     }
   });
+
+  const JSONStringify = (object) => {
+
+    let cache = [];
+    const str = JSON.stringify(object,
+      // custom replacer fxn - gets around "TypeError: Converting circular structure to JSON"
+      (key, value) => {
+
+        if (typeof value === 'object' && value !== null) {
+          if (cache.indexOf(value) !== -1) {
+            // Circular reference found, discard key
+            return;
+          }
+          // Store value in our collection
+          cache.push(value);
+        }
+        return value;
+      }, 4);
+    cache = null; // enable garbage collection
+    return str;
+  };
 };
 
 
