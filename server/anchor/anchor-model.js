@@ -914,7 +914,7 @@ AnchorModel.routes = {
   disabled: false,
   create: {
     auth: true,
-    disabled: true,
+    disabled: false,
     payload: null,
     handler: async (request,h) => {
 

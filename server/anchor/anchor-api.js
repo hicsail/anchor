@@ -56,34 +56,42 @@ const register = function (server,serverOptions) {
     config: {
       pre: [{
         assign: 'model',
-        method: function (request,h) {
+        method: async function (request,h) {
 
-          console.log('hello');
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
 
           if (!model) {
-            return Boom.notFound('Model not found');
+            throw Boom.notFound('Model not found');
           }
 
-          return model;
+          return await model;
         }
       }, {
-        assign: 'enabled',
+        assign: 'enabler',
         method: function (request,h) {
 
-          console.log('step two');
           const model = request.pre.model;
           if (model.routes.create.disabled) {
-            return (Boom.notFound('Permission Denied: Route Disabled'));
+
+            throw (Boom.notFound('Permission Denied: Route Disabled'));
           }
 
-          return (true);
-        },
-        assign: 'auth',
+          return h.continue;
+
+        }
+      }, {
+        assign: 'payload',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          return Joi.validate(request.payload,model.routes.create.payload);
+        }
+      }, {
+        assign: 'authc',
         method: async function (request,h) {
 
           const model = request.pre.model;
-          console.log(model.routes.create.auth);
           if (model.routes.create.auth) {
 
             const req = {
@@ -93,23 +101,17 @@ const register = function (server,serverOptions) {
             };
 
             const response = await server.inject(req);
-            console.log('HELLO');
             console.log(response.result.isValid);
             if (!response.result.isValid) {
-              return Boom.notFound('Authentication Invalid');
+              throw Boom.notFound('Authentication Invalid');
             }
 
-            return true;
+            return h.continue;
 
 
           }
-        },
-        assign: 'payload',
-        method: function (request,h) {
 
-          const model = request.pre.model;
-          return Joi.validate(request.payload,model.routes.create.payload);
-
+          return h.continue;
         }
       }]
     },

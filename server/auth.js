@@ -9,19 +9,23 @@ const register = function (server, options) {
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
 
+      console.log('IN AUTH');
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
+        console.log('SESSION NOT VALID');
         return { isValid: false };
       }
 
       const user = await User.findById(session.userId);
 
       if (!user) {
+        console.log('USER NOT VALID');
         return { isValid: false };
       }
 
       if (!user.isActive) {
+        console.log('USER NOT ACTIVE');
         return { isValid: false };
       }
 
