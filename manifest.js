@@ -41,6 +41,21 @@ const manifest = {
       },
       {
         plugin: './server/anchor/anchor-api'
+      },
+      {
+        plugin: 'hapi-cron',
+        options: {
+          jobs: [{
+            name: 'backup',
+            time: '0 0 0 * * *',
+            timezone: 'America/New_York',
+            request: {
+              method: 'POST',
+              url: '/api/backup/internal',
+              allowInternals: true
+            }
+          }]
+        }
       }
     ]
   }

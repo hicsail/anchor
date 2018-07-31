@@ -21,7 +21,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path: '/api/backup/cron',
+    path: '/api/backup/internal',
     options: {
       auth: false,
       isInternal: true
