@@ -1,12 +1,12 @@
 'use strict';
 const AuthAttempt = require('../models/auth-attempt');
-const Bcrypt = require('bcrypt');
 const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
 const Mailer = require('../mailer');
 const Session = require('../models/session');
 const User = require('../models/user');
+const Crypto = require('../crypto');
 
 const register = function (server, serverOptions) {
 
@@ -183,7 +183,7 @@ const register = function (server, serverOptions) {
 
       const key = request.payload.key;
       const token = request.pre.user.resetPassword.token;
-      const keyMatch = await Bcrypt.compare(key, token);
+      const keyMatch = await Crypto.compare(key, token);
 
       if (!keyMatch) {
         throw Boom.badRequest('Invalid email or key.');
