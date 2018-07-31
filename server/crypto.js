@@ -14,8 +14,14 @@ class Crypto {
     return { key, hash };
   }
 
+  static async compare(key,token) {
+
+      const keyMatch = await Bcrypt.compare(key, token);
+      
+      return keyMatch;
+  }
+
 }
 
 
 module.exports = Crypto;
-
