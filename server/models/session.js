@@ -8,6 +8,7 @@ const Hoek = require('hoek');
 const NewDate = require('joistick/new-date');
 const UserAgent = require('useragent');
 
+
 class Session extends AnchorModel {
 
   static async create(document) {
@@ -45,7 +46,7 @@ class Session extends AnchorModel {
       return;
     }
 
-    const keyMatch = await Bcrypt.compare(key, session.key);
+    const keyMatch = await Crypto.compare(key, session.key);
 
     if (keyMatch) {
       return session;
