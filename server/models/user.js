@@ -128,16 +128,34 @@ User.payload = Joi.object({
 });
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+
   create: {
+    auth:true,
+    basicAuth: true,
+    cookieAuth: false,
     disabled: false,
     payload: User.payload
   },
   update: {
     disabled: false,
-    payload: User.payload
+    payload: User.payload,
+    basicAuth: true,
+    cookieAuth: false
   },
   get: {
-    disabled: false
+    disabled: false,
+    basicAuth: true,
+    cookieAuth: false
+  },
+  getId: {
+    disabled: false,
+    basicAuth: true,
+    cookieAuth: false
+  },
+  delete: {
+    disabled: false,
+    basicAuth: true,
+    cookieAuth: false
   }
 
 });
