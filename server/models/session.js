@@ -2,7 +2,6 @@
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 const Crypto = require('../crypto');
-const Bcrypt = require('bcrypt');
 const Joi = require('joi');
 const Hoek = require('hoek');
 const NewDate = require('joistick/new-date');
