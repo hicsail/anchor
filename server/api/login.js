@@ -2,11 +2,11 @@
 const AuthAttempt = require('../models/auth-attempt');
 const Boom = require('boom');
 const Config = require('../../config');
+const Crypto = require('../crypto');
 const Joi = require('joi');
 const Mailer = require('../mailer');
 const Session = require('../models/session');
 const User = require('../models/user');
-const Crypto = require('../crypto');
 
 const register = function (server, serverOptions) {
 
@@ -77,7 +77,8 @@ const register = function (server, serverOptions) {
 
       const creds = {
         user: request.pre.user,
-        session: request.pre.session
+        session: request.pre.session,
+        authHeader:  `Basic ${new Buffer(`${request.pre.session._id}:${request.pre.session.key}`).toString('base64')}`
       };
 
       request.cookieAuth.set(creds);
@@ -118,7 +119,7 @@ const register = function (server, serverOptions) {
 
       // set reset token
 
-      const keyHash = await Session.generateKeyHash();
+      const keyHash = await Crypto.generateKeyHash();
       const update = {
         $set: {
           resetPassword: {
@@ -213,6 +214,7 @@ const register = function (server, serverOptions) {
 module.exports = {
   name: 'api-login',
   dependencies: [
+    'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-anchor-model',
     'hapi-remote-address'
