@@ -9,7 +9,11 @@ const register = function (server,serverOptions) {
   server.route({
     method: 'POST',
     path:'/api/{collectionName}',
-    config: {
+    options: {
+      auth: {
+        strategies: ['session','simple'],
+        mode: 'try'
+      },
       pre: [{
         assign: 'model',
         method: async function (request,h) {
@@ -36,17 +40,6 @@ const register = function (server,serverOptions) {
 
         }
       }, {
-        assign: 'auth',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.create.basicAuth || model.routes.create.cookieAuth) {
-            return true;
-          }
-
-          return h.continue;
-        }
-      }, {
         assign: 'payload',
         method: function (request,h) {
 
@@ -55,46 +48,22 @@ const register = function (server,serverOptions) {
           return Joi.validate(request.payload,model.routes.create.payload);
         }
       }, {
-        assign: 'basic',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.create.basicAuth) {
-
-            return await server.auth.test('simple',request);
-          }
-
-          return h.continue;
-        }
-      },
-      {
-        assign: 'cookie',
-        method:  async function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.create.cookieAuth) {
-            return await server.auth.test('session',request);
-          }
-
-          return h.continue;
-        }
-      },
-      {
-        assign: 'credentials',
+        assign: 'auth',
         method: function (request,h) {
 
-          if (request.pre.auth) {
+          const model = request.pre.model;
 
-            if (request.pre.basic || request.pre.cookie) {
-              return request.pre.basic || request.pre.cookie;
+          if (model.create.auth) {
+
+            if (!request.auth.isAuthenticated) {
+
+              throw Boom.notFound('Authentication Required');
             }
 
-            throw Boom.notFound('Authorization Denied');
+
           }
 
           return h.continue;
-
-
         }
       }
       ]
@@ -134,25 +103,12 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }, {
-
-        assign: 'auth',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.getId.basicAuth || model.routes.getId.cookieAuth) {
-
-            return true;
-          }
-
-          return h.continue;
-        }
-      }, {
         assign: 'basic',
         method: async function (request,h) {
 
           const model = request.pre.model;
 
-          if (model.routes.getId.basicAuth) {
+          if (model.routes.getId.auth) {
             return await server.auth.test('simple',request);
           }
 
@@ -165,7 +121,7 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          if (model.routes.getId.cookieAuth) {
+          if (model.routes.getId.auth) {
             return await server.auth.test('session',request);
           }
           return h.continue;
@@ -174,7 +130,9 @@ const register = function (server,serverOptions) {
         assign: 'credentials',
         method: async function (request,h) {
 
-          if (request.pre.auth) {
+          const model = request.pre.model;
+
+          if (model.routes.getId.auth) {
 
 
 
@@ -227,25 +185,11 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }, {
-
-        assign: 'auth',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-
-          if (model.routes.delete.basicAuth || model.routes.delete.cookieAuth) {
-
-            return true;
-          }
-          return h.continue;
-        }
-
-      }, {
         assign: 'basic',
         method: async function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.delete.basicAuth) {
+          if (model.routes.delete.auth) {
 
             return await server.auth.test('simple',request);
           }
@@ -258,7 +202,7 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          if (model.routes.delete.cookieAuth) {
+          if (model.routes.delete.auth) {
 
             return await server.auth.test('session',request);
           }
@@ -270,7 +214,9 @@ const register = function (server,serverOptions) {
         assign: 'credentials',
         method: function (request,h) {
 
-          if (request.pre.auth) {
+          const model = request.pre.model;
+
+          if (model.routes.delete.auth) {
             if (request.pre.cookie || request.pre.basic) {
 
               return request.pre.cookie || request.pre.basic;
@@ -324,25 +270,13 @@ const register = function (server,serverOptions) {
           const model = request.pre.model;
           return Joi.validate(request.payload,model.routes.update.payload);
         }
-      }, {
-
-        assign: 'auth',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.update.cookieAuth || model.routes.update.basicAuth) {
-
-            return true;
-          }
-          return h.continue;
-        }
       },
       {
         assign: 'basic',
         method: async function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.update.basicAuth) {
+          if (model.routes.update.auth) {
 
             return await server.auth.test('simple',request);
           }
@@ -354,7 +288,7 @@ const register = function (server,serverOptions) {
         method: async function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.update.cookieAuth) {
+          if (model.routes.update.auth) {
 
             return await server.auth.test('cookie',request);
           }
@@ -369,9 +303,14 @@ const register = function (server,serverOptions) {
         assign: 'credentials',
         method: function (request,h) {
 
-          if (request.pre.cookie || request.pre.basic) {
+          const model = request.pre.model;
 
-            return request.pre.cookie || request.pre.basic;
+          if (model.routes.update.auth) {
+
+            if (request.pre.cookie || request.pre.basic) {
+
+              return request.pre.cookie || request.pre.basic;
+            }
           }
 
           return Boom.notFound('Authorization Denied');
@@ -422,25 +361,14 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }, {
-        assign: 'auth',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-
-          if (model.routes.get.cookieAuth || model.routes.get.basicAuth) {
-
-            return true;
-          }
-
-          return h.continue;
-        }
-      }, {
         assign: 'basic',
         method: async function (request,h) {
 
           const model = request.pre.model;
 
-          if (model.routes.get.basicAuth) {
+          if (model.routes.get.auth) {
+
+            console.log('basic');
 
             return await server.auth.test('simple',request);
           }
@@ -454,9 +382,9 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          if (model.routes.get.cookieAuth) {
+          if (model.routes.get.auth) {
 
-            return await server.auth.test('session',request);
+            console.log( await server.auth.test('session',request));
           }
 
           return h.continue;
@@ -465,7 +393,9 @@ const register = function (server,serverOptions) {
         assign: 'credentials',
         method: function (request,h) {
 
-          if (request.pre.auth) {
+          const model = request.pre.model;
+
+          if (model.routes.get.auth) {
             if (request.pre.cookie || request.pre.basic) {
 
               return request.pre.cookie || request.pre.basic;
@@ -484,7 +414,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      return await request.pre.model.routes.getAll.handler(request,h);
+      return await request.pre.model.routes.get.handler(request,h);
     }
   });
 };
