@@ -23,7 +23,7 @@ const register = function (server,serverOptions) {
           return await model;
         }
       }, {
-        assign: 'enabler',
+        assign: 'enabled',
         method: function (request,h) {
 
           const model = request.pre.model;
@@ -34,6 +34,17 @@ const register = function (server,serverOptions) {
 
           return h.continue;
 
+        }
+      }, {
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.basicAuth || model.routes.create.cookieAuth) {
+            return true;
+          }
+
+          return h.continue;
         }
       }, {
         assign: 'payload',
@@ -48,7 +59,7 @@ const register = function (server,serverOptions) {
         method: async function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.create.auth) {
+          if (model.routes.create.basicAuth) {
 
             return await server.auth.test('simple',request);
           }
@@ -58,11 +69,11 @@ const register = function (server,serverOptions) {
       },
       {
         assign: 'cookie',
-        method:  function (request,h) {
+        method:  async function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.create.auth) {
-            return h.continue;
+          if (model.routes.create.cookieAuth) {
+            return await server.auth.test('session',request);
           }
 
           return h.continue;
@@ -72,11 +83,17 @@ const register = function (server,serverOptions) {
         assign: 'credentials',
         method: function (request,h) {
 
-          console.log('credentials');
-          if (request.pre.basic === null && request.pre.cookie === null) {
-            throw Boom.notFound('Authorization failed');
+          if (request.pre.auth) {
+
+            if (request.pre.basic || request.pre.cookie) {
+              return request.pre.basic || request.pre.cookie;
+            }
+
+            throw Boom.notFound('Authorization Denied');
           }
-          return request.pre.basic || request.pre.cookie;
+
+          return h.continue;
+
 
         }
       }
@@ -114,7 +131,65 @@ const register = function (server,serverOptions) {
             return Boom.notFound('Permission Denied: Route Disabled');
           }
 
-          return true;
+          return h.continue;
+        }
+      }, {
+
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.getId.basicAuth || model.routes.getId.cookieAuth) {
+
+            return true;
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'basic',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.getId.basicAuth) {
+            return await server.auth.test('simple',request);
+          }
+
+          h.continue;
+
+        }
+      }, {
+        assign: 'cookie',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.getId.cookieAuth) {
+            return await server.auth.test('session',request);
+          }
+          return h.continue;
+        }
+      }, {
+        assign: 'credentials',
+        method: async function (request,h) {
+
+          if (request.pre.auth) {
+
+
+
+            if (request.pre.cookie || request.pre.basic) {
+
+              return await request.pre.cookie || request.pre.basic;
+            }
+
+            throw Boom.notFound('Authorization denied');
+          }
+
+          else {
+
+            return h.continue;
+          }
         }
       }]
     },
@@ -149,7 +224,63 @@ const register = function (server,serverOptions) {
           if (model.routes.delete.disabled) {
             return Boom.notFound('Permission Denied: Route Disabled');
           }
-          return true;
+          return h.continue;
+        }
+      }, {
+
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.delete.basicAuth || model.routes.delete.cookieAuth) {
+
+            return true;
+          }
+          return h.continue;
+        }
+
+      }, {
+        assign: 'basic',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.delete.basicAuth) {
+
+            return await server.auth.test('simple',request);
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'cookie',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.delete.cookieAuth) {
+
+            return await server.auth.test('session',request);
+          }
+
+          return h.continue;
+        }
+      }, {
+
+        assign: 'credentials',
+        method: function (request,h) {
+
+          if (request.pre.auth) {
+            if (request.pre.cookie || request.pre.basic) {
+
+              return request.pre.cookie || request.pre.basic;
+            }
+
+            throw Boom.notFound('Authorization Denied');
+          }
+          else {
+            return h.continue;
+          }
         }
       }]
     },
@@ -184,13 +315,66 @@ const register = function (server,serverOptions) {
             return (Boom.notFound('Permission Denied: Route Disabled'));
           }
 
-          return (true);
-        },
+          return h.continue;
+        }
+      }, {
         assign: 'payload',
         method: function (request,h) {
 
           const model = request.pre.model;
           return Joi.validate(request.payload,model.routes.update.payload);
+        }
+      }, {
+
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.update.cookieAuth || model.routes.update.basicAuth) {
+
+            return true;
+          }
+          return h.continue;
+        }
+      },
+      {
+        assign: 'basic',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.update.basicAuth) {
+
+            return await server.auth.test('simple',request);
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'cookie',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.update.cookieAuth) {
+
+            return await server.auth.test('cookie',request);
+          }
+
+          return h.continue;
+        }
+
+
+
+      }, {
+
+        assign: 'credentials',
+        method: function (request,h) {
+
+          if (request.pre.cookie || request.pre.basic) {
+
+            return request.pre.cookie || request.pre.basic;
+          }
+
+          return Boom.notFound('Authorization Denied');
         }
       }]
     },
@@ -235,7 +419,65 @@ const register = function (server,serverOptions) {
             return (Boom.notFound('Permission Denied: Route Disabled'));
           }
 
-          return (true);
+          return h.continue;
+        }
+      }, {
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.get.cookieAuth || model.routes.get.basicAuth) {
+
+            return true;
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'basic',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.get.basicAuth) {
+
+            return await server.auth.test('simple',request);
+          }
+
+          return h.continue;
+        }
+      },  {
+
+        assign: 'cookie',
+        method: async function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.get.cookieAuth) {
+
+            return await server.auth.test('session',request);
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'credentials',
+        method: function (request,h) {
+
+          if (request.pre.auth) {
+            if (request.pre.cookie || request.pre.basic) {
+
+              return request.pre.cookie || request.pre.basic;
+            }
+
+            throw Boom.notFound('Authorization denied');
+          }
+
+          else {
+            return h.continue;
+          }
+
         }
       }]
 

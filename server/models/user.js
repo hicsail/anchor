@@ -131,15 +131,31 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 
   create: {
     auth:true,
+    basicAuth: true,
+    cookieAuth: false,
     disabled: false,
     payload: User.payload
   },
   update: {
-    disabled: true,
-    payload: User.payload
+    disabled: false,
+    payload: User.payload,
+    basicAuth: true,
+    cookieAuth: false
   },
   get: {
-    disabled: false
+    disabled: false,
+    basicAuth: true,
+    cookieAuth: false
+  },
+  getId: {
+    disabled: false,
+    basicAuth: true,
+    cookieAuth: false
+  },
+  delete: {
+    disabled: false,
+    basicAuth: true,
+    cookieAuth: false
   }
 
 });
