@@ -14,31 +14,21 @@ const register = function (server, serverOptions) {
     },
     handler: async function (request, h) {
 
-      const data = {};
-      for (const collectionName in  server.plugins['hapi-anchor-model'].models) {
-        data[collectionName] = await server.plugins['hapi-anchor-model'].models[collectionName].find({});
-      }
+      return await createBackup();
+    }
+  });
 
-      const filename = new Date().toISOString() + '.json';
-      const path = Path.join(__dirname,'../backups/',filename);
 
-      await new Promise((resolve, reject) => {
+  server.route({
+    method: 'POST',
+    path: '/api/backup/cron',
+    options: {
+      auth: false,
+      isInternal: true
+    },
+    handler: async function (request, h) {
 
-        Fs.writeFile(path,JSON.stringify(data), (err) => {
-
-          if (err) {
-            return reject(err);
-          }
-          resolve(true);
-        });
-      });
-
-      const backup = await Backup.create({
-        filename,
-        local: true
-      });
-
-      return backup;
+      return await createBackup();
     }
   });
 
@@ -68,6 +58,36 @@ const register = function (server, serverOptions) {
       return backup;
     }
   });
+
+  const createBackup = async () => {
+
+    const data = {};
+    for (const collectionName in  server.plugins['hapi-anchor-model'].models) {
+      data[collectionName] = await server.plugins['hapi-anchor-model'].models[collectionName].find({});
+    }
+
+    const filename = new Date().toISOString() + '.json';
+    const path = Path.join(__dirname,'../backups/',filename);
+
+    await new Promise((resolve, reject) => {
+
+      Fs.writeFile(path,JSON.stringify(data), (err) => {
+
+        if (err) {
+          return reject(err);
+        }
+        resolve(true);
+      });
+    });
+
+    const backup = await Backup.create({
+      filename,
+      local: true
+    });
+
+    return backup;
+
+  };
 };
 
 module.exports = {
