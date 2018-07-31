@@ -41,6 +41,33 @@ const register = function (server, serverOptions) {
       return backup;
     }
   });
+
+
+  server.route({
+    method: 'GET',
+    path: '/api/backup/{id}/data',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
+
+      const backup = await Backup.findById(request.params.id);
+      const path = Path.join(__dirname,'../backups/',backup.filename);
+
+      backup.data = await new Promise((resolve, reject) => {
+
+        Fs.readFile(path, 'utf8', (err, data) => {
+
+          if (err) {
+            return reject(err);
+          }
+          resolve(JSON.parse(data));
+        });
+      });
+
+      return backup;
+    }
+  });
 };
 
 module.exports = {
