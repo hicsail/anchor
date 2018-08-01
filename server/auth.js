@@ -2,6 +2,9 @@
 const Config = require('../config');
 const Session = require('./models/session');
 const User = require('./models/user');
+const Token = require('./models/token');
+const Jwt2 = require('hapi-auth-jwt2');
+const Crypto = require('crypto');
 
 
 const register = function (server, options) {
@@ -31,6 +34,37 @@ const register = function (server, options) {
       };
 
       return { credentials, isValid: true };
+    }
+  });
+
+  server.auth.strategy('token','jwt2', {
+    validate: async function (request,id) {
+
+      const token = await Token.FindByID(id);
+      const user = await User.findByID(token.userId);
+
+      if (!user) {
+        return { isValid: false };
+      }
+
+      if (!user.isActive) {
+        return { isValid: false };
+      }
+
+      if (Crypto.compare(token,token)){
+        const credentials = {
+          user,
+          session: token
+        };
+
+        return { credentials, session: token };
+
+      }
+      return { isValid: false };
+
+
+
+
     }
   });
 
@@ -79,7 +113,8 @@ module.exports = {
   dependencies: [
     'hapi-auth-basic',
     'hapi-auth-cookie',
-    'hapi-anchor-model'
+    'hapi-anchor-model',
+    'hapi-auth-jwt2'
   ],
   register
 };
