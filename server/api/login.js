@@ -78,7 +78,7 @@ const register = function (server, serverOptions) {
       const creds = {
         user: request.pre.user,
         session: request.pre.session,
-        authHeader:  `Basic ${new Buffer(`${request.pre.session._id}:${request.pre.session.key}`).toString('base64')}`
+        authHeader:  `Basic ${Buffer.from(`${request.pre.session._id}:${request.pre.session.key}`).toString('base64')}`
       };
 
       request.cookieAuth.set(creds);
