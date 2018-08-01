@@ -9,7 +9,7 @@ const Login = require('../../../server/api/login');
 const Mailer = require('../../../server/mailer');
 const Manifest = require('../../../manifest');
 const User = require('../../../server/models/user');
-
+const Session = require('../../../server/models/session');
 
 const lab = exports.lab = Lab.script();
 let server;
@@ -229,6 +229,48 @@ lab.experiment('POST /api/login/reset', () => {
 
 
   lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.message).to.match(/success/i);
+  });
+});
+
+
+lab.experiment('DELETE /api/logout', () => {
+
+  let request;
+
+
+  lab.beforeEach(() => {
+
+    request = {
+      method: 'DELETE',
+      url: '/api/logout'
+    };
+  });
+
+
+  lab.test('it returns HTTP 200 when credentials are missing', async () => {
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.message).to.match(/success/i);
+  });
+
+
+  lab.test('it returns HTTP 200 when credentials are present', async () => {
+
+    const user = await User.create({ username: 'ren', password:'baddog', email:'ren@stimpy.show', name: 'ren' });
+    const session = await Session.create({ userId: 'ren', ip: 'baddog', userAgent:'ren@stimpy.show' });
+
+    request.credentials = {
+      roles: [],
+      session,
+      user
+    };
 
     const response = await server.inject(request);
 

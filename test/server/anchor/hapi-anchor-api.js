@@ -82,6 +82,6 @@ lab.experiment('Plugin', () => {
       return await server.register(plugins);
     };
 
-    await Code.expect(throws()).to.resolve;
+    await Code.expect(throws()).to.not.reject();
   });
 });
