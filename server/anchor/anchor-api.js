@@ -226,6 +226,32 @@ const register = function (server,serverOptions) {
 
 
   server.route({
+    method: 'GET',
+    path: '/api/{collectionName}/schema',
+    config: {
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            return Boom.notFound('Model not found');
+          }
+
+          return model;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      return await JSONStringify(request.pre.model.schema);
+
+    }
+  });
+
+
+  server.route({
     method: 'DELETE',
     path: '/api/{collectionName}/{id}',
     config: {
@@ -545,6 +571,3 @@ module.exports = {
   ],
   register
 };
-
-
-
