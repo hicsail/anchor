@@ -924,7 +924,7 @@ AnchorModel.routes = {
     },
     query: null
   },
-  getAll: {
+  get: {
     disabled: false,
     query: null,
     handler: async (request,h) => {

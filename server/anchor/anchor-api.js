@@ -9,7 +9,11 @@ const register = function (server,serverOptions) {
   server.route({
     method: 'POST',
     path:'/api/{collectionName}',
-    config: {
+    options: {
+      auth: {
+        strategies: ['session','simple'],
+        mode: 'try'
+      },
       pre: [{
         assign: 'model',
         method: async function (request,h) {
@@ -36,17 +40,6 @@ const register = function (server,serverOptions) {
 
         }
       }, {
-        assign: 'auth',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.create.basicAuth || model.routes.create.cookieAuth) {
-            return true;
-          }
-
-          return h.continue;
-        }
-      }, {
         assign: 'payload',
         method: function (request,h) {
 
@@ -55,46 +48,23 @@ const register = function (server,serverOptions) {
           return Joi.validate(request.payload,model.routes.create.payload);
         }
       }, {
-        assign: 'basic',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.create.basicAuth) {
-
-            return await server.auth.test('simple',request);
-          }
-
-          return h.continue;
-        }
-      },
-      {
-        assign: 'cookie',
-        method:  async function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.create.cookieAuth) {
-            return await server.auth.test('session',request);
-          }
-
-          return h.continue;
-        }
-      },
-      {
-        assign: 'credentials',
+        assign: 'auth',
         method: function (request,h) {
 
-          if (request.pre.auth) {
+          const model = request.pre.model;
 
-            if (request.pre.basic || request.pre.cookie) {
-              return request.pre.basic || request.pre.cookie;
+          if (model.routes.create.auth) {
+            if (!request.auth.isAuthenticated) {
+
+              throw Boom.notFound('Authentication Required');
             }
 
-            throw Boom.notFound('Authorization Denied');
+            return h.continue;
+
+
           }
 
           return h.continue;
-
-
         }
       }
       ]
@@ -108,7 +78,11 @@ const register = function (server,serverOptions) {
   server.route({
     method: 'GET',
     path: '/api/{collectionName}/{id}',
-    config: {
+    options: {
+      auth: {
+        strategies: ['simple','session'],
+        mode: 'try'
+      },
       pre: [{
         assign: 'model',
         method: function (request,h) {
@@ -133,63 +107,26 @@ const register = function (server,serverOptions) {
 
           return h.continue;
         }
-      }, {
-
+      },  {
         assign: 'auth',
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.getId.basicAuth || model.routes.getId.cookieAuth) {
 
-            return true;
-          }
-
-          return h.continue;
-        }
-      }, {
-        assign: 'basic',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-
-          if (model.routes.getId.basicAuth) {
-            return await server.auth.test('simple',request);
-          }
-
-          h.continue;
-
-        }
-      }, {
-        assign: 'cookie',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-
-          if (model.routes.getId.cookieAuth) {
-            return await server.auth.test('session',request);
-          }
-          return h.continue;
-        }
-      }, {
-        assign: 'credentials',
-        method: async function (request,h) {
-
-          if (request.pre.auth) {
+          if (model.routes.getId.auth) {
 
 
 
-            if (request.pre.cookie || request.pre.basic) {
+            if (!request.auth.isAuthenticated) {
+              throw Boom.notFound('Authorization denied');
 
-              return await request.pre.cookie || request.pre.basic;
             }
 
-            throw Boom.notFound('Authorization denied');
-          }
-
-          else {
-
             return h.continue;
+
           }
+
+          return h.continue;
         }
       }]
     },
@@ -254,7 +191,11 @@ const register = function (server,serverOptions) {
   server.route({
     method: 'DELETE',
     path: '/api/{collectionName}/{id}',
-    config: {
+    options: {
+      auth: {
+        strategies: ['simple','session'],
+        mode:'try'
+      },
       pre: [{
         assign: 'model',
         method: function (request,h) {
@@ -284,54 +225,16 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          if (model.routes.delete.basicAuth || model.routes.delete.cookieAuth) {
+          if (model.routes.delete.auth) {
+            if (!request.auth.isAuthenticated) {
 
-            return true;
-          }
-          return h.continue;
-        }
-
-      }, {
-        assign: 'basic',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-          if (model.routes.delete.basicAuth) {
-
-            return await server.auth.test('simple',request);
-          }
-
-          return h.continue;
-        }
-      }, {
-        assign: 'cookie',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-
-          if (model.routes.delete.cookieAuth) {
-
-            return await server.auth.test('session',request);
-          }
-
-          return h.continue;
-        }
-      }, {
-
-        assign: 'credentials',
-        method: function (request,h) {
-
-          if (request.pre.auth) {
-            if (request.pre.cookie || request.pre.basic) {
-
-              return request.pre.cookie || request.pre.basic;
+              throw Boom.notFound('Authorization Denied');
             }
 
-            throw Boom.notFound('Authorization Denied');
+
           }
-          else {
-            return h.continue;
-          }
+
+          return h.continue;
         }
       }]
     },
@@ -344,7 +247,11 @@ const register = function (server,serverOptions) {
   server.route({
     method:'PUT',
     path: '/api/{collectionName}/{id}',
-    config: {
+    options: {
+      auth: {
+        strategies: ['simple','session'],
+        mode:'try'
+      },
       pre: [{
         assign: 'model',
         method: function (request,h) {
@@ -381,51 +288,19 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.update.cookieAuth || model.routes.update.basicAuth) {
 
-            return true;
-          }
-          return h.continue;
-        }
-      },
-      {
-        assign: 'basic',
-        method: async function (request,h) {
+          if (model.routes.update.auth) {
 
-          const model = request.pre.model;
-          if (model.routes.update.basicAuth) {
+            if (!request.auth.isAuthenticated) {
 
-            return await server.auth.test('simple',request);
+              return Boom.notFound('Authorization Denied');
+            }
+
+            return h.continue;
           }
 
           return h.continue;
-        }
-      }, {
-        assign: 'cookie',
-        method: async function (request,h) {
 
-          const model = request.pre.model;
-          if (model.routes.update.cookieAuth) {
-
-            return await server.auth.test('cookie',request);
-          }
-
-          return h.continue;
-        }
-
-
-
-      }, {
-
-        assign: 'credentials',
-        method: function (request,h) {
-
-          if (request.pre.cookie || request.pre.basic) {
-
-            return request.pre.cookie || request.pre.basic;
-          }
-
-          return Boom.notFound('Authorization Denied');
         }
       }]
     },
@@ -441,13 +316,17 @@ const register = function (server,serverOptions) {
     //paged find
     method:'GET',
     path:'/api/{collectionName}',
-    config: {
+    options: {
       validate: {
         query: {
           sort: Joi.string().default('_id'),
           limit: Joi.number().default(20),
           page: Joi.number().default(1)
         }
+      },
+      auth: {
+        strategies: ['simple','session'],
+        mode: 'try'
       },
       pre: [{
         assign: 'model',
@@ -478,56 +357,17 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          if (model.routes.get.cookieAuth || model.routes.get.basicAuth) {
+          if (model.routes.get.auth) {
+            if (!request.auth.isAuthenticated) {
+              throw Boom.notFound('Authorization Denied');
 
-            return true;
-          }
-
-          return h.continue;
-        }
-      }, {
-        assign: 'basic',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-
-          if (model.routes.get.basicAuth) {
-
-            return await server.auth.test('simple',request);
-          }
-
-          return h.continue;
-        }
-      },  {
-
-        assign: 'cookie',
-        method: async function (request,h) {
-
-          const model = request.pre.model;
-
-          if (model.routes.get.cookieAuth) {
-
-            return await server.auth.test('session',request);
-          }
-
-          return h.continue;
-        }
-      }, {
-        assign: 'credentials',
-        method: function (request,h) {
-
-          if (request.pre.auth) {
-            if (request.pre.cookie || request.pre.basic) {
-
-              return request.pre.cookie || request.pre.basic;
             }
 
-            throw Boom.notFound('Authorization denied');
+            return h.continue;
+
           }
 
-          else {
-            return h.continue;
-          }
+          return h.continue;
 
         }
       }]
@@ -535,7 +375,7 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      return await request.pre.model.routes.getAll.handler(request,h);
+      return await request.pre.model.routes.get.handler(request,h);
     }
   });
 
