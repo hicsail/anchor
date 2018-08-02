@@ -142,7 +142,6 @@ lab.experiment('Simple Auth Strategy', () => {
       url: '/simple'
     };
     const response = await server.inject(request);
-
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });

@@ -2,11 +2,11 @@
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 const Crypto = require('../crypto');
-const Bcrypt = require('bcrypt');
 const Joi = require('joi');
 const Hoek = require('hoek');
 const NewDate = require('joistick/new-date');
 const UserAgent = require('useragent');
+
 
 class Session extends AnchorModel {
 
@@ -45,7 +45,7 @@ class Session extends AnchorModel {
       return;
     }
 
-    const keyMatch = await Bcrypt.compare(key, session.key);
+    const keyMatch = await Crypto.compare(key, session.key);
 
     if (keyMatch) {
       return session;

@@ -1,8 +1,8 @@
 'use strict';
 const AuthAttempt = require('../models/auth-attempt');
-const Bcrypt = require('bcrypt');
 const Boom = require('boom');
 const Config = require('../../config');
+const Crypto = require('../crypto');
 const Joi = require('joi');
 const Mailer = require('../mailer');
 const Session = require('../models/session');
@@ -77,7 +77,8 @@ const register = function (server, serverOptions) {
 
       const creds = {
         user: request.pre.user,
-        session: request.pre.session
+        session: request.pre.session,
+        authHeader:  `Basic ${Buffer.from(`${request.pre.session._id}:${request.pre.session.key}`).toString('base64')}`
       };
 
       request.cookieAuth.set(creds);
@@ -118,7 +119,7 @@ const register = function (server, serverOptions) {
 
       // set reset token
 
-      const keyHash = await Session.generateKeyHash();
+      const keyHash = await Crypto.generateKeyHash();
       const update = {
         $set: {
           resetPassword: {
@@ -183,7 +184,7 @@ const register = function (server, serverOptions) {
 
       const key = request.payload.key;
       const token = request.pre.user.resetPassword.token;
-      const keyMatch = await Bcrypt.compare(key, token);
+      const keyMatch = await Crypto.compare(key, token);
 
       if (!keyMatch) {
         throw Boom.badRequest('Invalid email or key.');
@@ -207,12 +208,36 @@ const register = function (server, serverOptions) {
       return { message: 'Success.' };
     }
   });
+
+  server.route({
+    method: 'DELETE',
+    path: '/api/logout',
+    options: {
+      auth: {
+        strategies: ['session','simple'],
+        mode: 'try'
+      }
+    },
+    handler: function (request, h) {
+
+      const credentials = request.auth.credentials;
+
+      if (!credentials) {
+        return { message: 'Success.' };
+      }
+
+      Session.findByIdAndDelete(credentials.session._id);
+
+      return { message: 'Success.' };
+    }
+  });
 };
 
 
 module.exports = {
   name: 'api-login',
   dependencies: [
+    'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-anchor-model',
     'hapi-remote-address'
