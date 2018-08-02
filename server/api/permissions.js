@@ -106,6 +106,75 @@ const register = function (server, serverOptions) {
       return await Role.create(request.payload);
     }
   });
+
+  server.route({
+    method: 'PUT',
+    path:'/api/permissions/user/{id}',
+    config: {
+      auth: false,
+      pre: [{
+        assign: 'roleValidation',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload, Role.payload);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'permissions',
+        method: async function (request,h) {
+
+          const result = await server.inject({
+            method: 'GET',
+            url: '/api/permissions/available'
+          });
+
+          if (result.statusCode !== 200) {
+            throw Boom.badData(result.message);
+          }
+
+          return result.result;
+        }
+      }, {
+        assign: 'schema',
+        method: function (request,h) {
+
+          return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
+
+            a[v.key] = Joi.boolean();
+            return a;
+          }, {}));
+        }
+      }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      request.payload.filter = [];
+      request.payload.userId = '0000'; //request.auth.credentials.user._id.toString();
+      // const query: {
+      //   "_id": request.params.id
+      // };
+      //write a function the queries the _id here
+
+      return await Role.create(request.payload);
+    }
+  });
 };
 
 
