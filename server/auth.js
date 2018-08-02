@@ -3,8 +3,7 @@ const Config = require('../config');
 const Session = require('./models/session');
 const User = require('./models/user');
 const Token = require('./models/token');
-const Jwt2 = require('hapi-auth-jwt2');
-const Crypto = require('crypto');
+const Crypto = require('./crypto');
 
 
 const register = function (server, options) {
@@ -37,36 +36,66 @@ const register = function (server, options) {
     }
   });
 
-  server.auth.strategy('token','jwt2', {
-    validate: async function (request,id) {
+  server.auth.strategy('token','jwt', {
+    key: Config.get('/cookieSecret'),
+    validate: async function (id,request) {
 
-      const token = await Token.FindByID(id);
-      const user = await User.findByID(token.userId);
+      console.log('TOKEN');
+      console.log(id);
+
+      const split = id.split(':');
+
+
+      const tokenId = split[0];
+      const password = split[1];
+
+      console.log(tokenId);
+
+
+      const token = await Token.findById(tokenId);
+      if (token) {
+        console.log(token);
+      }
+      const user = await User.findById(token.userId);
+
+      if (user) {
+        console.log(user);
+      }
+
 
       if (!user) {
+        console.log('USERINVALID');
         return { isValid: false };
       }
 
       if (!user.isActive) {
+        console.log('USER NOT ACTIVE');
         return { isValid: false };
       }
 
-      if (Crypto.compare(token,token)){
+      console.log('passing through');
+      console.log(password);
+      console.log(token.token);
+      console.log('passing again');
+      if (await Crypto.compare(password,token.token)){
+        console.log('comparison completed');
         const credentials = {
           user,
           session: token
         };
 
-        return { credentials, session: token };
+        console.log('passing tests');
+
+        return { credentials, isValid: true };
 
       }
+
+      console.log('comparison failed');
       return { isValid: false };
-
-
-
-
-    }
+    },
+    verifyOptions: { algorithms: ['HS256'] }
   });
+
 
 
   server.auth.strategy('session', 'cookie', {
@@ -113,8 +142,8 @@ module.exports = {
   dependencies: [
     'hapi-auth-basic',
     'hapi-auth-cookie',
-    'hapi-anchor-model',
-    'hapi-auth-jwt2'
+    'hapi-auth-jwt2',
+    'hapi-anchor-model'
   ],
   register
 };
