@@ -1,5 +1,6 @@
 'use strict';
 const Backup = require('../models/backup');
+const Boom = require('boom');
 const Fs = require('fs');
 const Path = require('path');
 
@@ -83,6 +84,11 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       const backup = await Backup.findById(request.params.id);
+
+      if (!backup) {
+        return Boom.notFound('Backup not found');
+      }
+
       const path = Path.join(__dirname, '../backups/', backup.filename);
       const data = await readFile(path);
 
@@ -94,6 +100,9 @@ const register = function (server, serverOptions) {
           }
         }
       }
+
+      await Backup.deleteMany({});
+      await createBackupsFromDisk();
 
       return { message: 'Success' };
     }
@@ -116,6 +125,25 @@ const register = function (server, serverOptions) {
       local: true
     });
 
+  };
+
+  const createBackupsFromDisk = async () => {
+
+    const files = (await readDir(Path.join(__dirname, '../backups/'))).filter((filename) => {
+
+      return filename.slice(-5) === '.json';
+    });
+
+    const backups = [];
+    for (const filename of files) {
+      backups.push(await Backup.create({
+        filename,
+        local: true,
+        createdAt: new Date(filename).getTime()
+      }));
+    }
+
+    return backups;
   };
 
   const writeFile = (path, data) => {
@@ -145,7 +173,7 @@ const register = function (server, serverOptions) {
       });
     });
   };
-  /*
+
   const readDir = (path, opts = 'utf8') =>
 
     new Promise((res, rej) => {
@@ -160,7 +188,6 @@ const register = function (server, serverOptions) {
         }
       });
     });
-    */
 };
 
 module.exports = {
