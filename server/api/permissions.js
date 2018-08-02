@@ -10,9 +10,7 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/permissions/available',
     options: {
-      auth: {
-        strategies: ['session','simple']
-      }
+      auth: false
     },
     handler: function (request, h) {
 
@@ -48,9 +46,7 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path:'/api/permissions/role',
     config: {
-      auth: {
-        strategies: ['session','simple']
-      },
+      auth: false,
       pre: [{
         assign: 'roleValidation',
         method: function (request,h) {
@@ -84,7 +80,7 @@ const register = function (server, serverOptions) {
 
           return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
 
-            a[v.key] = Joi.boolean().required();
+            a[v.key] = Joi.boolean();
             return a;
           }, {}));
         }
