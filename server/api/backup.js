@@ -42,18 +42,9 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       const backup = await Backup.findById(request.params.id);
-      const path = Path.join(__dirname,'../backups/',backup.filename);
+      const path = Path.join(__dirname, '../backups/', backup.filename);
 
-      backup.data = await new Promise((resolve, reject) => {
-
-        Fs.readFile(path, 'utf8', (err, data) => {
-
-          if (err) {
-            return reject(err);
-          }
-          resolve(JSON.parse(data));
-        });
-      });
+      backup.data = await readFile(path);
 
       return backup;
     }
@@ -71,7 +62,7 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       const filename = request.payload.filename + '.json';
-      const path = Path.join(__dirname,'../backups/', filename);
+      const path = Path.join(__dirname, '../backups/', filename);
 
       await writeFile(path, request.payload.data);
 
@@ -79,6 +70,32 @@ const register = function (server, serverOptions) {
         filename,
         local: true
       });
+    }
+  });
+
+
+  server.route({
+    method: 'POST',
+    path: '/api/backup/restore/{id}',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
+
+      const backup = await Backup.findById(request.params.id);
+      const path = Path.join(__dirname, '../backups/', backup.filename);
+      const data = await readFile(path);
+
+      for (const collectionName in  server.plugins['hapi-anchor-model'].models) {
+        if (data[collectionName]) {
+          await server.plugins['hapi-anchor-model'].models[collectionName].deleteMany({});
+          if (data[collectionName].length > 0) {
+            await server.plugins['hapi-anchor-model'].models[collectionName].insertMany(data[collectionName]);
+          }
+        }
+      }
+
+      return { message: 'Success' };
     }
   });
 
@@ -90,7 +107,7 @@ const register = function (server, serverOptions) {
     }
 
     const filename = new Date().toISOString() + '.json';
-    const path = Path.join(__dirname,'../backups/',filename);
+    const path = Path.join(__dirname, '../backups/', filename);
 
     await writeFile(path, data);
 
@@ -105,7 +122,7 @@ const register = function (server, serverOptions) {
 
     return new Promise((resolve, reject) => {
 
-      Fs.writeFile(path,JSON.stringify(data), (err) => {
+      Fs.writeFile(path, JSON.stringify(data), (err) => {
 
         if (err) {
           return reject(err);
@@ -113,8 +130,37 @@ const register = function (server, serverOptions) {
         resolve(true);
       });
     });
-
   };
+
+  const readFile = (path) => {
+
+    return new Promise((resolve, reject) => {
+
+      Fs.readFile(path, 'utf8', (err, data) => {
+
+        if (err) {
+          return reject(err);
+        }
+        resolve(JSON.parse(data));
+      });
+    });
+  };
+  /*
+  const readDir = (path, opts = 'utf8') =>
+
+    new Promise((res, rej) => {
+
+      Fs.readdir(path, opts, (err, data) => {
+
+        if (err) {
+          rej(err);
+        }
+        else {
+          res(data);
+        }
+      });
+    });
+    */
 };
 
 module.exports = {

@@ -455,6 +455,9 @@ class AnchorModel {
         if (!doc.createdAt) {
           doc.createdAt = new Date();
         }
+        if (typeof doc._id === 'string') {
+          doc._id = this._idClass(doc._id);
+        }
       }
     }
     const db = dbFromArgs(args);
