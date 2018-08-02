@@ -59,6 +59,29 @@ const register = function (server, serverOptions) {
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/api/backup/data',
+    options: {
+      auth: false,
+      validate: {
+        payload: Backup.payload
+      }
+    },
+    handler: async function (request, h) {
+
+      const filename = request.payload.filename + '.json';
+      const path = Path.join(__dirname,'../backups/', filename);
+
+      await writeFile(path, request.payload.data);
+
+      return await Backup.create({
+        filename,
+        local: true
+      });
+    }
+  });
+
   const createBackup = async () => {
 
     const data = {};
@@ -69,7 +92,18 @@ const register = function (server, serverOptions) {
     const filename = new Date().toISOString() + '.json';
     const path = Path.join(__dirname,'../backups/',filename);
 
-    await new Promise((resolve, reject) => {
+    await writeFile(path, data);
+
+    return await Backup.create({
+      filename,
+      local: true
+    });
+
+  };
+
+  const writeFile = (path, data) => {
+
+    return new Promise((resolve, reject) => {
 
       Fs.writeFile(path,JSON.stringify(data), (err) => {
 
@@ -79,13 +113,6 @@ const register = function (server, serverOptions) {
         resolve(true);
       });
     });
-
-    const backup = await Backup.create({
-      filename,
-      local: true
-    });
-
-    return backup;
 
   };
 };

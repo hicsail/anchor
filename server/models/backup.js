@@ -31,8 +31,7 @@ Backup.schema = Joi.object({
 
 Backup.payload = Joi.object({
   filename: Joi.string().required(),
-  local: Joi.boolean().required(),
-  s3: Joi.boolean().required()
+  data: Joi.object().required()
 });
 
 Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
