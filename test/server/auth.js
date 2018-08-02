@@ -51,6 +51,8 @@ lab.before(async () => {
     }
   });
 
+
+
   server.route({
     method: 'GET',
     path: '/session',
