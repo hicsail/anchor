@@ -11,7 +11,7 @@ const register = function (server,serverOptions) {
     path:'/api/{collectionName}',
     options: {
       auth: {
-        strategies: ['session','simple'],
+        strategies: ['simple','session','token'],
         mode: 'try'
       },
       pre: [{
@@ -80,7 +80,7 @@ const register = function (server,serverOptions) {
     path: '/api/{collectionName}/{id}',
     options: {
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode: 'try'
       },
       pre: [{
@@ -193,7 +193,7 @@ const register = function (server,serverOptions) {
     path: '/api/{collectionName}/{id}',
     options: {
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode:'try'
       },
       pre: [{
@@ -249,7 +249,7 @@ const register = function (server,serverOptions) {
     path: '/api/{collectionName}/{id}',
     options: {
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode:'try'
       },
       pre: [{
@@ -325,7 +325,7 @@ const register = function (server,serverOptions) {
         }
       },
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode: 'try'
       },
       pre: [{

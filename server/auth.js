@@ -2,6 +2,8 @@
 const Config = require('../config');
 const Session = require('./models/session');
 const User = require('./models/user');
+const Token = require('./models/token');
+const Crypto = require('./crypto');
 
 
 const register = function (server, options) {
@@ -9,11 +11,15 @@ const register = function (server, options) {
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
 
-      const session = await Session.findByCredentials(sessionId, key);
 
+      const session = await Session.findByCredentials(sessionId, key);
+      console.log('BASIC');
       if (!session) {
+        console.log('session not found');
         return { isValid: false };
+
       }
+      console.log(session);
 
       const user = await User.findById(session.userId);
 
@@ -33,6 +39,49 @@ const register = function (server, options) {
       return { credentials, isValid: true };
     }
   });
+
+  server.auth.strategy('token','jwt', {
+    key: Config.get('/cookieSecret'),
+    validate: async function (id,request) {
+
+
+
+      const split = id.split(':');
+
+
+      const tokenId = split[0];
+      const password = split[1];
+
+
+
+      const token = await Token.findById(tokenId);
+      const user = await User.findById(token.userId);
+
+
+
+      if (!user) {
+        return { isValid: false };
+      }
+
+      if (!user.isActive) {
+        return { isValid: false };
+      }
+      if (await Crypto.compare(password,token.token)){
+        const credentials = {
+          user,
+          session: token
+        };
+
+
+        return { credentials, isValid: true };
+
+      }
+
+      return { isValid: false };
+    },
+    verifyOptions: { algorithms: ['HS256'] }
+  });
+
 
 
   server.auth.strategy('session', 'cookie', {
@@ -79,6 +128,7 @@ module.exports = {
   dependencies: [
     'hapi-auth-basic',
     'hapi-auth-cookie',
+    'hapi-auth-jwt2',
     'hapi-anchor-model'
   ],
   register
