@@ -11,11 +11,15 @@ const register = function (server, options) {
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
 
-      const session = await Session.findByCredentials(sessionId, key);
 
+      const session = await Session.findByCredentials(sessionId, key);
+      console.log('BASIC');
       if (!session) {
+        console.log('session not found');
         return { isValid: false };
+
       }
+      console.log(session);
 
       const user = await User.findById(session.userId);
 
@@ -40,8 +44,7 @@ const register = function (server, options) {
     key: Config.get('/cookieSecret'),
     validate: async function (id,request) {
 
-      console.log('TOKEN');
-      console.log(id);
+
 
       const split = id.split(':');
 
@@ -49,48 +52,31 @@ const register = function (server, options) {
       const tokenId = split[0];
       const password = split[1];
 
-      console.log(tokenId);
 
 
       const token = await Token.findById(tokenId);
-      if (token) {
-        console.log(token);
-      }
       const user = await User.findById(token.userId);
 
-      if (user) {
-        console.log(user);
-      }
 
 
       if (!user) {
-        console.log('USERINVALID');
         return { isValid: false };
       }
 
       if (!user.isActive) {
-        console.log('USER NOT ACTIVE');
         return { isValid: false };
       }
-
-      console.log('passing through');
-      console.log(password);
-      console.log(token.token);
-      console.log('passing again');
       if (await Crypto.compare(password,token.token)){
-        console.log('comparison completed');
         const credentials = {
           user,
           session: token
         };
 
-        console.log('passing tests');
 
         return { credentials, isValid: true };
 
       }
 
-      console.log('comparison failed');
       return { isValid: false };
     },
     verifyOptions: { algorithms: ['HS256'] }
