@@ -3,6 +3,7 @@ const Joi  = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 const Hoek = require('hoek');
+const ObjectId = require('mongodb').ObjectID;
 
 class Role extends AnchorModel {
 
@@ -27,13 +28,13 @@ class Role extends AnchorModel {
   }
 
 
-  static async updatePermissions(document) {
-    //db.tasks.updateOne( {"_id" : ObjectId("5b63255890f03a242f078ae6")},{$set:{"data" : { "url" : "http://test.com/testsurveyDIDTHISWORK" }}})
-    const filter = document.filter;
-    const update = document.update;
+  static async updatePermissions(filter,update) {
 
-    const role = await this.updateOne(filter, update);
-    return role[0];
+    const role = await this.updateOne(
+      { _id: ObjectId('5b636f434ebe107f67f02314') },
+      { $set: { 'permissions' : { 'POST-api-analytics' : 'false' } } }
+    );
+    return role;
   }
 }
 
