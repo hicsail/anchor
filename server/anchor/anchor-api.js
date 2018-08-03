@@ -245,6 +245,68 @@ const register = function (server,serverOptions) {
   });
 
   server.route({
+    method:'GET',
+    path: '/api/{collectionName}/my',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode:'try'
+      },
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+          if (!model) {
+            return Boom.notFound('Model not found');
+          }
+
+          return model;
+
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.update.disabled) {
+            throw Boom.notFound('Permission Denied: Route Disabled');
+          }
+
+          return h.continue;
+        },
+        assign: 'auth',
+        method: function (request,h){
+
+          const model = request.pre.model;
+
+          if (model.routes.getMy.auth) {
+
+            if (!request.auth.isAuthenticated) {
+
+              throw Boom.notFound('Authorization Denied');
+            }
+
+            return h.contnue;
+
+          }
+
+          return h.continue;
+
+        }
+
+
+      }]
+    },
+
+    handler: async function (request,h) {
+
+      return await request.pre.model.routes.getMy.handler(request,h);
+
+    }
+  });
+
+  server.route({
     method:'PUT',
     path: '/api/{collectionName}/{id}',
     options: {
@@ -293,7 +355,7 @@ const register = function (server,serverOptions) {
 
             if (!request.auth.isAuthenticated) {
 
-              return Boom.notFound('Authorization Denied');
+              throw Boom.notFound('Authorization Denied');
             }
 
             return h.continue;

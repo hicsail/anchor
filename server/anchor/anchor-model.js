@@ -988,6 +988,16 @@ AnchorModel.routes = {
       return await model.findById(id);
     },
     query: null
+  },
+
+  getMy: {
+    disabled: false,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const id = request.params.id;
+      return await model.lookupById(id);
+    }
   }
 };
 
