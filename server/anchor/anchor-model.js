@@ -918,8 +918,16 @@ AnchorModel.routes = {
     payload: null,
     handler: async (request,h) => {
 
+
+
       const model = request.pre.model;
       const payload = request.payload;
+
+      console.log(request.auth.credentials.user._id);
+
+      if (request.auth.isAuthenticated){
+        payload.userId = String(request.auth.credentials.user._id);
+      }
       return await model.create(payload);
     },
     query: null
