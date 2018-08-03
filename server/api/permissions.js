@@ -3,6 +3,7 @@ const AnchorModel = require('../anchor/anchor-model');
 const Boom = require('boom');
 const Joi = require('joi');
 const Role = require('../models/role');
+const User = require('../models/user');
 
 const register = function (server, serverOptions) {
 
@@ -172,6 +173,72 @@ const register = function (server, serverOptions) {
       return await Role.updateRole(objectid,permissions,name);
     }
   });
+
+  server.route({
+    method: 'PUT',
+    path:'/api/permissions/user/{id}',
+    config: {
+      auth: false,
+      pre: [{
+        assign: 'roleValidation',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload, User.permissionPayload);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'permissions',
+        method: async function (request,h) {
+
+          const result = await server.inject({
+            method: 'GET',
+            url: '/api/permissions/available'
+          });
+
+          if (result.statusCode !== 200) {
+            throw Boom.badData(result.message);
+          }
+
+          return result.result;
+        }
+      }, {
+        assign: 'schema',
+        method: function (request,h) {
+
+          return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
+
+            a[v.key] = Joi.boolean();
+            return a;
+          }, {}));
+        }
+      }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const objectid = request.params.id;
+      const permissions = request.payload.permissions;
+
+      return await User.updateUserPermissions(objectid,permissions);
+    }
+  });
+
 };
 
 

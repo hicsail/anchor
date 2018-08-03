@@ -4,6 +4,7 @@ const Assert = require('assert');
 const Bcrypt = require('bcrypt');
 const Hoek = require('hoek');
 const Joi = require('joi');
+const ObjectId = require('mongodb').ObjectID;
 
 
 class User extends AnchorModel {
@@ -95,6 +96,15 @@ class User extends AnchorModel {
 
     return this.findOne(query);
   }
+
+  static async updateUserPermissions(filter,update) {
+
+    const role = await this.updateOne(
+      { _id: ObjectId(filter) },
+      { $set: { 'permissions' : update } }
+    );
+    return role;
+  }
 }
 
 
@@ -122,6 +132,13 @@ User.payload = Joi.object({
   username: Joi.string().token().lowercase().invalid('root').required(),
   password: Joi.string().required(),
   email: Joi.string().email().lowercase().required(),
+  name: Joi.string().required(),
+  permissions: Joi.object(),
+  roles: Joi.array().items(Joi.string())
+});
+
+User.permissionPayload =  Joi.object({
+  username: Joi.string().token().lowercase().invalid('root').required(),
   name: Joi.string().required(),
   permissions: Joi.object(),
   roles: Joi.array().items(Joi.string())
