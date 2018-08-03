@@ -27,12 +27,11 @@ class Role extends AnchorModel {
 
   }
 
-
   static async updatePermissions(filter,update) {
 
     const role = await this.updateOne(
-      { _id: ObjectId('5b636f434ebe107f67f02314') },
-      { $set: { 'permissions' : { 'POST-api-analytics' : 'false' } } }
+      { _id: ObjectId(filter) },
+      { $set: { 'permissions' : update } }
     );
     return role;
   }

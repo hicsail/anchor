@@ -165,18 +165,10 @@ const register = function (server, serverOptions) {
     },
     handler: async function (request,h) {
 
-      request.payload.filter = [];
-      request.payload.userId = '0000'; //request.auth.credentials.user._id.toString();
-      console.log('permissions');
-
-      // const query: {
-      //   "_id": request.params.id
-      // };
-      //write a function the queries the _id here
+      const objectid = request.params.id;
       const permissions = request.payload.permissions;
-      console.log(permissions);
 
-      return await Role.updatePermissions('{"_id" : ObjectId("' + request.params.id + '")}', '{$set: { "permissions":' + JSON.stringify(permissions) + '}}');
+      return await Role.updatePermissions(objectid,permissions);
     }
   });
 };
