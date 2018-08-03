@@ -167,12 +167,17 @@ const register = function (server, serverOptions) {
 
       request.payload.filter = [];
       request.payload.userId = '0000'; //request.auth.credentials.user._id.toString();
+
       // const query: {
       //   "_id": request.params.id
       // };
       //write a function the queries the _id here
 
-      return await Role.create(request.payload);
+      const document = '';
+      document.filter = '{"_id" : ObjectId("' + request.params.id + '")}';
+      document.update = request.payload.permissions;
+
+      return await Role.updatePermissions(document);
     }
   });
 };

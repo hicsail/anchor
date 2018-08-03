@@ -25,6 +25,16 @@ class Role extends AnchorModel {
     return role[0];
 
   }
+
+
+  static async updatePermissions(document) {
+    //db.tasks.updateOne( {"_id" : ObjectId("5b63255890f03a242f078ae6")},{$set:{"data" : { "url" : "http://test.com/testsurveyDIDTHISWORK" }}})
+    const filter = document.filter;
+    const update = document.update;
+
+    const role = await this.updateOne(filter, update);
+    return role[0];
+  }
 }
 
 
