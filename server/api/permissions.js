@@ -109,7 +109,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'PUT',
-    path:'/api/permissions/user/{id}',
+    path:'/api/permissions/role/{id}',
     config: {
       auth: false,
       pre: [{
@@ -167,8 +167,9 @@ const register = function (server, serverOptions) {
 
       const objectid = request.params.id;
       const permissions = request.payload.permissions;
+      const name = request.payload.name;
 
-      return await Role.updatePermissions(objectid,permissions);
+      return await Role.updateRole(objectid,permissions,name);
     }
   });
 };
