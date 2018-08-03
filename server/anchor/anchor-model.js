@@ -927,7 +927,7 @@ AnchorModel.routes = {
 
       if (request.auth.isAuthenticated){
         payload.userId = String(request.auth.credentials.user._id);
-      }   
+      }
       return await model.create(payload);
     },
     query: null
