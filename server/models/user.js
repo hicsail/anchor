@@ -96,15 +96,6 @@ class User extends AnchorModel {
 
     return this.findOne(query);
   }
-
-  static async updateUserPermissions(filter,update) {
-
-    const role = await this.updateOne(
-      { _id: ObjectId(filter) },
-      { $set: { 'permissions' : update } }
-    );
-    return role;
-  }
 }
 
 
@@ -141,7 +132,7 @@ User.permissionPayload =  Joi.object({
   username: Joi.string().token().lowercase().invalid('root').required(),
   name: Joi.string().required(),
   permissions: Joi.object(),
-  roles: Joi.array().items(Joi.string())
+  roles: Joi.array().items(Joi.string()).default([])
 });
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {

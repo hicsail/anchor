@@ -27,15 +27,6 @@ class Role extends AnchorModel {
 
   }
 
-  static async updateRole(filter,update,namechange) {
-
-    const role = await this.updateOne(
-      { _id: ObjectId(filter) },
-      { $set: { 'permissions' : update,
-        'name': namechange } }
-    );
-    return role;
-  }
 }
 
 

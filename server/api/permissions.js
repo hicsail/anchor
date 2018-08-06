@@ -167,10 +167,10 @@ const register = function (server, serverOptions) {
     handler: async function (request,h) {
 
       const objectid = request.params.id;
-      const permissions = request.payload.permissions;
-      const name = request.payload.name;
+      const update = request.payload.permissions;
+      const namechange = request.payload.name;
 
-      return await Role.updateRole(objectid,permissions,name);
+      return await Role.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update, 'name': namechange } });
     }
   });
 
@@ -180,9 +180,8 @@ const register = function (server, serverOptions) {
     config: {
       auth: false,
       pre: [{
-        assign: 'roleValidation',
+        assign: 'userValidation',
         method: function (request,h) {
-
           const { error } = Joi.validate(request.payload, User.permissionPayload);
 
           if (error) {
@@ -219,9 +218,7 @@ const register = function (server, serverOptions) {
       }, {
         assign: 'validate',
         method: function (request,h) {
-
           const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
-
           if (error) {
             throw Boom.badRequest(error.message);
           }
@@ -233,9 +230,8 @@ const register = function (server, serverOptions) {
     handler: async function (request,h) {
 
       const objectid = request.params.id;
-      const permissions = request.payload.permissions;
-
-      return await User.updateUserPermissions(objectid,permissions);
+      const update = request.payload.permissions;
+      return await User.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update} });
     }
   });
 
