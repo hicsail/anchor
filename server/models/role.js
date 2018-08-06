@@ -25,6 +25,7 @@ class Role extends AnchorModel {
     return role[0];
 
   }
+
 }
 
 

@@ -127,6 +127,13 @@ User.payload = Joi.object({
   roles: Joi.array().items(Joi.string())
 });
 
+User.permissionPayload =  Joi.object({
+  username: Joi.string().token().lowercase().invalid('root').required(),
+  name: Joi.string().required(),
+  permissions: Joi.object(),
+  roles: Joi.array().items(Joi.string()).default([])
+});
+
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 
   create: {
