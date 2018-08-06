@@ -76,6 +76,66 @@ const register = function (server,serverOptions) {
   });
 
   server.route({
+    method: 'POST',
+    path: '/api/{collectionName}/insertMany',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      },
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            throw Boom.notFound('Model not found');
+          }
+          return model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.insertMany.disabled) {
+            throw Boom.notFound('Permission Denied: Route Disabled');
+          }
+
+          return h.continue;
+        }
+      },
+      {
+
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.insertMany.auth) {
+
+            if (!request.auth.isAuthenticated) {
+
+              throw Boom.notFound('Authorization denied');
+            }
+
+            return h.continue;
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      return await request.pre.model.routes.insertMany.handler(request,h);
+    }
+
+  });
+
+  server.route({
     method: 'GET',
     path: '/api/{collectionName}/{id}',
     options: {

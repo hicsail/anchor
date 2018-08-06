@@ -931,6 +931,19 @@ AnchorModel.routes = {
     },
     query: null
   },
+  insertMany: {
+    auth: false,
+    disabled: true,
+    payload: null,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const payload = request.payload;
+
+      return await model.insertMany(payload);
+    },
+    query: null
+  },
   getAll: {
     disabled: false,
     query: null,
@@ -1039,6 +1052,10 @@ AnchorModel.routeMap = {
   getMy: {
     method: 'GET',
     path: '/api/{collectionName}/my'
+  },
+  insertMany: {
+    method: 'POST',
+    path: '/api/{collectionName}/insertMany'
   }
 };
 AnchorModel.timestamps = true;
