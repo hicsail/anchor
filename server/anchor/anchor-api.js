@@ -252,6 +252,13 @@ const register = function (server,serverOptions) {
         strategies: ['simple','session','token'],
         mode:'try'
       },
+      validate: {
+        query: {
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1)
+        }
+      },
       pre: [{
         assign: 'model',
         method: function (request,h) {
@@ -269,7 +276,7 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.update.disabled) {
+          if (model.routes.getMy.disabled) {
             throw Boom.notFound('Permission Denied: Route Disabled');
           }
 
