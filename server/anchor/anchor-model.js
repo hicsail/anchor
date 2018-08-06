@@ -1001,13 +1001,11 @@ AnchorModel.routes = {
         sort: model.sortAdapter(request.query.sort)
       };
 
-      const userId = request.auth.credentials.user._id;
-      console.log(userId);
+      const userId = request.auth.credentials.user._id.toString();
       const query = {
         userId
       };
 
-      console.log(JSON.stringify(query));
 
 
 
