@@ -106,8 +106,24 @@ const register = function (server,serverOptions) {
 
           return h.continue;
         }
-      },
-      {
+      }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          console.log('validate');
+          console.log(Joi.validate(request.payload,Joi.array().items(model.routes.insertMany.payload)));
+
+          const { error } = (Joi.validate(request.payload,Joi.array().items(model.routes.insertMany.payload)));
+
+          if (error)  {
+
+            throw Boom.notFound('Payload Error');
+          }
+
+          return h.continue;
+        }
+      }, {
 
         assign: 'auth',
         method: function (request,h) {

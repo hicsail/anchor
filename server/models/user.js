@@ -153,7 +153,8 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   insertMany: {
     disabled: false,
-    auth: false
+    auth: false,
+    payload: User.payload
   },
   delete: {
     disabled: false,
