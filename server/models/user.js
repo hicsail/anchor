@@ -4,7 +4,6 @@ const Assert = require('assert');
 const Bcrypt = require('bcrypt');
 const Hoek = require('hoek');
 const Joi = require('joi');
-const ObjectId = require('mongodb').ObjectID;
 
 
 class User extends AnchorModel {

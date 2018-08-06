@@ -3,7 +3,6 @@ const Joi  = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 const Hoek = require('hoek');
-const ObjectId = require('mongodb').ObjectID;
 
 class Role extends AnchorModel {
 

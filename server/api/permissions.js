@@ -182,6 +182,7 @@ const register = function (server, serverOptions) {
       pre: [{
         assign: 'userValidation',
         method: function (request,h) {
+
           const { error } = Joi.validate(request.payload, User.permissionPayload);
 
           if (error) {
@@ -218,6 +219,7 @@ const register = function (server, serverOptions) {
       }, {
         assign: 'validate',
         method: function (request,h) {
+
           const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
           if (error) {
             throw Boom.badRequest(error.message);
@@ -231,7 +233,7 @@ const register = function (server, serverOptions) {
 
       const objectid = request.params.id;
       const update = request.payload.permissions;
-      return await User.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update} });
+      return await User.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update } });
     }
   });
 
