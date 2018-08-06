@@ -26,9 +26,7 @@ class Token extends AnchorModel {
     };
 
     const token = await this.insertOne(document);
-    console.log(token[0]._id);
     keyHash.key = JWT.sign(( token[0]._id + ':' + keyHash.key), Config.get('/cookieSecret'));
-    console.log(keyHash.key);
 
     token[0].key = keyHash.key;
 

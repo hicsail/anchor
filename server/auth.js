@@ -13,13 +13,11 @@ const register = function (server, options) {
 
 
       const session = await Session.findByCredentials(sessionId, key);
-      console.log('BASIC');
+
       if (!session) {
-        console.log('session not found');
         return { isValid: false };
 
       }
-      console.log(session);
 
       const user = await User.findById(session.userId);
 
