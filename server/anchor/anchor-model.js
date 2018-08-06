@@ -923,7 +923,6 @@ AnchorModel.routes = {
       const model = request.pre.model;
       const payload = request.payload;
 
-      console.log(request.auth.credentials.user._id);
 
       if (request.auth.isAuthenticated){
         payload.userId = String(request.auth.credentials.user._id);
@@ -988,6 +987,31 @@ AnchorModel.routes = {
       return await model.findById(id);
     },
     query: null
+  },
+
+  getMy: {
+    disabled: false,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+
+      const limit = request.query.limit;
+      const page = request.query.page;
+      const options = {
+        sort: model.sortAdapter(request.query.sort)
+      };
+
+      const userId = request.auth.credentials.user._id.toString();
+      const query = {
+        userId
+      };
+
+
+
+
+
+      return await model.pagedFind(query,page,limit,options);
+    }
   }
 };
 
@@ -1011,6 +1035,10 @@ AnchorModel.routeMap = {
   delete: {
     method: 'DELETE',
     path: '/api/{collectionName}'
+  },
+  getMy: {
+    method: 'GET',
+    path: '/api/{collectionName}/my'
   }
 };
 AnchorModel.timestamps = true;

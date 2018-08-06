@@ -14,7 +14,7 @@ class Analytic extends AnchorModel {
     document = new this({
       event: document.event,
       name: document.name,
-      data: document.data,
+      data: document.data || {},
       userId: document.userId
     });
 

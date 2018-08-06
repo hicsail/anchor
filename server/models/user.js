@@ -143,6 +143,10 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: false,
     auth: true
   },
+  getMy: {
+    disabled: false,
+    auth: true
+  },
   getId: {
     disabled: false,
     auth: true
