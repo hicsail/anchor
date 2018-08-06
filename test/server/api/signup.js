@@ -1,4 +1,5 @@
 'use strict';
+const Auth = require('../../../server/auth');
 const Code = require('code');
 const Fixtures = require('../fixtures');
 const Hapi = require('hapi');
@@ -26,6 +27,7 @@ lab.before(async () => {
       return entry;
     });
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
+  plugins.push(Auth);
   plugins.push(Signup);
 
   await server.register(plugins);

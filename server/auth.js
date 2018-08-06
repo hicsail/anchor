@@ -13,6 +13,7 @@ const register = function (server, options) {
 
 
       const session = await Session.findByCredentials(sessionId, key);
+
       if (!session) {
         return { isValid: false };
 

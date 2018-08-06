@@ -76,11 +76,15 @@ const register = function (server, serverOptions) {
       delete user.password;
       delete user.resetPassword;
 
-      return {
+      const creds = {
         user,
         session,
         authHeader
       };
+
+      request.cookieAuth.set(creds);
+
+      return creds;
     }
   });
 };
@@ -89,6 +93,9 @@ const register = function (server, serverOptions) {
 module.exports = {
   name: 'api-signup',
   dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
     'hapi-anchor-model',
     'hapi-remote-address'
   ],
