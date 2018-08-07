@@ -40,22 +40,15 @@ const register = function (server, options) {
 
   server.auth.strategy('token','jwt', {
     key: Config.get('/cookieSecret'),
+    verifyOptions: { algorithms: ['HS256'] },
     validate: async function (id,request) {
 
-
-
       const split = id.split(':');
-
-
       const tokenId = split[0];
       const password = split[1];
 
-
-
       const token = await Token.findById(tokenId);
       const user = await User.findById(token.userId);
-
-
 
       if (!user) {
         return { isValid: false };
@@ -64,22 +57,16 @@ const register = function (server, options) {
       if (!user.isActive) {
         return { isValid: false };
       }
-      if (await Crypto.compare(password,token.token)){
+      if (await Crypto.compare(password,token.key)){
         const credentials = {
           user,
           session: token
         };
-
-
         return { credentials, isValid: true };
-
       }
-
       return { isValid: false };
-    },
-    verifyOptions: { algorithms: ['HS256'] }
+    }
   });
-
 
 
   server.auth.strategy('session', 'cookie', {
@@ -116,8 +103,6 @@ const register = function (server, options) {
       return { credentials, valid: true };
     }
   });
-
-  //server.auth.default('session');
 };
 
 

@@ -29,7 +29,6 @@ lab.experiment('Token Model', () => {
     const document = {
       userId: '1234',
       description: 'sample token'
-
     };
 
     const token = await Token.create(document);

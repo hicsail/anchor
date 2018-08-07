@@ -18,20 +18,14 @@ class Token extends AnchorModel {
       description: document.description,
       active: true,
       createdAt: new Date(),
-      token:keyHash.hash,
+      key:keyHash.hash,
       userId: document.userId
-
-
-
     };
 
     const token = await this.insertOne(document);
     keyHash.key = JWT.sign(( token[0]._id + ':' + keyHash.key), Config.get('/cookieSecret'));
-
     token[0].key = keyHash.key;
-
     return token[0];
-
   }
 }
 
@@ -39,11 +33,10 @@ Token.collectionName = 'tokens';
 
 Token.schema = Joi.object({
   _id: Joi.object(),
-  token: Joi.string().required(),
+  key: Joi.string().required(),
   userId: Joi.string().required(),
   description: Joi.string().required(),
   active: Joi.boolean().default(true),
-
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),

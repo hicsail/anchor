@@ -1,13 +1,17 @@
 'use strict';
 const Auth = require('../../server/auth');
+const Crypto = require('../../server/crypto');
 const Code = require('code');
+const Config = require('../../config');
 const Hapi = require('hapi');
 const Fixtures = require('./fixtures');
 const Lab = require('lab');
 const Manifest = require('../../manifest');
+const JWT = require('jsonwebtoken');
 const lab = exports.lab = Lab.script();
 const User = require('../../server/models/user');
 const Session = require('../../server/models/session');
+const Token = require('../../server/models/token');
 
 let server;
 
@@ -51,8 +55,6 @@ lab.before(async () => {
     }
   });
 
-
-
   server.route({
     method: 'GET',
     path: '/session',
@@ -74,6 +76,26 @@ lab.before(async () => {
       catch (err) {
         // console.log(err);
 
+        return { isValid: false };
+      }
+    }
+  });
+
+
+  server.route({
+    method: 'GET',
+    path: '/token',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
+
+      try {
+        await request.server.auth.test('token', request);
+        return { isValid: true };
+      }
+
+      catch (err) {
         return { isValid: false };
       }
     }
@@ -344,5 +366,124 @@ lab.experiment('Session Auth Strategy', () => {
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(true);
+  });
+});
+
+
+lab.experiment('Token Auth Strategy', () => {
+
+  lab.test('it returns as invalid without authentication provided', async () => {
+
+    const request = {
+      method: 'GET',
+      url: '/token'
+    };
+    const response = await server.inject(request);
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the token is invalid', async () => {
+
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: 'eyJhbGciOiJIUzI1NiJ9.NWI2OWM2N2RmNDhkYjk2ZWY1MzEyNGQ1OjY5YTQ4YjYxLTEzODQtNDhmNC1hMjU2LWJhMDgxZjUzNDRiOQ.gZGuCTD4zv8repgyMicObgux96sVlHRCyKBHLclI1IU'
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the user query misses', async () => {
+
+    const token = await Token.create({ userId: '000000000000000000000001', description: 'test token' });
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: token.key
+      }
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the user is not active', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+
+    const update = {
+      $set: {
+        isActive: false
+      }
+    };
+
+    await User.findByIdAndUpdate(user._id, update);
+
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: token.key
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as valid when all is well', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: token.key
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
+  });
+
+
+  lab.test('it returns as invalid when token secret and token provided don\'t match', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+    const keyHash = await Crypto.generateKeyHash();
+    keyHash.key = JWT.sign(( token._id + ':' + keyHash.key), Config.get('/cookieSecret'));
+
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: keyHash.key
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 });
