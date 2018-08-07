@@ -79,19 +79,24 @@ const register = function (server, serverOptions) {
       const user = request.pre.user;
       const role = request.pre.role;
 
+      console.log(user.roles);
 
-      if (user.roles.includes(role)){
+      console.log(user.roles._id === role._id);
+      console.log(role._id);
 
+      if (String(user.roles._id) === String(role._id)){
         return user;
       }
 
+
       const update = {
         $set: {
-          roles: request.pre.role
+          roles: role
         }
       };
 
-      const id = request.params.id;
+      const id = user._id;
+
 
       return await User.findByIdAndUpdate(id,update);
 
