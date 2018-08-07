@@ -38,6 +38,7 @@ class AnchorModel {
   constructor(data) {
 
     const result = this.constructor.validate(data);
+
     Object.assign(this, result.value);
   }
 
