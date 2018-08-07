@@ -918,11 +918,8 @@ AnchorModel.routes = {
     payload: null,
     handler: async (request,h) => {
 
-
-
       const model = request.pre.model;
       const payload = request.payload;
-
 
       if (request.auth.isAuthenticated){
         payload.userId = String(request.auth.credentials.user._id);
@@ -949,16 +946,13 @@ AnchorModel.routes = {
     query: null,
     handler: async (request,h) => {
 
-
       const model = request.pre.model;
-
       const query = {};
       const limit = request.query.limit;
       const page = request.query.page;
       const options = {
         sort: model.sortAdapter(request.query.sort)
       };
-
       return await model.pagedFind(query, page, limit, options);
     },
     auth: true
@@ -974,7 +968,6 @@ AnchorModel.routes = {
         $set: request.payload
 
       };
-
       return await model.findByIdAndUpdate(id,update);
     },
     query: null
@@ -986,7 +979,6 @@ AnchorModel.routes = {
 
       const model = request.pre.model;
       const id = request.params.id;
-
       return await model.findByIdAndDelete(id);
     },
     query: null
@@ -1007,22 +999,15 @@ AnchorModel.routes = {
     handler: async (request,h) => {
 
       const model = request.pre.model;
-
       const limit = request.query.limit;
       const page = request.query.page;
       const options = {
         sort: model.sortAdapter(request.query.sort)
       };
-
       const userId = request.auth.credentials.user._id.toString();
       const query = {
         userId
       };
-
-
-
-
-
       return await model.pagedFind(query,page,limit,options);
     }
   }
