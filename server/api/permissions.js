@@ -42,6 +42,62 @@ const register = function (server, serverOptions) {
     }
   });
 
+  server.route({
+    method: 'PUT',
+    path: '/api/permissions/user/{userId}/role/{roleId}',
+    config: {
+      auth: false,
+      pre: [{
+        assign: 'user',
+        method: async function (request,h) {
+
+          const user = await User.findById(request.params.userId);
+          if (!user) {
+            throw Boom.notFound('Error finding User');
+          }
+          return user;
+        }
+      },
+      {
+        assign: 'role',
+        method: async function (request,h) {
+
+          const role = await Role.findById(request.params.roleId);
+
+          if (!role) {
+            throw Boom.notFound('Error finding role');
+          }
+
+          return role;
+
+
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const user = request.pre.user;
+      const role = request.pre.role;
+
+
+      if (user.roles.includes(role)){
+
+        return user;
+      }
+
+      const update = {
+        $set: {
+          roles: request.pre.role
+        }
+      };
+
+      const id = request.params.id;
+
+      return await User.findByIdAndUpdate(id,update);
+
+    }
+  });
+
 
   server.route({
     method: 'POST',

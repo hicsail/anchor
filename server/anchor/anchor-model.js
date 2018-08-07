@@ -39,9 +39,6 @@ class AnchorModel {
 
     const result = this.constructor.validate(data);
 
-    if (result.error) {
-      throw result.error;
-    }
 
     Object.assign(this, result.value);
   }

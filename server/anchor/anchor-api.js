@@ -41,6 +41,9 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
+          console.log(model);
+          console.log(model.routes.create.payload);
+          console.log(request.payload);
           const { error } = Joi.validate(request.payload,model.routes.create.payload);
 
           if (error) {
@@ -68,6 +71,8 @@ const register = function (server,serverOptions) {
       return await request.pre.model.routes.create.handler(request,h);
     }
   });
+
+
 
   server.route({
     method: 'POST',
