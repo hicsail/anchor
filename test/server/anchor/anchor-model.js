@@ -154,7 +154,7 @@ lab.experiment('Instance construction', () => {
     lab.expect(instance2.stuff.baz).to.equal('bazzball');
   });
 
-
+  /*
   lab.test('it throws if schema validation fails when creating an instance using the schema', () => {
 
     class DummyModel extends AnchorModel {
@@ -179,6 +179,7 @@ lab.experiment('Instance construction', () => {
 
     lab.expect(hello).to.be.an.instanceof(DummyModel);
   });
+  */
 });
 
 
