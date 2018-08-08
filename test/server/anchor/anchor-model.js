@@ -1272,6 +1272,42 @@ lab.experiment('Proxy methods', () => {
   });
 
 
+  lab.test('it returns a single result via lookupById with lookup operator equal to $in', async () => {
+
+    const document1 = {
+      name: 'Ren1'
+    };
+
+    const document2 = {
+      name: 'Ren2'
+    };
+
+    const friend1 = await DummyModel.insertOne(document1);
+    const friend2 = await DummyModel.insertOne(document2);
+
+    const parentDocument = {
+      name: 'Jen',
+      buddy: [`${friend1[0]._id}`,`${friend2[0]._id}`]
+    };
+
+    const parentTestDocs = await DummyModel.insertOne(parentDocument);
+    const parentId = parentTestDocs[0]._id;
+
+    const lookup = [{
+      from: DummyModel,
+      local: 'buddy',
+      foreign: '_id',
+      operator: '$in',
+      as: 'buddy'
+    }];
+
+    const result = await DummyModel.lookupById(parentId, lookup);
+
+    lab.expect(result).to.be.an.instanceOf(DummyModel);
+    lab.expect(result.buddy).to.be.an.array();
+  });
+
+
   lab.test('it returns a single result via lookupById with length of 0', async () => {
 
     const parentDocument = {

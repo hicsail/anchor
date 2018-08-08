@@ -64,6 +64,14 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+Token.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
+
 Token.indexes = [
   { key: { userId: 1 } }
 ];

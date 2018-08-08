@@ -57,6 +57,13 @@ Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 
 });
 
+Feedback.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Feedback.payload = Joi.object({
   title: Joi.string().required(),

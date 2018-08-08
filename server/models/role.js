@@ -57,6 +57,7 @@ Role.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+Role.lookups = [];
 
 Role.payload = Joi.object({
   name: Joi.string().required(),

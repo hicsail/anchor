@@ -71,6 +71,8 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+AuthAttempt.lookups = [];
+
 AuthAttempt.indexes = [
   { key: { ip: 1, username: 1 } },
   { key: { username: 1 } }

@@ -167,6 +167,14 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 
 });
 
+User.lookups = [{
+  from: require('./role'),
+  local: 'roles',
+  foreign: '_id',
+  as: 'roles',
+  operator: '$in'
+}];
+
 User.indexes = [
   { key: { username: 1, unique: 1 } },
   { key: { email: 1, unique: 1 } }

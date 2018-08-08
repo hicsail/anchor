@@ -92,6 +92,21 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+Session.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true,
+  lookups: [{
+    from: require('./role'),
+    local: 'roles',
+    foreign: '_id',
+    as: 'roles',
+    operator: '$in'
+  }]
+}];
+
 Session.indexes = [
   { key: { userId: 1 } }
 ];

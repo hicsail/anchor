@@ -516,14 +516,19 @@ class AnchorModel {
       for (let lookup of lookups) {
 
         lookup = Hoek.applyToDefaults(lookupDefaults,lookup);
-
         const foreignFilter = {};
         foreignFilter[lookup.foreign] = {};
+        foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
         if (lookup.foreign === '_id') {
-          foreignFilter[lookup.foreign][lookup.operator] = this.ObjectId(doc[lookup.local]);
-        }
-        else {
-          foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
+          if (Array.isArray(doc[lookup.local])) {
+            foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local].map((v) => {
+
+              return this.ObjectId(v);
+            });
+          }
+          else {
+            foreignFilter[lookup.foreign][lookup.operator] = this.ObjectId(doc[lookup.local]);
+          }
         }
         const results = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
         doc[lookup.as] = lookup.one ? results[0] : results;
@@ -645,7 +650,24 @@ class AnchorModel {
     return output;
   }
 
-
+  /**
+   * Finds documents and returns the results of a given size and page
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the documents.
+   * @param {number} page - a number indicating the current page.
+   * @param {number} limit - a number indicating how many results should be returned.
+   * @param {object[]} lookups - an array of lookup objects.
+   * @param {AnchorModel} [lookups[].from] - the collection object to reference.
+   * @param {string} lookups[].foreign - the field name on the from's collection to join upon.
+   * @param {string} lookups[].local - the field name on this collection to join upon.
+   * @param {string} lookups[].as - the field name on where to put the associated from objects.
+   * @param {object[]} [lookups[].lookups] - additional lookups to be added to the from's collection.
+   * @param {object} [lookups[].options] - an optional object passed to MongoDB's native on the from's [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @param {boolean} [lookups[].one = false] - an optional flag passed set the results of the look up to be an object rather than an array
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async pagedLookup() {
 
     const args = argsFromArguments(arguments);
@@ -950,7 +972,7 @@ AnchorModel.routes = {
       const options = {
         sort: model.sortAdapter(request.query.sort)
       };
-      return await model.pagedFind(query, page, limit, options);
+      return await model.pagedLookup(query, page, limit, options, model.lookups);
     },
     auth: true
   },
@@ -986,7 +1008,7 @@ AnchorModel.routes = {
 
       const model = request.pre.model;
       const id = request.params.id;
-      return await model.findById(id);
+      return await model.lookupById(id,model.lookups);
     },
     query: null
   },
@@ -1005,7 +1027,7 @@ AnchorModel.routes = {
       const query = {
         userId
       };
-      return await model.pagedFind(query,page,limit,options);
+      return await model.pagedLookup(query,page,limit,options,model.lookups);
     }
   }
 };
