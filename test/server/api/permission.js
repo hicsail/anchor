@@ -217,3 +217,64 @@ lab.experiment('PUT /api/permissions/user/{id}', () => {
     Code.expect(response.statusCode).to.equal(400);
   });
 });
+
+
+lab.experiment('PUT /api/permissions/user/{userId}/role/{roleId}', () => {
+
+  let request;
+  let role;
+
+  lab.beforeEach(async () => {
+
+    role = await Role.create({ name: 'test', permissions: {}, userId: user._id.toString(), filter: [] });
+
+    request = {
+      method: 'PUT',
+      url: `/api/permissions/user/${user._id}/role/${role._id}`,
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+  });
+
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+  });
+
+  lab.test('it returns HTTP 404 when user is not found', async () => {
+
+    request.url = `/api/permissions/user/555555555555555555555555/role/${role._id}`;
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(404);
+  });
+
+  lab.test('it returns HTTP 404 when user is not found', async () => {
+
+    request.url = `/api/permissions/user/${user._id}/role/555555555555555555555555`;
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(404);
+  });
+
+  lab.test('it returns HTTP 200 when the user already has that role', async () => {
+
+    user.roles.push(role._id.toString());
+
+    await User.findByIdAndUpdate(user._id.toString(), {
+      $set: {
+        roles: user.roles
+      }
+    });
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+  });
+
+});
