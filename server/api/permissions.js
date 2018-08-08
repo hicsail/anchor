@@ -76,12 +76,32 @@ const register = function (server, serverOptions) {
 
       const user = request.pre.user;
       const role = request.pre.role;
+      const id = user._id;
+      const roles = user.roles;
+      let flag = false;
 
-      if (role._id !== user.roles._id) {
+      for (const i in roles) {
+
+        if (String(roles[i]._id) === String(role._id)) {
+          roles.splice(i,1);
+          flag = true;
+        }
+
+      }
+
+      if (!flag) {
+
         return user;
       }
 
-      return await User.findByIdAndUpdate();
+      const update = {
+        $set: {
+          roles
+        }
+      };
+
+      return await User.findByIdAndUpdate(id,update);
+
     }
   });
 
@@ -125,9 +145,7 @@ const register = function (server, serverOptions) {
 
 
       for (const i in roles) {
-        if (String(user.roles[i]._id) === String(role._id)){
-
-          console.log('hello');
+        if (String(roles[i]._id) === String(role._id)){
           return user;
         }
       }
