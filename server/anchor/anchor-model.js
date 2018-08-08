@@ -492,6 +492,7 @@ class AnchorModel {
    * @param {string} lookups[].as - the field name on where to put the associated from objects.
    * @param {object[]} [lookups[].lookups] - additional lookups to be added to the from's collection.
    * @param {object} [lookups[].options] - an optional object passed to MongoDB's native on the from's [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @param {boolean} [lookups[].one = false] - an optional flag passed set the results of the look up to be an object rather than an array
    * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
    * @return {Promise<AnchorModel>}
    */
@@ -505,7 +506,8 @@ class AnchorModel {
       from: this,
       options: {},
       operator: '$eq',
-      lookups: []
+      lookups: [],
+      one: false
     };
 
     const localDocuments = await this.find(filter,options);
@@ -523,10 +525,10 @@ class AnchorModel {
         else {
           foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
         }
-        doc[lookup.as] = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
+        const results = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
+        doc[lookup.as] = lookup.one ? results[0] : results;
       }
     }
-
     return localDocuments;
   }
 
