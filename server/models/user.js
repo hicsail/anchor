@@ -127,6 +127,10 @@ User.payload = Joi.object({
   roles: Joi.array().items(Joi.string())
 });
 
+User.permissionPayload =  Joi.object({
+  permissions: Joi.object()
+});
+
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 
   create: {
@@ -143,9 +147,18 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: false,
     auth: true
   },
+  getMy: {
+    disabled: false,
+    auth: true
+  },
   getId: {
     disabled: false,
     auth: true
+  },
+  insertMany: {
+    disabled: false,
+    auth: false,
+    payload: User.payload
   },
   delete: {
     disabled: false,
@@ -153,6 +166,14 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 
 });
+
+User.lookups = [{
+  from: require('./role'),
+  local: 'roles',
+  foreign: '_id',
+  as: 'roles',
+  operator: '$in'
+}];
 
 User.indexes = [
   { key: { username: 1, unique: 1 } },

@@ -16,6 +16,7 @@ class Crypto {
 
   static async compare(key,token) {
 
+
     return await Bcrypt.compare(key, token);
 
   }

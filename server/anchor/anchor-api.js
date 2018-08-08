@@ -11,7 +11,7 @@ const register = function (server,serverOptions) {
     path:'/api/{collectionName}',
     options: {
       auth: {
-        strategies: ['session','simple'],
+        strategies: ['simple','session','token'],
         mode: 'try'
       },
       pre: [{
@@ -32,38 +32,32 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
           if (model.routes.create.disabled) {
-
-            throw (Boom.notFound('Permission Denied: Route Disabled'));
+            throw Boom.forbidden('Route Disabled');
           }
-
           return h.continue;
-
         }
       }, {
         assign: 'payload',
         method: function (request,h) {
 
           const model = request.pre.model;
+          const { error } = Joi.validate(request.payload,model.routes.create.payload);
 
-          return Joi.validate(request.payload,model.routes.create.payload);
+          if (error) {
+            throw Boom.badRequest('Incorrect Payload', error);
+          }
+          return h.continue;
         }
       }, {
         assign: 'auth',
         method: function (request,h) {
 
           const model = request.pre.model;
-
           if (model.routes.create.auth) {
             if (!request.auth.isAuthenticated) {
-
-              throw Boom.notFound('Authentication Required');
+              throw Boom.unauthorized('Authentication Required');
             }
-
-            return h.continue;
-
-
           }
-
           return h.continue;
         }
       }
@@ -76,11 +70,11 @@ const register = function (server,serverOptions) {
   });
 
   server.route({
-    method: 'GET',
-    path: '/api/{collectionName}/{id}',
+    method: 'POST',
+    path: '/api/{collectionName}/insertMany',
     options: {
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode: 'try'
       },
       pre: [{
@@ -88,11 +82,71 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+          if (!model) {
+            throw Boom.notFound('Model not found');
+          }
+          return model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
 
+          const model = request.pre.model;
+          if (model.routes.insertMany.disabled) {
+            throw Boom.forbidden('Route Disabled');
+          }
+          return h.continue;
+        }
+      }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          const { error } = (Joi.validate(request.payload,Joi.array().items(model.routes.insertMany.payload)));
+
+          if (error) {
+            throw Boom.badRequest('Incorrect Payload', error);
+          }
+          return h.continue;
+        }
+      }, {
+
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.insertMany.auth) {
+            if (!request.auth.isAuthenticated) {
+              throw Boom.unauthorized('Authentication Required');
+            }
+          }
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      return await request.pre.model.routes.insertMany.handler(request,h);
+    }
+
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/{collectionName}/{id}',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      },
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
             return Boom.notFound('Model not found');
           }
-
           return model;
         }
       }, {
@@ -102,9 +156,8 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
           if (model.routes.getId.disabled) {
-            return Boom.notFound('Permission Denied: Route Disabled');
+            throw Boom.forbidden('Route Disabled');
           }
-
           return h.continue;
         }
       },  {
@@ -112,20 +165,11 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-
           if (model.routes.getId.auth) {
-
-
-
             if (!request.auth.isAuthenticated) {
-              throw Boom.notFound('Authorization denied');
-
+              throw Boom.unauthorized('Authentication Required');
             }
-
-            return h.continue;
-
           }
-
           return h.continue;
         }
       }]
@@ -145,11 +189,9 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
-
           if (!model) {
             return Boom.notFound('Model not found');
           }
-
           return model;
         }
       }]
@@ -157,7 +199,6 @@ const register = function (server,serverOptions) {
     handler: async function (request,h) {
 
       return await JSONStringify(request.pre.model.routes);
-
     }
   });
 
@@ -193,7 +234,7 @@ const register = function (server,serverOptions) {
     path: '/api/{collectionName}/{id}',
     options: {
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode:'try'
       },
       pre: [{
@@ -214,7 +255,7 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
           if (model.routes.delete.disabled) {
-            return Boom.notFound('Permission Denied: Route Disabled');
+            throw Boom.forbidden('Route Disabled');
           }
           return h.continue;
         }
@@ -224,16 +265,11 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-
           if (model.routes.delete.auth) {
             if (!request.auth.isAuthenticated) {
-
-              throw Boom.notFound('Authorization Denied');
+              throw Boom.unauthorized('Authentication Required');
             }
-
-
           }
-
           return h.continue;
         }
       }]
@@ -245,11 +281,68 @@ const register = function (server,serverOptions) {
   });
 
   server.route({
+    method:'GET',
+    path: '/api/{collectionName}/my',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode:'try'
+      },
+      validate: {
+        query: {
+          sort: Joi.string().default('_id'),
+          limit: Joi.number().default(20),
+          page: Joi.number().default(1)
+        }
+      },
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+          if (!model) {
+            return Boom.notFound('Model not found');
+          }
+          return model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.getMy.disabled) {
+            throw Boom.forbidden('Route Disabled');
+          }
+          return h.continue;
+        }
+      }, {
+        assign: 'auth',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.getMy.auth) {
+            if (!request.auth.isAuthenticated) {
+              throw Boom.unauthorized('Authentication Required');
+            }
+          }
+          return h.continue;
+        }
+      }]
+    },
+
+    handler: async function (request,h) {
+
+      return await request.pre.model.routes.getMy.handler(request,h);
+
+    }
+  });
+
+  server.route({
     method:'PUT',
     path: '/api/{collectionName}/{id}',
     options: {
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode:'try'
       },
       pre: [{
@@ -257,11 +350,9 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
-
           if (!model) {
             return Boom.notFound('Model not found');
           }
-
           return model;
         }
       }, {
@@ -270,9 +361,8 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
           if (model.routes.update.disabled) {
-            return (Boom.notFound('Permission Denied: Route Disabled'));
+            throw Boom.forbidden('Route Disabled');
           }
-
           return h.continue;
         }
       }, {
@@ -280,7 +370,12 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          return Joi.validate(request.payload,model.routes.update.payload);
+          const { error } = Joi.validate(request.payload,model.routes.update.payload);
+
+          if (error) {
+            throw Boom.badRequest('Incorrect Payload', error);
+          }
+          return h.continue;
         }
       }, {
 
@@ -288,19 +383,12 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-
           if (model.routes.update.auth) {
-
             if (!request.auth.isAuthenticated) {
-
-              return Boom.notFound('Authorization Denied');
+              throw Boom.unauthorized('Authentication Required');
             }
-
-            return h.continue;
           }
-
           return h.continue;
-
         }
       }]
     },
@@ -325,7 +413,7 @@ const register = function (server,serverOptions) {
         }
       },
       auth: {
-        strategies: ['simple','session'],
+        strategies: ['simple','session','token'],
         mode: 'try'
       },
       pre: [{
@@ -337,18 +425,15 @@ const register = function (server,serverOptions) {
             return (Boom.notFound('Model not found'));
           }
           return model;
-
         }
       }, {
         assign: 'enabled',
         method: function (request,h) {
 
           const model = request.pre.model;
-
-          if (model.routes.get.disabled) {
-            return (Boom.notFound('Permission Denied: Route Disabled'));
+          if (model.routes.getAll.disabled) {
+            throw Boom.forbidden('Route Disabled');
           }
-
           return h.continue;
         }
       }, {
@@ -356,26 +441,19 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-
-          if (model.routes.get.auth) {
+          if (model.routes.getAll.auth) {
             if (!request.auth.isAuthenticated) {
-              throw Boom.notFound('Authorization Denied');
-
+              throw Boom.unauthorized('Authentication Required');
             }
-
-            return h.continue;
-
           }
-
           return h.continue;
-
         }
       }]
 
     },
     handler: async function (request,h) {
 
-      return await request.pre.model.routes.get.handler(request,h);
+      return await request.pre.model.routes.getAll.handler(request,h);
     }
   });
 
@@ -406,6 +484,9 @@ const register = function (server,serverOptions) {
 module.exports = {
   name: 'anchor-api',
   dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
     'auth',
     'hapi-anchor-model'
   ],

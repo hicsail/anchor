@@ -49,6 +49,13 @@ Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+Backup.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Backup.indexes = [
   { key: { filename: 1 } }

@@ -25,6 +25,7 @@ class Role extends AnchorModel {
     return role[0];
 
   }
+
 }
 
 
@@ -52,10 +53,11 @@ Role.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     payload: Role.payload
   },
   delete: {
-    dsiabled:false
+    disabled:false
   }
 });
 
+Role.lookups = [];
 
 Role.payload = Joi.object({
   name: Joi.string().required(),

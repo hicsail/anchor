@@ -4157,6 +4157,8 @@ Customer.indexes = [
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -4191,6 +4193,10 @@ Customer.indexes = [
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>a query object used to select the documents.</p></td>
         </tr>
@@ -4222,6 +4228,10 @@ Customer.indexes = [
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>an array of lookup objects.</p></td>
@@ -4257,6 +4267,10 @@ Customer.indexes = [
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>the collection object to reference.</p></td>
         </tr>
@@ -4288,6 +4302,10 @@ Customer.indexes = [
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>the field name on the from's collection to join upon.</p></td>
@@ -4321,6 +4339,10 @@ Customer.indexes = [
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>the field name on this collection to join upon.</p></td>
         </tr>
@@ -4352,6 +4374,10 @@ Customer.indexes = [
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>the field name on where to put the associated from objects.</p></td>
@@ -4387,6 +4413,10 @@ Customer.indexes = [
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>additional lookups to be added to the from's collection.</p></td>
         </tr>
@@ -4421,8 +4451,52 @@ Customer.indexes = [
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>an optional object passed to MongoDB's native on the from's <a href="https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find">Collection.find</a> method.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].one</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>an optional flag passed set the results of the look up to be an object rather than an array</p></td>
         </tr>
 
     
@@ -4454,6 +4528,10 @@ Customer.indexes = [
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>an optional object passed to MongoDB's native <a href="https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find">Collection.find</a> method.</p></td>
@@ -5644,6 +5722,578 @@ Customer.indexes = [
             
 <hr>
 <dt>
+    <h4 class="name" id=".pagedLookup"><span class="type-signature">&lt;async, static> </span>pagedLookup(filter, page, limit, lookups [, options])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Finds documents and returns the results of a given size and page</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>filter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>a filter object used to select the documents.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>page</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>a number indicating the current page.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>limit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>a number indicating how many results should be returned.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>an array of lookup objects.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].from</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="AnchorModel.html">AnchorModel</a></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>the collection object to reference.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].foreign</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>the field name on the from's collection to join upon.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].local</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>the field name on this collection to join upon.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].as</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>the field name on where to put the associated from objects.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].lookups</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;object></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>additional lookups to be added to the from's collection.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>an optional object passed to MongoDB's native on the from's <a href="https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find">Collection.find</a> method.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lookups[].one</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>an optional flag passed set the results of the look up to be an object rather than an array</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>an optional object passed to MongoDB's native <a href="https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find">Collection.find</a> method.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="AnchorModel.html">AnchorModel</a>></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
     <h4 class="name" id=".replaceOne"><span class="type-signature">&lt;async, static> </span>replaceOne(filter, doc [, options])</h4>
     
     
@@ -6510,7 +7160,7 @@ Customer.indexes = [
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on July 31st 2018, 12:15:59 pm
+		on August 8th 2018, 4:45:12 pm
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

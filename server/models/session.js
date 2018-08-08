@@ -4,7 +4,6 @@ const AnchorModel = require('../anchor/anchor-model');
 const Crypto = require('../crypto');
 const Joi = require('joi');
 const Hoek = require('hoek');
-const NewDate = require('joistick/new-date');
 const UserAgent = require('useragent');
 
 
@@ -71,11 +70,11 @@ Session.schema = Joi.object({
   browser: Joi.string().required(),
   ip: Joi.string().required(),
   key: Joi.string().required(),
-  lastActive: Joi.date().default(NewDate(), 'time of last activity'),
+  lastActive: Joi.date().default(new Date(), 'time of last activity'),
   os: Joi.string().required(),
   userId: Joi.string().required(),
-  createdAt: Joi.date().default(NewDate(), 'time of creation'),
-  updatedAt: Joi.date().default(NewDate(), 'time of document updated')
+  createdAt: Joi.date().default(new Date(), 'time of creation'),
+  updatedAt: Joi.date().default(new Date(), 'time of document updated')
 });
 
 Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
@@ -91,6 +90,21 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: false
   }
 });
+
+Session.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true,
+  lookups: [{
+    from: require('./role'),
+    local: 'roles',
+    foreign: '_id',
+    as: 'roles',
+    operator: '$in'
+  }]
+}];
 
 Session.indexes = [
   { key: { userId: 1 } }

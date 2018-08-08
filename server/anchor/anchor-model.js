@@ -38,11 +38,6 @@ class AnchorModel {
   constructor(data) {
 
     const result = this.constructor.validate(data);
-
-    if (result.error) {
-      throw result.error;
-    }
-
     Object.assign(this, result.value);
   }
 
@@ -500,6 +495,7 @@ class AnchorModel {
    * @param {string} lookups[].as - the field name on where to put the associated from objects.
    * @param {object[]} [lookups[].lookups] - additional lookups to be added to the from's collection.
    * @param {object} [lookups[].options] - an optional object passed to MongoDB's native on the from's [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @param {boolean} [lookups[].one = false] - an optional flag passed set the results of the look up to be an object rather than an array
    * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
    * @return {Promise<AnchorModel>}
    */
@@ -513,7 +509,8 @@ class AnchorModel {
       from: this,
       options: {},
       operator: '$eq',
-      lookups: []
+      lookups: [],
+      one: false
     };
 
     const localDocuments = await this.find(filter,options);
@@ -522,19 +519,24 @@ class AnchorModel {
       for (let lookup of lookups) {
 
         lookup = Hoek.applyToDefaults(lookupDefaults,lookup);
-
         const foreignFilter = {};
         foreignFilter[lookup.foreign] = {};
+        foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
         if (lookup.foreign === '_id') {
-          foreignFilter[lookup.foreign][lookup.operator] = this.ObjectId(doc[lookup.local]);
+          if (Array.isArray(doc[lookup.local])) {
+            foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local].map((v) => {
+
+              return this.ObjectId(v);
+            });
+          }
+          else {
+            foreignFilter[lookup.foreign][lookup.operator] = this.ObjectId(doc[lookup.local]);
+          }
         }
-        else {
-          foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
-        }
-        doc[lookup.as] = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
+        const results = await lookup.from.lookup(foreignFilter, lookup.options, lookup.lookups);
+        doc[lookup.as] = lookup.one ? results[0] : results;
       }
     }
-
     return localDocuments;
   }
 
@@ -651,7 +653,24 @@ class AnchorModel {
     return output;
   }
 
-
+  /**
+   * Finds documents and returns the results of a given size and page
+   * @async
+   * @static
+   * @param {object} filter - a filter object used to select the documents.
+   * @param {number} page - a number indicating the current page.
+   * @param {number} limit - a number indicating how many results should be returned.
+   * @param {object[]} lookups - an array of lookup objects.
+   * @param {AnchorModel} [lookups[].from] - the collection object to reference.
+   * @param {string} lookups[].foreign - the field name on the from's collection to join upon.
+   * @param {string} lookups[].local - the field name on this collection to join upon.
+   * @param {string} lookups[].as - the field name on where to put the associated from objects.
+   * @param {object[]} [lookups[].lookups] - additional lookups to be added to the from's collection.
+   * @param {object} [lookups[].options] - an optional object passed to MongoDB's native on the from's [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @param {boolean} [lookups[].one = false] - an optional flag passed set the results of the look up to be an object rather than an array
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.find]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#find} method.
+   * @return {Promise<AnchorModel>}
+   */
   static async pagedLookup() {
 
     const args = argsFromArguments(arguments);
@@ -916,33 +935,47 @@ AnchorModel.routes = {
   auth: true,
   disabled: false,
   create: {
-    auth: true,
+    auth: false,
     disabled: false,
     payload: null,
     handler: async (request,h) => {
 
       const model = request.pre.model;
       const payload = request.payload;
+
+      if (request.auth.isAuthenticated){
+        payload.userId = String(request.auth.credentials.user._id);
+      }
       return await model.create(payload);
     },
     query: null
   },
-  get: {
+  insertMany: {
+    auth: false,
+    disabled: true,
+    payload: null,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const payload = request.payload;
+
+      return await model.insertMany(payload);
+    },
+    query: null
+  },
+  getAll: {
     disabled: false,
     query: null,
     handler: async (request,h) => {
 
-
       const model = request.pre.model;
-
       const query = {};
       const limit = request.query.limit;
       const page = request.query.page;
       const options = {
         sort: model.sortAdapter(request.query.sort)
       };
-
-      return await model.pagedFind(query, page, limit, options);
+      return await model.pagedLookup(query, page, limit, options, model.lookups);
     },
     auth: true
   },
@@ -957,7 +990,6 @@ AnchorModel.routes = {
         $set: request.payload
 
       };
-
       return await model.findByIdAndUpdate(id,update);
     },
     query: null
@@ -969,7 +1001,6 @@ AnchorModel.routes = {
 
       const model = request.pre.model;
       const id = request.params.id;
-
       return await model.findByIdAndDelete(id);
     },
     query: null
@@ -980,9 +1011,27 @@ AnchorModel.routes = {
 
       const model = request.pre.model;
       const id = request.params.id;
-      return await model.findById(id);
+      return await model.lookupById(id,model.lookups);
     },
     query: null
+  },
+
+  getMy: {
+    disabled: false,
+    handler: async (request,h) => {
+
+      const model = request.pre.model;
+      const limit = request.query.limit;
+      const page = request.query.page;
+      const options = {
+        sort: model.sortAdapter(request.query.sort)
+      };
+      const userId = request.auth.credentials.user._id.toString();
+      const query = {
+        userId
+      };
+      return await model.pagedLookup(query,page,limit,options,model.lookups);
+    }
   }
 };
 
@@ -1006,6 +1055,14 @@ AnchorModel.routeMap = {
   delete: {
     method: 'DELETE',
     path: '/api/{collectionName}'
+  },
+  getMy: {
+    method: 'GET',
+    path: '/api/{collectionName}/my'
+  },
+  insertMany: {
+    method: 'POST',
+    path: '/api/{collectionName}/insertMany'
   }
 };
 AnchorModel.timestamps = true;

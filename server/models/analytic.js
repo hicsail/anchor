@@ -14,7 +14,7 @@ class Analytic extends AnchorModel {
     document = new this({
       event: document.event,
       name: document.name,
-      data: document.data,
+      data: document.data || {},
       userId: document.userId
     });
 
@@ -37,8 +37,6 @@ Analytic.schema = Joi.object({
   updatedAt: Joi.date()
 });
 
-
-
 Analytic.payload = Joi.object({
   event: Joi.string().required(),
   name: Joi.string().required(),
@@ -58,6 +56,14 @@ Analytic.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: false
   }
 });
+
+Analytic.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Analytic.indexes = [
   { key: { event: 1 } },

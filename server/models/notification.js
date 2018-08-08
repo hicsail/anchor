@@ -54,7 +54,6 @@ Notification.payload = Joi.object({
   subtitle: Joi.string().required(),
   message: Joi.string().required(),
   increaseBadgeNumber: Joi.number().integer().required()
-
 });
 
 Notification.routes = Hoek.applyToDefaults(AnchorModel.routes, {
@@ -70,6 +69,14 @@ Notification.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: false
   }
 });
+
+Notification.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Notification.indexes = [
   { key: { title: 1 } }

@@ -3,6 +3,7 @@ const AnchorModel = require('../anchor/anchor-model');
 const Boom = require('boom');
 const Joi = require('joi');
 const Role = require('../models/role');
+const User = require('../models/user');
 
 const register = function (server, serverOptions) {
 
@@ -11,7 +12,7 @@ const register = function (server, serverOptions) {
     path: '/api/permissions/available',
     options: {
       auth: {
-        strategies: ['session','simple']
+        strategies: ['simple','session','token']
       }
     },
     handler: function (request, h) {
@@ -43,13 +44,119 @@ const register = function (server, serverOptions) {
     }
   });
 
+  server.route({
+    method: 'DELETE',
+    path: '/api/permissions/user/{userId}/role/{roleId}',
+    config: {
+      auth: {
+        strategies: ['simple','session','token']
+      },
+      pre: [{
+        assign: 'user',
+        method: async function (request,h) {
+
+          const user = await User.findById(request.params.userId);
+
+          if (!user) {
+            throw Boom.notFound('Error finding User');
+          }
+          return user;
+        }
+      },
+      {
+        assign: 'role',
+        method: async function (request,h) {
+
+          const role = await Role.findById(request.params.roleId);
+          if (!role) {
+            throw Boom.notFound('Error finding role');
+          }
+
+          return role;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const user = request.pre.user;
+      const role = request.pre.role;
+      const roles = user.roles;
+      let flag = false;
+      for (const i in roles) {
+        if (String(roles[i]._id) === String(role._id)) {
+          roles.splice(i,1);
+          flag = true;
+        }
+      }
+      if (!flag) {
+        return user;
+      }
+      return await User.findByIdAndUpdate(user._id.toString(),{
+        $set: {
+          roles
+        }
+      });
+    }
+  });
+
+  server.route({
+    method: 'PUT',
+    path: '/api/permissions/user/{userId}/role/{roleId}',
+    config: {
+      auth: {
+        strategies: ['simple','session','token']
+      },
+      pre: [{
+        assign: 'user',
+        method: async function (request,h) {
+
+          const user = await User.findById(request.params.userId);
+          if (!user) {
+            throw Boom.notFound('User not found');
+          }
+          return user;
+        }
+      },
+      {
+        assign: 'role',
+        method: async function (request,h) {
+
+          const role = await Role.findById(request.params.roleId);
+
+          if (!role) {
+            throw Boom.notFound('Error finding role');
+          }
+          return role;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const user = request.pre.user;
+      const role = request.pre.role;
+
+      if (user.roles.indexOf(role._id.toString()) !== -1){
+        return user;
+      }
+
+      user.roles.push(role._id.toString());
+
+      return await User.findByIdAndUpdate(user._id.toString(),{
+        $set: {
+          roles: user.roles
+        }
+      });
+    }
+  });
+
+
 
   server.route({
     method: 'POST',
-    path:'/api/permissions/role',
+    path:'/api/role',
     config: {
       auth: {
-        strategies: ['session','simple']
+        strategies: ['simple','session','token']
       },
       pre: [{
         assign: 'roleValidation',
@@ -58,9 +165,8 @@ const register = function (server, serverOptions) {
           const { error } = Joi.validate(request.payload, Role.payload);
 
           if (error) {
-            throw Boom.badRequest(error.message);
+            throw Boom.badRequest('Incorrect Payload', error);
           }
-
           return h.continue;
         }
       }, {
@@ -69,12 +175,9 @@ const register = function (server, serverOptions) {
 
           const result = await server.inject({
             method: 'GET',
-            url: '/api/permissions/available'
+            url: '/api/permissions/available',
+            headers: request.headers
           });
-
-          if (result.statusCode !== 200) {
-            throw Boom.badData(result.message);
-          }
 
           return result.result;
         }
@@ -84,7 +187,7 @@ const register = function (server, serverOptions) {
 
           return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
 
-            a[v.key] = Joi.boolean().required();
+            a[v.key] = Joi.boolean();
             return a;
           }, {}));
         }
@@ -105,11 +208,135 @@ const register = function (server, serverOptions) {
     handler: async function (request,h) {
 
       request.payload.filter = [];
-      request.payload.userId = '0000'; //request.auth.credentials.user._id.toString();
+      request.payload.userId = request.auth.credentials.user._id.toString();
 
       return await Role.create(request.payload);
     }
   });
+
+  server.route({
+    method: 'PUT',
+    path:'/api/role/{id}',
+    config: {
+      auth: {
+        strategies: ['simple','session','token']
+      },
+      pre: [{
+        assign: 'roleValidation',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload, Role.payload);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'permissions',
+        method: async function (request,h) {
+
+          const result = await server.inject({
+            method: 'GET',
+            url: '/api/permissions/available',
+            headers: request.headers
+          });
+
+          return result.result;
+        }
+      }, {
+        assign: 'schema',
+        method: function (request,h) {
+
+          return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
+
+            a[v.key] = Joi.boolean();
+            return a;
+          }, {}));
+        }
+      }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const objectid = request.params.id;
+      const update = request.payload.permissions;
+      const namechange = request.payload.name;
+
+      return await Role.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update, 'name': namechange } });
+    }
+  });
+
+  server.route({
+    method: 'PUT',
+    path:'/api/permissions/user/{id}',
+    config: {
+      auth: false,
+      pre: [{
+        assign: 'userValidation',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload, User.permissionPayload);
+
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'permissions',
+        method: async function (request,h) {
+
+          const result = await server.inject({
+            method: 'GET',
+            url: '/api/permissions/available',
+            headers: request.headers
+          });
+
+          return result.result;
+        }
+      }, {
+        assign: 'schema',
+        method: function (request,h) {
+
+          return Joi.object().keys(request.pre.permissions.reduce((a, v) => {
+
+            a[v.key] = Joi.boolean();
+            return a;
+          }, {}));
+        }
+      }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
+          if (error) {
+            throw Boom.badRequest(error.message);
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      return await User.findByIdAndUpdate( request.params.id,{ $set: { 'permissions' : request.payload.permissions } });
+    }
+  });
+
 };
 
 
@@ -117,7 +344,9 @@ module.exports = {
   name: 'api-permissions',
   dependencies: [
     'auth',
+    'hapi-auth-basic',
     'hapi-auth-cookie',
+    'hapi-auth-jwt2',
     'hapi-anchor-model',
     'hapi-remote-address'
   ],

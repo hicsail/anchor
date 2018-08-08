@@ -4,7 +4,8 @@ const Crypto = require('../crypto');
 const Hoek = require('hoek');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
-
+const Config = require('../../config');
+// const config -> require cookie secret for JWT
 
 class Token extends AnchorModel {
 
@@ -12,29 +13,19 @@ class Token extends AnchorModel {
   static async create(document) {
 
     const keyHash = await Crypto.generateKeyHash();
-    keyHash.key = JWT.sign({ key: keyHash.key }, 'secret');
-    const signedKeyHash = JWT.sign({ key : keyHash.hash }, 'secret');
 
     document = {
       description: document.description,
       active: true,
       createdAt: new Date(),
-      token:signedKeyHash,
+      key:keyHash.hash,
       userId: document.userId
-
-
-
-
-
-
-
     };
 
     const token = await this.insertOne(document);
+    keyHash.key = JWT.sign(( token[0]._id + ':' + keyHash.key), Config.get('/cookieSecret'));
     token[0].key = keyHash.key;
-
     return token[0];
-
   }
 }
 
@@ -42,11 +33,10 @@ Token.collectionName = 'tokens';
 
 Token.schema = Joi.object({
   _id: Joi.object(),
-  token: Joi.string().required(),
+  key: Joi.string().required(),
   userId: Joi.string().required(),
   description: Joi.string().required(),
   active: Joi.boolean().default(true),
-
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),
@@ -56,7 +46,7 @@ Token.schema = Joi.object({
 Token.payload = Joi.object({
   userId: Joi.string().required(),
   description: Joi.string().required(),
-  active: Joi.boolean().required(),
+  active: Joi.boolean(),
   permission: Joi.object()
 });
 
@@ -66,12 +56,21 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     payload: Token.payload
   },
   update: {
+    auth: true,
     payload: Token.payload
   },
   delete: {
     disabled: false
   }
 });
+
+Token.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Token.indexes = [
   { key: { userId: 1 } }

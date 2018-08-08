@@ -18,9 +18,6 @@ class Invite extends AnchorModel {
     const invite = await this.insertOne(document);
     return invite[0];
   }
-
-
-
 }
 
 Invite.collectionName = 'invites';
@@ -36,12 +33,9 @@ Invite.schema = Joi.object({
   updatedAt: Joi.date()
 });
 
-
-
 Invite.payload = Joi.object({
   email: Joi.string().required(),
   status: Joi.string().valid('Pending','Accepted','Declined','Expired')
-
 });
 
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
@@ -57,6 +51,14 @@ Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: false
   }
 });
+
+Invite.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Invite.indexes = [
   { key: { email: 1 }  }

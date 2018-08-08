@@ -41,4 +41,20 @@ lab.experiment('Analytic Model', () => {
     Code.expect(analytic.name).to.equal('LoginPage');
 
   });
+
+  lab.test('it returns a new instance when create succeeds when data is provided', async () => {
+
+    const document = {
+      event: 'page_view',
+      name: 'LoginPage',
+      data: {}
+    };
+
+    const analytic = await Analytic.create(document);
+
+    Code.expect(analytic).to.be.an.instanceOf(Analytic);
+    Code.expect(analytic.event).to.equal('page_view');
+    Code.expect(analytic.name).to.equal('LoginPage');
+
+  });
 });
