@@ -45,6 +45,69 @@ const register = function (server, serverOptions) {
   });
 
   server.route({
+    method: 'DELETE',
+    path: '/api/permissions/user/{userId}/role/{roleId}',
+    config: {
+      auth: false,
+      pre: [{
+        assign: 'user',
+        method: async function (request,h) {
+
+          const user = await User.findById(request.params.userId);
+
+          if (!user) {
+            throw Boom.notFound('Error finding User');
+          }
+          return user;
+        }
+      },
+      {
+        assign: 'role',
+        method: async function (request,h) {
+
+          const role = await Role.findById(request.params.roleId);
+          if (!role) {
+            throw Boom.notFound('Error finding role');
+          }
+
+          return role;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const user = request.pre.user;
+      const role = request.pre.role;
+      const id = user._id;
+      const roles = user.roles;
+      let flag = false;
+
+      for (const i in roles) {
+
+        if (String(roles[i]._id) === String(role._id)) {
+          roles.splice(i,1);
+          flag = true;
+        }
+
+      }
+
+      if (!flag) {
+
+        return user;
+      }
+
+      const update = {
+        $set: {
+          roles
+        }
+      };
+
+      return await User.findByIdAndUpdate(id,update);
+
+    }
+  });
+
+  server.route({
     method: 'PUT',
     path: '/api/permissions/user/{userId}/role/{roleId}',
     config: {
@@ -79,16 +142,27 @@ const register = function (server, serverOptions) {
 
       const user = request.pre.user;
       const role = request.pre.role;
+      const roles = user.roles;
 
-      if (user.roles.indexOf(role._id.toString()) !== -1){
-        return user;
+
+      for (const i in roles) {
+        if (String(roles[i]._id) === String(role._id)){
+          return user;
+        }
+        
+
       }
 
-      user.roles.push(role._id.toString());
 
-      return await User.findByIdAndUpdate(user._id.toString(),{
+
+      roles.push(role);
+
+
+
+      const update = {
         $set: {
-          roles: user.roles
+          roles
+
         }
       });
     }
