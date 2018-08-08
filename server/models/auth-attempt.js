@@ -3,7 +3,6 @@ const AnchorModel = require('../anchor/anchor-model');
 const Assert = require('assert');
 const Config = require('../../config');
 const Joi = require('joi');
-const NewDate = require('joistick/new-date');
 const UserAgent = require('useragent');
 const Hoek = require('hoek');
 
@@ -54,7 +53,7 @@ AuthAttempt.schema = Joi.object({
   ip: Joi.string().required(),
   os: Joi.string().required(),
   username: Joi.string().lowercase().required(),
-  createdAt: Joi.date().default(NewDate(), 'time of creation')
+  createdAt: Joi.date().default(new Date(), 'time of creation')
 });
 
 AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
