@@ -43,6 +43,49 @@ const register = function (server, serverOptions) {
   });
 
   server.route({
+    method: 'DELETE',
+    path: '/api/permissions/user/{userId}/role/{roleId}',
+    config: {
+      auth: false,
+      pre: [{
+        assign: 'user',
+        method: async function (request,h) {
+
+          const user = await User.findById(request.params.userId);
+
+          if (!user) {
+            throw Boom.notFound('Error finding User');
+          }
+          return user;
+        }
+      },
+      {
+        assign: 'role',
+        method: async function (request,h) {
+
+          const role = await Role.findById(request.params.roleId);
+          if (!role) {
+            throw Boom.notFound('Error finding role');
+          }
+
+          return role;
+        }
+      }]
+    },
+    handler: async function (request,h) {
+
+      const user = request.pre.user;
+      const role = request.pre.role;
+
+      if (role._id !== user.roles._id) {
+        return user;
+      }
+
+      return await User.findByIdAndUpdate();
+    }
+  });
+
+  server.route({
     method: 'PUT',
     path: '/api/permissions/user/{userId}/role/{roleId}',
     config: {
@@ -78,16 +121,26 @@ const register = function (server, serverOptions) {
 
       const user = request.pre.user;
       const role = request.pre.role;
+      const roles = user.roles;
 
 
-      if (String(user.roles._id) === String(role._id)){
-        return user;
+      for (const i in roles) {
+        if (String(user.roles[i]._id) === String(role._id)){
+
+          console.log('hello');
+          return user;
+        }
       }
+
+
+
+      roles.push(role);
+
 
 
       const update = {
         $set: {
-          roles: role
+          roles
         }
       };
 
