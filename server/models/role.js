@@ -53,7 +53,7 @@ Role.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     payload: Role.payload
   },
   delete: {
-    dsiabled:false
+    disabled:false
   }
 });
 
