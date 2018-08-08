@@ -111,16 +111,14 @@ const register = function (server, serverOptions) {
     method: 'PUT',
     path: '/api/permissions/user/{userId}/role/{roleId}',
     config: {
-      auth: {
-        strategies: ['simple','session','token']
-      },
+      auth: false,
       pre: [{
         assign: 'user',
         method: async function (request,h) {
 
           const user = await User.findById(request.params.userId);
           if (!user) {
-            throw Boom.notFound('User not found');
+            throw Boom.notFound('Error finding User');
           }
           return user;
         }
@@ -134,7 +132,10 @@ const register = function (server, serverOptions) {
           if (!role) {
             throw Boom.notFound('Error finding role');
           }
+
           return role;
+
+
         }
       }]
     },
@@ -142,31 +143,27 @@ const register = function (server, serverOptions) {
 
       const user = request.pre.user;
       const role = request.pre.role;
-      const roles = user.roles;
 
 
-      for (const i in roles) {
-        if (String(roles[i]._id) === String(role._id)){
-          return user;
-        }
-        
-
+      if (String(user.roles._id) === String(role._id)){
+        return user;
       }
-
-
-
-      roles.push(role);
-
 
 
       const update = {
         $set: {
-          roles
-
+          roles: role
         }
-      });
+      };
+
+      const id = user._id;
+
+
+      return await User.findByIdAndUpdate(id,update);
+
     }
   });
+
 
 
   server.route({
