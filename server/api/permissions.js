@@ -11,7 +11,9 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/permissions/available',
     options: {
-      auth: false
+      auth: {
+        strategies: ['simple','session','token']
+      }
     },
     handler: function (request, h) {
 
@@ -45,9 +47,11 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path:'/api/permissions/role',
+    path:'/api/role',
     config: {
-      auth: false,
+      auth: {
+        strategies: ['simple','session','token']
+      },
       pre: [{
         assign: 'roleValidation',
         method: function (request,h) {
@@ -55,9 +59,8 @@ const register = function (server, serverOptions) {
           const { error } = Joi.validate(request.payload, Role.payload);
 
           if (error) {
-            throw Boom.badRequest(error.message);
+            throw Boom.badRequest('Incorrect Payload', error);
           }
-
           return h.continue;
         }
       }, {
@@ -66,12 +69,9 @@ const register = function (server, serverOptions) {
 
           const result = await server.inject({
             method: 'GET',
-            url: '/api/permissions/available'
+            url: '/api/permissions/available',
+            headers: request.headers
           });
-
-          if (result.statusCode !== 200) {
-            throw Boom.badData(result.message);
-          }
 
           return result.result;
         }
@@ -102,7 +102,7 @@ const register = function (server, serverOptions) {
     handler: async function (request,h) {
 
       request.payload.filter = [];
-      request.payload.userId = '0000'; //request.auth.credentials.user._id.toString();
+      request.payload.userId = request.auth.credentials.user._id.toString();
 
       return await Role.create(request.payload);
     }
@@ -110,7 +110,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'PUT',
-    path:'/api/permissions/role/{id}',
+    path:'/api/role/{id}',
     config: {
       auth: false,
       pre: [{
@@ -131,12 +131,9 @@ const register = function (server, serverOptions) {
 
           const result = await server.inject({
             method: 'GET',
-            url: '/api/permissions/available'
+            url: '/api/permissions/available',
+            headers: request.headers
           });
-
-          if (result.statusCode !== 200) {
-            throw Boom.badData(result.message);
-          }
 
           return result.result;
         }
@@ -197,12 +194,9 @@ const register = function (server, serverOptions) {
 
           const result = await server.inject({
             method: 'GET',
-            url: '/api/permissions/available'
+            url: '/api/permissions/available',
+            headers: request.headers
           });
-
-          if (result.statusCode !== 200) {
-            throw Boom.badData(result.message);
-          }
 
           return result.result;
         }
@@ -231,9 +225,7 @@ const register = function (server, serverOptions) {
     },
     handler: async function (request,h) {
 
-      const objectid = request.params.id;
-      const update = request.payload.permissions;
-      return await User.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update } });
+      return await User.findByIdAndUpdate( request.params.id,{ $set: { 'permissions' : request.payload.permissions } });
     }
   });
 
@@ -244,7 +236,9 @@ module.exports = {
   name: 'api-permissions',
   dependencies: [
     'auth',
+    'hapi-auth-basic',
     'hapi-auth-cookie',
+    'hapi-auth-jwt2',
     'hapi-anchor-model',
     'hapi-remote-address'
   ],
