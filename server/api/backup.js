@@ -195,6 +195,7 @@ module.exports = {
   dependencies: [
     'hapi-auth-basic',
     'hapi-auth-cookie',
+    'hapi-auth-jwt2',
     'hapi-anchor-model',
     'hapi-remote-address'
   ],
