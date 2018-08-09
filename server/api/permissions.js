@@ -7,6 +7,17 @@ const User = require('../models/user');
 
 const register = function (server, serverOptions) {
 
+  const  permission = function (user) {
+
+    const roles = user.roles;
+
+    const permissions = { roles };
+    return permissions;
+  };
+
+  permission({ 'userobjecthere':'yes' });
+
+
   server.route({
     method: 'GET',
     path: '/api/permissions/available',
@@ -278,6 +289,7 @@ const register = function (server, serverOptions) {
       return await Role.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update, 'name': namechange } });
     }
   });
+
 
   server.route({
     method: 'PUT',
