@@ -5,47 +5,12 @@ const Joi = require('joi');
 const Role = require('../models/role');
 const User = require('../models/user');
 
+
+
+
 const register = function (server, serverOptions) {
 
-  const  permission = function (user) {
 
-    const roles = user.roles;
-
-    const permissions = {};
-    console.log('hello');
-    for (const i in roles) {
-      for (const [key,value] of  Object.entries(roles[i].permissions)){
-
-        if (!permissions[key]) {
-
-          permissions[key] = (key,value);
-
-
-        }
-
-        else {
-
-          if (value === true) {
-
-            permissions[key] = (key,value);
-
-          }
-
-
-
-        }
-
-      }
-
-    }
-
-
-
-    return permissions;
-  };
-
-
-  permission({ 'userobjecthere':'yes' });
 
 
   server.route({
