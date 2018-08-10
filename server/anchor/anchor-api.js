@@ -169,6 +169,7 @@ const register = function (server,serverOptions) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
+            return h.continue;
           }
           return h.continue;
         }

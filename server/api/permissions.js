@@ -11,9 +11,39 @@ const register = function (server, serverOptions) {
 
     const roles = user.roles;
 
-    const permissions = { roles };
+    const permissions = {};
+    console.log('hello');
+    for (const i in roles) {
+      for (const [key,value] of  Object.entries(roles[i].permissions)){
+
+        if (!permissions[key]) {
+
+          permissions[key] = (key,value);
+
+
+        }
+
+        else {
+
+          if (value === true) {
+
+            permissions[key] = (key,value);
+
+          }
+
+
+
+        }
+
+      }
+
+    }
+
+
+
     return permissions;
   };
+
 
   permission({ 'userobjecthere':'yes' });
 
