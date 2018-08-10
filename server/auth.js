@@ -3,14 +3,49 @@ const Config = require('../config');
 const Session = require('./models/session');
 const User = require('./models/user');
 const Token = require('./models/token');
+const Boom = require('boom');
 const Crypto = require('./crypto');
 
+const permission = function (user) {
+
+  const roles = user.roles;
+
+  const permissions = {};
+  for (const i in roles) {
+    for (const [key,value] of  Object.entries(roles[i].permissions)){
+      if (!permissions[key]) {
+        permissions[key] = (key,value);
+      }
+      else {
+        if (value === true) {
+          permissions[key] = (key,value);
+        }
+      }
+    }
+  }
+  return permissions;
+};
+
+const confirm = function (request,user) {
+
+
+  const method = String(request.method).toUpperCase();
+  const incompletePath = String(request.path).split('/')[1] + '-' +  String(request.path).split('/')[2];
+  const key = method + '-' + incompletePath;
+  const permissions = permission(user);
+
+  if (permissions[key]) {
+    return permissions[key];
+  }
+
+  return true;
+
+};
 
 const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
-
 
       const session = await Session.findByCredentials(sessionId, key);
 
@@ -28,6 +63,12 @@ const register = function (server, options) {
       if (!user.isActive) {
         return { isValid: false };
       }
+
+      if (!confirm(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
+
+
 
       const credentials = {
         session,
