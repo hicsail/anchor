@@ -47,7 +47,6 @@ const register = function (server, options) {
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
 
-      confirm(request);
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
@@ -65,7 +64,7 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!confirm) {
+      if (!confirm(request,user)) {
         throw Boom.forbidden('Need permission');
       }
 
