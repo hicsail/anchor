@@ -1008,6 +1008,7 @@ AnchorModel.routes = {
       if (!check) {
         throw Boom.notFound('Model with id not found');
       }
+      return check;
     },
     query: null
   },
