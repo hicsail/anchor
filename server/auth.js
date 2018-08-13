@@ -12,7 +12,7 @@ const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
-
+      console.log('basic');
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
@@ -49,13 +49,14 @@ const register = function (server, options) {
     verifyOptions: { algorithms: ['HS256'] },
     validate: async function (id,request) {
 
+      console.log('token');
       const split = id.split(':');
       const tokenId = split[0];
       const password = split[1];
 
       const token = await Token.findById(tokenId);
+      console.log(token);
       const user = await User.findById(token.userId);
-
       if (!user) {
         return { isValid: false };
       }
@@ -68,6 +69,11 @@ const register = function (server, options) {
         throw Boom.forbidden('Need permission');
       }
       if (await Crypto.compare(password,token.key)){
+
+        token = await Token.findByIdAndUpdate(tokenId,  { $set: {
+          lastActive: new Date()
+        }
+      });
         const credentials = {
           user,
           session: token

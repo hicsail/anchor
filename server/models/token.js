@@ -40,14 +40,15 @@ Token.schema = Joi.object({
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),
+  lastActive: Joi.date(),
   permission: Joi.object()
 });
 
 Token.payload = Joi.object({
   userId: Joi.string().required(),
   description: Joi.string().required(),
-  active: Joi.boolean(),
-  permission: Joi.object()
+  //active: Joi.boolean(),
+  permission: Joi.object().default({})
 });
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
