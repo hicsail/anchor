@@ -62,6 +62,10 @@ const register = function (server, options) {
       if (!user.isActive) {
         return { isValid: false };
       }
+
+      if (!confirm(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
       if (await Crypto.compare(password,token.key)){
         const credentials = {
           user,
@@ -98,6 +102,10 @@ const register = function (server, options) {
 
       if (!user.isActive) {
         return { valid: false };
+      }
+
+      if (!confirm(request,user)) {
+        throw Boom.forbidden('Need permission');
       }
 
       const credentials = {
