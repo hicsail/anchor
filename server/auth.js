@@ -16,7 +16,6 @@ const register = function (server, options) {
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
-        console.log('session failed');
         return { isValid: false };
 
       }
@@ -24,7 +23,6 @@ const register = function (server, options) {
       const user = await User.findById(session.userId);
 
       if (!user) {
-        console.log('user not found failed');
         return { isValid: false };
       }
 
@@ -34,7 +32,6 @@ const register = function (server, options) {
       }
 
       if (!confirmPermission(request,user)) {
-        console.log('cofirm permission fail');
         throw Boom.forbidden('Need permission');
       }
 
