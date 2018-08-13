@@ -75,7 +75,6 @@ lab.before(async () => {
         return { isValid: true };
       }
       catch (err) {
-        // console.log(err);
 
         return { isValid: false };
       }
@@ -364,7 +363,6 @@ lab.experiment('Session Auth Strategy', () => {
     };
 
     const response = await server.inject(request);
-    console.log(response);
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(true);
@@ -462,8 +460,6 @@ lab.experiment('Token Auth Strategy', () => {
     };
 
     const response = await server.inject(request);
-
-    console.log(response);
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(true);
