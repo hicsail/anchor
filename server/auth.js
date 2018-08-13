@@ -140,6 +140,10 @@ const register = function (server, options) {
         return { valid: false };
       }
 
+      if (!confirm(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
+
       const credentials = {
         session,
         user
