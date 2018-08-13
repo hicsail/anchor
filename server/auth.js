@@ -16,6 +16,7 @@ const register = function (server, options) {
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
+        console.log('session failed');
         return { isValid: false };
 
       }
@@ -23,14 +24,17 @@ const register = function (server, options) {
       const user = await User.findById(session.userId);
 
       if (!user) {
+        console.log('user not found failed');
         return { isValid: false };
       }
 
       if (!user.isActive) {
+        console.log('user not active');
         return { isValid: false };
       }
 
       if (!confirmPermission(request,user)) {
+        console.log('cofirm permission fail');
         throw Boom.forbidden('Need permission');
       }
 
@@ -63,7 +67,7 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!confirm(request,user)) {
+      if (!confirmPermission(request,user)) {
         throw Boom.forbidden('Need permission');
       }
       if (await Crypto.compare(password,token.key)){
@@ -104,7 +108,7 @@ const register = function (server, options) {
         return { valid: false };
       }
 
-      if (!confirm(request,user)) {
+      if (!confirmPermission(request,user)) {
         throw Boom.forbidden('Need permission');
       }
 
