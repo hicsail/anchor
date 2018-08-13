@@ -12,7 +12,7 @@ const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
-      console.log('basic');
+
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
@@ -73,7 +73,7 @@ const register = function (server, options) {
         token = await Token.findByIdAndUpdate(tokenId,  { $set: {
           lastActive: new Date()
         }
-      });
+        });
         const credentials = {
           user,
           session: token
