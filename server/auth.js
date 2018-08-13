@@ -1,46 +1,12 @@
 'use strict';
-const Config = require('../config');
-const Session = require('./models/session');
-const User = require('./models/user');
-const Token = require('./models/token');
 const Boom = require('boom');
 const Crypto = require('./crypto');
+const Config = require('../config');
+const Role = require('./models/role');
+const Session = require('./models/session');
+const Token = require('./models/token');
+const User = require('./models/user');
 
-const permission = function (user) {
-
-  const roles = user.roles;
-
-  const permissions = {};
-  for (const i in roles) {
-    for (const [key,value] of  Object.entries(roles[i].permissions)){
-      if (!permissions[key]) {
-        permissions[key] = (key,value);
-      }
-      else {
-        if (value === true) {
-          permissions[key] = (key,value);
-        }
-      }
-    }
-  }
-  return permissions;
-};
-
-const confirm = function (request,user) {
-
-
-  const method = String(request.method).toUpperCase();
-  const incompletePath = String(request.path).split('/')[1] + '-' +  String(request.path).split('/')[2];
-  const key = method + '-' + incompletePath;
-  const permissions = permission(user);
-
-  if (permissions[key]) {
-    return permissions[key];
-  }
-
-  return true;
-
-};
 
 const register = function (server, options) {
 
@@ -64,11 +30,9 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!confirm(request,user)) {
+      if (!confirmPermission(request,user)) {
         throw Boom.forbidden('Need permission');
       }
-
-
 
       const credentials = {
         session,
@@ -146,6 +110,45 @@ const register = function (server, options) {
   });
 };
 
+const usersPermissions = async function (user) {
+
+  const roles = user.roles;
+
+  const permissions = {};
+  for (const roleId of roles) {
+    const role = await Role.findById(roleId);
+    if (role) {
+      for (const key in role.permissions){
+        if (!permissions[key]) {
+          permissions[key] = role.permissions[key];
+        }
+        else {
+          if (role.permissions[key] === true) {
+            permissions[key] = role.permissions[key];
+          }
+        }
+      }
+    }
+  }
+  return permissions;
+};
+
+const confirmPermission = function (request,user) {
+
+
+  const method = String(request.method).toUpperCase();
+  const incompletePath = String(request.path).split('/')[1] + '-' +  String(request.path).split('/')[2];
+  const key = method + '-' + incompletePath;
+  const permissions = usersPermissions(user);
+
+  if (permissions[key]) {
+    return permissions[key];
+  }
+
+  return true;
+
+};
+
 
 module.exports = {
   name: 'auth',
@@ -155,5 +158,7 @@ module.exports = {
     'hapi-auth-jwt2',
     'hapi-anchor-model'
   ],
-  register
+  register,
+  usersPermissions,
+  confirmPermission
 };
