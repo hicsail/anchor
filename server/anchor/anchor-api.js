@@ -41,10 +41,7 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          console.log(request.payload);
-          console.log(model.routes.create.payload);
           const { error } = Joi.validate(request.payload,model.routes.create.payload);
-
 
           if (error) {
             throw Boom.badRequest('Incorrect Payload', error);
