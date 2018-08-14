@@ -26,6 +26,11 @@ const config = {
     local: process.env.BASE_URL,
     $default: 'http://localhost:9000/'
   },
+  authAttempts: {
+    hours: 1,
+    forIp: 50,
+    forIpAndUser:7
+  },
   port: {
     web: {
       $filter: 'env',

@@ -33,12 +33,16 @@ class AuthAttempt extends AnchorModel {
 
     Assert.ok(ip, 'Missing ip argument.');
     Assert.ok(username, 'Missing username argument.');
+    const date = new Date();
+    date.setHours(date.getHours() - 1);
+
 
     const [countByIp, countByIpAndUser] = await Promise.all([
       this.count({ ip }),
-      this.count({ ip, username })
+      this.count({ ip, username, createdAt: { $gte:(date),$lte:(new Date()) } })
     ]);
     const config = Config.get('/authAttempts');
+    const hours = Config.get('/authAttempts/hours');
     const ipLimitReached = countByIp >= config.forIp;
     const ipUserLimitReached = countByIpAndUser >= config.forIpAndUser;
 
