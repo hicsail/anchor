@@ -131,6 +131,11 @@ User.permissionPayload =  Joi.object({
   permissions: Joi.object()
 });
 
+User.rootSignUpPayload = Joi.object({
+  email: Joi.string().email().lowercase().required(),
+  password: Joi.string().required()
+});
+
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 
   create: {
