@@ -1,7 +1,7 @@
 'use strict';
 const Glue = require('glue');
 const Manifest = require('./manifest');
-const HapiReactViews = require('hapi-react-views')
+const HapiReactViews = require('hapi-react-views');
 
 require('babel-core/register')(
   {
@@ -22,13 +22,13 @@ const main = async function () {
   const server = await Glue.compose(Manifest.get('/'), options);
 
   server.views({
-       engines: {
-           jsx: HapiReactViews
-       },
-       compileOptions: {}, // optional
-       relativeTo: __dirname,
-       path: './server/web/views'
-   });
+    engines: {
+      jsx: HapiReactViews
+    },
+    compileOptions: {}, // optional
+    relativeTo: __dirname,
+    path: './server/web/views'
+  });
 
   await server.start();
 
