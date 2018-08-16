@@ -29,6 +29,13 @@
     "node": "9.x.x"
   },
   "dependencies": {
+    "ajv": "^5.5.2",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "bcrypt": "3.x.x",
     "boom": "7.x.x",
     "confidence": "3.x.x",
@@ -40,6 +47,7 @@
     "hapi-auth-cookie": "9.x.x",
     "hapi-auth-jwt2": "8.x.x",
     "hapi-cron": "1.x.x",
+    "hapi-react-views": "^10.0.0",
     "hapi-remote-address": "1.x.x",
     "hoek": "5.x.x",
     "inert": "5.x.x",
@@ -49,10 +57,14 @@
     "mongodb": "3.x.x",
     "nodemailer": "4.x.x",
     "nodemailer-markdown": "1.x.x",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "regenerator-runtime": "^0.12.1",
     "useragent": "2.x.x",
     "uuid": "3.x.x",
-    "vision": "5.x.x",
-    "visionary": "6.x.x"
+    "vision": "^5.3.3",
+    "visionary": "6.x.x",
+    "webpack": "^4.16.5"
   },
   "devDependencies": {
     "code": "5.x.x",

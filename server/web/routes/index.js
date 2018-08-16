@@ -1,50 +1,22 @@
 'use strict';
-const internals = {};
-const Config = require('../../../config');
 
-internals.applyRoutes = function (server, next) {
+const register = function (server, serverOptions) {
 
   server.route({
     method: 'GET',
     path: '/',
-    config: {
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
-      }
+    options: {
+      auth: false
     },
-    handler: function (request, reply) {
+    handler: function (request, h) {
 
-      let user = null;
-      if (request.auth.isAuthenticated) {
-        user = request.auth.credentials.user;
-      }
-      return reply.view('index/index', {
-        user,
-        projectName: Config.get('/projectName'),
-        title: 'Home',
-        baseUrl: Config.get('/baseUrl')
-      });
+      return h.view('home');
     }
   });
-
-  next();
 };
 
 
-exports.register = function (server, options, next) {
-
-  server.dependency(['auth'], internals.applyRoutes);
-
-  next();
-};
-
-exports.register.attributes = {
-  name: 'home',
-  dependencies: 'visionary'
+module.exports = {
+  name: 'index',
+  register
 };

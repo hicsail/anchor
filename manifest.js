@@ -45,6 +45,12 @@ const manifest = {
       },
       {
         plugin: './server/anchor/anchor-api'
+      },
+      {
+        plugin: 'vision'
+      },
+      {
+        plugin: './server/web/routes/index'
       }
     ]
   }
