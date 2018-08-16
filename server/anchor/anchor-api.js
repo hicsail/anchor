@@ -318,6 +318,17 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (!model.routes.getMy.query) {
+            throw Boom.notFound('Query not validated');
+          }
+          return h.continue;
+        }
+      }, {
         assign: 'auth',
         method: function (request, h) {
 
@@ -424,6 +435,7 @@ const register = function (server,serverOptions) {
         assign: 'model',
         method: function (request,h) {
 
+
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
             return (Boom.notFound('Model not found'));
@@ -441,10 +453,25 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (!model.routes.getAll.query) {
+            throw Boom.notFound('Query not validated');
+          }
+          return h.continue;
+        }
+
+
+      }, {
         assign: 'auth',
         method: function (request,h) {
 
           const model = request.pre.model;
+
+          console.log(request.pre.model.routes.getAll.query);
           if (model.routes.getAll.auth) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
