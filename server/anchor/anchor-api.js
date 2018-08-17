@@ -290,13 +290,6 @@ const register = function (server,serverOptions) {
         strategies: ['simple','session','token'],
         mode:'try'
       },
-      validate: {
-        query: {
-          sort: Joi.string().default('_id'),
-          limit: Joi.number().default(20),
-          page: Joi.number().default(1)
-        }
-      },
       pre: [{
         assign: 'model',
         method: function (request,h) {
@@ -323,12 +316,12 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          if (!model.routes.getMy.query) {
+          if (!Joi.validate(request.query,model.routes.getMy.query)) {
             throw Boom.notFound('Query not validated');
           }
           return h.continue;
         }
-      }, {
+      },  {
         assign: 'auth',
         method: function (request, h) {
 
@@ -458,7 +451,7 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          if (!model.routes.getAll.query) {
+          if (!Joi.validate(request.query,model.routes.getAll.query)) {
             throw Boom.notFound('Query not validated');
           }
           return h.continue;
@@ -471,7 +464,6 @@ const register = function (server,serverOptions) {
 
           const model = request.pre.model;
 
-          console.log(request.pre.model.routes.getAll.query);
           if (model.routes.getAll.auth) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
