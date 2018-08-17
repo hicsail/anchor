@@ -37,7 +37,10 @@ const register = function (server, options) {
           throw Boom.forbidden('Need permission');
         }
 
+
       }
+
+      await session.updateLastActive();
 
       const credentials = {
         session,
@@ -67,17 +70,17 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!confirmPermission(request,user)) {
+      if (!await confirmPermission(request,user)) {
         throw Boom.forbidden('Need permission');
       }
+
       if (await Crypto.compare(password,token.key)){
 
-
-        token = await Token.findByIdAndUpdate(token._id,  { $set: {
-          lastActive: new Date()
-        }
+        token = await Token.findByIdAndUpdate(token._id,  {
+          $set: {
+            lastActive: new Date()
+          }
         });
-
 
         const credentials = {
           user,
@@ -104,8 +107,6 @@ const register = function (server, options) {
         return { valid: false };
       }
 
-      session.updateLastActive();
-
       const user = await User.findById(session.userId);
 
       if (!user) {
@@ -122,7 +123,10 @@ const register = function (server, options) {
           throw Boom.forbidden('Need permission');
         }
 
+
       }
+
+      await session.updateLastActive();
 
       const credentials = {
         session,
@@ -140,7 +144,7 @@ const usersPermissions = async function (user) {
 
   const permissions = {};
   for (const roleId of roles) {
-    const role = await Role.findById(roleId);
+    const role = await Role.lookupById(roleId,Role.lookups);
     if (role) {
       for (const key in role.permissions){
         if (!permissions[key]) {
@@ -160,8 +164,8 @@ const usersPermissions = async function (user) {
 const confirmPermission = async function (request,user) {
 
   const method = String(request.method).toUpperCase();
-  const incompletePath = String(request.path).split('/')[1] + '-' +  String(request.path).split('/')[2];
-  const key = method + '-' + incompletePath;
+  const incompletePath = String(request.path).split('/').join('-');
+  const key = method + incompletePath;
   const permissions = await usersPermissions(user);
 
   if (permissions[key] !== undefined) {
