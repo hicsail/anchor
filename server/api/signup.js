@@ -87,6 +87,77 @@ const register = function (server, serverOptions) {
       return creds;
     }
   });
+
+  server.route({
+    method: 'POST',
+    path: '/api/root',
+    options: {
+      auth: false,
+      validate: {
+        payload: User.rootSignUpPayload
+      },
+      pre: [{
+        assign: 'emailCheck',
+        method: async function (request, h) {
+
+          const user = await User.findByEmail(request.payload.email);
+
+          if (user) {
+            throw Boom.conflict('Email already in use.');
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: async function (request, h) {
+
+      // create and link account and user documents
+      request.payload.username = 'root';
+      request.payload.name = 'root';
+      request.payload._id = '000000000000000000000000';
+      const user = await User.create(request.payload);
+
+      const emailOptions = {
+        subject: `Your ${Config.get('/projectName')} account`,
+        to: {
+          name: request.payload.name,
+          address: request.payload.email
+        }
+      };
+
+      try {
+        await Mailer.sendEmail(emailOptions, 'welcome', request.payload);
+      }
+      catch (err) {
+        request.log(['mailer', 'error'], err);
+      }
+
+      // create session
+
+      const userAgent = request.headers['user-agent'];
+      const ip = request.remoteAddress;
+      const session = await Session.create({ userId: `${user._id}`, ip, userAgent });
+
+      // create auth header
+
+      const credentials = `${session._id}:${session.key}`;
+      const authHeader = `Basic ${new Buffer(credentials).toString('base64')}`;
+
+      delete user.password;
+      delete user.resetPassword;
+
+      const creds = {
+        user,
+        session,
+        authHeader
+      };
+
+      request.cookieAuth.set(creds);
+
+      return creds;
+    }
+  });
 };
 
 
