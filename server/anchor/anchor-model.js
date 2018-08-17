@@ -964,7 +964,11 @@ AnchorModel.routes = {
   },
   getAll: {
     disabled: false,
-    query: null,
+    query: {
+      sort: Joi.string().default('_id'),
+      limit: Joi.number().default(20),
+      page: Joi.number().default(1)
+    },
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1030,6 +1034,11 @@ AnchorModel.routes = {
 
   getMy: {
     disabled: false,
+    query: {
+      sort: Joi.string().default('_id'),
+      limit: Joi.number().default(20),
+      page: Joi.number().default(1)
+    },
     handler: async (request,h) => {
 
       const model = request.pre.model;
