@@ -5,7 +5,13 @@ const Joi = require('joi');
 const Role = require('../models/role');
 const User = require('../models/user');
 
+
+
+
 const register = function (server, serverOptions) {
+
+
+
 
   server.route({
     method: 'GET',
@@ -278,6 +284,7 @@ const register = function (server, serverOptions) {
       return await Role.findByIdAndUpdate(objectid,{ $set: { 'permissions' : update, 'name': namechange } });
     }
   });
+
 
   server.route({
     method: 'PUT',

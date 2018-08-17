@@ -9,9 +9,10 @@ const Lab = require('lab');
 const Manifest = require('../../manifest');
 const JWT = require('jsonwebtoken');
 const lab = exports.lab = Lab.script();
-const User = require('../../server/models/user');
+const Role = require('../../server/models/role');
 const Session = require('../../server/models/session');
 const Token = require('../../server/models/token');
+const User = require('../../server/models/user');
 
 let server;
 
@@ -74,7 +75,6 @@ lab.before(async () => {
         return { isValid: true };
       }
       catch (err) {
-        // console.log(err);
 
         return { isValid: false };
       }
@@ -235,6 +235,37 @@ lab.experiment('Simple Auth Strategy', () => {
   });
 
 
+  lab.test('it returns a when user does not have permission', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-simple': false
+    } });
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
+
+    const update = {
+      $set: {
+        roles: [`${ role._id }`]
+      }
+    };
+
+    await User.findByIdAndUpdate(user._id, update);
+
+    const request = {
+      method: 'GET',
+      url: '/simple',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
   lab.test('it returns as valid when all is well', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
@@ -345,6 +376,39 @@ lab.experiment('Session Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
+  lab.test('it returns a when user does not have permission', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login'
+    };
+    const loginResponse = await server.inject(loginRequest);
+
+    const user = loginResponse.result.user;
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-session': false
+    } });
+    const update = {
+      $set: {
+        roles: [`${ role._id }`]
+      }
+    };
+    await User.findByIdAndUpdate(user._id, update);
+
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
 
   lab.test('it returns as valid when all is well', async () => {
 
@@ -485,5 +549,107 @@ lab.experiment('Token Auth Strategy', () => {
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
+  });
+});
+
+
+lab.experiment('Users Permissions', () => {
+
+  lab.test('it returns the correct values when only 0 role is present', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+
+    const results = await Auth.usersPermissions(user);
+
+    Code.expect(results).to.equal({});
+  });
+
+  lab.test('it returns the correct values when only 1 role is present', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': true, 'POST-api-signup': false, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    user.roles = [`${ role._id }`];
+
+    const results = await Auth.usersPermissions(user);
+
+    Code.expect(results['POST-api-login']).to.equal(true);
+    Code.expect(results['POST-api-signup']).to.equal(false);
+    Code.expect(results['POST-api-users']).to.equal(false);
+    Code.expect(results['GET-api-users']).to.equal(true);
+  });
+
+
+  lab.test('it returns the correct values when 2 role is present', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role1 = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': true, 'POST-api-signup': false, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    const role2 = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': false, 'POST-api-signup': true, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    user.roles = [`${ role1._id }`,`${ role2._id }`];
+
+    const results = await Auth.usersPermissions(user);
+
+    Code.expect(results['POST-api-login']).to.equal(true);
+    Code.expect(results['POST-api-signup']).to.equal(true);
+    Code.expect(results['POST-api-users']).to.equal(false);
+    Code.expect(results['GET-api-users']).to.equal(true);
+  });
+
+
+  lab.test('it returns the correct values when 1 role is not found in db', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': true, 'POST-api-signup': false, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    user.roles = [`${ role._id }`,'000000000000000000000000'];
+
+    const results = await Auth.usersPermissions(user);
+
+    Code.expect(results['POST-api-login']).to.equal(true);
+    Code.expect(results['POST-api-signup']).to.equal(false);
+    Code.expect(results['POST-api-users']).to.equal(false);
+    Code.expect(results['GET-api-users']).to.equal(true);
+  });
+
+  lab.test('it returns true when user has permission', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-api-users': true
+    } });
+    user.roles = [`${ role._id }`];
+
+    const request = {
+      method: 'GET',
+      path: '/api/users'
+    };
+
+    const result = await Auth.confirmPermission(request, user);
+
+    Code.expect(result).to.equal(true);
+  });
+
+  lab.test('it returns false when user does not have permission', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-api-users': false
+    } });
+    user.roles = [`${ role._id }`];
+
+    const request = {
+      method: 'GET',
+      path: '/api/users'
+    };
+
+    const result = await Auth.confirmPermission(request, user);
+
+    Code.expect(result).to.equal(false);
   });
 });

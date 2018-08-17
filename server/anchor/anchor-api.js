@@ -169,6 +169,7 @@ const register = function (server,serverOptions) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
+            return h.continue;
           }
           return h.continue;
         }
@@ -269,6 +270,7 @@ const register = function (server,serverOptions) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
+            return h.continue;
           }
           return h.continue;
         }
@@ -287,13 +289,6 @@ const register = function (server,serverOptions) {
       auth: {
         strategies: ['simple','session','token'],
         mode:'try'
-      },
-      validate: {
-        query: {
-          sort: Joi.string().default('_id'),
-          limit: Joi.number().default(20),
-          page: Joi.number().default(1)
-        }
       },
       pre: [{
         assign: 'model',
@@ -316,6 +311,18 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          const { error } = Joi.validate(request.query,model.routes.getMy.query);
+
+          if (error) {
+            throw Boom.notFound('Query not validated');
+          }
+          return h.continue;
+        }
+      },  {
         assign: 'auth',
         method: function (request, h) {
 
@@ -324,6 +331,7 @@ const register = function (server,serverOptions) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
+            return h.continue;
           }
           return h.continue;
         }
@@ -387,6 +395,7 @@ const register = function (server,serverOptions) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
+            return h.continue;
           }
           return h.continue;
         }
@@ -405,13 +414,6 @@ const register = function (server,serverOptions) {
     method:'GET',
     path:'/api/{collectionName}',
     options: {
-      validate: {
-        query: {
-          sort: Joi.string().default('_id'),
-          limit: Joi.number().default(20),
-          page: Joi.number().default(1)
-        }
-      },
       auth: {
         strategies: ['simple','session','token'],
         mode: 'try'
@@ -419,6 +421,7 @@ const register = function (server,serverOptions) {
       pre: [{
         assign: 'model',
         method: function (request,h) {
+
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
@@ -437,14 +440,29 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }, {
+        assign: 'validate',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          const { error } = Joi.validate(request.query,model.routes.getAll.query);
+          if (error) {
+            throw Boom.notFound('Query not validated');
+          }
+          return h.continue;
+        }
+
+
+      }, {
         assign: 'auth',
         method: function (request,h) {
 
           const model = request.pre.model;
+
           if (model.routes.getAll.auth) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
+            return h.continue;
           }
           return h.continue;
         }

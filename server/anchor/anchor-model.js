@@ -1,6 +1,7 @@
 'use strict';
 const Hoek = require('hoek');
 const Joi = require('joi');
+const Boom = require('boom');
 const Mongodb = require('mongodb');
 
 const argsFromArguments = function (argumentz) {
@@ -555,6 +556,7 @@ class AnchorModel {
    */
   static async lookupById() {
 
+
     const args = argsFromArguments(arguments);
     const id = args.shift();
     const lookups = args.pop() || [];
@@ -965,7 +967,11 @@ AnchorModel.routes = {
   },
   getAll: {
     disabled: false,
-    query: null,
+    query: {
+      sort: Joi.string().default('_id'),
+      limit: Joi.number().default(20),
+      page: Joi.number().default(1)
+    },
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -990,7 +996,11 @@ AnchorModel.routes = {
         $set: request.payload
 
       };
-      return await model.findByIdAndUpdate(id,update);
+      const check = await model.findByIdAndUpdate(id,update);
+      if (!check) {
+        throw Boom.notFound('Error updating');
+      }
+      return check;
     },
     query: null
   },
@@ -1001,7 +1011,11 @@ AnchorModel.routes = {
 
       const model = request.pre.model;
       const id = request.params.id;
-      return await model.findByIdAndDelete(id);
+      const check = await model.findByIdAndDelete(id);
+      if (!check) {
+        throw Boom.notFound('Model with id not found');
+      }
+      return check;
     },
     query: null
   },
@@ -1011,13 +1025,23 @@ AnchorModel.routes = {
 
       const model = request.pre.model;
       const id = request.params.id;
-      return await model.lookupById(id,model.lookups);
+      const result = await model.lookupById(id,model.lookups);
+
+      if (!result) {
+        throw Boom.notFound('Model with id not found');
+      }
+      return result;
     },
     query: null
   },
 
   getMy: {
     disabled: false,
+    query: {
+      sort: Joi.string().default('_id'),
+      limit: Joi.number().default(20),
+      page: Joi.number().default(1)
+    },
     handler: async (request,h) => {
 
       const model = request.pre.model;

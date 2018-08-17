@@ -1,16 +1,17 @@
 'use strict';
-const Config = require('../config');
-const Session = require('./models/session');
-const User = require('./models/user');
-const Token = require('./models/token');
+const Boom = require('boom');
 const Crypto = require('./crypto');
+const Config = require('../config');
+const Role = require('./models/role');
+const Session = require('./models/session');
+const Token = require('./models/token');
+const User = require('./models/user');
 
 
 const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
-
 
       const session = await Session.findByCredentials(sessionId, key);
 
@@ -28,6 +29,12 @@ const register = function (server, options) {
       if (!user.isActive) {
         return { isValid: false };
       }
+
+      if (!await confirmPermission(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
+
+      await session.updateLastActive();
 
       const credentials = {
         session,
@@ -47,9 +54,8 @@ const register = function (server, options) {
       const tokenId = split[0];
       const password = split[1];
 
-      const token = await Token.findById(tokenId);
+      let token = await Token.findById(tokenId);
       const user = await User.findById(token.userId);
-
       if (!user) {
         return { isValid: false };
       }
@@ -57,7 +63,19 @@ const register = function (server, options) {
       if (!user.isActive) {
         return { isValid: false };
       }
+
+      if (!await confirmPermission(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
+
       if (await Crypto.compare(password,token.key)){
+
+        token = await Token.findByIdAndUpdate(token._id,  {
+          $set: {
+            lastActive: new Date()
+          }
+        });
+
         const credentials = {
           user,
           session: token
@@ -83,8 +101,6 @@ const register = function (server, options) {
         return { valid: false };
       }
 
-      session.updateLastActive();
-
       const user = await User.findById(session.userId);
 
       if (!user) {
@@ -94,6 +110,12 @@ const register = function (server, options) {
       if (!user.isActive) {
         return { valid: false };
       }
+
+      if (!await confirmPermission(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
+
+      await session.updateLastActive();
 
       const credentials = {
         session,
@@ -105,6 +127,43 @@ const register = function (server, options) {
   });
 };
 
+const usersPermissions = async function (user) {
+
+  const roles = user.roles;
+
+  const permissions = {};
+  for (const roleId of roles) {
+    const role = await Role.lookupById(roleId,Role.lookups);
+    if (role) {
+      for (const key in role.permissions){
+        if (!permissions[key]) {
+          permissions[key] = role.permissions[key];
+        }
+        else {
+          if (role.permissions[key] === true) {
+            permissions[key] = role.permissions[key];
+          }
+        }
+      }
+    }
+  }
+  return permissions;
+};
+
+const confirmPermission = async function (request,user) {
+
+  const method = String(request.method).toUpperCase();
+  const incompletePath = String(request.path).split('/').join('-');
+  const key = method + incompletePath;
+  const permissions = await usersPermissions(user);
+
+  if (permissions[key] !== undefined) {
+    return permissions[key];
+  }
+
+  return true;
+};
+
 
 module.exports = {
   name: 'auth',
@@ -114,5 +173,7 @@ module.exports = {
     'hapi-auth-jwt2',
     'hapi-anchor-model'
   ],
-  register
+  register,
+  usersPermissions,
+  confirmPermission
 };

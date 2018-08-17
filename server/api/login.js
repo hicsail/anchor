@@ -32,7 +32,7 @@ const register = function (server, serverOptions) {
 
           const ip = request.remoteAddress;
           const username = request.payload.username;
-          const detected = await AuthAttempt.abuseDetected(ip, username);
+          const detected = await AuthAttempt.abuseDetected(ip,username);
 
           if (detected) {
             throw Boom.badRequest('Maximum number of auth attempts reached.');
