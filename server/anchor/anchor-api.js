@@ -315,8 +315,9 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
+          const { error } = Joi.validate(request.query,model.routes.getMy.query);
 
-          if (!Joi.validate(request.query,model.routes.getMy.query)) {
+          if (error) {
             throw Boom.notFound('Query not validated');
           }
           return h.continue;
@@ -443,8 +444,8 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-
-          if (!Joi.validate(request.query,model.routes.getAll.query)) {
+          const { error } = Joi.validate(request.query,model.routes.getAll.query);
+          if (error) {
             throw Boom.notFound('Query not validated');
           }
           return h.continue;
