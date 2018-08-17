@@ -413,13 +413,6 @@ const register = function (server,serverOptions) {
     method:'GET',
     path:'/api/{collectionName}',
     options: {
-      validate: {
-        query: {
-          sort: Joi.string().default('_id'),
-          limit: Joi.number().default(20),
-          page: Joi.number().default(1)
-        }
-      },
       auth: {
         strategies: ['simple','session','token'],
         mode: 'try'
