@@ -30,7 +30,12 @@ lab.experiment('Invite Model', () => {
   lab.test('it returns a new instance when create succeeds', async () => {
 
     const document = {
+      username: 'test',
       email: 'test@gmail.com',
+      name: 'Test Test',
+      role: [],
+      permission: {},
+      userId: 'John',
       status: 'Pending'
     };
 
