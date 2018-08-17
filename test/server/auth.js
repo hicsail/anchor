@@ -553,4 +553,39 @@ lab.experiment('Users Permissions', () => {
     Code.expect(results['GET-api-users']).to.equal(true);
   });
 
+  lab.test('it returns true when user has permission', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-api-users': true
+    } });
+    user.roles = [`${ role._id }`];
+
+    const request = {
+      method: 'GET',
+      path: '/api/users'
+    };
+
+    const result = await Auth.confirmPermission(request, user);
+
+    Code.expect(result).to.equal(true);
+  });
+
+  lab.test('it returns false when user does not have permission', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-api-users': false
+    } });
+    user.roles = [`${ role._id }`];
+
+    const request = {
+      method: 'GET',
+      path: '/api/users'
+    };
+
+    const result = await Auth.confirmPermission(request, user);
+
+    Code.expect(result).to.equal(false);
+  });
 });

@@ -148,20 +148,18 @@ const usersPermissions = async function (user) {
   return permissions;
 };
 
-const confirmPermission = function (request,user) {
-
+const confirmPermission = async function (request,user) {
 
   const method = String(request.method).toUpperCase();
   const incompletePath = String(request.path).split('/')[1] + '-' +  String(request.path).split('/')[2];
   const key = method + '-' + incompletePath;
-  const permissions = usersPermissions(user);
+  const permissions = await usersPermissions(user);
 
-  if (permissions[key]) {
+  if (permissions[key] !== undefined) {
     return permissions[key];
   }
 
   return true;
-
 };
 
 
