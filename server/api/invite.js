@@ -50,6 +50,13 @@ const register = function (server, serverOptions) {
           return h.continue;
         }
       }]
+    },
+    handler: async function (request, h) {
+
+      request.payload.status = 'pending';
+      request.payload.userId = request.auth.credentials.user._id.toString();
+
+      return await Invite.create(request.payload);
     }
   });
 
@@ -57,6 +64,13 @@ const register = function (server, serverOptions) {
 
 module.exports = {
   name: 'api-invite',
-  dependencies: [],
+  dependencies: [
+    'auth',
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'hapi-anchor-model',
+    'hapi-remote-address'
+  ],
   register
 };

@@ -11,7 +11,12 @@ class Invite extends AnchorModel {
     Assert.ok(document.status,'Status missing');
 
     document = {
+      username: document.username,
       email: document.email,
+      name: document.name,
+      role: document.role,
+      permission: document.permission,
+      userId: document.userId,
       status: document.status
     };
 
