@@ -51,6 +51,7 @@ Invite.payload = Joi.object({
   status: Joi.string().valid('Pending','Accepted','Declined','Expired')
 });
 
+
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     disabled: false,

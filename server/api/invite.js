@@ -10,7 +10,7 @@ const register = function (server, serverOptions) {
     path: '/api/invite',
     options: {
       auth: {
-        strategies: ['simple']
+        strategies: ['simple', 'session', 'token']
       },
       validate: {
         payload: Invite.payload
@@ -54,6 +54,8 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       request.payload.status = 'pending';
+      request.payload.permission = {};
+      request.payload.role = [];
       request.payload.userId = request.auth.credentials.user._id.toString();
 
       return await Invite.create(request.payload);
