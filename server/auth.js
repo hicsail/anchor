@@ -1,205 +1,179 @@
 'use strict';
-const Async = require('async');
+const Boom = require('boom');
+const Crypto = require('./crypto');
 const Config = require('../config');
+const Role = require('./models/role');
+const Session = require('./models/session');
+const Token = require('./models/token');
+const User = require('./models/user');
 
 
-const internals = {};
-
-
-internals.applyStrategy = function (server, next) {
-
-  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
-  const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
-  const User = server.plugins['hicsail-hapi-mongo-models'].User;
+const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
-    validateFunc: function (request, username, password, callback) {
+    validate: async function (request, sessionId, key, h) {
 
-      Async.auto({
-        session: function (done) {
+      const session = await Session.findByCredentials(sessionId, key);
 
-          Session.findByCredentials(username, password, done);
-        },
-        user: ['session', function (results, done) {
+      if (!session) {
+        return { isValid: false };
 
-          if (!results.session) {
-            return done();
-          }
+      }
 
-          User.findById(results.session.userId, done);
-        }],
-        scope: ['user', function (results, done) {
+      const user = await User.findById(session.userId);
 
-          if (!results.user || !results.user.roles) {
-            return done();
-          }
+      if (!user) {
+        return { isValid: false };
+      }
 
-          done(null, Object.keys(results.user.roles));
-        }],
-        updateSession: ['scope', function (results, done) {
+      if (!user.isActive) {
+        return { isValid: false };
+      }
 
-          if (!results.scope) {
-            return done();
-          }
+      if (!confirmPermission(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
 
-          const update = {
-            $set: {
-              lastActive: new Date()
-            }
-          };
+      const credentials = {
+        session,
+        user
+      };
 
-          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return callback(err);
-        }
-
-        if (!results.session) {
-          return callback(null, false);
-        }
-
-        callback(null, Boolean(results.user), results);
-      });
+      return { credentials, isValid: true };
     }
   });
 
-  server.auth.strategy('jwt', 'jwt', {
-    key: Config.get('/authSecret'),
+  server.auth.strategy('token','jwt', {
+    key: Config.get('/cookieSecret'),
     verifyOptions: { algorithms: ['HS256'] },
-    validateFunc: function (decoded, request, callback) {
+    validate: async function (id,request) {
 
-      Async.auto({
-        token: function (done) {
+      const split = id.split(':');
+      const tokenId = split[0];
+      const password = split[1];
 
-          Token.findOne({
-            tokenId: decoded,
-            active: true
-          }, done);
-        },
-        updateToken: ['token', function (results,done) {
+      let token = await Token.findById(tokenId);
+      const user = await User.findById(token.userId);
+      if (!user) {
+        return { isValid: false };
+      }
 
-          if (!results.token) {
-            return done();
-          }
-          Token.findByIdAndUpdate(results.token._id,{
-            $set: {
-              lastUsed: new Date()
-            }
-          },done);
-        }],
-        user: ['token', function (results, done) {
+      if (!user.isActive) {
+        return { isValid: false };
+      }
 
-          if (!results.token) {
-            return done();
-          }
+      if (!confirmPermission(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
+      if (await Crypto.compare(password,token.key)){
 
-          User.findById(results.token.userId, done);
-        }],
-        scope: ['user', function (results, done) {
 
-          if (!results.user || !results.user.roles) {
-            return done();
-          }
-
-          done(null, Object.keys(results.user.roles));
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return callback(err);
+        token = await Token.findByIdAndUpdate(token._id,  { $set: {
+          lastActive: new Date()
         }
+        });
 
-        if (!results.token) {
-          return callback(null, false);
-        }
 
-        callback(null, Boolean(results.user), results);
-      });
+        const credentials = {
+          user,
+          session: token
+        };
+        return { credentials, isValid: true };
+      }
+      return { isValid: false };
     }
   });
 
 
   server.auth.strategy('session', 'cookie', {
-    password: Config.get('/authSecret'),
-    cookie: 'AuthCookie',
+    password: Config.get('/cookieSecret'),
+    cookie: 'anchor-auth',
     isSecure: false,
-    clearInvalid: true,
-    keepAlive: true,
-    ttl: 60000 * 30, //30 Minutes
     redirectTo: '/login',
     appendNext: 'returnUrl',
-    validateFunc: function (request, data, callback) {
+    validateFunc: async function (request, data) {
 
-      Async.auto({
-        session: function (done) {
+      const session = await Session.findByCredentials(data.session._id, data.session.key);
 
-          const id = data._id;
-          const key = data.key;
+      if (!session) {
+        return { valid: false };
+      }
 
-          Session.findByCredentials(id, key, done);
-        },
-        user: ['session', function (results, done) {
+      session.updateLastActive();
 
-          if (!results.session) {
-            return done();
-          }
+      const user = await User.findById(session.userId);
 
-          User.findById(results.session.userId, done);
-        }],
-        scope: ['user', function (results, done) {
+      if (!user) {
+        return { valid: false };
+      }
 
-          if (!results.user || !results.user.roles) {
-            return done();
-          }
+      if (!user.isActive) {
+        return { valid: false };
+      }
 
-          done(null, Object.keys(results.user.roles));
-        }],
-        updateSession: ['scope', function (results, done) {
+      if (!confirmPermission(request,user)) {
+        throw Boom.forbidden('Need permission');
+      }
 
-          if (!results.scope) {
-            return done();
-          }
+      const credentials = {
+        session,
+        user
+      };
 
-          const update = {
-            $set: {
-              lastActive: new Date()
-            }
-          };
-
-          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return callback(err);
-        }
-
-        if (!results.session) {
-          return callback(null, false);
-        }
-
-        callback(null, Boolean(results.user), results);
-      });
+      return { credentials, valid: true };
     }
   });
-
-
-  next();
 };
 
-exports.register = function (server, options, next) {
+const usersPermissions = async function (user) {
 
-  server.dependency('hicsail-hapi-mongo-models', internals.applyStrategy);
+  const roles = user.roles;
 
-  next();
+  const permissions = {};
+  for (const roleId of roles) {
+    const role = await Role.findById(roleId);
+    if (role) {
+      for (const key in role.permissions){
+        if (!permissions[key]) {
+          permissions[key] = role.permissions[key];
+        }
+        else {
+          if (role.permissions[key] === true) {
+            permissions[key] = role.permissions[key];
+          }
+        }
+      }
+    }
+  }
+  return permissions;
+};
+
+const confirmPermission = function (request,user) {
+
+
+  const method = String(request.method).toUpperCase();
+  const incompletePath = String(request.path).split('/')[1] + '-' +  String(request.path).split('/')[2];
+  const key = method + '-' + incompletePath;
+  const permissions = usersPermissions(user);
+
+  if (permissions[key]) {
+    return permissions[key];
+  }
+
+  return true;
+
 };
 
 
-exports.preware = internals.preware;
-
-
-exports.register.attributes = {
-  name: 'auth'
+module.exports = {
+  name: 'auth',
+  dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'hapi-anchor-model'
+  ],
+  register,
+  usersPermissions,
+  confirmPermission
 };

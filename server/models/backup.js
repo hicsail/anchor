@@ -1,46 +1,65 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const Assert = require('assert');
+const AnchorModel = require('../anchor/anchor-model');
+const Hoek = require('hoek');
 
+class Backup extends AnchorModel {
 
-class Backup extends MongoModels {
+  static async create(document){
 
-  static create(backupId, zip, s3, callback, time = (new Date())) {
+    Assert.ok(document.filename, 'Missing filename');
 
-    const document = {
-      backupId,
-      zip,
-      s3,
-      time
-    };
+    const backup = await this.insertOne(document);
 
-    this.insertOne(document, (err, docs) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    return backup[0];
   }
 }
 
 
-Backup.collection = 'backups';
+Backup.collectionName = 'backups';
 
 
 Backup.schema = Joi.object({
   _id: Joi.object(),
-  backupId: Joi.string().required(),
-  zip: Joi.boolean().required(),
+  filename: Joi.string().required(),
+  local: Joi.boolean().required(),
   s3: Joi.boolean().required(),
-  time: Joi.date().required()
+  createdAt: Joi.date(),
+  updatedAt: Joi.date()
 });
 
+Backup.payload = Joi.object({
+  filename: Joi.string().required(),
+  local: Joi.boolean().required(),
+  s3: Joi.boolean().required()
+});
+
+Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Backup.payload
+  },
+  update: {
+    disabled: false,
+    payload: Backup.payload
+  },
+  delete: {
+    disabled: false,
+    payload: Backup.payload
+  }
+});
+
+Backup.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Backup.indexes = [
-  { key: { backupId: 1 } },
-  { key: { time: 1 } }
+  { key: { filename: 1 } }
 ];
 
 

@@ -2,8 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/hicsail/anchor/tree/master.svg?style=svg)](https://circleci.com/gh/hicsail/anchor/tree/master)
 [![Build Status](https://travis-ci.org/hicsail/anchor.svg?branch=master)](https://travis-ci.org/hicsail/anchor)
-[![Dependency Status](https://img.shields.io/david/hicsail/anchor.svg)](https://david-dm.org/hicsail/hicsail-mongo-models)
-[![devDependency Status](https://img.shields.io/david/dev/hicsail/anchor.svg)](https://david-dm.org/hicsail/hicsail-mongo-models?type=dev)
+[![Dependency Status](https://img.shields.io/david/hicsail/anchor.svg)](https://david-dm.org/hicsail/anchor)
+[![devDependency Status](https://img.shields.io/david/dev/hicsail/anchor.svg)](https://david-dm.org/hicsail/anchor?type=dev)
 [![Coverage Status](https://coveralls.io/repos/github/hicsail/anchor/badge.svg?branch=master)](https://coveralls.io/github/hicsail/anchor?branch=master)
 
 A user system API starter with a database administrative system. Bring your own front-end.

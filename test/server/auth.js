@@ -1,905 +1,556 @@
 'use strict';
-const AuthPlugin = require('../../server/auth');
+const Auth = require('../../server/auth');
+const Crypto = require('../../server/crypto');
 const Code = require('code');
 const Config = require('../../config');
-const CookieAdmin = require('./fixtures/cookie-admin');
 const Hapi = require('hapi');
-const HapiAuthBasic = require('hapi-auth-basic');
-const HapiAuthCookie = require('hapi-auth-cookie');
-const HapiAuthJWT = require('hapi-auth-jwt2');
+const Fixtures = require('./fixtures');
 const Lab = require('lab');
-const MakeMockModel = require('./fixtures/make-mock-model');
 const Manifest = require('../../manifest');
-const Path = require('path');
-const Proxyquire = require('proxyquire');
+const JWT = require('jsonwebtoken');
+const lab = exports.lab = Lab.script();
+const Role = require('../../server/models/role');
 const Session = require('../../server/models/session');
 const Token = require('../../server/models/token');
 const User = require('../../server/models/user');
 
-
-const lab = exports.lab = Lab.script();
 let server;
-let stub;
 
+lab.before(async () => {
 
-lab.beforeEach((done) => {
+  server = Hapi.Server();
 
-  stub = {
-    Session: MakeMockModel(),
-    Token: MakeMockModel(),
-    User: MakeMockModel()
-  };
+  const plugins = Manifest.get('/register/plugins')
+    .filter((entry) => Auth.dependencies.includes(entry.plugin))
+    .map((entry) => {
 
-  const proxy = {};
-  proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
-  proxy[Path.join(process.cwd(), './server/models/token')] = stub.Token;
-  proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
+      entry.plugin = require(entry.plugin);
 
-  const ModelsPlugin = {
-    register: Proxyquire('hicsail-hapi-mongo-models', proxy),
-    options: Manifest.get('/registrations').filter((reg) => {
+      return entry;
 
-      if (reg.plugin && reg.plugin.register && reg.plugin.register === 'hicsail-hapi-mongo-models') {
+    });
 
-        return true;
+  plugins.push(Auth);
+  plugins.push({ plugin: require('../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
+
+  await server.register(plugins);
+  await server.start();
+  await Fixtures.Db.removeAllData();
+
+  server.route({
+    method: 'GET',
+    path: '/simple',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
+
+      try {
+        await request.server.auth.test('simple', request);
+        return { isValid: true };
       }
 
-      return false;
-    })[0].plugin.options
-  };
-
-  const plugins = [HapiAuthCookie, HapiAuthBasic, HapiAuthJWT, ModelsPlugin, AuthPlugin];
-  server = new Hapi.Server();
-  server.connection({ port: Config.get('/port/web') });
-  server.register(plugins, (err) => {
-
-    if (err) {
-      return done(err);
+      catch (err) {
+        return { isValid: false };
+      }
     }
-
-    server.initialize(done);
-  });
-});
-
-
-lab.afterEach((done) => {
-
-  server.plugins['hicsail-hapi-mongo-models'].MongoModels.disconnect();
-
-  done();
-});
-
-
-lab.experiment('Auth Plugin Basic', () => {
-
-  lab.test('it returns authentication credentials', (done) => {
-
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
-
-    stub.User.findById = function (username, callback) {
-
-      callback(null, new User({ _id: '1D', username: 'ren' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('simple', request, (err, credentials) => {
-
-          Code.expect(err).to.not.exist();
-          Code.expect(credentials).to.be.an.object();
-          reply('ok');
-        });
-      }
-    });
-
-    const request = {
-      method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'Basic ' + (new Buffer('ren:baddog')).toString('base64')
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      done();
-    });
   });
 
-
-  lab.test('it returns an error when the session is not found', (done) => {
-
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback();
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('simple', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          Code.expect(credentials).to.not.exist();
-          reply('ok');
-        });
-      }
-    });
-
-    const request = {
-      method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'Basic ' + (new Buffer('ren:baddog')).toString('base64')
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns an error when the user is not found', (done) => {
-
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback(null, new Session({ username: 'ren', key: 'baddog' }));
-    };
-
-    stub.User.findByUsername = function (username, callback) {
-
-      callback();
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('simple', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          reply('ok');
-        });
-      }
-    });
-
-    const request = {
-      method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'Basic ' + (new Buffer('ren:baddog')).toString('base64')
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns an error when a model error occurs', (done) => {
-
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback(Error('session fail'));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('simple', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          Code.expect(credentials).to.not.exist();
-          reply('ok');
-        });
-      }
-    });
-
-    const request = {
-      method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'Basic ' + (new Buffer('ren:baddog')).toString('base64')
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      done();
-    });
-  });
-
-
-  lab.test('it takes over when the required role is missing', (done) => {
-
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
-
-    stub.User.findById = function (id, callback) {
-
-      callback(null, new User({ _id: '1D', username: 'ren' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      config: {
-        auth: {
-          strategies: ['simple', 'jwt', 'session'],
-          scope: 'admin'
+  server.route({
+    method: 'GET',
+    path: '/session',
+    options: {
+      auth: false,
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: false
         }
-      },
-      handler: function (request, reply) {
-
-        Code.expect(request.auth.credentials).to.be.an.object();
-
-        reply('ok');
       }
-    });
+    },
+    handler: async function (request, h) {
 
-    const request = {
-      method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'Basic ' + (new Buffer('2D:baddog')).toString('base64')
+      try {
+        await request.server.auth.test('session', request);
+
+        return { isValid: true };
       }
-    };
+      catch (err) {
 
-    server.inject(request, (response) => {
-
-      Code.expect(response.result.message).to.match(/insufficient scope/i);
-
-      done();
-    });
+        return { isValid: false };
+      }
+    }
   });
 
 
-  lab.test('it continues through pre handler when role is present', (done) => {
+  server.route({
+    method: 'GET',
+    path: '/token',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
 
-    stub.Session.findByCredentials = function (username, key, callback) {
+      try {
+        await request.server.auth.test('token', request);
+        return { isValid: true };
+      }
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
+      catch (err) {
+        return { isValid: false };
+      }
+    }
+  });
 
-    stub.User.findById = function (id, callback) {
+  server.route({
+    method: 'POST',
+    path: '/login',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
 
-      const user = new User({
-        username: 'ren',
-        roles: {
-          admin: {
-            id: '953P150D35',
-            name: 'Ren Höek'
+      const userCreds = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+
+      if (request.query && request.query.badSession) {
+        userCreds.session.key = 'blamo';
+      }
+
+      if (request.query && request.query.badUser) {
+        const sessionUpdate = {
+          $set: {
+            userId: '555555555555555555555555'
           }
-        }
-      });
+        };
 
-      user._roles = {
-        admin: {
-          _id: '953P150D35',
-          name: {
-            first: 'Ren',
-            last: 'Höek'
+        await Session.findByIdAndUpdate(userCreds.session._id, sessionUpdate);
+      }
+
+      if (request.query && request.query.notActive) {
+        const userUpdate = {
+          $set: {
+            isActive: false
           }
-        }
+        };
+
+        await User.findByIdAndUpdate(userCreds.user._id, userUpdate);
+      }
+
+      const creds = {
+        user: {
+          _id: userCreds.user._id,
+          username: userCreds.user.username,
+          email: userCreds.user.email
+        },
+        session: userCreds.session
       };
 
-      callback(null, user);
-    };
+      request.cookieAuth.set(creds);
 
-    stub.Session.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      config: {
-        auth: {
-          strategies: ['simple', 'jwt', 'session'],
-          scope: ['account', 'admin']
-        }
-      },
-      handler: function (request, reply) {
-
-        Code.expect(request.auth.credentials).to.be.an.object();
-
-        reply('ok');
-      }
-    });
-
-    const request = {
-      method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'Basic ' + (new Buffer('ren:baddog')).toString('base64')
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.result).to.match(/ok/i);
-
-      done();
-    });
+      return creds;
+    }
   });
 });
 
-lab.experiment('Auth Plugin Cookie', () => {
+lab.after(async () => {
 
-  lab.test('it returns authentication credentials', (done) => {
+  await Fixtures.Db.removeAllData();
+  await server.stop();
+});
 
-    stub.Session.findByCredentials = function (username, key, callback) {
+lab.experiment('Simple Auth Strategy', () => {
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
-
-    stub.User.findById = function (username, callback) {
-
-      callback(null, new User({ _id: '1D', username: 'ren' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('session', request, (err, credentials) => {
-
-          Code.expect(err).to.not.exist();
-          Code.expect(credentials).to.be.an.object();
-
-          reply('ok');
-        });
-      }
-    });
+  lab.test('it returns as invalid without authentication provided', async () => {
 
     const request = {
       method: 'GET',
-      url: '/',
-      headers: {
-        cookie: CookieAdmin
-      }
+      url: '/simple'
     };
-
-    server.inject(request, (response) => {
-
-      done();
-    });
+    const response = await server.inject(request);
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it returns an error when the session is not found', (done) => {
+  lab.test('it returns as invalid when the session query misses', async () => {
 
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback();
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('session', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          // Code.expect(credentials).to.not.exist();
-
-          reply('ok');
-        });
-      }
-    });
-
+    const sessionId = '000000000000000000000001';
+    const sessionKey = '01010101-0101-0101-0101-010101010101';
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
-        cookie: CookieAdmin
+        authorization: Fixtures.Creds.authHeader(sessionId, sessionKey)
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      done();
-    });
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it returns an error when the user is not found', (done) => {
+  lab.test('it returns as invalid when the user query misses', async () => {
 
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback(null, new Session({ username: 'ren', key: 'baddog' }));
-    };
-
-    stub.User.findByUsername = function (username, callback) {
-
-      callback();
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('session', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          reply('ok');
-        });
-      }
-    });
-
+    const session = await Session.create({ userId: '000000000000000000000000', ip: '127.0.0.1', userAgent: 'Lab' });
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
-        cookie: CookieAdmin
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
     };
+    const response = await server.inject(request);
 
-    server.inject(request, (response) => {
-
-      done();
-    });
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it returns an error when a model error occurs', (done) => {
+  lab.test('it returns as invalid when the user is not active', async () => {
 
-    stub.Session.findByCredentials = function (username, key, callback) {
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
 
-      callback(Error('session fail'));
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
+    const update = {
+      $set: {
+        isActive: false
+      }
     };
 
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('session', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          // Code.expect(credentials).to.not.exist();
-
-          reply('ok');
-        });
-      }
-    });
+    await User.findByIdAndUpdate(user._id, update);
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
-        cookie: CookieAdmin
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      done();
-    });
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it takes over when the required role is missing', (done) => {
+  lab.test('it returns as valid when all is well', async () => {
 
-    stub.Session.findByCredentials = function (username, key, callback) {
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
 
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
-
-    stub.User.findById = function (id, callback) {
-
-      callback(null, new User({ _id: '1D', username: 'ren' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      config: {
-        auth: {
-          strategy: 'session',
-          scope: 'admin'
-        }
-      },
-      handler: function (request, reply) {
-
-        Code.expect(request.auth.credentials).to.be.an.object();
-
-        reply('ok');
-      }
-    });
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/simple',
       headers: {
-        cookie: CookieAdmin
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      Code.expect(response.result.message).to.match(/insufficient scope/i);
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
+  });
+});
 
-      done();
-    });
+lab.experiment('Session Auth Strategy', () => {
+
+  lab.afterEach(async () => {
+
+    await Fixtures.Db.removeAllData();
   });
 
 
-  lab.test('it continues through pre handler when role is present', (done) => {
-
-    stub.Session.findByCredentials = function (username, key, callback) {
-
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
-
-    stub.User.findById = function (id, callback) {
-
-      const user = new User({
-        username: 'ren',
-        roles: {
-          admin: {
-            id: '953P150D35',
-            name: 'Ren Höek'
-          }
-        }
-      });
-
-      user._roles = {
-        admin: {
-          _id: '953P150D35',
-          name: {
-            first: 'Ren',
-            last: 'Höek'
-          }
-        }
-      };
-
-      callback(null, user);
-    };
-
-    stub.Session.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, new Session({ _id: '2D', userId: '1D', key: 'baddog' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      config: {
-        auth: {
-          strategy: 'session',
-          scope: ['account', 'admin']
-        }
-      },
-      handler: function (request, reply) {
-
-        Code.expect(request.auth.credentials).to.be.an.object();
-
-        reply('ok');
-      }
-    });
+  lab.test('it returns as invalid without authentication provided', async () => {
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/session'
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the session query misses', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login?badSession=1'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+
+    const request = {
+      method: 'GET',
+      url: '/session',
       headers: {
-        cookie: CookieAdmin
+        cookie
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      Code.expect(response.result).to.match(/ok/i);
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
 
-      done();
-    });
+
+  lab.test('it returns as invalid when the user query misses', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login?badUser=1'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the user is not active', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login?notActive=1'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as valid when all is well', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login'
+    };
+    const loginResponse = await server.inject(loginRequest);
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
   });
 });
 
 
-lab.experiment('Auth Plugin Token', () => {
+lab.experiment('Token Auth Strategy', () => {
 
-  lab.test('it returns authentication credentials', (done) => {
-
-    stub.Token.findOne = function (id, callback) {
-
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
-
-    stub.Token.findByIdAndUpdate = function (id, options, callback) {
-
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
-
-    stub.User.findById = function (username, callback) {
-
-      callback(null, new User({ _id: '1D', username: 'ren' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('jwt', request, (err, credentials) => {
-
-          Code.expect(err).to.not.exist();
-          Code.expect(credentials).to.be.an.object();
-          reply('ok');
-        });
-      }
-    });
+  lab.test('it returns as invalid without authentication provided', async () => {
 
     const request = {
       method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'eyJhbGciOiJIUzI1NiJ9.NTljMmI3MTM0YjNiMDAxYjljNzk3ZTEx.r3WbN1Aat3i2JUhQaEkZQggnyBpZBCax1nBceQXGHVk'
-      }
+      url: '/token'
     };
-
-    server.inject(request, (response) => {
-
-      done();
-    });
+    const response = await server.inject(request);
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it returns an error when the token is not found', (done) => {
-
-    stub.Token.findOne = function (id, callback) {
-
-      callback();
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('jwt', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          reply('ok');
-        });
-      }
-    });
+  lab.test('it returns as invalid when the token is invalid', async () => {
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/token',
       headers: {
-        authorization: 'eyJhbGciOiJIUzI1NiJ9.NTljMmI3MTM0YjNiMDAxYjljNzk3ZTEx.r3WbN1Aat3i2JUhQaEkZQggnyBpZBCax1nBceQXGHVk'
+        authorization: 'eyJhbGciOiJIUzI1NiJ9.NWI2OWM2N2RmNDhkYjk2ZWY1MzEyNGQ1OjY5YTQ4YjYxLTEzODQtNDhmNC1hMjU2LWJhMDgxZjUzNDRiOQ.gZGuCTD4zv8repgyMicObgux96sVlHRCyKBHLclI1IU'
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      done();
-    });
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it returns an error when the user is not found', (done) => {
+  lab.test('it returns as invalid when the user query misses', async () => {
 
-    stub.Token.findOne = function (id, callback) {
-
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
-
-    stub.Token.findByIdAndUpdate = function (id, options, callback) {
-
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
-
-    stub.User.findByUsername = function (username, callback) {
-
-      callback();
-    };
-
-    server.route({
+    const token = await Token.create({ userId: '000000000000000000000001', description: 'test token' });
+    const request = {
       method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('jwt', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          reply('ok');
-        });
+      url: '/token',
+      headers: {
+        authorization: token.key
       }
-    });
+    };
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as invalid when the user is not active', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+
+    const update = {
+      $set: {
+        isActive: false
+      }
+    };
+
+    await User.findByIdAndUpdate(user._id, update);
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/token',
       headers: {
-        authorization: 'eyJhbGciOiJIUzI1NiJ9.NTljMmI3MTM0YjNiMDAxYjljNzk3ZTEx.r3WbN1Aat3i2JUhQaEkZQggnyBpZBCax1nBceQXGHVk'
+        authorization: token.key
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      done();
-    });
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
   });
 
 
-  lab.test('it returns an error when a model error occurs', (done) => {
+  lab.test('it returns as valid when all is well', async () => {
 
-    stub.Token.findOne = function (id, callback) {
-
-      callback(Error('token fail'));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      handler: function (request, reply) {
-
-        server.auth.test('jwt', request, (err, credentials) => {
-
-          Code.expect(err).to.be.an.object();
-          Code.expect(credentials).to.not.exist();
-          reply('ok');
-        });
-      }
-    });
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/token',
       headers: {
-        authorization: 'eyJhbGciOiJIUzI1NiJ9.NTljMmI3MTM0YjNiMDAxYjljNzk3ZTEx.r3WbN1Aat3i2JUhQaEkZQggnyBpZBCax1nBceQXGHVk'
+        authorization: token.key
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      done();
-    });
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
   });
 
 
-  lab.test('it takes over when the required role is missing', (done) => {
+  lab.test('it returns as invalid when token secret and token provided don\'t match', async () => {
 
-    stub.Token.findOne = function (id, callback) {
-
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
-
-    stub.Token.findByIdAndUpdate = function (id, options, callback) {
-
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
-
-    stub.User.findById = function (id, callback) {
-
-      callback(null, new User({ _id: '1D', username: 'ren' }));
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      config: {
-        auth: {
-          strategies: ['jwt'],
-          scope: 'admin'
-        }
-      },
-      handler: function (request, reply) {
-
-        Code.expect(request.auth.credentials).to.be.an.object();
-
-        reply('ok');
-      }
-    });
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+    const keyHash = await Crypto.generateKeyHash();
+    keyHash.key = JWT.sign(( token._id + ':' + keyHash.key), Config.get('/cookieSecret'));
 
     const request = {
       method: 'GET',
-      url: '/',
+      url: '/token',
       headers: {
-        authorization: 'eyJhbGciOiJIUzI1NiJ9.NTljMmI3MTM0YjNiMDAxYjljNzk3ZTEx.r3WbN1Aat3i2JUhQaEkZQggnyBpZBCax1nBceQXGHVk'
+        authorization: keyHash.key
       }
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      Code.expect(response.result.message).to.match(/insufficient scope/i);
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+});
 
-      done();
-    });
+
+lab.experiment('Users Permissions', () => {
+
+  lab.test('it returns the correct values when only 0 role is present', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+
+    const results = await Auth.usersPermissions(user);
+
+    Code.expect(results).to.equal({});
+  });
+
+  lab.test('it returns the correct values when only 1 role is present', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': true, 'POST-api-signup': false, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    user.roles = [`${ role._id }`];
+
+    const results = await Auth.usersPermissions(user);
+
+    Code.expect(results['POST-api-login']).to.equal(true);
+    Code.expect(results['POST-api-signup']).to.equal(false);
+    Code.expect(results['POST-api-users']).to.equal(false);
+    Code.expect(results['GET-api-users']).to.equal(true);
   });
 
 
-  lab.test('it continues through pre handler when role is present', (done) => {
+  lab.test('it returns the correct values when 2 role is present', async () => {
 
-    stub.Token.findOne = function (id, callback) {
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role1 = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': true, 'POST-api-signup': false, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    const role2 = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': false, 'POST-api-signup': true, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    user.roles = [`${ role1._id }`,`${ role2._id }`];
 
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
+    const results = await Auth.usersPermissions(user);
 
-    stub.Token.findByIdAndUpdate = function (id, options, callback) {
-
-      callback(null, new Token({ _id: '2D', userId: '1D', active: true }));
-    };
-
-    stub.User.findById = function (id, callback) {
-
-      const user = new User({
-        username: 'ren',
-        roles: {
-          admin: {
-            id: '953P150D35',
-            name: 'Ren Höek'
-          }
-        }
-      });
-
-      user._roles = {
-        admin: {
-          _id: '953P150D35',
-          name: {
-            first: 'Ren',
-            last: 'Höek'
-          }
-        }
-      };
-
-      callback(null, user);
-    };
-
-    server.route({
-      method: 'GET',
-      path: '/',
-      config: {
-        auth: {
-          strategies: ['jwt'],
-          scope: ['account', 'admin']
-        }
-      },
-      handler: function (request, reply) {
-
-        Code.expect(request.auth.credentials).to.be.an.object();
-
-        reply('ok');
-      }
-    });
-
-    const request = {
-      method: 'GET',
-      url: '/',
-      headers: {
-        authorization: 'eyJhbGciOiJIUzI1NiJ9.NTljMmI3MTM0YjNiMDAxYjljNzk3ZTEx.r3WbN1Aat3i2JUhQaEkZQggnyBpZBCax1nBceQXGHVk'
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.result).to.match(/ok/i);
-
-      done();
-    });
+    Code.expect(results['POST-api-login']).to.equal(true);
+    Code.expect(results['POST-api-signup']).to.equal(true);
+    Code.expect(results['POST-api-users']).to.equal(false);
+    Code.expect(results['GET-api-users']).to.equal(true);
   });
+
+
+  lab.test('it returns the correct values when 1 role is not found in db', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'POST-api-login': true, 'POST-api-signup': false, 'POST-api-users': false, 'GET-api-users': true
+    } });
+    user.roles = [`${ role._id }`,'000000000000000000000000'];
+
+    const results = await Auth.usersPermissions(user);
+
+    Code.expect(results['POST-api-login']).to.equal(true);
+    Code.expect(results['POST-api-signup']).to.equal(false);
+    Code.expect(results['POST-api-users']).to.equal(false);
+    Code.expect(results['GET-api-users']).to.equal(true);
+  });
+
 });

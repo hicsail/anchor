@@ -1,56 +1,69 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
-const User = require('./user');
+const Assert = require('assert');
+const AnchorModel = require('../anchor/anchor-model');
+const Hoek = require('hoek');
+class Invite extends AnchorModel {
+  static async create(document) {
 
-class Invite extends MongoModels {
 
-  static create(name, email, description, userId, callback) {
+    Assert.ok(document.email, 'Email missing');
+    Assert.ok(document.status,'Status missing');
 
-    const document = {
-      name,
-      email,
-      description,
-      userId,
-      status: 'Pending',
-      time: new Date(),
-      expiredAt: new Date(new Date().getTime() + 1000 * 86400 * 7) //7 days
+    document = {
+      email: document.email,
+      status: document.status
     };
 
-    this.insertOne(document, (err, docs) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    const invite = await this.insertOne(document);
+    return invite[0];
   }
 }
 
-
-Invite.collection = 'invite';
+Invite.collectionName = 'invites';
 
 
 Invite.schema = Joi.object({
   _id: Joi.object(),
-  user: User.payload,
-  userId: Joi.string().required(),
-  status: Joi.boolean().required(),
-  time: Joi.date().required()
+  email: Joi.string().required(),
+  userId: Joi.string(),
+  expiredAt: Joi.date(),
+  status: Joi.string().valid('Pending','Accepted','Declined','Expired'),
+  createdAt: Joi.date(),
+  updatedAt: Joi.date()
 });
 
 Invite.payload = Joi.object({
-  email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required(),
-  description: Joi.string().optional()
+  email: Joi.string().required(),
+  status: Joi.string().valid('Pending','Accepted','Declined','Expired')
 });
 
+Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Invite.payload
+  },
+  update: {
+    disabled: false,
+    payload: Invite.payload
+  },
+  delete: {
+    disabled: false
+  }
+});
+
+Invite.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
 
 Invite.indexes = [
-  { key: { userId: 1 } },
-  { key: { status: 1 } }
+  { key: { email: 1 }  }
 ];
 
 
 module.exports = Invite;
+

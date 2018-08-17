@@ -1,439 +1,152 @@
 'use strict';
-const AuthPlugin = require('../../../server/auth');
+const Auth = require('../../../server/auth');
 const Code = require('code');
-const Config = require('../../../config');
+const Fixtures = require('../fixtures');
 const Hapi = require('hapi');
-const HapiAuthBasic = require('hapi-auth-basic');
-const HapiAuthCookie = require('hapi-auth-cookie');
-const HapiAuthJWT = require('hapi-auth-jwt2');
 const Lab = require('lab');
-const MailerPlugin = require('../../../server/mailer');
-const MakeMockModel = require('../fixtures/make-mock-model');
+const Mailer = require('../../../server/mailer');
 const Manifest = require('../../../manifest');
-const Path = require('path');
-const Proxyquire = require('proxyquire');
-const SignupPlugin = require('../../../server/api/signup');
+const Signup = require('../../../server/api/signup');
+const User = require('../../../server/models/user');
 
 
 const lab = exports.lab = Lab.script();
-let request;
 let server;
-let stub;
 
 
-lab.before((done) => {
+lab.before(async () => {
 
-  stub = {
-    Session: MakeMockModel(),
-    User: MakeMockModel()
-  };
+  server = Hapi.Server();
 
-  const proxy = {};
-  proxy[Path.join(process.cwd(), './server/models/session')] = stub.Session;
-  proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
+  const plugins = Manifest.get('/register/plugins')
+    .filter((entry) => Signup.dependencies.includes(entry.plugin))
+    .map((entry) => {
 
-  const ModelsPlugin = {
-    register: Proxyquire('hicsail-hapi-mongo-models', proxy),
-    options: Manifest.get('/registrations').filter((reg) => {
+      entry.plugin = require(entry.plugin);
 
-      if (reg.plugin &&
-        reg.plugin.register &&
-        reg.plugin.register === 'hicsail-hapi-mongo-models') {
+      return entry;
+    });
+  plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
+  plugins.push(Auth);
+  plugins.push(Signup);
 
-        return true;
-      }
-
-      return false;
-    })[0].plugin.options
-  };
-
-  const plugins = [HapiAuthBasic, HapiAuthCookie, HapiAuthJWT, AuthPlugin, ModelsPlugin, MailerPlugin, SignupPlugin];
-  server = new Hapi.Server();
-  server.connection({ port: Config.get('/port/web') });
-  server.register(plugins, (err) => {
-
-    if (err) {
-      return done(err);
-    }
-
-    server.initialize(done);
-  });
+  await server.register(plugins);
+  await server.start();
+  await Fixtures.Db.removeAllData();
 });
 
 
-lab.after((done) => {
+lab.after(async () => {
 
-  server.plugins['hicsail-hapi-mongo-models'].MongoModels.disconnect();
-
-  done();
+  await Fixtures.Db.removeAllData();
+  await server.stop();
 });
 
-lab.experiment('Signup Plugin', () => {
 
-  lab.beforeEach((done) => {
+lab.experiment('DELETE /api/signup', () => {
+
+  const Mailer_sendEmail = Mailer.sendEmail;
+  let request;
+
+
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
-      url: '/signup',
-      payload: {
-        name: 'Muddy Mudskipper',
-        username: 'muddy',
-        password: 'dirtandWater1',
-        email: 'mrmud@mudmail.mud'
-      }
+      url: '/api/signup'
     };
-
-    done();
   });
 
-  lab.test('it returns an error when find one fails for username check', (done) => {
 
-    stub.User.findOne = function (conditions, callback) {
+  lab.afterEach(() => {
 
-      if (conditions.username) {
-        callback(Error('find one failed'));
-      }
-      else {
-        callback();
-      }
+    Mailer.sendEmail = Mailer_sendEmail;
+  });
+
+
+  lab.test('it returns HTTP 409 when the username is already in use', async () => {
+
+    await User.create({ username: 'ren', password: 'baddog', email: 'ren@stimpy.show', name: 'ren' });
+
+    request.payload = {
+      name: 'Unoriginal Bill',
+      email: 'bill@hotmail.gov',
+      username: 'ren',
+      password: 'pass123'
     };
 
-    server.inject(request, (response) => {
+    const response = await server.inject(request);
 
-      Code.expect(response.statusCode).to.equal(500);
+    Code.expect(response.statusCode).to.equal(409);
+    Code.expect(response.result.message).to.match(/username already in use/i);
+  });
 
-      done();
+
+  lab.test('it returns HTTP 409 when the email is already in use', async () => {
+
+    request.payload = {
+      name: 'Unoriginal Bill',
+      email: 'ren@stimpy.show',
+      username: 'bill',
+      password: 'pass123'
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(409);
+    Code.expect(response.result.message).to.match(/email already in use/i);
+  });
+
+
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    Mailer.sendEmail = () => undefined;
+
+    request.payload = {
+      name: 'Captain Original',
+      email: 'captain@stimpy.show',
+      username: 'captain',
+      password: 'allaboard'
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result).to.be.an.object();
+    Code.expect(response.result.user).to.be.an.object();
+    Code.expect(response.result.session).to.be.an.object();
+    Code.expect(response.result.authHeader).to.be.a.string();
+  });
+
+
+  lab.test('it returns HTTP 200 when all is well and logs any mailer errors', async () => {
+
+    Mailer.sendEmail = function () {
+
+      throw new Error('Failed to send mail.');
+    };
+
+    const mailerLogEvent = server.events.once({
+      name: 'request',
+      filter: ['error', 'mailer']
     });
+
+    request.payload = {
+      name: 'Assistant Manager',
+      email: 'manager@stimpy.show',
+      username: 'assistant',
+      password: 'totheregionalmanager'
+    };
+
+    const response = await server.inject(request);
+    const [, event] = await mailerLogEvent;
+
+    Code.expect(event.error.message).to.match(/failed to send mail/i);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result).to.be.an.object();
+    Code.expect(response.result.user).to.be.an.object();
+    Code.expect(response.result.session).to.be.an.object();
+    Code.expect(response.result.authHeader).to.be.a.string();
   });
-
-
-  lab.test('it returns a conflict when find one hits for username check', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      if (conditions.username) {
-        callback(null, {});
-      }
-      else {
-        callback(Error('find one failed'));
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(409);
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns an error when find one fails for email check', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      if (conditions.email) {
-        callback(Error('find one failed'));
-      }
-      else {
-        callback();
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns a conflict when find one hits for email check', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      if (conditions.email) {
-        callback(null, {});
-      }
-      else {
-        callback();
-      }
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(409);
-
-      done();
-    });
-  });
-
-  lab.test('it returns a conflict when password do not meet requirements', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback(null, null);
-    };
-
-    request.payload.password = 'notagoodpassword';
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(409);
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns an error if any critical setup step fails', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback();
-    };
-
-    stub.User.create = function (username, password, email, name, callback) {
-
-      callback(Error('create failed'));
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-
-      done();
-    });
-  });
-
-
-  lab.test('it finishes successfully (even if sending welcome email fails)', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback();
-    };
-
-    stub.User.create = function (username, password, email, name, callback) {
-
-      callback(null, { _id: 'BL4M0' });
-    };
-
-    stub.User.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, [{}, {}]);
-    };
-
-    const realSendEmail = server.plugins.mailer.sendEmail;
-    server.plugins.mailer.sendEmail = function (options, template, context, callback) {
-
-      callback(new Error('Whoops.'));
-    };
-
-    stub.Session.create = function (username, ip, userAgent, callback) {
-
-      callback(null, {});
-    };
-
-    const realWarn = console.warn;
-    console.warn = function () {
-
-      console.warn = realWarn;
-
-      done();
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
-
-      server.plugins.mailer.sendEmail = realSendEmail;
-    });
-  });
-
-
-  lab.test('it finishes successfully', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback();
-    };
-
-    stub.User.create = function (username, password, email, name, callback) {
-
-      callback(null, { _id: 'BL4M0' });
-    };
-
-    stub.User.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, [{}, {}]);
-    };
-
-    const realSendEmail = server.plugins.mailer.sendEmail;
-    server.plugins.mailer.sendEmail = function (options, template, context, callback) {
-
-      callback(null, {});
-    };
-
-    stub.Session.create = function (username, ip, userAgent, callback) {
-
-      callback(null, {});
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
-
-      server.plugins.mailer.sendEmail = realSendEmail;
-
-      done();
-    });
-  });
-
-
-  lab.test('it finishes successfully with an x-forwarded-for header', (done) => {
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback();
-    };
-
-    stub.User.create = function (username, password, email, name, callback) {
-
-      callback(null, { _id: 'BL4M0' });
-    };
-
-    stub.User.findByIdAndUpdate = function (id, update, callback) {
-
-      callback(null, [{}, {}]);
-    };
-
-    const realSendEmail = server.plugins.mailer.sendEmail;
-    server.plugins.mailer.sendEmail = function (options, template, context, callback) {
-
-      callback(null, {});
-    };
-
-    stub.Session.create = function (username, ip, userAgent, callback) {
-
-      callback(null, {});
-    };
-
-    request.headers = {
-      'x-forwarded-for': '127.0.0.1'
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result).to.be.an.object();
-
-      server.plugins.mailer.sendEmail = realSendEmail;
-
-      done();
-    });
-  });
-});
-
-lab.experiment('Available Plugin', () => {
-
-  lab.beforeEach((done) => {
-
-    request = {
-      method: 'POST',
-      url: '/available',
-      payload: {}
-    };
-
-    done();
-  });
-
-  lab.test('it returns an error when input is not valid', (done) => {
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(400);
-      Code.expect(response.result).to.be.an.object();
-
-      done();
-    });
-  });
-
-  lab.test('it returns an error when username is taken', (done) => {
-
-    request.payload.username = 'testUsername';
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback(null,{});
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.username).to.equal(false);
-
-      done();
-    });
-  });
-
-  lab.test('it returns an error when email is taken', (done) => {
-
-    request.payload.email = 'testEmail@email.email';
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback(null,{});
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.email).to.equal(false);
-
-      done();
-    });
-  });
-
-  lab.test('it returns an error when find fails', (done) => {
-
-    request.payload.email = 'testEmail@email.email';
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback(Error('test error'));
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(500);
-
-      done();
-    });
-  });
-
-  lab.test('it returns an successfully', (done) => {
-
-    request.payload.email = 'testEmail@email.email';
-    request.payload.username = 'username';
-
-    stub.User.findOne = function (conditions, callback) {
-
-      callback();
-    };
-
-    server.inject(request, (response) => {
-
-      Code.expect(response.statusCode).to.equal(200);
-      Code.expect(response.result.email).to.equal(true);
-      Code.expect(response.result.username).to.equal(true);
-
-      done();
-    });
-  });
-
-
 });

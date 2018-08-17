@@ -1,55 +1,91 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const Assert = require('assert');
+const AnchorModel = require('../anchor/anchor-model');
+const Hoek = require('hoek');
 
+class Feedback extends AnchorModel {
 
-class Feedback extends MongoModels {
+  static async create(document){
 
-  static create(subject,description, userId, callback) {
+    Assert.ok(document.title,'Missing title');
+    Assert.ok(document.description, 'Missing description');
+    Assert.ok(document.userId,'Missing userid');
 
-    const document = {
-      subject,
-      description,
-      userId,
+    document =  {
+      title: document.title,
+      description: document.description,
+      userId: document.userId,
       resolved: false,
-      time: new Date()
+      comments: []
     };
 
-    this.insertOne(document, (err, docs) => {
+    const feedback =  await this.insertOne(document);
 
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    return feedback[0];
   }
 }
 
 
-Feedback.collection = 'feedback';
+Feedback.collectionName = 'feedbacks';
 
 
 Feedback.schema = Joi.object({
   _id: Joi.object(),
-  subject: Joi.string().required(),
+  title: Joi.string().required(),
   description: Joi.string().required(),
   userId: Joi.string().required(),
-  resolved: Joi.boolean().required(),
-  time: Joi.date().required()
+  resolved: Joi.boolean().default(false),
+  createdAt: Joi.date(),
+  updatedAt: Joi.date(),
+  comments: Joi.array().items(Joi.object({
+    message: Joi.string().required(),
+    userId: Joi.string().required(),
+    createdAt: Joi.date().required()
+  }))
 });
 
+Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: false,
+    payload: Feedback.payload
+  },
+  update: {
+    disabled: false,
+    payload: Feedback.payload
+  }
+
+});
+
+Feedback.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true
+}];
+
 Feedback.payload = Joi.object({
-  subject: Joi.string().required(),
+  title: Joi.string().required(),
   description: Joi.string().required()
 });
 
-
 Feedback.indexes = [
-  { key: { name: 1 } },
-  { key: { time: 1 } },
-  { key: { userId: 1 } }
+  { key: { title: 1 } }
 ];
 
 
+
+
+
 module.exports = Feedback;
+
+
+
+
+
+
+
+
+
+

@@ -26,6 +26,11 @@ const config = {
     local: process.env.BASE_URL,
     $default: 'http://localhost:9000/'
   },
+  authAttempts: {
+    hours: 1,
+    forIp: 50,
+    forIpAndUser:7
+  },
   port: {
     web: {
       $filter: 'env',
@@ -39,20 +44,26 @@ const config = {
     forIp: 50,
     forIpAndUser: 7
   },
-  authSecret: {
+  cookieSecret: {
     $filter: 'env',
     production: process.env.AUTH_SECRET,
     local: process.env.AUTH_SECRET,
     $default: '!k3yb04rdK4tz~4qu4~k3yb04rdd0gz!'
   },
-  hapiMongoModels: {
+  hapiAnchorModel: {
     mongodb: {
-      uri: {
-        $filter: 'env',
-        production: process.env.MONGODB_URI,
-        test: 'mongodb://localhost:27017/anchor-test',
-        local: process.env.MONGODB_URI,
-        $default: 'mongodb://localhost:27017/anchor'
+      connection: {
+        uri: {
+          $filter: 'env',
+          production: process.env.MONGODB_URI,
+          $default: 'mongodb://localhost:27017/'
+        },
+        db: {
+          $filter: 'env',
+          production: process.env.MONGODB_DB_NAME,
+          test: 'anchor-test',
+          $default: 'anchor'
+        }
       }
     },
     autoIndex: true
