@@ -103,3 +103,69 @@ lab.experiment('POST /api/backup/internal', () => {
     Code.expect(response.result._id).to.be.a.object();
   });
 });
+
+
+lab.experiment('GET /api/backup/{id}/data', () => {
+
+  let request;
+
+  lab.beforeEach(() => {
+
+    request = {
+      method: 'GET',
+      url: '/api/backup/',
+      allowInternals: true
+    };
+  });
+
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const backupRequest = {
+      method: 'POST',
+      url: '/api/backup/internal',
+      allowInternals: true
+    };
+
+    const backup = await server.inject(backupRequest);
+
+    request.url += backup.result._id + '/data';
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result).to.be.an.object();
+    Code.expect(response.result.filename).to.be.a.string();
+    Code.expect(response.result.local).to.be.a.boolean();
+    Code.expect(response.result.createdAt).to.be.a.date();
+    Code.expect(response.result._id).to.be.a.object();
+  });
+});
+
+
+lab.experiment('POST /api/backup/data', () => {
+
+  let request;
+
+  lab.beforeEach(() => {
+
+    request = {
+      method: 'POST',
+      url: '/api/backup/data',
+      payload: {
+        filename: 'test',
+        data: {}
+      }
+    };
+  });
+
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result).to.be.an.object();
+    Code.expect(response.result.filename).to.be.a.string();
+    Code.expect(response.result.local).to.be.a.boolean();
+    Code.expect(response.result.createdAt).to.be.a.date();
+    Code.expect(response.result._id).to.be.a.object();
+  });
+});
