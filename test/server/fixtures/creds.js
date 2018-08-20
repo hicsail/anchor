@@ -8,7 +8,7 @@ class Credentials {
 
     const combo = `${username}:${password}`;
 
-    const combo64 = (new Buffer(combo)).toString('base64');
+    const combo64 = (Buffer.from(combo)).toString('base64');
     return `Basic ${combo64}`;
 
 

@@ -33,7 +33,7 @@ const register = function (server, options) {
 
       if (String(user._id) !== '000000000000000000000000') {
 
-        if (!confirmPermission(request,user)) {
+        if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
 
@@ -119,7 +119,7 @@ const register = function (server, options) {
 
       if (String(user.id) !== '000000000000000000000000') {
 
-        if (!confirmPermission(request,user)) {
+        if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
 
