@@ -34,6 +34,30 @@ class Credentials {
       session
     };
   }
+
+  static async createRootUser(password,email) {
+
+    const user = await User.insertOne({
+      _id: User._idClass('000000000000000000000000'),
+      username: 'root',
+      password,
+      email,
+      name: 'root',
+      roles: [],
+      permissions: {}
+    });
+
+    const session = await Session.create({
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    });
+
+    return {
+      user,
+      session
+    };
+  }
 }
 
 module.exports = Credentials;

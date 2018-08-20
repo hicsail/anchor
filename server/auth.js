@@ -30,14 +30,10 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-
-      if (String(user._id) !== '000000000000000000000000') {
-
+      if (`${user._id}` !== '000000000000000000000000') {
         if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
-
-
       }
 
       await session.updateLastActive();
@@ -117,13 +113,10 @@ const register = function (server, options) {
         return { valid: false };
       }
 
-      if (String(user.id) !== '000000000000000000000000') {
-
+      if (`${user._id}` !== '000000000000000000000000') {
         if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
-
-
       }
 
       await session.updateLastActive();

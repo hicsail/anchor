@@ -266,6 +266,27 @@ lab.experiment('Simple Auth Strategy', () => {
   });
 
 
+  lab.test('it returns as valid when it is the root user', async () => {
+
+    const { user } = await Fixtures.Creds.createRootUser('321!abc','ren@stimpy.show');
+
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
+
+    const request = {
+      method: 'GET',
+      url: '/simple',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
+  });
+
+
   lab.test('it returns as valid when all is well', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
