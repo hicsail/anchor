@@ -103,6 +103,16 @@ lab.experiment('GET /api/{collectionName}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 
+  lab.test('it returns HTTP 400 when query is not valid', async () => {
+
+    request.url += '?extra=test';
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(400);
+    Code.expect(response.result).to.be.an.object();
+  });
+
   lab.test('it returns HTTP 200 when auth is not required', async () => {
 
     User.routes.getAll.auth = false;
@@ -334,6 +344,16 @@ lab.experiment('GET /api/{collectionName}/my', () => {
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(401);
+    Code.expect(response.result).to.be.an.object();
+  });
+
+  lab.test('it returns HTTP 400 when query is not valid', async () => {
+
+    request.url += '?extra=test';
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(400);
     Code.expect(response.result).to.be.an.object();
   });
 
