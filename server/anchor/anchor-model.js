@@ -983,7 +983,7 @@ AnchorModel.routes = {
     auth: true
   },
   update: {
-    disabled: true,
+    disabled: false,
     payload: null,
     handler: async (request,h) => {
 
@@ -991,7 +991,6 @@ AnchorModel.routes = {
       const id = request.params.id;
       const update = {
         $set: request.payload
-
       };
       const check = await model.findByIdAndUpdate(id,update);
       if (!check) {
