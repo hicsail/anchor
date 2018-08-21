@@ -13,7 +13,6 @@ const register = function (server, options) {
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
 
-
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
@@ -44,8 +43,6 @@ const register = function (server, options) {
         user
       };
 
-
-
       return { credentials, isValid: true };
     }
   });
@@ -69,20 +66,16 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!confirmtokenPermission(request,token)) {
+      if (!confirmTokenPermission(request,token)) {
         throw Boom.forbidden('Insufficient token permissions');
-
       }
 
       if (await Crypto.compare(password,token.key)){
 
-
-      if (await Crypto.compare(password,token.key)){
-
-        token = await Token.findByIdAndUpdate(token._id,  { $set: {
-          lastActive: new Date()
-        }
-
+        token = await Token.findByIdAndUpdate(token._id,  {
+          $set: {
+            lastActive: new Date()
+          }
         });
 
         const credentials = {
@@ -161,41 +154,30 @@ const usersPermissions = async function (user) {
   return permissions;
 };
 
-const pathtoKey = function (request) {
+const pathToKey = function (request) {
 
-
-  const method = String(request.method).toUpperCase();
-  const path = String(request.path).split('/')[1] + '-' + String(request.path).split('/')[2];
-
-
+  const method = request.method.toUpperCase();
+  const path = request.path.split('/').join('-');
   return method + '-' + path;
 };
 
-const confirmtokenPermission = function (request,token) {
+const confirmTokenPermission = function (request,token) {
 
-  const key = pathtoKey(request);
-
+  const key = pathToKey(request);
   if (token.permissions[key] !== undefined) {
-
     return token.permissions[key];
   }
-
   return true;
 };
 
-
-
-
 const confirmPermission = async function (request,user) {
 
-  const key = pathtoKey(request);
-
+  const key = pathToKey(request);
   const permissions = await usersPermissions(user);
 
   if (permissions[key] !== undefined) {
     return permissions[key];
   }
-
   return true;
 };
 
@@ -210,5 +192,6 @@ module.exports = {
   ],
   register,
   usersPermissions,
-  confirmPermission
+  confirmPermission,
+  confirmTokenPermission
 };
