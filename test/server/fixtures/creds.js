@@ -36,7 +36,7 @@ class Credentials {
 
   static async createRootUser(password,email) {
 
-    const user = await User.insertOne({
+    const user = (await User.insertOne({
       _id: User._idClass('000000000000000000000000'),
       username: 'root',
       password,
@@ -44,7 +44,7 @@ class Credentials {
       name: 'root',
       roles: [],
       permissions: {}
-    });
+    }))[0];
 
     const session = await Session.create({
       userId: `${user._id}`,

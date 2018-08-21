@@ -156,7 +156,7 @@ const pathToKey = function (request) {
 
   const method = request.method.toUpperCase();
   const path = request.path.split('/').join('-');
-  return method + '-' + path;
+  return method + path;
 };
 
 const confirmTokenPermission = function (request,token) {

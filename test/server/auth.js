@@ -515,25 +515,6 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-  lab.test('it returns as valid when all is well', async () => {
-
-    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
-    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
-
-    const request = {
-      method: 'GET',
-      url: '/token',
-      headers: {
-        authorization: token.key
-      }
-    };
-
-    const response = await server.inject(request);
-
-    Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result.isValid).to.equal(true);
-  });
-
   lab.test('it returns as invalid when token secret and token provided don\'t match', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
@@ -553,6 +534,25 @@ lab.experiment('Token Auth Strategy', () => {
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
+  });
+
+  lab.test('it returns as valid when all is well', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: token.key
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
   });
 });
 
