@@ -13,7 +13,6 @@ const register = function (server, options) {
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
 
-      console.log(pathtoKey(request));
 
       const session = await Session.findByCredentials(sessionId, key);
 
