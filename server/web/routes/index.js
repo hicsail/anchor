@@ -6,18 +6,19 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/',
     options: {
-      auth: false
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      }
     },
     handler: function (request, h) {
 
-      const context = {
-        context: {
-          projectName: 'Anchor',
-          credentials: request.auth.credentials
-        }
+      const props = {
+        projectName: 'Anchor',
+        credentials: request.auth.credentials
       };
 
-      return h.view('home', context);
+      return h.view('home', props);
     }
   });
 };

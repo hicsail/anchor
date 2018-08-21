@@ -8,8 +8,26 @@ class Navbar extends React.Component {
     }
 
     render () {
-        let navbarEnd;
-        console.log(this);
+        let endMenu;
+        if(this.props.credentials) {
+            endMenu = <div className="navbar-end">
+                    <a className="navbar-item" href="/">
+                        {this.props.credentials.user.name}
+                    </a>
+                    <a className="navbar-item" href="/logout">
+                    Logout
+                    </a>
+                </div>
+        } else {
+            endMenu = <div className="navbar-end">
+                <a className="navbar-item" href="/login">
+                    Login
+                </a>
+                <a className="navbar-item" href="/signup">
+                    Sign Up
+                </a>
+            </div>
+        }
         return (
             <nav className="navbar is-white has-shadow">
                 <div className="navbar-brand">
@@ -22,21 +40,13 @@ class Navbar extends React.Component {
                         <span/>
                     </div>
                 </div>
-
                 <div id="navbar" className="navbar-menu">
                     <div className="navbar-start">
                         <a className="navbar-item" href="/">
                             Home
                         </a>
                     </div>
-                    <div className="navbar-end">
-                        <a className="navbar-item" href="/login">
-                            Login
-                        </a>
-                        <a className="navbar-item" href="/signup">
-                            Sign Up
-                        </a>
-                    </div>
+                    {endMenu}
                 </div>
             </nav>
         )
