@@ -14,7 +14,6 @@ const Session = require('../../../server/models/session');
 const lab = exports.lab = Lab.script();
 let server;
 
-
 lab.before(async () => {
 
   server = Hapi.Server();
@@ -39,20 +38,17 @@ lab.before(async () => {
   await User.create({ username: 'ren', password: 'baddog', email: 'ren@stimpy.show', name: 'ren' });
 });
 
-
 lab.after(async () => {
 
   await Fixtures.Db.removeAllData();
   await server.stop();
 });
 
-
 lab.experiment('POST /api/login', () => {
 
   const AuthAttempt_abuseDetected = AuthAttempt.abuseDetected;
   const User_findByCredentials = User.findByCredentials;
   let request;
-
 
   lab.beforeEach(() => {
 
@@ -66,13 +62,11 @@ lab.experiment('POST /api/login', () => {
     };
   });
 
-
   lab.afterEach(() => {
 
     AuthAttempt.abuseDetected = AuthAttempt_abuseDetected;
     User.findByCredentials = User_findByCredentials;
   });
-
 
   lab.test('it returns HTTP 400 when login abuse is detected', async () => {
 
@@ -85,7 +79,6 @@ lab.experiment('POST /api/login', () => {
       .to.match(/maximum number of auth attempts reached/i);
   });
 
-
   lab.test('it returns HTTP 400 when a user is not found', async () => {
 
     User.findByCredentials = () => undefined;
@@ -96,7 +89,6 @@ lab.experiment('POST /api/login', () => {
     Code.expect(response.result.message)
       .to.match(/credentials are invalid or account is inactive/i);
   });
-
 
   lab.test('it returns HTTP 200 when all is well', async () => {
 
@@ -110,13 +102,11 @@ lab.experiment('POST /api/login', () => {
   });
 });
 
-
 lab.experiment('POST /api/login/forgot', () => {
 
   const Mailer_sendEmail = Mailer.sendEmail;
   const User_findOne = User.findOne;
   let request;
-
 
   lab.beforeEach(() => {
 
@@ -129,13 +119,11 @@ lab.experiment('POST /api/login/forgot', () => {
     };
   });
 
-
   lab.afterEach(() => {
 
     Mailer.sendEmail = Mailer_sendEmail;
     User.findOne = User_findOne;
   });
-
 
   lab.test('it returns HTTP 200 when the user query misses', async () => {
 
@@ -146,7 +134,6 @@ lab.experiment('POST /api/login/forgot', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.message).to.match(/success/i);
   });
-
 
   lab.test('it returns HTTP 200 when all is well', async () => {
 
@@ -159,14 +146,12 @@ lab.experiment('POST /api/login/forgot', () => {
   });
 });
 
-
 lab.experiment('POST /api/login/reset', () => {
 
   const User_findOne = User.findOne;
   const Mailer_sendEmail = Mailer.sendEmail;
   let request;
   let key;
-
 
   lab.before(async () => {
 
@@ -184,7 +169,6 @@ lab.experiment('POST /api/login/reset', () => {
     });
   });
 
-
   lab.beforeEach(() => {
 
     request = {
@@ -198,13 +182,11 @@ lab.experiment('POST /api/login/reset', () => {
     };
   });
 
-
   lab.afterEach(() => {
 
     Mailer.sendEmail = Mailer_sendEmail;
     User.findOne = User_findOne;
   });
-
 
   lab.test('it returns HTTP 400 when the user query misses', async () => {
 
@@ -216,7 +198,6 @@ lab.experiment('POST /api/login/reset', () => {
     Code.expect(response.result.message).to.match(/invalid email or key/i);
   });
 
-
   lab.test('it returns HTTP 400 when the key match misses', async () => {
 
     request.payload.key += 'poison';
@@ -227,7 +208,6 @@ lab.experiment('POST /api/login/reset', () => {
     Code.expect(response.result.message).to.match(/invalid email or key/i);
   });
 
-
   lab.test('it returns HTTP 200 when all is well', async () => {
 
     const response = await server.inject(request);
@@ -237,11 +217,9 @@ lab.experiment('POST /api/login/reset', () => {
   });
 });
 
-
 lab.experiment('DELETE /api/logout', () => {
 
   let request;
-
 
   lab.beforeEach(() => {
 
@@ -251,7 +229,6 @@ lab.experiment('DELETE /api/logout', () => {
     };
   });
 
-
   lab.test('it returns HTTP 200 when credentials are missing', async () => {
 
     const response = await server.inject(request);
@@ -259,7 +236,6 @@ lab.experiment('DELETE /api/logout', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.message).to.match(/success/i);
   });
-
 
   lab.test('it returns HTTP 200 when credentials are present', async () => {
 

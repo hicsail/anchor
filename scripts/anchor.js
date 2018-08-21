@@ -103,7 +103,6 @@ case 'g':
   Fs.writeFileSync(modelTestPath,modelTest);
   console.log('anchor\tmodel test\t\t' + data.name + ' Generated');
 
-
   //---------------------------
   //api test
   //---------------------------
@@ -118,7 +117,6 @@ case 'g':
   }
   Fs.writeFileSync(apiTestPath,apiTest);
   console.log('anchor\tapi test\t\t' + data.name + ' Generated');
-
 
   //---------------------------
   //web route
@@ -154,7 +152,6 @@ case 'g':
   Fs.writeFileSync(createPath,create);
   console.log('anchor\tclient side create\t' + data.name + ' Generated');
 
-
   //---------------------------
   //client side edit javascript
   //---------------------------
@@ -169,7 +166,6 @@ case 'g':
   }
   Fs.writeFileSync(editPath,edit);
   console.log('anchor\tclient side edit\t' + data.name + ' Generated');
-
 
   //---------------------------
   //client side index javascript
@@ -205,7 +201,6 @@ case 'g':
   Fs.writeFileSync(indexHtmlPath,indexHtml);
   console.log('anchor\tindex.html\t\t' + data.name + ' Generated');
 
-
   //---------------------------
   //client side create html
   //---------------------------
@@ -220,7 +215,6 @@ case 'g':
   }
   Fs.writeFileSync(createHtmlPath,createHtml);
   console.log('anchor\tcreate.html\t\t' + data.name + ' Generated');
-
 
   //---------------------------
   //client side edit.html.handlebars html

@@ -6,10 +6,8 @@ const Fixtures = require('../fixtures');
 const Lab = require('lab');
 const Session = require('../../../server/models/session');
 
-
 const lab = exports.lab = Lab.script();
 const config = Config.get('/hapiAnchorModel/mongodb');
-
 
 lab.experiment('Session Model', () => {
 
@@ -19,14 +17,12 @@ lab.experiment('Session Model', () => {
     await Fixtures.Db.removeAllData();
   });
 
-
   lab.after(async () => {
 
     await Fixtures.Db.removeAllData();
 
     Session.disconnect();
   });
-
 
   lab.test('it returns a new instance when create succeeds', async () => {
 
@@ -39,7 +35,6 @@ lab.experiment('Session Model', () => {
     Code.expect(session).to.be.an.instanceOf(Session);
   });
 
-
   lab.test('it returns undefined when finding by credentials session misses', async () => {
 
     const id = '555555555555555555555555';
@@ -48,7 +43,6 @@ lab.experiment('Session Model', () => {
 
     Code.expect(session).to.be.undefined();
   });
-
 
   lab.test('it returns undefined when finding by credentials session hits and key match misses', async () => {
 
@@ -71,7 +65,6 @@ lab.experiment('Session Model', () => {
 
     Code.expect(result).to.be.undefined();
   });
-
 
   lab.test('it returns a session instance when finding by credentials hits and key match hits', async () => {
 
@@ -96,7 +89,6 @@ lab.experiment('Session Model', () => {
     Code.expect(session._id).to.equal(result._id);
   });
 
-
   lab.test('it creates a key hash combination', async () => {
 
     const result = await Crypto.generateKeyHash();
@@ -105,7 +97,6 @@ lab.experiment('Session Model', () => {
     Code.expect(result.key).to.be.a.string();
     Code.expect(result.hash).to.be.a.string();
   });
-
 
   lab.test('it updates the last active time of an instance', async () => {
 

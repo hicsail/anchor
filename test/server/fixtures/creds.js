@@ -11,7 +11,6 @@ class Credentials {
     const combo64 = (Buffer.from(combo)).toString('base64');
     return `Basic ${combo64}`;
 
-
   };
 
   static async createUser(username,password,email,name) {

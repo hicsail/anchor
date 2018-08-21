@@ -45,7 +45,6 @@ lab.after(async () => {
   await server.stop();
 });
 
-
 lab.experiment('GET /api/{collectionName}', () => {
 
   let request;
@@ -123,7 +122,6 @@ lab.experiment('GET /api/{collectionName}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('POST /api/{collectionName}', () => {
 
@@ -220,7 +218,6 @@ lab.experiment('POST /api/{collectionName}', () => {
   });
 });
 
-
 lab.experiment('GET /api/{collectionName}/{id}', () => {
 
   let request;
@@ -299,7 +296,6 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
   });
 });
 
-
 lab.experiment('GET /api/{collectionName}/my', () => {
 
   let request;
@@ -377,7 +373,6 @@ lab.experiment('GET /api/{collectionName}/my', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('PUT /api/{collectionName}/{id}', () => {
 
@@ -473,7 +468,6 @@ lab.experiment('PUT /api/{collectionName}/{id}', () => {
   });
 });
 
-
 lab.experiment('GET /api/{collectionName}/routes', () => {
 
   let request;
@@ -508,7 +502,6 @@ lab.experiment('GET /api/{collectionName}/routes', () => {
   });
 });
 
-
 lab.experiment('GET /api/{collectionName}/schema', () => {
 
   let request;
@@ -542,7 +535,6 @@ lab.experiment('GET /api/{collectionName}/schema', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('GET /api/{collectionName}/{id}', () => {
 
@@ -611,7 +603,6 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('POST /api/{collectionName}/insertMany', () => {
 
@@ -707,7 +698,6 @@ lab.experiment('POST /api/{collectionName}/insertMany', () => {
     Code.expect(response.result).to.be.an.array();
   });
 });
-
 
 lab.experiment('DELETE /api/{collectionName}/{id}', () => {
 

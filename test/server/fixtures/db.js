@@ -6,7 +6,6 @@ const Feedback = require('../../../server/models/feedback');
 const Session = require('../../../server/models/session');
 const User = require('../../../server/models/user');
 
-
 class Db {
   static async removeAllData() {
 
@@ -20,6 +19,5 @@ class Db {
     ]);
   }
 }
-
 
 module.exports = Db;

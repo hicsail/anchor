@@ -83,6 +83,3 @@ Notification.indexes = [
 ];
 
 module.exports = Notification;
-
-
-

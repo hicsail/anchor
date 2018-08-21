@@ -81,7 +81,6 @@ lab.before(async () => {
     }
   });
 
-
   server.route({
     method: 'GET',
     path: '/token',
@@ -170,7 +169,6 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-
   lab.test('it returns as invalid when the session query misses', async () => {
 
     const sessionId = '000000000000000000000001';
@@ -189,7 +187,6 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-
   lab.test('it returns as invalid when the user query misses', async () => {
 
     const session = await Session.create({ userId: '000000000000000000000000', ip: '127.0.0.1', userAgent: 'Lab' });
@@ -205,7 +202,6 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });
-
 
   lab.test('it returns as invalid when the user is not active', async () => {
 
@@ -233,7 +229,6 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });
-
 
   lab.test('it returns a when user does not have permission', async () => {
 
@@ -265,7 +260,6 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-
   lab.test('it returns as valid when it is the root user', async () => {
 
     const { user } = await Fixtures.Creds.createRootUser('321!abc','ren@stimpy.show');
@@ -285,7 +279,6 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(true);
   });
-
 
   lab.test('it returns as valid when all is well', async () => {
 
@@ -315,7 +308,6 @@ lab.experiment('Session Auth Strategy', () => {
     await Fixtures.Db.removeAllData();
   });
 
-
   lab.test('it returns as invalid without authentication provided', async () => {
 
     const request = {
@@ -327,7 +319,6 @@ lab.experiment('Session Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });
-
 
   lab.test('it returns as invalid when the session query misses', async () => {
 
@@ -352,7 +343,6 @@ lab.experiment('Session Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-
   lab.test('it returns as invalid when the user query misses', async () => {
 
     const loginRequest = {
@@ -373,7 +363,6 @@ lab.experiment('Session Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });
-
 
   lab.test('it returns as invalid when the user is not active', async () => {
 
@@ -454,7 +443,6 @@ lab.experiment('Session Auth Strategy', () => {
   });
 });
 
-
 lab.experiment('Token Auth Strategy', () => {
 
   lab.test('it returns as invalid without authentication provided', async () => {
@@ -467,7 +455,6 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });
-
 
   lab.test('it returns as invalid when the token is invalid', async () => {
 
@@ -485,7 +472,6 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-
   lab.test('it returns as invalid when the user query misses', async () => {
 
     const token = await Token.create({ userId: '000000000000000000000001', description: 'test token' });
@@ -501,7 +487,6 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });
-
 
   lab.test('it returns as invalid when the user is not active', async () => {
 
@@ -530,7 +515,6 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-
   lab.test('it returns as valid when all is well', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
@@ -549,7 +533,6 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(true);
   });
-
 
   lab.test('it returns as invalid when token secret and token provided don\'t match', async () => {
 
@@ -572,7 +555,6 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 });
-
 
 lab.experiment('Users Permissions', () => {
 
@@ -601,7 +583,6 @@ lab.experiment('Users Permissions', () => {
     Code.expect(results['GET-api-users']).to.equal(true);
   });
 
-
   lab.test('it returns the correct values when 2 role is present', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
@@ -620,7 +601,6 @@ lab.experiment('Users Permissions', () => {
     Code.expect(results['POST-api-users']).to.equal(false);
     Code.expect(results['GET-api-users']).to.equal(true);
   });
-
 
   lab.test('it returns the correct values when 1 role is not found in db', async () => {
 

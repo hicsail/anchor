@@ -3,9 +3,7 @@ const Code = require('code');
 const Lab = require('lab');
 const Manifest = require('../manifest');
 
-
 const lab = exports.lab = Lab.script();
-
 
 lab.experiment('Manifest', () => {
 
@@ -13,7 +11,6 @@ lab.experiment('Manifest', () => {
 
     Code.expect(Manifest.get('/')).to.be.an.object();
   });
-
 
   lab.test('it gets manifest meta data', () => {
 

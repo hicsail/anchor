@@ -28,10 +28,7 @@ class Role extends AnchorModel {
 
 }
 
-
-
 Role.collectionName = 'roles';
-
 
 Role.schema = Joi.object({
   _id: Joi.object(),
@@ -68,6 +65,5 @@ Role.payload = Joi.object({
 Role.indexes = [
   { key: { name: 1, unique: 1 } }
 ];
-
 
 module.exports = Role;

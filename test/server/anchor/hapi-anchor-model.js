@@ -5,7 +5,6 @@ const Lab = require('lab');
 const Fs = require('fs');
 const Proxyquire = require('proxyquire');
 
-
 const lab = exports.lab = Lab.script();
 const config = {
   mongodb: {
@@ -23,9 +22,7 @@ const HapiAnchorModel = Proxyquire('../../../server/anchor/hapi-anchor-model', {
   'anchor-model': stub.AnchorModel
 });
 
-
 lab.experiment('Plugin', () => {
-
 
   lab.test('it throws an error id unable to read from directory', async () => {
 
@@ -53,7 +50,6 @@ lab.experiment('Plugin', () => {
     Fs.readdir = realreadDir;
   });
 
-
   lab.test('it successfuly connects and exposes the plugin (default autoIndex value)', async () => {
 
     const server = Hapi.Server();
@@ -66,15 +62,12 @@ lab.experiment('Plugin', () => {
     await server.register(plugin);
     await server.start();
 
-
-
     Code.expect(server.plugins['hapi-anchor-model']).to.be.an.object();
 
     server.plugins['hapi-anchor-model'].anchorModel.disconnect();
 
     await server.stop();
   });
-
 
   lab.test('it successfuly connects and exposes the plugin without any anchorModels', async () => {
 
@@ -90,15 +83,12 @@ lab.experiment('Plugin', () => {
     await server.register(plugin);
     await server.start();
 
-
-
     Code.expect(server.plugins['hapi-anchor-model']).to.be.an.object();
 
     server.plugins['hapi-anchor-model'].anchorModel.disconnect();
 
     await server.stop();
   });
-
 
   lab.test('it connects to the db and creates indexes during pre-start (autoIndex set manually)', async () => {
 
@@ -121,7 +111,6 @@ lab.experiment('Plugin', () => {
 
     await server.stop();
   });
-
 
   lab.test('it connects to the db and skips creating indexes during pre-start (autoIndex set manually)', async () => {
 

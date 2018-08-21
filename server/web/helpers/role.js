@@ -1,7 +1,6 @@
 'use strict';
 const _ = require('lodash');
 
-
 const roleHelper = function (user, role, context) {
 
   if (_.isEmpty(context)) {

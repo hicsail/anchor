@@ -7,7 +7,6 @@ const Session = require('./models/session');
 const Token = require('./models/token');
 const User = require('./models/user');
 
-
 const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
@@ -88,7 +87,6 @@ const register = function (server, options) {
     }
   });
 
-
   server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
     cookie: 'anchor-auth',
@@ -167,7 +165,6 @@ const confirmPermission = async function (request,user) {
 
   return true;
 };
-
 
 module.exports = {
   name: 'auth',
