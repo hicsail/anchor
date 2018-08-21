@@ -1,21 +1,20 @@
 'use strict';
 const React = require('react');
+const Navbar = require('./components/navbar');
 
 
 class LayoutView extends React.Component {
-    render () {
 
+    render () {
         return (
             <html>
                 <head>
                     <title>{this.props.title}</title>
+                    <link rel="stylesheet" href="/public/css/lib/bulma.min.css"/>
                 </head>
                 <body>
+                    <Navbar context={this.props.context}/>
                     {this.props.children}
-                    <hr />
-                    <p>
-                        <a href="/">Home</a> | <a href="/about">About Us</a>
-                    </p>
                 </body>
             </html>
         );

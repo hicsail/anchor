@@ -10,7 +10,14 @@ const register = function (server, serverOptions) {
     },
     handler: function (request, h) {
 
-      return h.view('home');
+      const context = {
+        context: {
+          projectName: 'Anchor',
+          credentials: request.auth.credentials
+        }
+      };
+
+      return h.view('home', context);
     }
   });
 };

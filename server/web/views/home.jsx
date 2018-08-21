@@ -21,7 +21,7 @@ class HomeView extends React.Component {
     render () {
 
         return (
-            <Layout title="Home Page">
+            <Layout context={this.context}>
                 <h1>Welcome to the plot device.</h1>
                 <ButtonColumn tabs = {fields} />
                 <ButtonRow tabs = {fields} />

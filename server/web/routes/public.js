@@ -1,29 +1,25 @@
 'use strict';
 
-exports.register = function (server, options, next) {
+const register = function (server, serverOptions) {
 
   server.route({
     method: 'GET',
     path: '/public/{param*}',
-    config: {
-      security: {
-        xframe: {
-          rule: 'sameorigin'
-        }
-      }
+    options: {
+      auth: false
     },
     handler: {
       directory: {
-        path: './server/web/public/',
-        listing: true
+        path: 'server/web/public/',
+        listing: false
       }
     }
   });
-
-  next();
 };
 
 
-exports.register.attributes = {
-  name: 'public'
+module.exports = {
+  name: 'web-public',
+  dependencies: [],
+  register
 };
