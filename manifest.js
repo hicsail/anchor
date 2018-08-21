@@ -21,6 +21,40 @@ const manifest = {
   register: {
     plugins: [
       {
+        plugin: 'good',
+        options: {
+          reporters: {
+            myConsoleReporter: [
+              {
+                module: 'good-squeeze',
+                name: 'Squeeze',
+                args: [{
+                  error: '*',
+                  log: '*',
+                  request: '*',
+                  response: '*'
+                }]
+              },
+              {
+                module: 'good-file',
+                args: ['./server/logs/log']
+              },
+              {
+                module: 'good-console',
+                args: [{
+                  color: {
+                    $filter: 'env',
+                    production: false,
+                    $default: true
+                  }
+                }]
+              },
+              'stdout'
+            ]
+          }
+        }
+      },
+      {
         plugin: 'hapi-auth-cookie'
       },
       {
