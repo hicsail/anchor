@@ -13,6 +13,8 @@ const register = function (server, options) {
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, sessionId, key, h) {
 
+      console.log(pathtoKey(request));
+
       const session = await Session.findByCredentials(sessionId, key);
 
       if (!session) {
@@ -31,6 +33,7 @@ const register = function (server, options) {
       }
 
 
+
       if (String(user._id) !== '000000000000000000000000') {
 
         if (!confirmPermission(request,user)) {
@@ -43,6 +46,8 @@ const register = function (server, options) {
         session,
         user
       };
+
+
 
       return { credentials, isValid: true };
     }
@@ -67,11 +72,13 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!confirmPermission(request,user)) {
-        throw Boom.forbidden('Need permission');
+      if (!confirmtokenPermission(request,token)) {
+        throw Boom.forbidden('Insufficient token permissions');
       }
-      if (await Crypto.compare(password,token.key)){
 
+
+
+      if (await Crypto.compare(password,token.key)){
 
         token = await Token.findByIdAndUpdate(token._id,  { $set: {
           lastActive: new Date()
@@ -157,11 +164,34 @@ const usersPermissions = async function (user) {
   return permissions;
 };
 
-const confirmPermission = async function (request,user) {
+const pathtoKey = function (request) {
+
 
   const method = String(request.method).toUpperCase();
-  const incompletePath = String(request.path).split('/')[1] + '-' +  String(request.path).split('/')[2];
-  const key = method + '-' + incompletePath;
+  const path = String(request.path).split('/')[1] + '-' + String(request.path).split('/')[2];
+
+
+  return method + '-' + path;
+};
+
+const confirmtokenPermission = function (request,token) {
+
+  const key = pathtoKey(request);
+
+  if (token.permissions[key] !== undefined) {
+
+    return token.permissions[key];
+  }
+
+  return true;
+};
+
+
+
+
+const confirmPermission = async function (request,user) {
+
+  const key = pathtoKey(request);
   const permissions = await usersPermissions(user);
 
   if (permissions[key] !== undefined) {

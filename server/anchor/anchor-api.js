@@ -444,6 +444,7 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
+
           const { error } = Joi.validate(request.query,model.routes.getAll.query);
           if (error) {
             throw Boom.notFound('Query not validated');
