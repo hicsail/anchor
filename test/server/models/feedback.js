@@ -5,10 +5,8 @@ const Config = require('../../../config');
 const Fixtures = require('../fixtures');
 const Lab = require('lab');
 
-
 const lab = exports.lab = Lab.script();
 const config = Config.get('/hapiAnchorModel/mongodb');
-
 
 lab.experiment('Feedback Model', () => {
 
@@ -18,14 +16,12 @@ lab.experiment('Feedback Model', () => {
     await Fixtures.Db.removeAllData();
   });
 
-
   lab.after(async () => {
 
     await Fixtures.Db.removeAllData();
 
     Feedback.disconnect();
   });
-
 
   lab.test('it returns a new instance when create succeeds', async () => {
 

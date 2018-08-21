@@ -6,7 +6,6 @@ const Hoek = require('hoek');
 class Invite extends AnchorModel {
   static async create(document) {
 
-
     Assert.ok(document.email, 'Email missing');
     Assert.ok(document.status,'Status missing');
 
@@ -26,7 +25,6 @@ class Invite extends AnchorModel {
 }
 
 Invite.collectionName = 'invites';
-
 
 Invite.schema = Joi.object({
   _id: Joi.object(),
@@ -50,7 +48,6 @@ Invite.payload = Joi.object({
   permission: Joi.object(),
   status: Joi.string().valid('Pending','Accepted','Declined','Expired')
 });
-
 
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
@@ -78,6 +75,4 @@ Invite.indexes = [
   { key: { email: 1 }  }
 ];
 
-
 module.exports = Invite;
-

@@ -14,7 +14,6 @@ Gulp.task('documentation', (cb) => {
 
 });
 
-
 Gulp.task('css', () => {
 
   Gulp.src([
@@ -23,7 +22,6 @@ Gulp.task('css', () => {
   ]).pipe(Gulp.dest('./server/web/public/css/lib/'));
 });
 
-
 Gulp.task('cssDatatables', () => {
 
   Gulp.src([
@@ -31,7 +29,6 @@ Gulp.task('cssDatatables', () => {
     './node_modules/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css'
   ]).pipe(Gulp.dest('./server/web/public/css/lib/datatables/'));
 });
-
 
 Gulp.task('js', () => {
 

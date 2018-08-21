@@ -4,7 +4,6 @@ const Lab = require('lab');
 const AnchorModel = require('../../../server/anchor/anchor-model');
 const Mongodb = require('mongodb');
 
-
 const lab = exports.lab = Lab.script();
 const config = {
   connection: {
@@ -13,7 +12,6 @@ const config = {
   },
   options: {}
 };
-
 
 lab.experiment('Connections', () => {
 
@@ -29,7 +27,6 @@ lab.experiment('Connections', () => {
     lab.expect(db.serverConfig.isConnected()).to.equal(false);
   });
 
-
   lab.test('it throws when the db connection fails', async () => {
 
     const connection = {
@@ -39,7 +36,6 @@ lab.experiment('Connections', () => {
 
     await lab.expect(AnchorModel.connect(connection)).to.reject();
   });
-
 
   lab.test('it connects to multiple databases', async () => {
 
@@ -62,12 +58,10 @@ lab.experiment('Connections', () => {
     lab.expect(db2.serverConfig.isConnected()).to.equal(false);
   });
 
-
   lab.test('it throws when trying to close a named db connection that misses', () => {
 
     lab.expect(AnchorModel.disconnect.bind(AnchorModel, 'poison')).to.throw();
   });
-
 
   lab.test('it binds db functions to a named connection using `with` and caches for subsequent use', async () => {
 
@@ -94,7 +88,6 @@ lab.experiment('Connections', () => {
     lab.expect(db.serverConfig.isConnected()).to.equal(false);
   });
 
-
   lab.test('it throws when trying to use `with` and the named db misses', () => {
 
     class DummyModel extends AnchorModel {
@@ -103,7 +96,6 @@ lab.experiment('Connections', () => {
     lab.expect(DummyModel.with.bind(DummyModel, 'poison')).to.throw();
   });
 });
-
 
 lab.experiment('Instance construction', () => {
 
@@ -182,7 +174,6 @@ lab.experiment('Instance construction', () => {
   */
 });
 
-
 lab.experiment('Validation', () => {
 
   lab.test('it returns the Joi validation results of a SubClass', () => {
@@ -198,7 +189,6 @@ lab.experiment('Validation', () => {
 
     lab.expect(DummyModel.validate()).to.be.an.object();
   });
-
 
   lab.test('it returns the Joi validation results of a SubClass instance', () => {
 
@@ -217,11 +207,9 @@ lab.experiment('Validation', () => {
   });
 });
 
-
 lab.experiment('Result factory', () => {
 
   let DummyModel;
-
 
   lab.before(() => {
 
@@ -236,7 +224,6 @@ lab.experiment('Result factory', () => {
     });
   });
 
-
   lab.test('it returns an instance for a single document result', () => {
 
     const input = {
@@ -247,7 +234,6 @@ lab.experiment('Result factory', () => {
 
     lab.expect(result).to.be.an.instanceof(DummyModel);
   });
-
 
   lab.test('it returns an array of instances for a `writeOpResult` object', () => {
 
@@ -267,7 +253,6 @@ lab.experiment('Result factory', () => {
     });
   });
 
-
   lab.test('it returns a instance for a `findOpResult` object', () => {
 
     const input = {
@@ -281,7 +266,6 @@ lab.experiment('Result factory', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it returns undefined for a `findOpResult` object that missed', () => {
 
     const input = {
@@ -292,7 +276,6 @@ lab.experiment('Result factory', () => {
 
     lab.expect(result).to.not.exist();
   });
-
 
   lab.test('it does not convert an object into an instance without an _id property', () => {
 
@@ -306,11 +289,9 @@ lab.experiment('Result factory', () => {
   });
 });
 
-
 lab.experiment('Indexes', () => {
 
   let DummyModel;
-
 
   lab.before(async () => {
 
@@ -322,12 +303,10 @@ lab.experiment('Indexes', () => {
     await AnchorModel.connect(config.connection, config.options);
   });
 
-
   lab.after(() => {
 
     AnchorModel.disconnect();
   });
-
 
   lab.test('it successfully creates indexes', async () => {
 
@@ -337,7 +316,6 @@ lab.experiment('Indexes', () => {
     lab.expect(result).to.be.an.object();
   });
 });
-
 
 lab.experiment('Helpers', () => {
 
@@ -350,7 +328,6 @@ lab.experiment('Helpers', () => {
 
     AnchorModel.disconnect();
   });
-
 
   lab.test('it creates a fields document from a string', () => {
 
@@ -380,9 +357,6 @@ lab.experiment('Helpers', () => {
     lab.expect(Object.keys(fields2)).to.have.length(0);
   });
 
-
-
-
   lab.test('it creates a sort document from a string', () => {
 
     const sort = AnchorModel.sortAdapter('one -two three');
@@ -411,7 +385,6 @@ lab.experiment('Helpers', () => {
     lab.expect(Object.keys(sort2)).to.have.length(0);
   });
 
-
   lab.test('it returns the raw mongodb collection', () => {
 
     class DummyModel extends AnchorModel {
@@ -425,11 +398,9 @@ lab.experiment('Helpers', () => {
   });
 });
 
-
 lab.experiment('Paged find', () => {
 
   let DummyModel;
-
 
   lab.before(async () => {
 
@@ -448,18 +419,15 @@ lab.experiment('Paged find', () => {
     await AnchorModel.connect(config.connection, config.options);
   });
 
-
   lab.after(() => {
 
     AnchorModel.disconnect();
   });
 
-
   lab.afterEach(async () => {
 
     await DummyModel.deleteMany({});
   });
-
 
   lab.test('it throws when an error occurs', async () => {
 
@@ -484,7 +452,6 @@ lab.experiment('Paged find', () => {
     DummyModel.count = realCount;
   });
 
-
   lab.test('it returns paged results', async () => {
 
     const documents = [
@@ -507,7 +474,6 @@ lab.experiment('Paged find', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it returns paged results without timestamps', async () => {
 
@@ -555,7 +521,6 @@ lab.experiment('Paged find', () => {
     lab.expect(result).to.be.an.object();
   });
 
-
   lab.test('it returns paged results where end item is less than total', async () => {
 
     const documents = [
@@ -578,7 +543,6 @@ lab.experiment('Paged find', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it returns paged results where begin item is less than total', async () => {
 
@@ -604,11 +568,9 @@ lab.experiment('Paged find', () => {
   });
 });
 
-
 lab.experiment('Proxy methods', () => {
 
   let DummyModel;
-
 
   lab.before(async () => {
 
@@ -631,18 +593,15 @@ lab.experiment('Proxy methods', () => {
     await AnchorModel.connect(config.connection, config.options);
   });
 
-
   lab.after(() => {
 
     AnchorModel.disconnect();
   });
 
-
   lab.afterEach(async () => {
 
     await DummyModel.deleteMany({});
   });
-
 
   lab.test('it inserts one document and returns the result', async () => {
 
@@ -668,7 +627,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(results[0].createdAt).to.equal(date);
     lab.expect(results.length).to.equal(1);
   });
-
 
   lab.test('it inserts many documents and returns the results', async () => {
 
@@ -697,7 +655,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(results.length).to.equal(2);
   });
 
-
   lab.test('it updates a document and returns the results', async () => {
 
     const documents = [
@@ -716,7 +673,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it updates a document and returns the results without timestamps', async () => {
 
@@ -742,7 +698,6 @@ lab.experiment('Proxy methods', () => {
     DummyModel.timestamps = true;
   });
 
-
   lab.test('it updates a document and returns the results', async () => {
 
     const documents = [
@@ -763,7 +718,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.object();
   });
 
-
   lab.test('it updates many documents and returns the results', async () => {
 
     const documents = [
@@ -780,7 +734,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it updates many documents and returns the results without timestamps', async () => {
 
@@ -803,7 +756,6 @@ lab.experiment('Proxy methods', () => {
     DummyModel.timestamps = true;
   });
 
-
   lab.test('it updates many documents and returns the results (with options)', async () => {
 
     const documents = [
@@ -821,7 +773,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it returns aggregate results from a collection', async () => {
 
@@ -844,7 +795,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result[1].total).to.equal(110);
   });
 
-
   lab.test('it returns a collection count', async () => {
 
     const documents = [
@@ -859,7 +809,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.equal(3);
   });
-
 
   lab.test('it returns distinct results from a collection', async () => {
 
@@ -876,7 +825,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.array();
     lab.expect(result.length).to.equal(2);
   });
-
 
   lab.test('it returns a result array', async () => {
 
@@ -898,7 +846,6 @@ lab.experiment('Proxy methods', () => {
     });
   });
 
-
   lab.test('it returns a single result', async () => {
 
     const document = {
@@ -912,7 +859,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it returns a single result via id', async () => {
 
     const document = {
@@ -924,7 +870,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
-
 
   lab.test('it updates a single document via findByIdAndUpdate', async () => {
 
@@ -961,7 +906,6 @@ lab.experiment('Proxy methods', () => {
     DummyModel.timestamps = true;
   });
 
-
   lab.test('it updates a single document via id (with options)', async () => {
 
     const document = {
@@ -980,7 +924,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it updates a single document via findOneAndUpdate', async () => {
 
     const document = {
@@ -995,7 +938,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
-
 
   lab.test('it updates a single document via findOneAndUpdate without timestamps', async () => {
 
@@ -1016,7 +958,6 @@ lab.experiment('Proxy methods', () => {
     DummyModel.timestamps = true;
   });
 
-
   lab.test('it updates a single document via findOneAndUpdate (with options)', async () => {
 
     const document = {
@@ -1032,7 +973,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
-
 
   lab.test('it replaces a single document via findOneAndReplace', async () => {
 
@@ -1052,7 +992,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
-
 
   lab.test('it replaces a single document via findOneAndReplace (with options)', async () => {
 
@@ -1076,7 +1015,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it replaces one document and returns the result', async () => {
 
     const document = {
@@ -1096,7 +1034,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.array();
     lab.expect(result[0]).to.be.an.instanceof(DummyModel);
   });
-
 
   lab.test('it replaces one document and returns the result (with options)', async () => {
 
@@ -1121,7 +1058,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result[0]).to.be.an.instanceof(DummyModel);
   });
 
-
   lab.test('it deletes a document via findOneAndDelete', async () => {
 
     const document = {
@@ -1139,7 +1075,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it deletes a document via findByIdAndDelete', async () => {
 
     const document = {
@@ -1153,7 +1088,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
-
 
   lab.test('it deletes a single document via findByIdAndDelete (with options)', async () => {
 
@@ -1172,7 +1106,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it deletes one document via deleteOne', async () => {
 
     const document = {
@@ -1185,7 +1118,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it deletes multiple documents and returns the count via deleteMany', async () => {
 
@@ -1201,7 +1133,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it returns a single result via lookupById with length of 2', async () => {
 
@@ -1235,7 +1166,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
     lab.expect(result.buddy).to.be.an.array();
   });
-
 
   lab.test('it returns a single result via lookupById with length of 1 with one flag set', async () => {
 
@@ -1271,7 +1201,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result.buddy).to.be.an.object();
   });
 
-
   lab.test('it returns a single result via lookupById with lookup operator equal to $in', async () => {
 
     const document1 = {
@@ -1306,7 +1235,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
     lab.expect(result.buddy).to.be.an.array();
   });
-
 
   lab.test('it returns a single result via lookupById with length of 0', async () => {
 
@@ -1344,7 +1272,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it returns a single result via lookupOne', async () => {
 
     const document = {
@@ -1372,7 +1299,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result).to.be.an.instanceOf(DummyModel);
     lab.expect(result.buddy).to.be.an.array();
   });
-
 
   lab.test('it returns a single result via lookupOne with options', async () => {
 
@@ -1402,7 +1328,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result.buddy).to.be.an.array();
   });
 
-
   lab.test('it returns a single result via lookupOne no lookup', async () => {
 
     const document = {
@@ -1423,7 +1348,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.instanceOf(DummyModel);
   });
-
 
   lab.test('it returns results via pagedLookup', async () => {
 
@@ -1452,7 +1376,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result.data[0]).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it returns results via pagedLookup with options', async () => {
 
     const document = {
@@ -1480,7 +1403,6 @@ lab.experiment('Proxy methods', () => {
     lab.expect(result.data[0]).to.be.an.instanceOf(DummyModel);
   });
 
-
   lab.test('it returns results via pagedLookup with no lookup', async () => {
 
     const document = {
@@ -1501,7 +1423,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result.data[0]).to.be.an.instanceOf(DummyModel);
   });
-
 
   lab.test('it returns paged lookup results where begin item is less than total', async () => {
 
@@ -1531,7 +1452,6 @@ lab.experiment('Proxy methods', () => {
 
     lab.expect(result).to.be.an.object();
   });
-
 
   lab.test('it returns paged results where end item is less than total', async () => {
 

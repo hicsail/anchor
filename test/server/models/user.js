@@ -5,10 +5,8 @@ const Fixtures = require('../fixtures');
 const Lab = require('lab');
 const User = require('../../../server/models/user');
 
-
 const lab = exports.lab = Lab.script();
 const config = Config.get('/hapiAnchorModel/mongodb');
-
 
 lab.experiment('User Model', () => {
 
@@ -18,14 +16,12 @@ lab.experiment('User Model', () => {
     await Fixtures.Db.removeAllData();
   });
 
-
   lab.after(async () => {
 
     await Fixtures.Db.removeAllData();
 
     User.disconnect();
   });
-
 
   lab.test('it returns a new instance when create succeeds', async () => {
 
@@ -39,8 +35,6 @@ lab.experiment('User Model', () => {
     Code.expect(user).to.be.an.instanceOf(User);
   });
 
-
-
   lab.test('it returns undefined when finding by credentials user misses', async () => {
 
     const user = await User.findByCredentials('steve', '123456');
@@ -48,14 +42,12 @@ lab.experiment('User Model', () => {
     Code.expect(user).to.be.undefined();
   });
 
-
   lab.test('it returns undefined when finding by credentials user hits and password match misses', async () => {
 
     const user = await User.findByCredentials('ren', '123456');
 
     Code.expect(user).to.be.undefined();
   });
-
 
   lab.test('it returns an instance when finding by credentials user hits and password match hits', async () => {
 
@@ -68,7 +60,6 @@ lab.experiment('User Model', () => {
     Code.expect(withEmail).to.be.an.instanceOf(User);
   });
 
-
   lab.test('it returns an instance when finding by email', async () => {
 
     const user = await User.findByEmail('ren@stimpy.show');
@@ -76,14 +67,12 @@ lab.experiment('User Model', () => {
     Code.expect(user).to.be.an.instanceOf(User);
   });
 
-
   lab.test('it returns an instance when finding by username', async () => {
 
     const user = await User.findByUsername('ren');
 
     Code.expect(user).to.be.an.instanceOf(User);
   });
-
 
   lab.test('it creates a password hash combination', async () => {
 

@@ -8,9 +8,7 @@ const Nodemailer = require('nodemailer');
 const Path = require('path');
 const Util = require('util');
 
-
 const readFile = Util.promisify(Fs.readFile);
-
 
 class Mailer {
   static async renderTemplate(signature, context) {
@@ -28,7 +26,6 @@ class Mailer {
     return this.templateCache[signature](context);
   }
 
-
   static async sendEmail(options, template, context) {
 
     const content = await this.renderTemplate(template, context);
@@ -42,10 +39,8 @@ class Mailer {
   }
 }
 
-
 Mailer.templateCache = {};
 Mailer.transport = Nodemailer.createTransport(Config.get('/nodemailer'));
 Mailer.transport.use('compile', Markdown({ useEmbeddedImages: true }));
-
 
 module.exports = Mailer;

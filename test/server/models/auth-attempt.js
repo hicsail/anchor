@@ -5,10 +5,8 @@ const Config = require('../../../config');
 const Fixtures = require('../fixtures');
 const Lab = require('lab');
 
-
 const lab = exports.lab = Lab.script();
 const config = Config.get('/hapiAnchorModel/mongodb');
-
 
 lab.experiment('AuthAttempt Model', () => {
 
@@ -17,7 +15,6 @@ lab.experiment('AuthAttempt Model', () => {
     await AuthAttempt.connect(config.connection, config.options);
     await Fixtures.Db.removeAllData();
   });
-
 
   lab.after(async () => {
 
@@ -48,7 +45,6 @@ lab.experiment('AuthAttempt Model', () => {
     Code.expect(result).to.equal(true);
   });
 
-
   lab.test('it detects login abuse from an ip and one user', async () => {
 
     const attemptConfig = Config.get('/authAttempts');
@@ -70,8 +66,6 @@ lab.experiment('AuthAttempt Model', () => {
 
     Code.expect(result).to.equal(true);
   });
-
-
 
   lab.test('it returns a new instance when create succeeds', async () => {
 

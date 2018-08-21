@@ -16,7 +16,6 @@ let server;
 let user;
 let session;
 
-
 lab.before(async () => {
 
   server = Hapi.Server();
@@ -43,13 +42,11 @@ lab.before(async () => {
   session = await Session.create({ userId: user._id.toString(), ip: '127.0.0.1', userAgent: 'Lab' });
 });
 
-
 lab.after(async () => {
 
   await Fixtures.Db.removeAllData();
   await server.stop();
 });
-
 
 lab.experiment('GET /api/permissions/available', () => {
 
@@ -78,7 +75,6 @@ lab.experiment('GET /api/permissions/available', () => {
     Code.expect(response.result[0].key).to.be.an.string();
   });
 });
-
 
 lab.experiment('POST /api/role', () => {
 
@@ -124,7 +120,6 @@ lab.experiment('POST /api/role', () => {
     Code.expect(response.statusCode).to.equal(400);
   });
 });
-
 
 lab.experiment('PUT /api/role', () => {
 
@@ -173,7 +168,6 @@ lab.experiment('PUT /api/role', () => {
   });
 });
 
-
 lab.experiment('PUT /api/permissions/user/{id}', () => {
 
   let request;
@@ -217,7 +211,6 @@ lab.experiment('PUT /api/permissions/user/{id}', () => {
     Code.expect(response.statusCode).to.equal(400);
   });
 });
-
 
 lab.experiment('PUT /api/permissions/user/{userId}/role/{roleId}', () => {
 

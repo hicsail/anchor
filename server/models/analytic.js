@@ -7,7 +7,6 @@ class Analytic extends AnchorModel {
 
   static async create(document) {
 
-
     Assert.ok(document.event, 'Missing event argument');
     Assert.ok(document.name, 'Missing name argument');
 
@@ -71,5 +70,3 @@ Analytic.indexes = [
 ];
 
 module.exports = Analytic;
-
-

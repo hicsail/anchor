@@ -3,9 +3,7 @@ const Code = require('code');
 const Config = require('../config');
 const Lab = require('lab');
 
-
 const lab = exports.lab = Lab.script();
-
 
 lab.experiment('Config', () => {
 
@@ -13,7 +11,6 @@ lab.experiment('Config', () => {
 
     Code.expect(Config.get('/')).to.be.an.object();
   });
-
 
   lab.test('it gets config meta data', () => {
 

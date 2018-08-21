@@ -5,7 +5,6 @@ const Bcrypt = require('bcrypt');
 const Hoek = require('hoek');
 const Joi = require('joi');
 
-
 class User extends AnchorModel {
 
   static async generatePasswordHash(password) {
@@ -46,7 +45,6 @@ class User extends AnchorModel {
 
   }
 
-
   static async findByCredentials(username, password) {
 
     Assert.ok(username,'Missing username argument.');
@@ -76,7 +74,6 @@ class User extends AnchorModel {
 
   }
 
-
   static findByUsername(username) {
 
     Assert.ok(username, 'Misisng username argument.');
@@ -85,7 +82,6 @@ class User extends AnchorModel {
 
     return this.findOne(query);
   }
-
 
   static findByEmail(email) {
 
@@ -96,7 +92,6 @@ class User extends AnchorModel {
     return this.findOne(query);
   }
 }
-
 
 User.collectionName = 'users';
 

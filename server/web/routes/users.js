@@ -138,7 +138,6 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
   server.route({
     method: 'GET',
     path: '/users/clinicians/{id}',
@@ -161,7 +160,6 @@ internals.applyRoutes = function (server, next) {
 
   next();
 };
-
 
 exports.register = function (server, options, next) {
 

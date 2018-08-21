@@ -4,20 +4,16 @@ const Config = require('../../config');
 const Lab = require('lab');
 const Mailer = require('../../server/mailer');
 
-
 const lab = exports.lab = Lab.script();
-
 
 lab.experiment('Mailer', () => {
 
   const Mailer_transport = Mailer.transport;
 
-
   lab.afterEach(() => {
 
     Mailer.transport = Mailer_transport;
   });
-
 
   lab.test('it populates the template cache on first render', async () => {
 
@@ -27,7 +23,6 @@ lab.experiment('Mailer', () => {
     Code.expect(content).to.match(/ren@stimpy.show/i);
   });
 
-
   lab.test('it uses the template cache on subsequent renders', async () => {
 
     const context = { username: 'stimpy', email: 'stimpy@ren.show' };
@@ -35,7 +30,6 @@ lab.experiment('Mailer', () => {
 
     Code.expect(content).to.match(/stimpy@ren.show/i);
   });
-
 
   lab.test('it sends the email through the the transport', async () => {
 

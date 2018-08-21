@@ -38,7 +38,6 @@ class AuthAttempt extends AnchorModel {
 
     date.setHours(date.getHours() - parseInt(hours));
 
-
     const [countByIp, countByIpAndUser] = await Promise.all([
       this.count({ ip }),
       this.count({ ip, username, createdAt: { $gte:(date) } })

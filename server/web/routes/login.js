@@ -126,7 +126,6 @@ exports.register = function (server, options, next) {
   next();
 };
 
-
 exports.register.attributes = {
   name: 'login/index',
   dependencies: 'visionary'

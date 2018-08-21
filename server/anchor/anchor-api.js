@@ -4,8 +4,6 @@ const Joi = require('joi');
 
 const register = function (server,serverOptions) {
 
-
-
   server.route({
     method: 'POST',
     path:'/api/{collectionName}',
@@ -203,7 +201,6 @@ const register = function (server,serverOptions) {
     }
   });
 
-
   server.route({
     method: 'GET',
     path: '/api/{collectionName}/schema',
@@ -228,7 +225,6 @@ const register = function (server,serverOptions) {
 
     }
   });
-
 
   server.route({
     method: 'DELETE',
@@ -407,8 +403,6 @@ const register = function (server,serverOptions) {
     }
   });
 
-
-
   server.route({
     //paged find
     method:'GET',
@@ -421,7 +415,6 @@ const register = function (server,serverOptions) {
       pre: [{
         assign: 'model',
         method: function (request,h) {
-
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
@@ -450,7 +443,6 @@ const register = function (server,serverOptions) {
           }
           return h.continue;
         }
-
 
       }, {
         assign: 'auth',
@@ -496,8 +488,6 @@ const register = function (server,serverOptions) {
     return str;
   };
 };
-
-
 
 module.exports = {
   name: 'anchor-api',

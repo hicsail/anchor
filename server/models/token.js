@@ -9,7 +9,6 @@ const Config = require('../../config');
 
 class Token extends AnchorModel {
 
-
   static async create(document) {
 
     const keyHash = await Crypto.generateKeyHash();

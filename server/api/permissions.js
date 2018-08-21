@@ -5,13 +5,7 @@ const Joi = require('joi');
 const Role = require('../models/role');
 const User = require('../models/user');
 
-
-
-
 const register = function (server, serverOptions) {
-
-
-
 
   server.route({
     method: 'GET',
@@ -155,8 +149,6 @@ const register = function (server, serverOptions) {
     }
   });
 
-
-
   server.route({
     method: 'POST',
     path:'/api/role',
@@ -285,7 +277,6 @@ const register = function (server, serverOptions) {
     }
   });
 
-
   server.route({
     method: 'PUT',
     path:'/api/permissions/user/{id}',
@@ -345,7 +336,6 @@ const register = function (server, serverOptions) {
   });
 
 };
-
 
 module.exports = {
   name: 'api-permissions',

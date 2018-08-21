@@ -3,7 +3,6 @@ const Code = require('code');
 const Crypto = require('../../server/crypto');
 const Lab = require('lab');
 
-
 const lab = exports.lab = Lab.script();
 
 lab.experiment('Crypto Methods', () => {

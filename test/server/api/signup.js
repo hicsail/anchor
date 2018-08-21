@@ -9,10 +9,8 @@ const Manifest = require('../../../manifest');
 const Signup = require('../../../server/api/signup');
 const User = require('../../../server/models/user');
 
-
 const lab = exports.lab = Lab.script();
 let server;
-
 
 lab.before(async () => {
 
@@ -35,19 +33,16 @@ lab.before(async () => {
   await Fixtures.Db.removeAllData();
 });
 
-
 lab.after(async () => {
 
   await Fixtures.Db.removeAllData();
   await server.stop();
 });
 
-
 lab.experiment('POST /api/signup', () => {
 
   const Mailer_sendEmail = Mailer.sendEmail;
   let request;
-
 
   lab.beforeEach(() => {
 
@@ -57,12 +52,10 @@ lab.experiment('POST /api/signup', () => {
     };
   });
 
-
   lab.afterEach(() => {
 
     Mailer.sendEmail = Mailer_sendEmail;
   });
-
 
   lab.test('it returns HTTP 409 when the username is already in use', async () => {
 
@@ -81,7 +74,6 @@ lab.experiment('POST /api/signup', () => {
     Code.expect(response.result.message).to.match(/username already in use/i);
   });
 
-
   lab.test('it returns HTTP 409 when the email is already in use', async () => {
 
     request.payload = {
@@ -96,7 +88,6 @@ lab.experiment('POST /api/signup', () => {
     Code.expect(response.statusCode).to.equal(409);
     Code.expect(response.result.message).to.match(/email already in use/i);
   });
-
 
   lab.test('it returns HTTP 200 when all is well', async () => {
 
@@ -117,7 +108,6 @@ lab.experiment('POST /api/signup', () => {
     Code.expect(response.result.session).to.be.an.object();
     Code.expect(response.result.authHeader).to.be.a.string();
   });
-
 
   lab.test('it returns HTTP 200 when all is well and logs any mailer errors', async () => {
 
@@ -151,7 +141,6 @@ lab.experiment('POST /api/signup', () => {
   });
 });
 
-
 lab.experiment('POST /api/root', () => {
   /*
 
@@ -166,12 +155,10 @@ lab.beforeEach(() => {
   };
 });
 
-
 lab.afterEach(() => {
 
   Mailer.sendEmail = Mailer_sendEmail;
 });
-
 
 lab.test('it returns HTTP 409 when the username is already in use', async () => {
 
@@ -190,7 +177,6 @@ lab.test('it returns HTTP 409 when the username is already in use', async () => 
   Code.expect(response.result.message).to.match(/username already in use/i);
 });
 
-
 lab.test('it returns HTTP 409 when the email is already in use', async () => {
 
   request.payload = {
@@ -205,7 +191,6 @@ lab.test('it returns HTTP 409 when the email is already in use', async () => {
   Code.expect(response.statusCode).to.equal(409);
   Code.expect(response.result.message).to.match(/email already in use/i);
 });
-
 
 lab.test('it returns HTTP 200 when all is well', async () => {
 
@@ -226,7 +211,6 @@ lab.test('it returns HTTP 200 when all is well', async () => {
   Code.expect(response.result.session).to.be.an.object();
   Code.expect(response.result.authHeader).to.be.a.string();
 });
-
 
 lab.test('it returns HTTP 200 when all is well and logs any mailer errors', async () => {
 
