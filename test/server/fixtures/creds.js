@@ -8,7 +8,7 @@ class Credentials {
 
     const combo = `${username}:${password}`;
 
-    const combo64 = (new Buffer(combo)).toString('base64');
+    const combo64 = (Buffer.from(combo)).toString('base64');
     return `Basic ${combo64}`;
 
 
@@ -21,6 +21,30 @@ class Credentials {
       password,
       email,
       name
+    });
+
+    const session = await Session.create({
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    });
+
+    return {
+      user,
+      session
+    };
+  }
+
+  static async createRootUser(password,email) {
+
+    const user = await User.insertOne({
+      _id: User._idClass('000000000000000000000000'),
+      username: 'root',
+      password,
+      email,
+      name: 'root',
+      roles: [],
+      permissions: {}
     });
 
     const session = await Session.create({

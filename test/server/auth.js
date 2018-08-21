@@ -235,6 +235,58 @@ lab.experiment('Simple Auth Strategy', () => {
   });
 
 
+  lab.test('it returns a when user does not have permission', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-simple': false
+    } });
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
+
+    const update = {
+      $set: {
+        roles: [`${ role._id }`]
+      }
+    };
+
+    await User.findByIdAndUpdate(user._id, update);
+
+    const request = {
+      method: 'GET',
+      url: '/simple',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+
+  lab.test('it returns as valid when it is the root user', async () => {
+
+    const { user } = await Fixtures.Creds.createRootUser('321!abc','ren@stimpy.show');
+
+    const session = await Session.create({ userId: `${user._id}`, ip:'127.0.0.1', userAgent: 'Lab' });
+
+    const request = {
+      method: 'GET',
+      url: '/simple',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
+  });
+
+
   lab.test('it returns as valid when all is well', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
@@ -345,6 +397,39 @@ lab.experiment('Session Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
+  lab.test('it returns a when user does not have permission', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login'
+    };
+    const loginResponse = await server.inject(loginRequest);
+
+    const user = loginResponse.result.user;
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-session': false
+    } });
+    const update = {
+      $set: {
+        roles: [`${ role._id }`]
+      }
+    };
+    await User.findByIdAndUpdate(user._id, update);
+
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
 
   lab.test('it returns as valid when all is well', async () => {
 

@@ -318,7 +318,7 @@ const register = function (server,serverOptions) {
           const { error } = Joi.validate(request.query,model.routes.getMy.query);
 
           if (error) {
-            throw Boom.notFound('Query not validated');
+            throw Boom.badRequest('Query not validated');
           }
           return h.continue;
         }
@@ -447,7 +447,7 @@ const register = function (server,serverOptions) {
 
           const { error } = Joi.validate(request.query,model.routes.getAll.query);
           if (error) {
-            throw Boom.notFound('Query not validated');
+            throw Boom.badRequest('Query not validated');
           }
           return h.continue;
         }

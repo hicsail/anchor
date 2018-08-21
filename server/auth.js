@@ -31,15 +31,13 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-
-
-      if (String(user._id) !== '000000000000000000000000') {
-
-        if (!confirmPermission(request,user)) {
+      if (`${user._id}` !== '000000000000000000000000') {
+        if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
-
       }
+
+      await session.updateLastActive();
 
       const credentials = {
         session,
@@ -73,8 +71,10 @@ const register = function (server, options) {
 
       if (!confirmtokenPermission(request,token)) {
         throw Boom.forbidden('Insufficient token permissions');
+
       }
 
+      if (await Crypto.compare(password,token.key)){
 
 
       if (await Crypto.compare(password,token.key)){
@@ -82,8 +82,8 @@ const register = function (server, options) {
         token = await Token.findByIdAndUpdate(token._id,  { $set: {
           lastActive: new Date()
         }
-        });
 
+        });
 
         const credentials = {
           user,
@@ -110,8 +110,6 @@ const register = function (server, options) {
         return { valid: false };
       }
 
-      session.updateLastActive();
-
       const user = await User.findById(session.userId);
 
       if (!user) {
@@ -122,13 +120,13 @@ const register = function (server, options) {
         return { valid: false };
       }
 
-      if (String(user.id) !== '000000000000000000000000') {
-
-        if (!confirmPermission(request,user)) {
+      if (`${user._id}` !== '000000000000000000000000') {
+        if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
-
       }
+
+      await session.updateLastActive();
 
       const credentials = {
         session,
@@ -146,7 +144,7 @@ const usersPermissions = async function (user) {
 
   const permissions = {};
   for (const roleId of roles) {
-    const role = await Role.findById(roleId);
+    const role = await Role.lookupById(roleId,Role.lookups);
     if (role) {
       for (const key in role.permissions){
         if (!permissions[key]) {
@@ -191,6 +189,7 @@ const confirmtokenPermission = function (request,token) {
 const confirmPermission = async function (request,user) {
 
   const key = pathtoKey(request);
+
   const permissions = await usersPermissions(user);
 
   if (permissions[key] !== undefined) {
