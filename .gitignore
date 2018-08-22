@@ -2,6 +2,7 @@ node_modules/*
 .env
 .idea
 server/backups
+server/logs
 .coveralls.yml
 server/web/public/css/lib
 server/web/public/js/lib
