@@ -24,7 +24,24 @@ const manifest = {
         plugin: 'good',
         options: {
           reporters: {
+
+            myFileReporter: [{
+              module: 'good-squeeze',
+              name: 'Squeeze',
+              args: [{ ops: '*' }]
+            }, {
+              module: 'good-squeeze',
+              name: 'SafeJson'
+            }, {
+
+              module: 'good-file',
+              args: ['./server/logs/awesome_log']
+            }
+
+            ],
+
             myConsoleReporter: [
+
               {
                 module: 'good-squeeze',
                 name: 'Squeeze',
@@ -36,10 +53,6 @@ const manifest = {
                 }]
               },
               {
-                module: 'good-file',
-                args: ['./server/logs/log']
-              },
-              {
                 module: 'good-console',
                 args: [{
                   color: {
@@ -48,6 +61,7 @@ const manifest = {
                     $default: true
                   }
                 }]
+
               },
               'stdout'
             ]
