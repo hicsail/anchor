@@ -7,7 +7,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path: '/api/invite',
+    path: '/api/invites',
     options: {
       auth: {
         strategies: ['simple', 'session', 'token']

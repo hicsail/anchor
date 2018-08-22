@@ -16,7 +16,7 @@ class Invite extends AnchorModel {
       role: document.role,
       permission: document.permission,
       userId: document.userId,
-      status: document.status
+      status: 'Pending'
     };
 
     const invite = await this.insertOne(document);
@@ -41,12 +41,11 @@ Invite.schema = Joi.object({
 });
 
 Invite.payload = Joi.object({
-  username: Joi.string(),
+  username: Joi.string().required(),
   email: Joi.string().required(),
-  name: Joi.string(),
+  name: Joi.string().required(),
   role: Joi.array().items(Joi.string()),
-  permission: Joi.object(),
-  status: Joi.string().valid('Pending','Accepted','Declined','Expired')
+  permission: Joi.object()
 });
 
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
