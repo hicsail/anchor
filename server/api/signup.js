@@ -1,5 +1,6 @@
 'use strict';
 const Boom = require('boom');
+const Crypto = require('../crypto');
 const Config = require('../../config');
 const Mailer = require('../mailer');
 const Session = require('../models/session');
@@ -111,11 +112,16 @@ const register = function (server, serverOptions) {
     },
     handler: async function (request, h) {
 
-      // create and link account and user documents
       request.payload.username = 'root';
       request.payload.name = 'root';
-      request.payload._id = '000000000000000000000000';
-      const user = await User.create(request.payload);
+
+      const user = (await User.insertOne({
+        _id: User.ObjectId('000000000000000000000000'),
+        email: request.payload.email.toLowerCase(),
+        username: request.payload.username,
+        name: request.payload.name,
+        password: (await Crypto.generateKeyHash(request.payload.password)).hash
+      }))[0];
 
       const emailOptions = {
         subject: `Your ${Config.get('/projectName')} account`,
