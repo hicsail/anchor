@@ -16,7 +16,6 @@ const register = function (server,serverOptions) {
         assign: 'permissions',
         method: async function (request,h) {
 
-          console.log(Token.payload);
           const result = await server.inject({
             method: 'GET',
             url: '/api/permissions/available',
