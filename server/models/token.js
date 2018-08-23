@@ -15,7 +15,7 @@ class Token extends AnchorModel {
 
     document = {
       description: document.description,
-      active: true,
+      isActive: true,
       createdAt: new Date(),
       key:keyHash.hash,
       userId: document.userId,
