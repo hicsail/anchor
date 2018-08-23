@@ -46,7 +46,7 @@ Token.schema = Joi.object({
 
 Token.payload = Joi.object({
   description: Joi.string().required(),
-  permission: Joi.object().default({})
+  permission: Joi.any()
 });
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
