@@ -60,6 +60,52 @@ const register = function (server,serverOptions) {
       return await Token.create(request.payload);
     }
   });
+
+  server.route({
+    method: 'PUT',
+    path: '/token/{id}/active',
+    config: {
+      auth: {
+        strategies: ['simple','session','token']
+      },
+      validate: {
+        payload: Token.isActivePayload
+      }
+    },
+    handler: function (request,reply) {
+
+      const id = request.params.id;
+
+      Token.findByIdAndUpdate(id,{
+        $set: {
+          isActive: true
+        }
+      });
+    }
+  });
+
+  server.route({
+    method:'PUT',
+    path:'/token/{id}/deactive',
+    config: {
+      auth: {
+        strategies: ['simple','session','token']
+      },
+      validate: {
+        payload: Token.isActivePayload
+      }
+    },
+    handler: function (request,reply) {
+
+      const id = request.params.id;
+
+      Token.findByIdAndUpdate(id,{
+        $set: {
+          isActive: false
+        }
+      });
+    }
+  });
 };
 
 module.exports = {

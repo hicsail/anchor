@@ -49,6 +49,10 @@ Token.payload = Joi.object({
   permission: Joi.any()
 });
 
+Token.isActivePayload = Joi.object({
+  isActive: Joi.boolean().required()
+});
+
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     disabled: false,

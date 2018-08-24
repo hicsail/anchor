@@ -65,6 +65,10 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
+      if (!token.isActive) {
+        return { isValid: false };
+      }
+
       if (!confirmTokenPermission(request,token)) {
         throw Boom.forbidden('Insufficient token permissions');
       }
