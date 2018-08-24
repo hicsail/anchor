@@ -63,20 +63,19 @@ const register = function (server,serverOptions) {
 
   server.route({
     method: 'PUT',
-    path: '/token/{id}/active',
-    config: {
+    path: '/api/tokens/{id}/active',
+    options: {
       auth: {
         strategies: ['simple','session','token']
-      },
-      validate: {
-        payload: Token.isActivePayload
       }
     },
-    handler: function (request,reply) {
+    handler: async function (request,h) {
+
+      console.log('token');
 
       const id = request.params.id;
 
-      Token.findByIdAndUpdate(id,{
+      return await Token.findByIdAndUpdate(id,{
         $set: {
           isActive: true
         }
@@ -86,24 +85,17 @@ const register = function (server,serverOptions) {
 
   server.route({
     method:'PUT',
-    path:'/token/{id}/deactive',
-    config: {
+    path:'/api/tokens/{id}/deactive',
+    options: {
       auth: {
         strategies: ['simple','session','token']
-      },
-      validate: {
-        payload: Token.isActivePayload
       }
     },
-    handler: function (request,reply) {
+    handler: async function (request,h) {
 
       const id = request.params.id;
 
-      Token.findByIdAndUpdate(id,{
-        $set: {
-          isActive: false
-        }
-      });
+      return await Token.findByIdAndUpdate(id,{ $set: { isActive: false } });
     }
   });
 };
