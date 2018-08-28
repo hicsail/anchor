@@ -6,15 +6,17 @@ const Hoek = require('hoek');
 class Invite extends AnchorModel {
   static async create(document) {
 
+    Assert.ok(document.username, 'Username missing');
     Assert.ok(document.email, 'Email missing');
-    Assert.ok(document.status,'Status missing');
+    Assert.ok(document.name, 'Name missing');
+    Assert.ok(document.userId, 'User Id missing');
 
     document = {
       username: document.username,
       email: document.email,
       name: document.name,
-      role: document.role,
-      permission: document.permission,
+      roles: document.roles,
+      permissions: document.permissions,
       userId: document.userId,
       status: 'Pending'
     };
@@ -28,24 +30,25 @@ Invite.collectionName = 'invites';
 
 Invite.schema = Joi.object({
   _id: Joi.object(),
-  username: Joi.string(), //suggested username of invitee
-  email: Joi.string().required(), //email of person to invite?
+  username: Joi.string().lowercase(), //suggested username of invitee
+  email: Joi.string().email().lowercase().required(), //email of person to invite
   name: Joi.string(), //invitee name
-  role: Joi.array().items(Joi.string()),
-  permission: Joi.object(),
+  roles: Joi.array(),
+  permissions: Joi.object(),
   userId: Joi.string(), // inviter userId
   expiredAt: Joi.date(),
   status: Joi.string().valid('Pending','Accepted','Declined','Expired'),
+  invitedUser: Joi.string(),
   createdAt: Joi.date(),
   updatedAt: Joi.date()
 });
 
 Invite.payload = Joi.object({
   username: Joi.string().required(),
-  email: Joi.string().required(),
+  email: Joi.string().email().required(),
   name: Joi.string().required(),
-  role: Joi.array().items(Joi.string()),
-  permission: Joi.object()
+  roles: Joi.array(),
+  permissions: Joi.object()
 });
 
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {

@@ -2,6 +2,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const Invite = require('../models/invite');
+const User = require('../models/user');
 
 const register = function (server, serverOptions) {
 
@@ -53,12 +54,66 @@ const register = function (server, serverOptions) {
     },
     handler: async function (request, h) {
 
-      request.payload.status = 'pending';
-      request.payload.permission = {};
-      request.payload.role = [];
       request.payload.userId = request.auth.credentials.user._id.toString();
-
       return await Invite.create(request.payload);
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/api/invites/{id}',
+    options: {
+      auth: false,
+      validate: {
+        payload: User.payload
+      },
+      pre: [{
+        assign: 'invite',
+        method: async function (request,h) {
+
+          const invite = await Invite.findById(request.params.id);
+
+          if (!invite) {
+            throw Boom.notFound('Invite not found');
+          }
+          return invite;
+        }
+      }]
+    },
+    handler: async function (request, h) {
+
+      const invite = request.pre.invite;
+
+      const signupRequest = {
+        method: 'POST',
+        url: '/api/signup',
+        payload: request.payload
+      };
+
+      const signupResponse = await server.inject(signupRequest);
+      if (signupResponse.statusCode !== 200) {
+        const error = signupResponse.result;
+        throw new Boom(error.message,{
+          statusCode: error.statusCode
+        });
+      }
+
+      let user = signupResponse.result.user;
+      user = await User.findByIdAndUpdate(user._id, {
+        $set : {
+          roles: invite.roles,
+          permissions: invite.permissions
+        }
+      });
+
+      await Invite.findByIdAndUpdate(invite._id, {
+        $set : {
+          status: 'Accepted',
+          invitedUser: `${user._id}`
+        }
+      });
+
+      return user;
     }
   });
 
