@@ -108,7 +108,14 @@ lab.before(async () => {
     },
     handler: async function (request, h) {
 
-      const userCreds = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+      let userCreds;
+
+      if (request.query && request.query.rootUser) {
+        userCreds = await Fixtures.Creds.createRootUser('321!abc','ren@stimpy.show');
+      }
+      else {
+        userCreds = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+      }
 
       if (request.query && request.query.badSession) {
         userCreds.session.key = 'blamo';
@@ -386,7 +393,7 @@ lab.experiment('Session Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
-  lab.test('it returns a when user does not have permission', async () => {
+  lab.test('it returns invalid when user does not have permission', async () => {
 
     const loginRequest = {
       method: 'POST',
@@ -418,6 +425,40 @@ lab.experiment('Session Auth Strategy', () => {
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
+  });
+
+  lab.test('it returns valid when its the root user', async () => {
+
+    const loginRequest = {
+      method: 'POST',
+      url: '/login?rootUser=1'
+    };
+    const loginResponse = await server.inject(loginRequest);
+
+    const user = loginResponse.result.user;
+    const role = await Role.create({ name:'test', filter: [], userId: `${ user._id }`, permissions: {
+      'GET-session': false
+    } });
+    const update = {
+      $set: {
+        roles: [`${ role._id }`]
+      }
+    };
+    await User.findByIdAndUpdate(user._id, update);
+
+    const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
+    const request = {
+      method: 'GET',
+      url: '/session',
+      headers: {
+        cookie
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(true);
   });
 
   lab.test('it returns as valid when all is well', async () => {
@@ -515,6 +556,33 @@ lab.experiment('Token Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
+  lab.test('it returns as invalid when the token is not active', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+
+    const update = {
+      $set: {
+        isActive: false
+      }
+    };
+
+    await Token.findByIdAndUpdate(token._id, update);
+
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: token.key
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
   lab.test('it returns as invalid when token secret and token provided don\'t match', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
@@ -527,6 +595,25 @@ lab.experiment('Token Auth Strategy', () => {
       url: '/token',
       headers: {
         authorization: keyHash.key
+      }
+    };
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result.isValid).to.equal(false);
+  });
+
+  lab.test('it returns as invalid when permission is set to false', async () => {
+
+    const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token', permissions: { 'GET-token': false } });
+
+    const request = {
+      method: 'GET',
+      url: '/token',
+      headers: {
+        authorization: token.key
       }
     };
 
