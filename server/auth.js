@@ -137,23 +137,31 @@ const usersPermissions = async function (user) {
 
   const roles = user.roles;
 
-  const permissions = {};
+  let permissions = {};
   for (const roleId of roles) {
     const role = await Role.lookupById(roleId,Role.lookups);
     if (role) {
-      for (const key in role.permissions){
-        if (!permissions[key]) {
-          permissions[key] = role.permissions[key];
-        }
-        else {
-          if (role.permissions[key] === true) {
-            permissions[key] = role.permissions[key];
-          }
-        }
+      permissions = mergePermissions(permissions,role.permissions);
+    }
+  }
+  permissions = mergePermissions(permissions,user.permissions);
+
+  return permissions;
+};
+
+const mergePermissions = function (permissionObject, newPermissions) {
+
+  for (const key in newPermissions){
+    if (!permissionObject[key]) {
+      permissionObject[key] = newPermissions[key];
+    }
+    else {
+      if (newPermissions[key] === true) {
+        permissionObject[key] = newPermissions[key];
       }
     }
   }
-  return permissions;
+  return permissionObject;
 };
 
 const pathToKey = function (request) {
