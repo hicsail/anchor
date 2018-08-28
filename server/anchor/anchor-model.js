@@ -15,7 +15,6 @@ const argsFromArguments = function (argumentz) {
   return args;
 };
 
-
 const dbFromArgs = function (args) {
 
   let db = AnchorModel.dbs.default;
@@ -26,7 +25,6 @@ const dbFromArgs = function (args) {
 
   return db;
 };
-
 
 class AnchorModel {
 
@@ -556,7 +554,6 @@ class AnchorModel {
    */
   static async lookupById() {
 
-
     const args = argsFromArguments(arguments);
     const id = args.shift();
     const lookups = args.pop() || [];
@@ -755,7 +752,6 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
   static resultFactory(result) {
 
     if (Object.prototype.toString.call(result) === '[object Array]') {
@@ -877,18 +873,15 @@ class AnchorModel {
     return this.resultFactory(result);
   }
 
-
   static validate(input) {
 
     return Joi.validate(input, this.schema);
   }
 
-
   validate() {
 
     return Joi.validate(this, this.constructor.schema);
   }
-
 
   static with(name) {
 
@@ -986,7 +979,7 @@ AnchorModel.routes = {
     auth: true
   },
   update: {
-    disabled: true,
+    disabled: false,
     payload: null,
     handler: async (request,h) => {
 
@@ -994,7 +987,6 @@ AnchorModel.routes = {
       const id = request.params.id;
       const update = {
         $set: request.payload
-
       };
       const check = await model.findByIdAndUpdate(id,update);
       if (!check) {
@@ -1091,11 +1083,9 @@ AnchorModel.routeMap = {
 };
 AnchorModel.timestamps = true;
 
-
 AnchorModel._idClass = Mongodb.ObjectID;
 AnchorModel.ObjectId = AnchorModel.ObjectID = Mongodb.ObjectID;
 AnchorModel.clients = {};
 AnchorModel.dbs = {};
-
 
 module.exports = AnchorModel;

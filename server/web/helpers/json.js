@@ -11,4 +11,3 @@ const jsonHelper = function (json, context) {
 };
 
 module.exports = jsonHelper;
-

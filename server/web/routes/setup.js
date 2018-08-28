@@ -10,7 +10,6 @@ const internals = {};
 
 internals.applyRoutes = function (server, next) {
 
-
   server.route({
     method: 'GET',
     path: '/setup',
@@ -150,7 +149,6 @@ exports.register = function (server, options, next) {
 
   next();
 };
-
 
 exports.register.attributes = {
   name: 'setup',

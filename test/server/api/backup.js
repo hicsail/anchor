@@ -15,7 +15,6 @@ let server;
 let user;
 let session;
 
-
 lab.before(async () => {
 
   server = Hapi.Server();
@@ -41,13 +40,11 @@ lab.before(async () => {
   session = await Session.create({ userId: user._id.toString(), ip: '127.0.0.1', userAgent: 'Lab' });
 });
 
-
 lab.after(async () => {
 
   await Fixtures.Db.removeAllData();
   await server.stop();
 });
-
 
 lab.experiment('POST /api/backup', () => {
 
@@ -77,7 +74,6 @@ lab.experiment('POST /api/backup', () => {
   });
 });
 
-
 lab.experiment('POST /api/backup/internal', () => {
 
   let request;
@@ -103,7 +99,6 @@ lab.experiment('POST /api/backup/internal', () => {
     Code.expect(response.result._id).to.be.a.object();
   });
 });
-
 
 lab.experiment('GET /api/backup/{id}/data', () => {
 
@@ -139,7 +134,6 @@ lab.experiment('GET /api/backup/{id}/data', () => {
     Code.expect(response.result._id).to.be.a.object();
   });
 });
-
 
 lab.experiment('POST /api/backup/data', () => {
 

@@ -7,13 +7,10 @@ const Fs = require('fs');
 const Manifest = require('../../../manifest');
 const Proxyquire = require('proxyquire');
 
-
 const lab = exports.lab = Lab.script();
 const HapiAnchorApi = Proxyquire('../../../server/anchor/hapi-anchor-api', {});
 
-
-lab.experiment('Plugin', () => {
-
+lab.experiment('Hapi-Anchor-Api Plugin', () => {
 
   lab.test('it successfully registers the plugin', async () => {
 
@@ -53,7 +50,6 @@ lab.experiment('Plugin', () => {
 
     Fs.readdir = realreadDir;
   });
-
 
   lab.test('it successfully starts with custom path', async () => {
 

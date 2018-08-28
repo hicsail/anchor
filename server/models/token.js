@@ -9,17 +9,15 @@ const Config = require('../../config');
 
 class Token extends AnchorModel {
 
-
   static async create(document) {
 
     const keyHash = await Crypto.generateKeyHash();
 
     document = {
       description: document.description,
-      active: true,
-      createdAt: new Date(),
-      key:keyHash.hash,
-      userId: document.userId
+      key: keyHash.hash,
+      userId: document.userId,
+      permissions: document.permissions || {}
     };
 
     const token = await this.insertOne(document);
@@ -36,7 +34,7 @@ Token.schema = Joi.object({
   key: Joi.string().required(),
   userId: Joi.string().required(),
   description: Joi.string().required(),
-  active: Joi.boolean().default(true),
+  isActive: Joi.boolean().default(true),
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),
@@ -46,7 +44,11 @@ Token.schema = Joi.object({
 
 Token.payload = Joi.object({
   description: Joi.string().required(),
-  permission: Joi.object().default({})
+  permission: Joi.any()
+});
+
+Token.isActivePayload = Joi.object({
+  isActive: Joi.boolean().required()
 });
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {

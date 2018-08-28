@@ -5,10 +5,8 @@ const Config = require('../../../config');
 const Fixtures = require('../fixtures');
 const Lab = require('lab');
 
-
 const lab = exports.lab = Lab.script();
 const config = Config.get('/hapiAnchorModel/mongodb');
-
 
 lab.experiment('Invite Model', () => {
 
@@ -18,7 +16,6 @@ lab.experiment('Invite Model', () => {
     await Fixtures.Db.removeAllData();
   });
 
-
   lab.after(async () => {
 
     await Fixtures.Db.removeAllData();
@@ -26,11 +23,15 @@ lab.experiment('Invite Model', () => {
     Invite.disconnect();
   });
 
-
   lab.test('it returns a new instance when create succeeds', async () => {
 
     const document = {
+      username: 'test',
       email: 'test@gmail.com',
+      name: 'Test Test',
+      role: [],
+      permission: {},
+      userId: 'John',
       status: 'Pending'
     };
 

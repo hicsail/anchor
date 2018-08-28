@@ -6,7 +6,6 @@ const criteria = {
   env: process.env.NODE_ENV
 };
 
-
 const manifest = {
   $meta: 'This file defines the plot device.',
   server: {
@@ -21,6 +20,54 @@ const manifest = {
   },
   register: {
     plugins: [
+      {
+        plugin: 'good',
+        options: {
+          reporters: {
+
+            myFileReporter: [{
+              module: 'good-squeeze',
+              name: 'Squeeze',
+              args: [{ ops: '*' }]
+            }, {
+              module: 'good-squeeze',
+              name: 'SafeJson'
+            }, {
+
+              module: 'good-file',
+              args: ['./server/logs/awesome_log']
+            }
+
+            ],
+
+            myConsoleReporter: [
+
+              {
+                module: 'good-squeeze',
+                name: 'Squeeze',
+                args: [{
+                  error: '*',
+                  log: '*',
+                  request: '*',
+                  response: '*'
+                }]
+              },
+              {
+                module: 'good-console',
+                args: [{
+                  color: {
+                    $filter: 'env',
+                    production: false,
+                    $default: true
+                  }
+                }]
+
+              },
+              'stdout'
+            ]
+          }
+        }
+      },
       {
         plugin: 'hapi-auth-cookie'
       },
@@ -65,15 +112,12 @@ const manifest = {
   }
 };
 
-
 const store = new Confidence.Store(manifest);
-
 
 exports.get = function (key) {
 
   return store.get(key, criteria);
 };
-
 
 exports.meta = function (key) {
 

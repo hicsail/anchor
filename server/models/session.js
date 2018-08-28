@@ -6,7 +6,6 @@ const Joi = require('joi');
 const Hoek = require('hoek');
 const UserAgent = require('useragent');
 
-
 class Session extends AnchorModel {
 
   static async create(document) {
@@ -31,7 +30,6 @@ class Session extends AnchorModel {
 
     return sessions[0];
   }
-
 
   static async findByCredentials(id, key) {
 

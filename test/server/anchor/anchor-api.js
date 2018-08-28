@@ -45,7 +45,6 @@ lab.after(async () => {
   await server.stop();
 });
 
-
 lab.experiment('GET /api/{collectionName}', () => {
 
   let request;
@@ -103,6 +102,16 @@ lab.experiment('GET /api/{collectionName}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 
+  lab.test('it returns HTTP 400 when query is not valid', async () => {
+
+    request.url += '?extra=test';
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(400);
+    Code.expect(response.result).to.be.an.object();
+  });
+
   lab.test('it returns HTTP 200 when auth is not required', async () => {
 
     User.routes.getAll.auth = false;
@@ -113,7 +122,6 @@ lab.experiment('GET /api/{collectionName}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('POST /api/{collectionName}', () => {
 
@@ -210,7 +218,6 @@ lab.experiment('POST /api/{collectionName}', () => {
   });
 });
 
-
 lab.experiment('GET /api/{collectionName}/{id}', () => {
 
   let request;
@@ -268,6 +275,16 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 
+  lab.test('it returns HTTP 404 when model is not found', async () => {
+
+    request.url = '/api/users/' + '000000000000000000000000';
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(404);
+    Code.expect(response.result).to.be.an.object();
+  });
+
   lab.test('it returns HTTP 200 when auth is not required', async () => {
 
     User.routes.getId.auth = false;
@@ -278,7 +295,6 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('GET /api/{collectionName}/my', () => {
 
@@ -337,6 +353,16 @@ lab.experiment('GET /api/{collectionName}/my', () => {
     Code.expect(response.result).to.be.an.object();
   });
 
+  lab.test('it returns HTTP 400 when query is not valid', async () => {
+
+    request.url += '?extra=test';
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(400);
+    Code.expect(response.result).to.be.an.object();
+  });
+
   lab.test('it returns HTTP 200 when auth is not required', async () => {
 
     User.routes.getMy.auth = false;
@@ -347,7 +373,6 @@ lab.experiment('GET /api/{collectionName}/my', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('PUT /api/{collectionName}/{id}', () => {
 
@@ -422,6 +447,16 @@ lab.experiment('PUT /api/{collectionName}/{id}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 
+  lab.test('it returns HTTP 404 when model is not found', async () => {
+
+    request.url = '/api/users/' + '000000000000000000000000';
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(404);
+    Code.expect(response.result).to.be.an.object();
+  });
+
   lab.test('it returns HTTP 200 when auth is not required', async () => {
 
     User.routes.update.auth = false;
@@ -432,7 +467,6 @@ lab.experiment('PUT /api/{collectionName}/{id}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('GET /api/{collectionName}/routes', () => {
 
@@ -468,7 +502,6 @@ lab.experiment('GET /api/{collectionName}/routes', () => {
   });
 });
 
-
 lab.experiment('GET /api/{collectionName}/schema', () => {
 
   let request;
@@ -502,7 +535,6 @@ lab.experiment('GET /api/{collectionName}/schema', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('GET /api/{collectionName}/{id}', () => {
 
@@ -571,7 +603,6 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
     Code.expect(response.result).to.be.an.object();
   });
 });
-
 
 lab.experiment('POST /api/{collectionName}/insertMany', () => {
 
@@ -668,7 +699,6 @@ lab.experiment('POST /api/{collectionName}/insertMany', () => {
   });
 });
 
-
 lab.experiment('DELETE /api/{collectionName}/{id}', () => {
 
   let request;
@@ -727,6 +757,16 @@ lab.experiment('DELETE /api/{collectionName}/{id}', () => {
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result).to.be.an.object();
+  });
+
+  lab.test('it returns HTTP 404 when model is not found', async () => {
+
+    request.url = '/api/users/' + '000000000000000000000000';
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(404);
     Code.expect(response.result).to.be.an.object();
   });
 

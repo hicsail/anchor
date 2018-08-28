@@ -1,10 +1,9 @@
 node_modules/*
-test/artifacts/*
 .env
 .idea
 server/backups
+server/logs
 .coveralls.yml
 server/web/public/css/lib
 server/web/public/js/lib
-*~
 .DS_Store

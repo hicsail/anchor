@@ -4,7 +4,6 @@ const Boom = require('boom');
 const Fs = require('fs');
 const Path = require('path');
 
-
 const register = function (server, serverOptions) {
 
   server.route({
@@ -19,7 +18,6 @@ const register = function (server, serverOptions) {
     }
   });
 
-
   server.route({
     method: 'POST',
     path: '/api/backup/internal',
@@ -32,7 +30,6 @@ const register = function (server, serverOptions) {
       return await createBackup();
     }
   });
-
 
   server.route({
     method: 'GET',
@@ -73,7 +70,6 @@ const register = function (server, serverOptions) {
       });
     }
   });
-
 
   server.route({
     method: 'POST',

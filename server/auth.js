@@ -7,7 +7,6 @@ const Session = require('./models/session');
 const Token = require('./models/token');
 const User = require('./models/user');
 
-
 const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
@@ -30,8 +29,10 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!await confirmPermission(request,user)) {
-        throw Boom.forbidden('Need permission');
+      if (`${user._id}` !== '000000000000000000000000') {
+        if (!await confirmPermission(request,user)) {
+          throw Boom.forbidden('Need permission');
+        }
       }
 
       await session.updateLastActive();
@@ -64,8 +65,12 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      if (!await confirmPermission(request,user)) {
-        throw Boom.forbidden('Need permission');
+      if (!token.isActive) {
+        return { isValid: false };
+      }
+
+      if (!confirmTokenPermission(request,token)) {
+        throw Boom.forbidden('Insufficient token permissions');
       }
 
       if (await Crypto.compare(password,token.key)){
@@ -85,7 +90,6 @@ const register = function (server, options) {
       return { isValid: false };
     }
   });
-
 
   server.auth.strategy('session', 'cookie', {
     password: Config.get('/cookieSecret'),
@@ -111,8 +115,10 @@ const register = function (server, options) {
         return { valid: false };
       }
 
-      if (!await confirmPermission(request,user)) {
-        throw Boom.forbidden('Need permission');
+      if (`${user._id}` !== '000000000000000000000000') {
+        if (!await confirmPermission(request,user)) {
+          throw Boom.forbidden('Need permission');
+        }
       }
 
       await session.updateLastActive();
@@ -150,20 +156,32 @@ const usersPermissions = async function (user) {
   return permissions;
 };
 
+const pathToKey = function (request) {
+
+  const method = request.method.toUpperCase();
+  const path = request.path.split('/').join('-');
+  return method + path;
+};
+
+const confirmTokenPermission = function (request,token) {
+
+  const key = pathToKey(request);
+  if (token.permissions[key] !== undefined) {
+    return token.permissions[key];
+  }
+  return true;
+};
+
 const confirmPermission = async function (request,user) {
 
-  const method = String(request.method).toUpperCase();
-  const incompletePath = String(request.path).split('/').join('-');
-  const key = method + incompletePath;
+  const key = pathToKey(request);
   const permissions = await usersPermissions(user);
 
   if (permissions[key] !== undefined) {
     return permissions[key];
   }
-
   return true;
 };
-
 
 module.exports = {
   name: 'auth',
@@ -175,5 +193,6 @@ module.exports = {
   ],
   register,
   usersPermissions,
-  confirmPermission
+  confirmPermission,
+  confirmTokenPermission
 };

@@ -87,7 +87,6 @@ const register = function (server, serverOptions) {
     }
   });
 
-
   server.route({
     method: 'POST',
     path: '/api/login/forgot',
@@ -146,7 +145,6 @@ const register = function (server, serverOptions) {
       return { message: 'Success.' };
     }
   });
-
 
   server.route({
     method: 'POST',
@@ -232,7 +230,6 @@ const register = function (server, serverOptions) {
     }
   });
 };
-
 
 module.exports = {
   name: 'api-login',

@@ -23,7 +23,6 @@ lab.experiment('Token Model', () => {
     Token.disconnect();
   });
 
-
   lab.test('it returns a new instance when create succeeds', async () => {
 
     const document = {
@@ -40,4 +39,3 @@ lab.experiment('Token Model', () => {
   });
 
 });
-

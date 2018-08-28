@@ -26,9 +26,7 @@ class Feedback extends AnchorModel {
   }
 }
 
-
 Feedback.collectionName = 'feedbacks';
-
 
 Feedback.schema = Joi.object({
   _id: Joi.object(),
@@ -74,18 +72,4 @@ Feedback.indexes = [
   { key: { title: 1 } }
 ];
 
-
-
-
-
 module.exports = Feedback;
-
-
-
-
-
-
-
-
-
-

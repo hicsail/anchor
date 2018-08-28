@@ -16,9 +16,7 @@ class Backup extends AnchorModel {
   }
 }
 
-
 Backup.collectionName = 'backups';
-
 
 Backup.schema = Joi.object({
   _id: Joi.object(),
@@ -60,6 +58,5 @@ Backup.lookups = [{
 Backup.indexes = [
   { key: { filename: 1 } }
 ];
-
 
 module.exports = Backup;

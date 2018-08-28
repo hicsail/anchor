@@ -4,8 +4,6 @@ const Joi = require('joi');
 
 const register = function (server,serverOptions) {
 
-
-
   server.route({
     method: 'POST',
     path:'/api/{collectionName}',
@@ -203,7 +201,6 @@ const register = function (server,serverOptions) {
     }
   });
 
-
   server.route({
     method: 'GET',
     path: '/api/{collectionName}/schema',
@@ -228,7 +225,6 @@ const register = function (server,serverOptions) {
 
     }
   });
-
 
   server.route({
     method: 'DELETE',
@@ -318,7 +314,7 @@ const register = function (server,serverOptions) {
           const { error } = Joi.validate(request.query,model.routes.getMy.query);
 
           if (error) {
-            throw Boom.notFound('Query not validated');
+            throw Boom.badRequest('Query not validated');
           }
           return h.continue;
         }
@@ -407,8 +403,6 @@ const register = function (server,serverOptions) {
     }
   });
 
-
-
   server.route({
     //paged find
     method:'GET',
@@ -421,7 +415,6 @@ const register = function (server,serverOptions) {
       pre: [{
         assign: 'model',
         method: function (request,h) {
-
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
@@ -446,11 +439,10 @@ const register = function (server,serverOptions) {
           const model = request.pre.model;
           const { error } = Joi.validate(request.query,model.routes.getAll.query);
           if (error) {
-            throw Boom.notFound('Query not validated');
+            throw Boom.badRequest('Query not validated');
           }
           return h.continue;
         }
-
 
       }, {
         assign: 'auth',
@@ -496,8 +488,6 @@ const register = function (server,serverOptions) {
     return str;
   };
 };
-
-
 
 module.exports = {
   name: 'anchor-api',

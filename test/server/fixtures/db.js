@@ -10,7 +10,6 @@ const Session = require('../../../server/models/session');
 const Token = require('../../../server/models/token');
 const User = require('../../../server/models/user');
 
-
 class Db {
   static async removeAllData() {
 
@@ -28,6 +27,5 @@ class Db {
     ]);
   }
 }
-
 
 module.exports = Db;
