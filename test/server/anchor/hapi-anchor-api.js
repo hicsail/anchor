@@ -10,7 +10,7 @@ const Proxyquire = require('proxyquire');
 const lab = exports.lab = Lab.script();
 const HapiAnchorApi = Proxyquire('../../../server/anchor/hapi-anchor-api', {});
 
-lab.experiment('Plugin', () => {
+lab.experiment('Hapi-Anchor-Api Plugin', () => {
 
   lab.test('it successfully registers the plugin', async () => {
 

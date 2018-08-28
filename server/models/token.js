@@ -15,9 +15,7 @@ class Token extends AnchorModel {
 
     document = {
       description: document.description,
-      active: true,
-      createdAt: new Date(),
-      key:keyHash.hash,
+      key: keyHash.hash,
       userId: document.userId,
       permissions: document.permissions || {}
     };
@@ -36,7 +34,7 @@ Token.schema = Joi.object({
   key: Joi.string().required(),
   userId: Joi.string().required(),
   description: Joi.string().required(),
-  active: Joi.boolean().default(true),
+  isActive: Joi.boolean().default(true),
   createdAt: Joi.date(),
   updatedAt: Joi.date(),
   lastUsed: Joi.date(),
@@ -46,7 +44,7 @@ Token.schema = Joi.object({
 
 Token.payload = Joi.object({
   description: Joi.string().required(),
-  permission: Joi.object().default({})
+  permission: Joi.any()
 });
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {

@@ -539,7 +539,7 @@ lab.experiment('Token Auth Strategy', () => {
   lab.test('it returns as valid when all is well', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy');
-    const token = await Token.create({ userId: `${user._id}`, description: 'test token' });
+    const token = await Token.create({ userId: `${user._id}`, description: 'test token', permissions: { 'GET-token':true } });
 
     const request = {
       method: 'GET',
