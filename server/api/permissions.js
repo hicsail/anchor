@@ -80,22 +80,16 @@ const register = function (server, serverOptions) {
 
       const user = request.pre.user;
       const role = request.pre.role;
-      const roles = user.roles;
-      let flag = false;
-      for (const i in roles) {
-        if (String(roles[i]._id) === String(role._id)) {
-          roles.splice(i,1);
-          flag = true;
-        }
+
+      if (user.roles.indexOf(`${role._id}`) > -1) {
+        user.roles.splice(`${role._id}`, 1);
+        return await User.findByIdAndUpdate(user._id.toString(),{
+          $set: {
+            roles: user.roles
+          }
+        });
       }
-      if (!flag) {
-        return user;
-      }
-      return await User.findByIdAndUpdate(user._id.toString(),{
-        $set: {
-          roles
-        }
-      });
+      return user;
     }
   });
 

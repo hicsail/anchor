@@ -16,7 +16,6 @@ const register = function (server, options) {
 
       if (!session) {
         return { isValid: false };
-
       }
 
       const user = await User.findById(session.userId);

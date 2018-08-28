@@ -272,3 +272,78 @@ lab.experiment('PUT /api/permissions/user/{userId}/role/{roleId}', () => {
   });
 
 });
+
+lab.experiment('DELETE /api/permissions/user/{userId}/role/{roleId}', () => {
+
+  let request;
+  let role;
+
+  lab.beforeEach(async () => {
+
+    const creds = await Fixtures.Creds.createUser('Ren','password','email@e.com','Ren');
+    user = creds.user;
+    session = creds.session;
+    role = await Role.create({ name: 'test', permissions: {}, userId: user._id.toString(), filter: [] });
+    user = await User.findByIdAndUpdate(user._id, { $set: { roles: [`${role._id}`] } });
+
+    request = {
+      method: 'DELETE',
+      url: `/api/permissions/user/${user._id}/role/${role._id}`,
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+  });
+
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+  });
+
+  lab.test('it returns HTTP 404 when user is not found', async () => {
+
+    request.url = `/api/permissions/user/555555555555555555555555/role/${role._id}`;
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(404);
+  });
+
+  lab.test('it returns HTTP 404 when role is not found', async () => {
+
+    request.url = `/api/permissions/user/${user._id}/role/555555555555555555555555`;
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(404);
+  });
+
+  lab.test('it returns HTTP 200 when the user doesnt have that role', async () => {
+
+    await User.findByIdAndUpdate(user._id, {
+      $set: {
+        roles: ['555555555555555555555555']
+      }
+    });
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+  });
+
+  lab.test('it returns HTTP 200 when the user does have that role', async () => {
+
+    await User.findByIdAndUpdate(user._id, {
+      $set: {
+        roles: [`${role._id}`]
+      }
+    });
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+  });
+
+});
