@@ -60,6 +60,44 @@ const register = function (server,serverOptions) {
       return await Token.create(request.payload);
     }
   });
+
+  server.route({
+    method: 'PUT',
+    path: '/api/tokens/{id}/active',
+    options: {
+      auth: {
+        strategies: ['simple','session','token']
+      }
+    },
+    handler: async function (request,h) {
+
+      console.log('token');
+
+      const id = request.params.id;
+
+      return await Token.findByIdAndUpdate(id,{
+        $set: {
+          isActive: true
+        }
+      });
+    }
+  });
+
+  server.route({
+    method:'PUT',
+    path:'/api/tokens/{id}/deactive',
+    options: {
+      auth: {
+        strategies: ['simple','session','token']
+      }
+    },
+    handler: async function (request,h) {
+
+      const id = request.params.id;
+
+      return await Token.findByIdAndUpdate(id,{ $set: { isActive: false } });
+    }
+  });
 };
 
 module.exports = {
