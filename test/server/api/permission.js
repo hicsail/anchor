@@ -87,7 +87,8 @@ lab.experiment('POST /api/role', () => {
       url: '/api/role',
       payload: {
         name: 'testRole',
-        permissions: {}
+        permissions: {},
+        filter: []
       },
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)

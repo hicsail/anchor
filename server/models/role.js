@@ -35,7 +35,11 @@ Role.schema = Joi.object({
   name: Joi.string().required(),
   userId: Joi.string().required(),
   permissions: Joi.object().required(),
-  filter: Joi.array(),
+  filter: Joi.array().items(Joi.object({
+    collectionName: Joi.string(),
+    field: Joi.string(),
+    operator: Joi.string()
+  })),
   createdAt: Joi.date(),
   updatedAt: Joi.date()
 });
@@ -59,7 +63,11 @@ Role.lookups = [];
 Role.payload = Joi.object({
   name: Joi.string().required(),
   permissions: Joi.object().required(),
-  filter: Joi.array()
+  filter: Joi.array().items(Joi.object({
+    collectionName: Joi.string(),
+    field: Joi.string(),
+    operator: Joi.string()
+  }))
 });
 
 Role.indexes = [

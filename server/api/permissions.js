@@ -205,7 +205,6 @@ const register = function (server, serverOptions) {
     },
     handler: async function (request,h) {
 
-      request.payload.filter = [];
       request.payload.userId = request.auth.credentials.user._id.toString();
 
       return await Role.create(request.payload);

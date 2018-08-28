@@ -31,7 +31,6 @@ const register = function (server,serverOptions) {
           return Joi.object().keys(request.pre.permissions.reduce((a,v) => {
 
             a[v.key] = Joi.boolean();
-
             return a;
           }, {}));
         }
@@ -41,13 +40,9 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const { error } = Joi.validate(request.payload.permissions, request.pre.schema);
-
           if (error) {
-
             throw Boom.badRequest(error.message);
-
           }
-
           return h.continue;
         }
 
@@ -71,15 +66,8 @@ const register = function (server,serverOptions) {
     },
     handler: async function (request,h) {
 
-      console.log('token');
-
       const id = request.params.id;
-
-      return await Token.findByIdAndUpdate(id,{
-        $set: {
-          isActive: true
-        }
-      });
+      return await Token.findByIdAndUpdate(id,{ $set: { isActive: true } });
     }
   });
 
@@ -94,7 +82,6 @@ const register = function (server,serverOptions) {
     handler: async function (request,h) {
 
       const id = request.params.id;
-
       return await Token.findByIdAndUpdate(id,{ $set: { isActive: false } });
     }
   });

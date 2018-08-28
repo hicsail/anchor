@@ -17,7 +17,8 @@ class Token extends AnchorModel {
       description: document.description,
       key: keyHash.hash,
       userId: document.userId,
-      permissions: document.permissions || {}
+      permissions: document.permissions || {},
+      isActive: true
     };
 
     const token = await this.insertOne(document);
