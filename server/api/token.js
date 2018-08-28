@@ -1,5 +1,5 @@
 'use strict';
-const Boom = require('Boom');
+const Boom = require('boom');
 const Joi = require('joi');
 const Token = require('../models/token');
 

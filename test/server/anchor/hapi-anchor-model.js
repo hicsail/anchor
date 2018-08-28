@@ -22,7 +22,7 @@ const HapiAnchorModel = Proxyquire('../../../server/anchor/hapi-anchor-model', {
   'anchor-model': stub.AnchorModel
 });
 
-lab.experiment('Plugin', () => {
+lab.experiment('Hapi-Anchor-Model Plugin', () => {
 
   lab.test('it throws an error id unable to read from directory', async () => {
 
