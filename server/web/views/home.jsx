@@ -28,6 +28,7 @@ class HomeView extends React.Component {
                 <Forms fields  = {signup} />
 
             </Layout>
+
         );
     }
 }
