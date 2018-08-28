@@ -163,3 +163,41 @@ lab.experiment('POST /api/backup/data', () => {
     Code.expect(response.result._id).to.be.a.object();
   });
 });
+
+lab.experiment('POST /api/backup/restore/{id}', () => {
+
+  let backupRequest;
+  let request;
+
+  lab.beforeEach(() => {
+
+    backupRequest = {
+      method: 'POST',
+      url: '/api/backup',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+
+    request = {
+      method: 'POST',
+      url: '/api/backup/restore/',
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+  });
+
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const backup = (await server.inject(backupRequest)).result;
+
+    request.url += `${backup._id}`;
+
+    const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result).to.be.an.object();
+    Code.expect(response.result.message).to.equal('Success');
+  });
+});

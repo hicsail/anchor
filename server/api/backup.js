@@ -89,11 +89,12 @@ const register = function (server, serverOptions) {
       const data = await readFile(path);
 
       for (const collectionName in  server.plugins['hapi-anchor-model'].models) {
+        const model = server.plugins['hapi-anchor-model'].models[collectionName];
         if (data[collectionName]) {
-          await server.plugins['hapi-anchor-model'].models[collectionName].deleteMany({});
-          if (data[collectionName].length > 0) {
-            await server.plugins['hapi-anchor-model'].models[collectionName].insertMany(data[collectionName]);
-          }
+          await model.deleteMany({});
+        }
+        if (data[collectionName].length > 0) {
+          await model.insertMany(data[collectionName]);
         }
       }
 
