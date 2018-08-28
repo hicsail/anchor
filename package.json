@@ -45,7 +45,7 @@
     "hapi-auth-basic": "5.x.x",
     "hapi-auth-cookie": "9.x.x",
     "hapi-auth-jwt2": "8.x.x",
-    "hapi-cron": "1.x.x",
+    "hapi-cron": "^1.0.4",
     "hapi-remote-address": "1.x.x",
     "hoek": "5.x.x",
     "inert": "5.x.x",
