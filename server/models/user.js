@@ -180,4 +180,12 @@ User.indexes = [
   { key: { email: 1, unique: 1 } }
 ];
 
+User.columnDefs = [
+  { HeaderName: 'Name', field: 'name' },
+  { HeaderName: 'Username', field: 'username' },
+  { HeaderName: 'Email', field: 'email' },
+  { HeaderName: 'Roles', field: 'roles' },
+  { HeaderName: '', field: '' }
+];
+
 module.exports = User;
