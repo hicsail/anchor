@@ -4,6 +4,7 @@ const Layout = require('./layout.jsx');
 const ButtonColumn = require('./components/buttoncolumn')
 const ButtonRow = require('./components/buttonrow')
 const Forms = require('./components/forms')
+const Spreadsheet = require('./components/spreadsheet')
 const fields = [
   {id: 0, title: 'test', route:'/'},
   {id: 1, title: 'test2', route: '/break'},
@@ -15,6 +16,12 @@ const signup = [
   {id: 2, name: 'email', type: 'email'},
   {id: 3, name: 'name', type: 'text'}
 ]
+const gridDivStyle = {
+  height: '500px',
+  width: '600px'
+}
+const gridId = 'myGrid'
+const gridClassName = 'ag-theme-balham'
 
 class HomeView extends React.Component {
 
@@ -26,7 +33,8 @@ class HomeView extends React.Component {
                 <ButtonColumn tabs = {fields} />
                 <ButtonRow tabs = {fields} />
                 <Forms fields  = {signup} />
-
+                <Spreadsheet idName={gridId} divStyle={gridDivStyle} themeClass={gridClassName} />
+                <Spreadsheet idName= {'blah'} divStyle={gridDivStyle} themeClass={gridClassName} />
             </Layout>
 
         );
