@@ -109,6 +109,7 @@ User.schema = Joi.object({
     token: Joi.string().required(),
     expires: Joi.date().required()
   }),
+  playerIds: Joi.array().items(Joi.string()),
   createdAt: Joi.date(),
   updatedAt: Joi.date()
 });
