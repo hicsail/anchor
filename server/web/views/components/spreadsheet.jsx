@@ -1,5 +1,6 @@
 'use strict'
 const React = require('react')
+const User = require('../../../models/user')
 const divStyle = {
   height: '600px',
   width: '500px'
@@ -11,6 +12,9 @@ const columnDefs = [
 {headerName: "Model", field: "model"},
 {headerName: "Price", field: "price"}
 ];
+//console.log(User.AuthAttemps)
+//console.log(User.gridCollections.AuthAttemps)
+
 // specify the data
 const rowData = [
 {make: "Toyota", model: "Celica", price: 35000},

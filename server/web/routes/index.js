@@ -8,9 +8,55 @@ const register = function (server, serverOptions) {
     options: {
       auth: false
     },
-    handler: function (request, h) {
+    handler: async function (request, h) {
 
-      return h.view('home');
+
+
+      const dataRequest = {
+        method: 'GET',
+        url: '/api/users',
+        headers: request.headers
+      };
+
+      const data = (await server.inject(dataRequest)).result;
+
+      const props = {
+        data,
+        projectName: 'Anchor',
+        credentials: request.auth.credentials
+      };
+
+      return h.view('home', props);
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/dataRow',
+    options: {
+      auth: false
+    },
+    handler: async function (request, h) {
+
+      console.log(JSON.stringify(request.headers) + ' headers');
+
+      const dataRequest = {
+        method: 'GET',
+        url: '/api/users',
+        headers: request.headers
+      };
+
+      const data = (await server.inject(dataRequest)).result;
+
+      const props = {
+        data,
+        projectName: 'Anchor',
+        credentials: request.auth.credentials
+      };
+
+      console.log(props);
+
+      return h.view('home',props);
     }
   });
 };

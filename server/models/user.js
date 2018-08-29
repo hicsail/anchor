@@ -122,9 +122,7 @@ User.payload = Joi.object({
   username: Joi.string().token().lowercase().invalid('root').required(),
   password: Joi.string().required(),
   email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required(),
-  permissions: Joi.object(),
-  roles: Joi.array().items(Joi.string())
+  name: Joi.string().required()
 });
 
 User.permissionPayload =  Joi.object({
@@ -143,9 +141,9 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     payload: User.payload,
     auth: true
   },
-  get: {
+  getAll: {
     disabled: false,
-    auth: true
+    auth: false
   },
   getMy: {
     disabled: false,
@@ -180,12 +178,54 @@ User.indexes = [
   { key: { email: 1, unique: 1 } }
 ];
 
-User.columnDefs = [
-  { HeaderName: 'Name', field: 'name' },
-  { HeaderName: 'Username', field: 'username' },
-  { HeaderName: 'Email', field: 'email' },
-  { HeaderName: 'Roles', field: 'roles' },
-  { HeaderName: '', field: '' }
-];
+// ColumnDefs and RowDefs
+// User.AuthAttemps = [
+//   { HeaderName: 'Name', field: 'name' },
+//   { HeaderName: 'Username', field: 'username' },
+//   { HeaderName: 'Email', field: 'email' },
+//   { HeaderName: 'Roles', field: 'roles' },
+//   { HeaderName: '', field: '' }
+// ];
+//
+//
+// User.Clinicians = [
+//   { HeaderName: 'Name', field: 'name' }
+// ];
+//
+// User.Events = [
+//   { HeaderName: 'Username', field: 'username' },
+//   { HeaderName: 'Study ID', fields: 'studyID' },
+//   { HeaderName: 'Event', fields: 'event' },
+//   { HeaderName: 'Time', fields: '' }
+// ];
+//
+// User.Feedback = [
+//   { HeaderName: 'Username', field: 'username' },
+//   { HeaderName: 'Study ID', field: 'studyID' },
+//   { HeaderName: 'Subject', field: '' },
+//   { HeaderName: 'Description', field: '' },
+//   { HeaderName: 'Comment', field: '' },
+//   { HeaderName: 'Resolved', field: '' },
+//   { HeaderName: 'Time', field: '' },
+//   { HeaderName: 'Edit', field: '' }
+// ];
+//
+// User.Sessions = [
+//   { HeaderName: 'Username', field: 'username' },
+//   { HeaderName: 'Study ID', field: 'studyID' },
+//   { HeaderName: 'IP', field: '' },
+//   { HeaderName: 'Browser', field: '' },
+//   { HeaderName: 'OS', field: '' },
+//   { HeaderName: 'Last Active',field: '' },
+//   { HeaderName: 'Created At', field: 'createdAt' }
+// ];
+//
+// User.Users = [
+//   { HeaderName: 'Name', field: 'name' },
+//   { HeaderName: 'Username', field: 'username' },
+//   { HeaderName: 'Email', field: 'email' },
+//   { HeaderName: 'Joined Study', field: '' },
+//   { HeaderName: 'User Events', field: '' }
+// ];
 
 module.exports = User;
