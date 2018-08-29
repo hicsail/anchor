@@ -109,7 +109,9 @@ lab.experiment('GET /api/backup/{id}/data', () => {
     request = {
       method: 'GET',
       url: '/api/backup/',
-      allowInternals: true
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
     };
   });
 
@@ -147,6 +149,9 @@ lab.experiment('POST /api/backup/data', () => {
       payload: {
         filename: 'test',
         data: {}
+      },
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
     };
   });

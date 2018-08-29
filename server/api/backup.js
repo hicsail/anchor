@@ -10,7 +10,11 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/backup',
     options: {
-      auth: false
+      tags: ['api','backups'],
+      description: 'Get a paginated list of all backups.',
+      auth: {
+        strategies: ['simple', 'session', 'token']
+      }
     },
     handler: async function (request, h) {
 
@@ -35,7 +39,11 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/backup/{id}/data',
     options: {
-      auth: false
+      tags: ['api','backups'],
+      description: 'Get a backup by ID',
+      auth: {
+        strategies: ['simple', 'session', 'token']
+      }
     },
     handler: async function (request, h) {
 
@@ -52,7 +60,11 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/backup/data',
     options: {
-      auth: false,
+      tags: ['api','backups'],
+      description: 'Create a backup with Data',
+      auth: {
+        strategies: ['simple', 'session', 'token']
+      },
       validate: {
         payload: Backup.payload
       }
@@ -75,7 +87,11 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/backup/restore/{id}',
     options: {
-      auth: false
+      tags: ['api','backups'],
+      description: 'Restore backup by ID',
+      auth: {
+        strategies: ['simple', 'session', 'token']
+      }
     },
     handler: async function (request, h) {
 

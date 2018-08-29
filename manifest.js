@@ -1,6 +1,7 @@
 'use strict';
 const Confidence = require('confidence');
 const Config = require('./config');
+const Package = require('./package.json');
 
 const criteria = {
   env: process.env.NODE_ENV
@@ -106,6 +107,44 @@ const manifest = {
               allowInternals: true
             }
           }]
+        }
+      },
+      {
+        plugin:'inert'
+      },
+      {
+        plugin:'vision'
+      },
+      {
+        plugin:'hapi-swagger',
+        options: {
+          securityDefinitions: {
+            'basic': {
+              'type': 'apiKey',
+              'name': 'Authorization',
+              'in': 'header'
+            }
+          },
+          security: [{ 'basic': [] }],
+          info: {
+            title: 'Anchor API Documentation',
+            version: Package.version,
+            description: `Anchor API`
+          },
+          grouping: 'tags',
+          sortTags: 'name',
+          tags: [
+            {
+              name: 'anchor-api',
+              description: 'endpoints auto generator for each Anchor Model.'
+            },{
+              name: 'auth',
+              description: 'endpoints to sign up, login or logout.'
+            },{
+              name: 'backups',
+              description: 'endpoints auto generated for backup api'
+            }
+          ]
         }
       }
     ]
