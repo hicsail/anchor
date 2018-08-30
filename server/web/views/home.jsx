@@ -5,6 +5,7 @@ const ButtonColumn = require('./components/buttoncolumn')
 const ButtonRow = require('./components/buttonrow')
 const Forms = require('./components/forms')
 const Spreadsheet = require('./components/spreadsheet')
+const User = require('../../models/user')
 const fields = [
   {id: 0, title: 'test', route:'/'},
   {id: 1, title: 'test2', route: '/break'},
@@ -23,6 +24,9 @@ const gridDivStyle = {
 const gridId = 'myGrid'
 const gridClassName = 'ag-theme-balham'
 
+const columnDefs = User.columnDefs
+console.log(columnDefs)
+
 class HomeView extends React.Component {
 
     render () {
@@ -33,8 +37,7 @@ class HomeView extends React.Component {
                 <ButtonColumn tabs = {fields} />
                 <ButtonRow tabs = {fields} />
                 <Forms fields  = {signup} />
-                <Spreadsheet idName={gridId} divStyle={gridDivStyle} themeClass={gridClassName} />
-                <Spreadsheet idName= {'blah'} divStyle={gridDivStyle} themeClass={gridClassName} />
+                <Spreadsheet idName={gridId} divStyle={gridDivStyle} themeClass={gridClassName} columnData={columnDefs}/>
             </Layout>
 
         );
