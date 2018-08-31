@@ -21,6 +21,21 @@ const gridDivStyle = {
   height: '500px',
   width: '600px'
 }
+const rowDefs2 = [
+  {_id: '0001', createdAt: '00/00/0000', email: '0001@test.com', inStudy: 'true', name: '0001 test', username: '0001test'},
+  {_id: '0010', createdAt: '00/00/0000', email: '0010@test.com', inStudy: 'true', name: '0010 test', username: '0010test'},
+  {_id: '0011', createdAt: '00/00/0000', email: '0011@test.com', inStudy: 'true', name: '0011 test', username: '0011test'},
+  {_id: '0100', createdAt: '00/00/0000', email: '0100@test.com', inStudy: 'true', name: '0100 test', username: '0100test'},
+  {_id: '0101', createdAt: '00/00/0000', email: '0101@test.com', inStudy: 'true', name: '0101 test', username: '0101test'},
+  {_id: '0110', createdAt: '00/00/0000', email: '0110@test.com', inStudy: 'true', name: '0110 test', username: '0110test'},
+  {_id: '0111', createdAt: '00/00/0000', email: '0001@test.com', inStudy: 'true', name: '0001 test', username: '0001test'},
+  {_id: '1000', createdAt: '00/00/0000', email: '0001@test.com', inStudy: 'true', name: '0001 test', username: '0001test'},
+  {_id: '1001', createdAt: '00/00/0000', email: '0001@test.com', inStudy: 'true', name: '0001 test', username: '0001test'},
+  {_id: '1010', createdAt: '00/00/0000', email: '0001@test.com', inStudy: 'true', name: '0001 test', username: '0001test'},
+  {_id: '1011', createdAt: '00/00/0000', email: '0001@test.com', inStudy: 'true', name: '0001 test', username: '0001test'},
+  {_id: '1100', createdAt: '00/00/0000', email: '0001@test.com', inStudy: 'true', name: '0001 test', username: '0001test'},
+
+]
 const gridId = 'myGrid'
 const gridClassName = 'ag-theme-balham'
 
@@ -28,6 +43,12 @@ const columnDefs = User.columnDefs
 console.log(columnDefs)
 
 class HomeView extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      data: this.props.data
+    }
+  }
 
     render () {
 
@@ -37,7 +58,7 @@ class HomeView extends React.Component {
                 <ButtonColumn tabs = {fields} />
                 <ButtonRow tabs = {fields} />
                 <Forms fields  = {signup} />
-                <Spreadsheet idName={gridId} divStyle={gridDivStyle} themeClass={gridClassName} columnData={columnDefs}/>
+                <Spreadsheet idName={gridId} divStyle={gridDivStyle} themeClass={gridClassName} columnData={columnDefs} rowData={rowDefs2}/>
             </Layout>
 
         );

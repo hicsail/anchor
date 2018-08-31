@@ -54,9 +54,7 @@ const register = function (server, serverOptions) {
         credentials: request.auth.credentials
       };
 
-      console.log(JSON.stringify(props.data.data));
-
-      return h.view('home',props);
+      return props.data.data;
     }
   });
 };
