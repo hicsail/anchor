@@ -38,8 +38,6 @@ const register = function (server, serverOptions) {
     },
     handler: async function (request, h) {
 
-      console.log(JSON.stringify(request.headers) + ' headers');
-
       const dataRequest = {
         method: 'GET',
         url: '/api/users',

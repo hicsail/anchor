@@ -3,8 +3,8 @@ const React = require('react')
 const http = require('http')
 
 const divStyle = {
-  height: '600px',
-  width: '500px'
+  height: '100%',
+  width: '100%'
 }
 
 const gridclassname = "ag-theme-balham"
@@ -22,60 +22,62 @@ const rowDefs = [
 ];
 //Test Data for user Data
 const columnDefs2 = [
-{ headerName: 'User Id', field: '_id' },
-{ headerName: 'Created At', field: 'createdAt' },
-{ headerName: 'Email', field: 'email' },
-{ headerName: 'In Study', field: 'inStudy' },
-{ headerName: 'Name', field: 'name' },
-{ headerName: 'Username', field: 'username' }
-];
+  {headerName:'User Id',field:'_id'},
+  {headerName: 'Created At',field:'createdAt'},
+  {headerName:'Email',field:'email'},
+  {headerName:'In Study',field:'inStudy'},
+  {headerName:'Name',field:'name'},
+  {headerName:'Username',field:'username'}];
 
-
-
-// const rowDefs3 = http.get({
-//   hostname: 'localhost',
-//   port: 9000,
-//   path: '/getData',
-//   agent: false  // create a new agent just for this one request
-// }, (res) => {
-//   console.log(res.data)
-//   return res
-// });
-
-function gridContents (idname,columnData, rowData) {
-  const fetch = `
-  fetch('/dataRow').then(function(response) {
-    console.log(response)
-    return response;
-  }).then(function(data) {
-    console.log(data)
-  })`
-  const gridOptions = {
-    columnDefs: columnData,
-    rowData: rowData,
-    suppressResize: true
+function grid(idname,columnData, route) {
+  const scriptHtml =`
+  // setup the grid after the page has finished loading
+  var columnDefs =${JSON.stringify(columnData)}
+  var gridOptions = {
+    columnDefs: columnDefs,
+    pagination: true
   };
-  const gridOptionsString = JSON.stringify(gridOptions)
-  const idName ='"#' + idname +  '"';
-  const eGridDiv = `document.querySelector(${idName})`;
-  const objectGrid = 'new agGrid.Grid('+eGridDiv+','+ gridOptionsString +');';
+  document.addEventListener('DOMContentLoaded', function() {
+    var gridDiv = document.querySelector('#${idname}');
+    new agGrid.Grid(gridDiv, gridOptions);
+    // do http request to get our sample data - not using any framework to keep the example self contained.
+    // you will probably use a framework like JQuery, Angular or something else to do your HTTP calls.
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.open('GET', '${route}');
+    httpRequest.send();
+    httpRequest.onreadystatechange = function() {
+      if (httpRequest.readyState === 4 && httpRequest.status === 200) {
+        var httpResult = JSON.parse(httpRequest.responseText);
+        gridOptions.api.setRowData(httpResult);
+      }
+    };
+  });`
 
-  return {__html: objectGrid + fetch};
+  return {__html: scriptHtml};
   }
 
 
 class Spreadsheet extends React.Component {
   constructor (props) {
     super(props)
-    
+
   }
   render () {
     return (
       <div>
-        <div id={this.props.idName} style={this.props.divStyle} className={this.props.themeClass}></div>
+        <div id={this.props.idName}
+          style={this.props.divStyle}
+          className={this.props.themeClass}>
+        </div>
         <script type={"text/javascript"}
           charSet={"utf-8"}
-          dangerouslySetInnerHTML={gridContents(this.props.idName,this.props.columnData, this.props.rowData)}/>
+          dangerouslySetInnerHTML={
+            grid(
+              this.props.idName,
+              this.props.columnDefs,
+              this.props.dataRoute
+            )
+          }/>
       </div>
 
     )
