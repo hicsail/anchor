@@ -1,5 +1,6 @@
 'use strict';
 const Fs = require('fs');
+const Path = require('path');
 
 const register = function (server, serverOptions) {
 
@@ -11,13 +12,19 @@ const register = function (server, serverOptions) {
     },
     handler: function (request,h) {
 
-      Fs.readFile('/Users/Dope_Esen/SAIL/anchor/server/logs/awesome_log', (err, data) => {
+      const appDir = [Path.dirname(require.main.filename),'/server/logs/awesome_log'];
+      const filePath = appDir.join('');
+      // const logArray = [];
+
+      Fs.readFile(filePath, (err, data) => {
 
         if (err) {
           throw err;
         }
+        console.log(data);
+
         const logs = JSON.parse(data);
-        console.log(logs);
+
         return logs;
       });
     }
