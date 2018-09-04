@@ -10,6 +10,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/invites',
     options: {
+      tags: ['api','invites'],
+      description: 'Create an Invite',
       auth: {
         strategies: ['simple', 'session', 'token']
       },
@@ -63,6 +65,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/invites/{id}',
     options: {
+      tags: ['api','invites'],
+      description: 'Accept an Invite',
       auth: false,
       validate: {
         payload: User.payload

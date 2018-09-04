@@ -143,6 +143,9 @@ const manifest = {
             },{
               name: 'backups',
               description: 'endpoints auto generated for backup api'
+            },{
+              name: 'invites',
+              description: 'endpoints auto generated for invite api'
             }
           ]
         }

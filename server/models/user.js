@@ -117,9 +117,7 @@ User.payload = Joi.object({
   username: Joi.string().token().lowercase().invalid('root').required(),
   password: Joi.string().required(),
   email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required(),
-  permissions: Joi.object(),
-  roles: Joi.array().items(Joi.string())
+  name: Joi.string().required()
 });
 
 User.permissionPayload =  Joi.object({
