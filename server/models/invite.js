@@ -53,15 +53,10 @@ Invite.payload = Joi.object({
 
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Invite.payload
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Invite.payload
-  },
-  delete: {
-    disabled: false
+    disabled: true
   }
 });
 

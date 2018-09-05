@@ -34,16 +34,13 @@ Backup.payload = Joi.object({
 
 Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Backup.payload
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Backup.payload
+    disabled: true
   },
   delete: {
-    disabled: false,
-    payload: Backup.payload
+    disabled: true
   }
 });
 

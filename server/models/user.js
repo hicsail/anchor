@@ -130,39 +130,15 @@ User.rootSignUpPayload = Joi.object({
 });
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
-
   create: {
-    auth:true,
-    disabled: false,
     payload: User.payload
   },
   update: {
-    disabled: false,
-    payload: User.payload,
-    auth: true
-  },
-  get: {
-    disabled: false,
-    auth: true
-  },
-  getMy: {
-    disabled: false,
-    auth: true
-  },
-  getId: {
-    disabled: false,
-    auth: true
-  },
-  insertMany: {
-    disabled: false,
-    auth: false,
     payload: User.payload
   },
-  delete: {
-    disabled: false,
-    auth: true
+  insertMany: {
+    payload: User.payload
   }
-
 });
 
 User.lookups = [{

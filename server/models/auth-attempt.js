@@ -62,15 +62,13 @@ AuthAttempt.schema = Joi.object({
 
 AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: AuthAttempt.paylaod
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: AuthAttempt.payload
+    disabled: true
   },
   delete: {
-    disabled: false
+    disabled: true
   }
 });
 

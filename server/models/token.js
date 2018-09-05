@@ -54,15 +54,10 @@ Token.isActivePayload = Joi.object({
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
     payload: Token.payload
   },
   update: {
-    auth: true,
     payload: Token.payload
-  },
-  delete: {
-    disabled: false
   }
 });
 

@@ -46,15 +46,10 @@ Role.schema = Joi.object({
 
 Role.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Role.payload
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Role.payload
-  },
-  delete: {
-    disabled:false
+    disabled: true
   }
 });
 

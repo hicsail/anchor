@@ -44,15 +44,13 @@ Analytic.payload = Joi.object({
 
 Analytic.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Analytic.payload
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Analytic.payload
+    disabled: true
   },
   delete: {
-    disabled: false
+    disabled: true
   }
 });
 

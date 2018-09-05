@@ -56,19 +56,7 @@ Notification.payload = Joi.object({
   increaseBadgeNumber: Joi.number().integer().required()
 });
 
-Notification.routes = Hoek.applyToDefaults(AnchorModel.routes, {
-  create: {
-    disabled: false,
-    payload: Notification.payload
-  },
-  update: {
-    disabled: false,
-    payload: Notification.payload
-  },
-  delete: {
-    disabled: false
-  }
-});
+Notification.routes = Hoek.applyToDefaults(AnchorModel.routes, {});
 
 Notification.lookups = [{
   from: require('./user'),
