@@ -12,6 +12,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/signup',
     options: {
+      tags: ['api','auth'],
+      description: 'Sign up for a new user account.',
       auth: false,
       validate: {
         payload: User.payload
@@ -92,6 +94,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/root',
     options: {
+      tags: ['api','auth'],
+      description: 'Creation of Root User Account',
       auth: false,
       validate: {
         payload: User.rootSignUpPayload

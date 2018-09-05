@@ -9,6 +9,8 @@ const register = function (server,serverOptions) {
     method:'POST',
     path: '/api/tokens',
     options: {
+      tags: ['api','tokens'],
+      description: 'Create a new API token',
       auth: {
         strategies: ['simple','session','token']
       },
@@ -60,6 +62,8 @@ const register = function (server,serverOptions) {
     method: 'PUT',
     path: '/api/tokens/{id}/active',
     options: {
+      tags: ['api','tokens'],
+      description: 'Set token to active',
       auth: {
         strategies: ['simple','session','token']
       }
@@ -73,8 +77,10 @@ const register = function (server,serverOptions) {
 
   server.route({
     method:'PUT',
-    path:'/api/tokens/{id}/deactive',
+    path:'/api/tokens/{id}/inactive',
     options: {
+      tags: ['api','tokens'],
+      description: 'Set token to inactive',
       auth: {
         strategies: ['simple','session','token']
       }

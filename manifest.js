@@ -146,6 +146,12 @@ const manifest = {
             },{
               name: 'invites',
               description: 'endpoints auto generated for invite api'
+            },{
+              name: 'permissions',
+              description: 'endpoints auto generated for permissions api'
+            },{
+              name: 'tokens',
+              description: 'endpoints auto generated for tokens api'
             }
           ]
         }
