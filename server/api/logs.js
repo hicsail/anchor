@@ -16,7 +16,7 @@ const register = function (server, serverOptions) {
       const filePath = appDir.join('');
       // const logArray = [];
 
-      Fs.readFile(filePath, (err, data) => {
+      Fs.readFile(filePath, 'utf8', (err, data) => {
 
         if (err) {
           throw err;
