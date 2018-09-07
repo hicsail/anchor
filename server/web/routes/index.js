@@ -6,11 +6,12 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/',
     options: {
-      auth: false
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      }
     },
     handler: async function (request, h) {
-
-
 
       const dataRequest = {
         method: 'GET',

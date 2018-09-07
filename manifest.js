@@ -50,7 +50,13 @@ const manifest = {
         plugin: 'vision'
       },
       {
+        plugin: 'inert'
+      },
+      {
         plugin: './server/web/routes/index'
+      },
+      {
+        plugin: './server/web/routes/public'
       }
     ]
   }

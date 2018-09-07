@@ -1,55 +1,30 @@
 'use strict';
 const React = require('react');
 const Layout = require('./layout.jsx');
-const ButtonColumn = require('./components/buttoncolumn')
-const ButtonRow = require('./components/buttonrow')
-const Forms = require('./components/forms')
-const Spreadsheet = require('./components/spreadsheet')
-const User = require('../../models/user')
-const fields = [
-  {id: 0, title: 'test', route:'/'},
-  {id: 1, title: 'test2', route: '/break'},
-  {id: 2, title:'button', route: '/test2'}
-];
-const signup = [
-  {id: 0, name: 'username', type: 'text'},
-  {id: 1, name: 'password', type: 'password'},
-  {id: 2, name: 'email', type: 'email'},
-  {id: 3, name: 'name', type: 'text'}
-]
-const gridDivStyle = {
-  height: '500px',
-  width: '1200px'
-}
-const gridId = 'myGrid'
-const gridClassName = 'ag-theme-balham'
-
-const columnDefs = User.columnDefs
+const Navbar = require('./components/navbar');
 
 class HomeView extends React.Component {
   constructor (props) {
     super(props)
   }
     render () {
-
         return (
-            <Layout title="Home Page">
-                <h1>Welcome to the plot device.</h1>
-                <ButtonColumn tabs = {fields} />
-                <ButtonRow tabs = {fields} />
-                <Forms fields  = {signup} />
-                <Spreadsheet
-                  idName={gridId}
-                  divStyle={gridDivStyle}
-                  themeClass={gridClassName}
-                  columnDefs={columnDefs}
-                  dataRoute={'/dataRow'} />
+            <Layout>
+                <section className="hero is-light is-large">
+                    <div className="hero-head">
+                        <Navbar credentials={this.props.credentials}/>
+                    </div>
+                    <div className="hero-body">
+                        <div className="container has-text-centered">
+                            <p className="title">
+                                Welcome to the plot device.
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </Layout>
-
         );
     }
 }
-
-
 
 module.exports = HomeView;
