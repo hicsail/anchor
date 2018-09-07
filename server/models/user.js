@@ -134,7 +134,8 @@ User.columns = [
   { headerName: 'Name', field: 'name' },
   { headerName: 'Username', field: 'username' },
   { headerName: 'Email', field: 'email' },
-  { headerName: 'Created At', field: 'createdAt' }];
+  { headerName: 'Created At', field: 'createdAt' }
+];
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 
@@ -169,7 +170,6 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: false,
     auth: true
   }
-
 });
 
 User.lookups = [{
@@ -184,57 +184,5 @@ User.indexes = [
   { key: { username: 1, unique: 1 } },
   { key: { email: 1, unique: 1 } }
 ];
-
-
-
-// ColumnDefs and RowDefs
-// User.AuthAttemps = [
-//   { HeaderName: 'Name', field: 'name' },
-//   { HeaderName: 'Username', field: 'username' },
-//   { HeaderName: 'Email', field: 'email' },
-//   { HeaderName: 'Roles', field: 'roles' },
-//   { HeaderName: '', field: '' }
-// ];
-//
-//
-// User.Clinicians = [
-//   { HeaderName: 'Name', field: 'name' }
-// ];
-//
-// User.Events = [
-//   { HeaderName: 'Username', field: 'username' },
-//   { HeaderName: 'Study ID', fields: 'studyID' },
-//   { HeaderName: 'Event', fields: 'event' },
-//   { HeaderName: 'Time', fields: '' }
-// ];
-//
-// User.Feedback = [
-//   { HeaderName: 'Username', field: 'username' },
-//   { HeaderName: 'Study ID', field: 'studyID' },
-//   { HeaderName: 'Subject', field: '' },
-//   { HeaderName: 'Description', field: '' },
-//   { HeaderName: 'Comment', field: '' },
-//   { HeaderName: 'Resolved', field: '' },
-//   { HeaderName: 'Time', field: '' },
-//   { HeaderName: 'Edit', field: '' }
-// ];
-//
-// User.Sessions = [
-//   { HeaderName: 'Username', field: 'username' },
-//   { HeaderName: 'Study ID', field: 'studyID' },
-//   { HeaderName: 'IP', field: '' },
-//   { HeaderName: 'Browser', field: '' },
-//   { HeaderName: 'OS', field: '' },
-//   { HeaderName: 'Last Active',field: '' },
-//   { HeaderName: 'Created At', field: 'createdAt' }
-// ];
-//
-// User.Users = [
-//   { HeaderName: 'Name', field: 'name' },
-//   { HeaderName: 'Username', field: 'username' },
-//   { HeaderName: 'Email', field: 'email' },
-//   { HeaderName: 'Joined Study', field: '' },
-//   { HeaderName: 'User Events', field: '' }
-// ];
 
 module.exports = User;

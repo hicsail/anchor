@@ -106,6 +106,28 @@ Session.lookups = [{
   }]
 }];
 
+Session.columns = [
+  {
+    headerName: 'Session',
+    children: [
+      { headerName: 'Id', field: '_id' },
+      { headerName: 'Browser', field: 'browser' },
+      { headerName: 'ip', field: 'ip' },
+      { headerName: 'os', field: 'os' },
+      { headerName: 'Last Active', field: 'lastActive' },
+      { headerName: 'Created At', field: 'createdAt' }
+    ]
+  },
+  {
+    headerName: 'User',
+    children: [
+      { headerName: 'Name', field: 'user.name' },
+      { headerName: 'Username', field: 'user.username' },
+      { headerName: 'Email', field: 'user.email' }
+    ]
+  }
+];
+
 Session.indexes = [
   { key: { userId: 1 } }
 ];

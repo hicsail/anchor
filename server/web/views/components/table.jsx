@@ -15,13 +15,20 @@ class Table extends React.Component {
         
         var gridOptions = {
             columnDefs,
-            rowData
+            rowData,
+            enableColResize: true,
+            rowSelection: 'single',
         };
+        
+        function sizeToFit() {
+            gridOptions.api.sizeColumnsToFit();
+        }
         
         document.addEventListener('DOMContentLoaded', function() {
             
             var gridDiv = document.querySelector('#grid');
             new agGrid.Grid(gridDiv, gridOptions);
+            sizeToFit();
         });`;
 
         return {__html: scriptHtml};
