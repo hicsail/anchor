@@ -1,6 +1,7 @@
 'use strict';
 const Gulp = require('gulp');
 const JsDoc = require('gulp-jsdoc3');
+const Nodemon = require('gulp-nodemon');
 
 Gulp.task('documentation', (cb) => {
 
@@ -24,45 +25,47 @@ Gulp.task('css', () => {
 });
 
 
-Gulp.task('cssDatatables', () => {
+Gulp.task('ag-grid', () => {
 
   Gulp.src([
-    './node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css',
-    './node_modules/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css'
-  ]).pipe(Gulp.dest('./server/web/public/css/lib/datatables/'));
+    './node_modules/ag-grid/dist/styles/ag-grid.css',
+    './node_modules/ag-grid/dist/styles/ag-theme-balham.css'
+  ]).pipe(Gulp.dest('./server/web/public/css/lib/'));
+
+  Gulp.src([
+    './node_modules/ag-grid/dist/ag-grid.min.noStyle.js'
+  ]).pipe(Gulp.dest('./server/web/public/js/lib/'));
 });
 
 
 Gulp.task('js', () => {
 
   Gulp.src([
-    './node_modules/bootstrap/dist/js/bootstrap.min.js',
-    './node_modules/chart.js/dist/Chart.min.js',
-    './node_modules/joi-browser/dist/joi-browser.js',
     './node_modules/jquery/dist/jquery.min.js',
     './node_modules/moment/moment.js',
-    './node_modules/mustache/mustache.min.js',
-    './node_modules/popper.js/dist/popper.min.js',
     './node_modules/select2/dist/js/select2.full.min.js'
   ]).pipe(Gulp.dest('./server/web/public/js/lib/'));
 });
 
-Gulp.task('jsDatatables', () => {
+Gulp.task('clientSideJs', () => {
 
-  Gulp.src([
-    './node_modules/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js',
-    './node_modules/datatables.net-buttons/js/buttons.colVis.min.js',
-    './node_modules/datatables.net-buttons/js/buttons.html5.min.js',
-    './node_modules/datatables.net-buttons/js/buttons.print.min.js',
-    './node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js',
-    './node_modules/datatables.net-buttons/js/dataTables.buttons.min.js',
-    './node_modules/datatables.net/js/jquery.dataTables.min.js',
-    './node_modules/jszip/dist/jszip.min.js',
-    './node_modules/pdfmake/build/pdfmake.min.js',
-    './node_modules/pdfmake/build/vfs_fonts.js'
-  ]).pipe(Gulp.dest('./server/web/public/js/lib/datatables/'));
+  Gulp.src('./server/web/views/**/*.js').pipe(Gulp.dest('./server/web/public/js/'));
 });
 
-const tasks = ['css', 'cssDatatables','js', 'jsDatatables'];
+Gulp.task('watch', (done) => {
+
+  Nodemon({
+    script: 'server.js',
+    ext: 'js html jsx css',
+    watch: 'src/',
+    delay: 1,
+    done
+  }).on('restart', () => {
+
+    Gulp.run('clientSideJs');
+  });
+});
+
+const tasks = ['css', 'ag-grid','js','clientSideJs'];
 
 Gulp.task('default', tasks);
