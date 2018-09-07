@@ -45,7 +45,7 @@ class LoginView extends React.Component {
                         </div>
                     </div>
                 </section>
-                <script src={"/public/js/pages/login.js"}></script>
+                <script src="/public/js/pages/login.js"></script>
             </Layout>
         );
     }

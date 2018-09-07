@@ -60,6 +60,9 @@ const manifest = {
       },
       {
         plugin: './server/web/routes/login'
+      },
+      {
+        plugin: './server/web/routes/table'
       }
     ]
   }

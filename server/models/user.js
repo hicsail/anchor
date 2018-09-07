@@ -129,14 +129,12 @@ User.permissionPayload =  Joi.object({
   permissions: Joi.object()
 });
 
-User.columnDefs = [
-  { headerName: 'User Id', field: '_id' },
-  { headerName: 'Created At', field: 'createdAt' },
-  { headerName: 'Email', field: 'email' },
-  { headerName: 'In Study', field: 'inStudy' },
+User.columns = [
+  { headerName: 'Id', field: '_id' },
   { headerName: 'Name', field: 'name' },
-  { headerName: 'Username', field: 'username' }
-];
+  { headerName: 'Username', field: 'username' },
+  { headerName: 'Email', field: 'email' },
+  { headerName: 'Created At', field: 'createdAt' }];
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 

@@ -11,18 +11,9 @@ const register = function (server, serverOptions) {
         mode: 'try'
       }
     },
-    handler: async function (request, h) {
-
-      const dataRequest = {
-        method: 'GET',
-        url: '/api/users',
-        headers: request.headers
-      };
-
-      const data = (await server.inject(dataRequest)).result;
+    handler: function (request, h) {
 
       const props = {
-        data,
         projectName: 'Anchor',
         credentials: request.auth.credentials
       };
