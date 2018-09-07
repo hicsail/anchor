@@ -1,7 +1,7 @@
 'use strict';
 const AnchorModel = require('../anchor/anchor-model');
 const Assert = require('assert');
-const Bcrypt = require('bcrypt');
+const Crypto = require('../crypto');
 const Hoek = require('hoek');
 const Joi = require('joi');
 
@@ -10,8 +10,8 @@ class User extends AnchorModel {
   static async generatePasswordHash(password) {
 
     Assert.ok(password, 'Missing pasword arugment.');
-    const salt = await (Bcrypt.genSalt(10));
-    const hash = await (Bcrypt.hash(password,salt));
+    const salt = await Crypto.genSalt(10);
+    const hash = await Crypto.hash(password,salt);
 
     return { password, hash };
 
@@ -66,7 +66,7 @@ class User extends AnchorModel {
       return;
     }
 
-    const passwordMatch = await Bcrypt.compare(password,user.password);
+    const passwordMatch = await Crypto.compare(password,user.password);
 
     if (passwordMatch) {
       return user;
