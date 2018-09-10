@@ -18,7 +18,7 @@ const register = function (server, serverOptions) {
         credentials: request.auth.credentials
       };
 
-      return h.view('home', props);
+      return h.view('index', props);
     }
   });
 };
@@ -27,6 +27,7 @@ const register = function (server, serverOptions) {
 module.exports = {
   name: 'web-index',
   dependencies: [
+    'vision',
     'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-auth-jwt2',

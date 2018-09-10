@@ -47,7 +47,7 @@ const register = function (server, serverOptions) {
         credentials: request.auth.credentials
       };
 
-      return h.view('pages/table',props);
+      return h.view('table',props);
     }
   });
 };

@@ -1,6 +1,9 @@
 'use strict';
 const Confidence = require('confidence');
 const Config = require('./config');
+const HapiReactViews = require('hapi-react-views');
+const Path = require('path');
+
 
 const criteria = {
   env: process.env.NODE_ENV
@@ -47,8 +50,20 @@ const manifest = {
         plugin: './server/anchor/anchor-api'
       },
       {
-        plugin: 'vision'
+        plugin: 'vision',
+        options: {
+          engines: {
+            jsx: HapiReactViews
+          },
+          compileOptions: {
+            removeCacheRegExp: '.jsx$',
+            layoutPath: Path.join(process.cwd(), './server/web/views/pages/')
+          },
+          relativeTo: __dirname,
+          path: './server/web/views/pages'
+        }
       },
+
       {
         plugin: 'inert'
       },

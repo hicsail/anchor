@@ -36,7 +36,7 @@ const register = function (server, serverOptions) {
         return h.redirect('/');
       }
 
-      return h.view('pages/signup');
+      return h.view('signup');
     }
   });
 

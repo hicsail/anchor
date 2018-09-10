@@ -1,7 +1,7 @@
 'use strict';
 const React = require('react');
-const Layout = require('./layout.jsx');
-const Navbar = require('./components/navbar');
+const Layout = require('../layout.jsx');
+const Navbar = require('../components/navbar');
 
 class HomeView extends React.Component {
   constructor (props) {
