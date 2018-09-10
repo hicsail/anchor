@@ -67,5 +67,12 @@ const register = function (server, serverOptions) {
 
 module.exports = {
   name: 'web-login',
+  dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'auth',
+    'hapi-anchor-model'
+  ],
   register
 };

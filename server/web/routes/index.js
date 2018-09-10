@@ -21,36 +21,17 @@ const register = function (server, serverOptions) {
       return h.view('home', props);
     }
   });
-
-  server.route({
-    method: 'GET',
-    path: '/dataRow',
-    options: {
-      auth: false
-    },
-    handler: async function (request, h) {
-
-      const dataRequest = {
-        method: 'GET',
-        url: '/api/users',
-        headers: request.headers
-      };
-
-      const data = (await server.inject(dataRequest)).result;
-
-      const props = {
-        data,
-        projectName: 'Anchor',
-        credentials: request.auth.credentials
-      };
-
-      return props.data.data;
-    }
-  });
 };
 
 
 module.exports = {
-  name: 'index',
+  name: 'web-index',
+  dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'auth',
+    'hapi-anchor-model'
+  ],
   register
 };

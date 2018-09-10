@@ -20,6 +20,6 @@ const register = function (server, serverOptions) {
 
 module.exports = {
   name: 'web-public',
-  dependencies: [],
+  dependencies: ['inert'],
   register
 };

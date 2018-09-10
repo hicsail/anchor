@@ -53,16 +53,7 @@ const manifest = {
         plugin: 'inert'
       },
       {
-        plugin: './server/web/routes/index'
-      },
-      {
-        plugin: './server/web/routes/public'
-      },
-      {
-        plugin: './server/web/routes/login'
-      },
-      {
-        plugin: './server/web/routes/table'
+        plugin: './server/anchor/hapi-anchor-web'
       }
     ]
   }
