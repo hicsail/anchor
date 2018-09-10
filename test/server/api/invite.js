@@ -6,6 +6,7 @@ const Fixtures = require('../fixtures');
 const Hapi = require('hapi');
 const Lab = require('lab');
 const Manifest = require('../../../manifest');
+const Mailer = require('../../../server/mailer');
 const Invite = require('../../../server/models/invite');
 const InviteApi = require('../../../server/api/invite');
 const Permission = require('../../../server/api/permissions');
@@ -52,6 +53,7 @@ lab.after(async () => {
 
 lab.experiment('POST /api/invites', () => {
 
+  const Mailer_sendEmail = Mailer.sendEmail;
   let request;
 
   lab.beforeEach(() => {
@@ -70,9 +72,37 @@ lab.experiment('POST /api/invites', () => {
     };
   });
 
+  lab.afterEach(() => {
+
+    Mailer.sendEmail = Mailer_sendEmail;
+  });
+
   lab.test('it returns HTTP 200 when all is well', async () => {
 
+    Mailer.sendEmail = () => undefined;
+
     const response = await server.inject(request);
+
+    Code.expect(response.statusCode).to.equal(200);
+    Code.expect(response.result).to.be.an.instanceOf(Invite);
+  });
+
+  lab.test('it returns HTTP 200 when all is well and logs any mailer errors', async () => {
+
+    Mailer.sendEmail = function () {
+
+      throw new Error('Failed to send mail.');
+    };
+
+    const mailerLogEvent = server.events.once({
+      name: 'request',
+      filter: ['error', 'mailer']
+    });
+
+    const response = await server.inject(request);
+    const [, event] = await mailerLogEvent;
+
+    Code.expect(event.error.message).to.match(/failed to send mail/i);
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result).to.be.an.instanceOf(Invite);
