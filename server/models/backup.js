@@ -48,6 +48,12 @@ Backup.sidebar = {
   name: 'Backups'
 };
 
+Backup.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'File name', field: 'filename' },
+  { headerName: 'Created At', field: 'createdAt' }
+];
+
 Backup.lookups = [{
   from: require('./user'),
   local: 'userId',

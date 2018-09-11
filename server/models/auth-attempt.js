@@ -76,6 +76,14 @@ AuthAttempt.sidebar = {
   name: 'Auth Attempts'
 };
 
+AuthAttempt.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'Browser', field: 'browser' },
+  { headerName: 'ip', field: 'ip' },
+  { headerName: 'os', field: 'os' },
+  { headerName: 'Created At', field: 'createdAt' }
+];
+
 AuthAttempt.lookups = [];
 
 AuthAttempt.indexes = [

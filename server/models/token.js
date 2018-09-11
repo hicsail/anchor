@@ -65,6 +65,26 @@ Token.sidebar = {
   name: 'Tokens'
 };
 
+Token.columns = [
+  {
+    headerName: 'Token',
+    children: [
+      { headerName: 'Id', field: '_id' },
+      { headerName: 'Description', field: 'description' },
+      { headerName: 'Last Active', field: 'lastActive' },
+      { headerName: 'Created At', field: 'createdAt' }
+    ]
+  },
+  {
+    headerName: 'User',
+    children: [
+      { headerName: 'Name', field: 'user.name' },
+      { headerName: 'Username', field: 'user.username' },
+      { headerName: 'Email', field: 'user.email' }
+    ]
+  }
+];
+
 Token.lookups = [{
   from: require('./user'),
   local: 'userId',

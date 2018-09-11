@@ -66,11 +66,48 @@ Invite.lookups = [{
   foreign: '_id',
   as: 'user',
   one: true
+},{
+  from: require('./role'),
+  local: 'roles',
+  foreign: '_id',
+  as: 'roles',
+  operator: '$in'
 }];
 
 Invite.sidebar = {
   name: 'Invites'
 };
+
+Invite.columns = [
+  {
+    headerName: 'Invite',
+    children: [
+      { headerName: 'Id', field: '_id' },
+      { headerName: 'Roles', field: 'roles' },
+      { headerName: 'Permissions', field: 'permissions' },
+      { headerName: 'Expires At', field: 'expiredAt' },
+      { headerName: 'Status', field: 'status' },
+      { headerName: 'Created At', field: 'createdAt' },
+      { headerName: 'Updated At', field: 'updatedAt' }
+    ]
+  },
+  {
+    headerName: 'Invitee',
+    children: [
+      { headerName: 'Username', field: 'username' },
+      { headerName: 'Name', field: 'name' },
+      { headerName: 'Email', field: 'email' }
+    ]
+  },
+  {
+    headerName: 'Inviter',
+    children: [
+      { headerName: 'Name', field: 'user.name' },
+      { headerName: 'Username', field: 'user.username' },
+      { headerName: 'Email', field: 'user.email' }
+    ]
+  }
+];
 
 Invite.indexes = [
   { key: { email: 1 }  }

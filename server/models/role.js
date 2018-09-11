@@ -69,6 +69,12 @@ Role.sidebar = {
   name: 'Roles'
 };
 
+Role.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'Name', field: 'name' },
+  { headerName: 'Permissions', field: 'permissions' }
+];
+
 Role.indexes = [
   { key: { name: 1, unique: 1 } }
 ];
