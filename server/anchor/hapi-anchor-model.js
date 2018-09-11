@@ -19,19 +19,26 @@ const register = async function (server, options) {
 
   const models = await readDir(Path.join(__dirname,modelPath));
 
-  const [anchorModels, collectionModels] = models.reduce((accumulator, file) => {
+  const [anchorModels, collectionModels, collectionNames, sidebar] = models.reduce((accumulator, file) => {
 
     const model = require(Path.join(__dirname,modelPath,file));
     if (model.prototype instanceof AnchorModel) {
       accumulator[0].push(model);
       accumulator[1][model.collectionName] = model;
+      accumulator[2].push(model.collectionName);
+      const sidebarOptions = model.sidebar;
+      sidebarOptions.collectionName = model.collectionName;
+      accumulator[3].push(sidebarOptions);
+
     }
     return accumulator;
-  },[[],{}]);
+  },[[],{},[],[]]);
 
   server.expose('models',collectionModels);
   server.expose('anchorModel', AnchorModel);
   server.expose('modelsArray', anchorModels);
+  server.expose('collectionNames', collectionNames);
+  server.expose('sidebar', sidebar);
 
   server.ext({
     type: 'onPreStart',

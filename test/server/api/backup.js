@@ -6,6 +6,8 @@ const Hapi = require('hapi');
 const Lab = require('lab');
 const Manifest = require('../../../manifest');
 const BackupApi = require('../../../server/api/backup');
+const Permissions = require('../../../server/api/permissions');
+
 //const Backup = require('../../../server/models/backup');
 const User = require('../../../server/models/user');
 const Session = require('../../../server/models/session');
@@ -30,6 +32,7 @@ lab.before(async () => {
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
   plugins.push(Auth);
+  plugins.push(Permissions);
   plugins.push(BackupApi);
 
   await server.register(plugins);

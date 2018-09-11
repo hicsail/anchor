@@ -44,7 +44,8 @@ const register = function (server, serverOptions) {
           rows: data.result
         },
         projectName: 'Anchor',
-        credentials: request.auth.credentials
+        credentials: request.auth.credentials,
+        sidebar: server.plugins['hapi-anchor-model'].sidebar
       };
 
       return h.view('table',props);

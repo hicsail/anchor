@@ -60,6 +60,11 @@ Feedback.lookups = [{
   one: true
 }];
 
+Feedback.sidebar = {
+  name: 'Feedback',
+  disabled: true
+};
+
 Feedback.payload = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().required()

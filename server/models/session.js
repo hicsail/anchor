@@ -87,6 +87,10 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+Session.sidebar = {
+  name: 'Sessions'
+};
+
 Session.lookups = [{
   from: require('./user'),
   local: 'userId',

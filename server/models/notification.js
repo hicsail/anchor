@@ -66,6 +66,11 @@ Notification.lookups = [{
   one: true
 }];
 
+Notification.sidebar = {
+  name: 'Notifications',
+  disabled: true
+};
+
 Notification.indexes = [
   { key: { title: 1 } }
 ];

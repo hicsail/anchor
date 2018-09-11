@@ -149,6 +149,10 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+User.sidebar = {
+  name: 'Users'
+};
+
 User.lookups = [{
   from: require('./role'),
   local: 'roles',

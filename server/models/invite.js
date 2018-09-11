@@ -68,6 +68,10 @@ Invite.lookups = [{
   one: true
 }];
 
+Invite.sidebar = {
+  name: 'Invites'
+};
+
 Invite.indexes = [
   { key: { email: 1 }  }
 ];

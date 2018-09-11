@@ -3,6 +3,7 @@ const React = require('react');
 const Layout = require('../layout.jsx');
 const Navbar = require('../components/navbar.jsx');
 const Table = require('../components/table.jsx');
+const Sidebar = require('../components/sidebar.jsx');
 
 
 class TableView extends React.Component {
@@ -13,17 +14,24 @@ class TableView extends React.Component {
     render () {
         return (
             <Layout projectName={this.props.projectName} pageName={this.props.pageName}>
-                <section className="hero is-light is-fullheight">
+                <section className="hero is-light" style={{minHeight: '100vh'}}>
                     <div className="hero-head">
                         <Navbar credentials={this.props.credentials}/>
                     </div>
                     <div className="hero-body">
-                        <div className="container">
-                            <Table
-                                url={this.props.table.url}
-                                rows={this.props.table.rows}
-                                columns={this.props.table.columns}
-                            />
+                        <div className="columns">
+                            <div className="column is-3">
+                                <Sidebar credentials={this.props.credentials} sidebar={this.props.sidebar}/>
+                            </div>
+                            <div className="column is-9">
+                                <div className="container">
+                                    <Table
+                                        url={this.props.table.url}
+                                        rows={this.props.table.rows}
+                                        columns={this.props.table.columns}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>

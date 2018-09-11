@@ -2,6 +2,7 @@
 const Boom = require('boom');
 const Crypto = require('./crypto');
 const Config = require('../config');
+const Hoek = require('hoek');
 const Role = require('./models/role');
 const Session = require('./models/session');
 const Token = require('./models/token');
@@ -28,17 +29,26 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
+      let permissions = {};
+
       if (`${user._id}` !== '000000000000000000000000') {
         if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
+        else {
+          permissions = await fullUsersPermission(server,user);
+        }
+      }
+      else {
+        permissions = await allPermissions(server);
       }
 
       await session.updateLastActive();
 
       const credentials = {
         session,
-        user
+        user,
+        permissions
       };
 
       return { credentials, isValid: true };
@@ -114,17 +124,26 @@ const register = function (server, options) {
         return { valid: false };
       }
 
+      let permissions = {};
+
       if (`${user._id}` !== '000000000000000000000000') {
         if (!await confirmPermission(request,user)) {
           throw Boom.forbidden('Need permission');
         }
+        else {
+          permissions = await fullUsersPermission(server,user);
+        }
+      }
+      else {
+        permissions = await allPermissions(server);
       }
 
       await session.updateLastActive();
 
       const credentials = {
         session,
-        user
+        user,
+        permissions
       };
 
       return { credentials, valid: true };
@@ -144,6 +163,31 @@ const usersPermissions = async function (user) {
     }
   }
   permissions = mergePermissions(permissions,user.permissions);
+
+  return permissions;
+};
+
+const fullUsersPermission = async function (server,user) {
+
+  const usersPermission = await usersPermissions(user);
+  const allPermission = await allPermissions(server);
+
+  return Hoek.merge(allPermission,usersPermission);
+};
+
+const allPermissions = async function (server) {
+
+  const permissionRequest = {
+    method: 'GET',
+    url: '/api/permissions/available'
+  };
+
+  const permissionResult = (await server.inject(permissionRequest)).result;
+
+  const permissions = {};
+  for (const permission of permissionResult) {
+    permissions[permission.key] = true;
+  }
 
   return permissions;
 };

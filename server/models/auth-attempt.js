@@ -72,6 +72,10 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+AuthAttempt.sidebar = {
+  name: 'Auth Attempts'
+};
+
 AuthAttempt.lookups = [];
 
 AuthAttempt.indexes = [

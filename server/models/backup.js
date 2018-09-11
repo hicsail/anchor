@@ -44,6 +44,10 @@ Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+Backup.sidebar = {
+  name: 'Backups'
+};
+
 Backup.lookups = [{
   from: require('./user'),
   local: 'userId',

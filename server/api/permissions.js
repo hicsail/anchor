@@ -11,9 +11,7 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/permissions/available',
     options: {
-      auth: {
-        strategies: ['simple','session','token']
-      }
+      auth: false
     },
     handler: function (request, h) {
 
@@ -337,8 +335,7 @@ module.exports = {
     'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-auth-jwt2',
-    'hapi-anchor-model',
-    'hapi-remote-address'
+    'hapi-anchor-model'
   ],
   register
 };

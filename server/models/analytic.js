@@ -62,6 +62,11 @@ Analytic.lookups = [{
   one: true
 }];
 
+Analytic.sidebar = {
+  name: 'Analytics',
+  disabled: true
+};
+
 Analytic.indexes = [
   { key: { event: 1 } },
   { key : { name: 1 } }

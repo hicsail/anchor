@@ -65,6 +65,10 @@ Role.payload = Joi.object({
   }))
 });
 
+Role.sidebar = {
+  name: 'Roles'
+};
+
 Role.indexes = [
   { key: { name: 1, unique: 1 } }
 ];

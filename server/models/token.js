@@ -61,6 +61,10 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   }
 });
 
+Token.sidebar = {
+  name: 'Tokens'
+};
+
 Token.lookups = [{
   from: require('./user'),
   local: 'userId',
