@@ -117,7 +117,7 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       request.payload.username = 'root';
-      request.payload.name = 'root';
+      request.payload.name = 'Root';
 
       const user = (await User.insertOne({
         _id: User.ObjectId('000000000000000000000000'),

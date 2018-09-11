@@ -1,4 +1,5 @@
 'use strict';
+const Boom = require('boom');
 
 const register = function (server, serverOptions) {
 
@@ -37,6 +38,35 @@ const register = function (server, serverOptions) {
       }
 
       return h.view('signup');
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/setup',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      },
+      pre: [{
+        assign: 'rootUserCheck',
+        method: async function (request, h) {
+
+          const root = await require('../../models/user').findById('000000000000000000000000');
+          if (root) {
+            throw Boom.notFound();
+          }
+        }
+      }]
+    },
+    handler: function (request, h) {
+
+      if (request.auth.isAuthenticated) {
+        return h.redirect('/');
+      }
+
+      return h.view('setup');
     }
   });
 
