@@ -145,10 +145,10 @@ const register = function (server, serverOptions) {
     options: {
       tags: ['api', 'invites'],
       description: 'Resend invite',
-      auth: false,
       validate: {
         payload: Invite.payload
       },
+      auth: false,
       pre: [{
         assign: 'invite',
         method: async function (request,h) {
@@ -180,8 +180,7 @@ const register = function (server, serverOptions) {
       catch (err) {
         request.log(['mailer', 'error'], err);
       }
-      return await Invite.create(request.payload);
-
+      return invite;
     }
   });
 
