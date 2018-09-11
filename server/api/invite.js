@@ -147,7 +147,7 @@ const register = function (server, serverOptions) {
       description: 'Resend invite',
       auth: false,
       validate: {
-        payload: User.payload
+        payload: Invite.payload
       },
       pre: [{
         assign: 'invite',

@@ -17,6 +17,7 @@ const lab = exports.lab = Lab.script();
 let server;
 let user;
 let session;
+let invite;
 
 lab.before(async () => {
 
@@ -42,6 +43,7 @@ lab.before(async () => {
   await Fixtures.Db.removeAllData();
 
   user = await User.create({ username: 'ren', password: 'baddog', email: 'ren@stimpy.show', name: 'ren' });
+  invite = await Invite.create({ username: 'renren', email: 'mytest@test.com', name: 'renny', userId: user._id });
   session = await Session.create({ userId: user._id.toString(), ip: '127.0.0.1', userAgent: 'Lab' });
 });
 
@@ -107,4 +109,60 @@ lab.experiment('POST /api/invites', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result).to.be.an.instanceOf(Invite);
   });
+});
+
+lab.experiment('POST /api/invites/{id}',  () => {
+
+  let request;
+  const Mailer_sendEmail = Mailer.sendEmail;
+
+  lab.beforeEach(() => {
+
+    request = {
+      method: 'POST',
+      url: '/api/invites/' + invite._id,
+      payload: {
+        username: 'ren2',
+        password: 'Baddog222!',
+        email: 'ren2@stimpy.show',
+        name: 'ren2'
+      },
+      headers: {
+        authorization: Fixtures.Creds.authHeader(session._id, session.key)
+      }
+    };
+  });
+
+  lab.afterEach(() => {
+
+    Mailer.sendEmail = Mailer_sendEmail;
+  });
+
+  lab.test('it returns HTTP 200 when everything goes well', async () => {
+
+    Mailer.sendEmail = () => undefined;
+    console.log(request);
+    const response = await server.inject(request);
+    Code.expect(response.statusCode).to.equal(200);
+  });
+
+  lab.test('it returns HTTP 200 when everything goes well and logs any mailer errors', async () => {
+
+    Mailer.sendEmail = () => {
+
+      throw new Error('Failed to send mail.');
+    };
+
+    const response = await server.inject(request);
+    Code.expect(response.statusCode).to.equal(200);
+  });
+
+  lab.test('it returns HTTP 500 when the invite id is incorrect', async () => {
+
+    request.url = '/api/invites/000001';
+    console.log(request);
+    const response = await server.inject(request);
+    Code.expect(response.statusCode).to.equal(500);
+  });
+
 });
