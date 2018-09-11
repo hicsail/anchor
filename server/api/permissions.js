@@ -31,10 +31,12 @@ const register = function (server, serverOptions) {
       server.table().forEach((route) => {
 
         if (route.path.indexOf('{collectionName}') === -1) {
-          const method = route.method.toUpperCase();
-          const path = route.path;
-          const tag = path.split('/')[2];
-          permissions.push({ method, path, tag, key: method + path.split('/').join('-') });
+          if (route.settings.auth) {
+            const method = route.method.toUpperCase();
+            const path = route.path;
+            const tag = path.split('/')[2];
+            permissions.push({ method, path, tag, key: method + path.split('/').join('-') });
+          }
         }
       });
 
