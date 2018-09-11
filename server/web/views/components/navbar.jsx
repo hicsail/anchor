@@ -7,17 +7,17 @@ class Navbar extends React.Component {
         super(props);
     }
 
-    render () {
+    endMenu() {
         let endMenu;
         if(this.props.credentials) {
             endMenu = <div className="navbar-end">
-                    <a className="navbar-item" href="/">
-                        {this.props.credentials.user.name}
-                    </a>
-                    <a className="navbar-item" href="/logout">
+                <a className="navbar-item" href="/">
+                    {this.props.credentials.user.name}
+                </a>
+                <a className="navbar-item" href="/logout">
                     Logout
-                    </a>
-                </div>
+                </a>
+            </div>
         } else {
             endMenu = <div className="navbar-end">
                 <a className="navbar-item" href="/login">
@@ -28,27 +28,34 @@ class Navbar extends React.Component {
                 </a>
             </div>
         }
+        return endMenu;
+    }
+
+    render () {
         return (
-            <nav className="navbar is-white has-shadow">
-                <div className="navbar-brand">
-                    <a className="navbar-item" href="https://bulma.io">
-                        {this.props.projectName}
-                    </a>
-                    <div className="navbar-burger burger" data-target="navbar">
-                        <span/>
-                        <span/>
-                        <span/>
-                    </div>
-                </div>
-                <div id="navbar" className="navbar-menu">
-                    <div className="navbar-start">
-                        <a className="navbar-item" href="/">
-                            Home
+            <div>
+                <nav className="navbar is-white has-shadow">
+                    <div className="navbar-brand">
+                        <a className="navbar-item" href="https://bulma.io">
+                            {this.props.projectName}
+                        </a>
+                        <a role="button" className="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+                            <span aria-hidden="true"/>
+                            <span aria-hidden="true"/>
+                            <span aria-hidden="true"/>
                         </a>
                     </div>
-                    {endMenu}
-                </div>
-            </nav>
+                    <div id="navMenu" className="navbar-menu">
+                        <div className="navbar-start">
+                            <a className="navbar-item" href="/">
+                                Home
+                            </a>
+                        </div>
+                        {this.endMenu()}
+                    </div>
+                </nav>
+                <script src="/public/js/components/navbar.js"/>
+            </div>
         )
     }
 }

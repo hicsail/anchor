@@ -1,7 +1,7 @@
 'use strict';
 const React = require('react');
 const Layout = require('../layout.jsx');
-const Navbar = require('../components/navbar');
+const Navbar = require('../components/navbar.jsx');
 
 class LoginView extends React.Component {
     constructor (props) {
@@ -9,7 +9,7 @@ class LoginView extends React.Component {
     }
     render () {
         return (
-            <Layout>
+            <Layout projectName={this.props.projectName} pageName="Login">
                 <section className="hero is-light is-fullheight">
                     <div className="hero-head">
                         <Navbar credentials={this.props.credentials}/>

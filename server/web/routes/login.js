@@ -17,7 +17,7 @@ const register = function (server, serverOptions) {
         return h.redirect('/');
       }
 
-      return h.view('pages/login');
+      return h.view('login');
     }
   });
 

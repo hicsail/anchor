@@ -1,8 +1,8 @@
 'use strict';
 const React = require('react');
 const Layout = require('../layout.jsx');
-const Navbar = require('../components/navbar');
-const Table = require('../components/table');
+const Navbar = require('../components/navbar.jsx');
+const Table = require('../components/table.jsx');
 
 
 class TableView extends React.Component {
@@ -12,7 +12,7 @@ class TableView extends React.Component {
 
     render () {
         return (
-            <Layout>
+            <Layout projectName={this.props.projectName} pageName={this.props.pageName}>
                 <section className="hero is-light is-fullheight">
                     <div className="hero-head">
                         <Navbar credentials={this.props.credentials}/>
