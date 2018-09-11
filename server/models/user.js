@@ -129,6 +129,14 @@ User.rootSignUpPayload = Joi.object({
   password: Joi.string().required()
 });
 
+User.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'Name', field: 'name' },
+  { headerName: 'Username', field: 'username' },
+  { headerName: 'Email', field: 'email' },
+  { headerName: 'Created At', field: 'createdAt' }
+];
+
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     payload: User.payload

@@ -1,49 +1,37 @@
 'use strict';
-const internals = {};
-const Config = require('../../../config');
 
-internals.applyRoutes = function (server, next) {
+const register = function (server, serverOptions) {
 
   server.route({
     method: 'GET',
     path: '/',
-    config: {
+    options: {
       auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
+        strategies: ['simple','session','token'],
+        mode: 'try'
       }
     },
-    handler: function (request, reply) {
+    handler: function (request, h) {
 
-      let user = null;
-      if (request.auth.isAuthenticated) {
-        user = request.auth.credentials.user;
-      }
-      return reply.view('index/index', {
-        user,
-        projectName: Config.get('/projectName'),
-        title: 'Home',
-        baseUrl: Config.get('/baseUrl')
-      });
+      const props = {
+        projectName: 'Anchor',
+        credentials: request.auth.credentials
+      };
+
+      return h.view('index', props);
     }
   });
-
-  next();
 };
 
-exports.register = function (server, options, next) {
-
-  server.dependency(['auth'], internals.applyRoutes);
-
-  next();
-};
-
-exports.register.attributes = {
-  name: 'home',
-  dependencies: 'visionary'
+module.exports = {
+  name: 'web-index',
+  dependencies: [
+    'vision',
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'auth',
+    'hapi-anchor-model'
+  ],
+  register
 };

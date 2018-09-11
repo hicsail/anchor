@@ -1,6 +1,11 @@
 'use strict';
 const Glue = require('glue');
 const Manifest = require('./manifest');
+require('babel-core/register')(
+  {
+    presets: ['react', 'es2017']
+  }
+);
 
 process.on('unhandledRejection', (reason, promise) => {
 
