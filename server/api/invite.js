@@ -1,6 +1,8 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
+const Mailer = require('../mailer');
+const Config = require('../../config');
 const Invite = require('../models/invite');
 const User = require('../models/user');
 
@@ -57,7 +59,23 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       request.payload.userId = request.auth.credentials.user._id.toString();
-      return await Invite.create(request.payload);
+      const invite = await Invite.create(request.payload);
+
+      const emailOptions = {
+        subject: `Your ${Config.get('/projectName')} account.`,
+        to: {
+          name: request.payload.name,
+          address: request.payload.email
+        }
+      };
+
+      try {
+        await Mailer.sendEmail(emailOptions, 'invite', invite);
+      }
+      catch (err) {
+        request.log(['mailer', 'error'], err);
+      }
+      return invite;
     }
   });
 
@@ -118,6 +136,51 @@ const register = function (server, serverOptions) {
       });
 
       return user;
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/api/invite/{id}/resend',
+    options: {
+      tags: ['api', 'invites'],
+      description: 'Resend invite',
+      validate: {
+        payload: Invite.payload
+      },
+      auth: false,
+      pre: [{
+        assign: 'invite',
+        method: async function (request,h) {
+
+          const invite = await Invite.findById(request.params.id);
+
+          if (!invite) {
+            throw Boom.notFound('Invite not found');
+          }
+          return invite;
+        }
+      }]
+    },
+
+    handler: async function (request, h){
+
+      const invite = request.pre.invite;
+      const emailOptions = {
+        subject: `Your ${Config.get('/projectName')} account`,
+        to: {
+          name: request.payload.name,
+          address: request.payload.email
+        }
+      };
+
+      try {
+        await Mailer.sendEmail(emailOptions, 'invite', invite);
+      }
+      catch (err) {
+        request.log(['mailer', 'error'], err);
+      }
+      return invite;
     }
   });
 
