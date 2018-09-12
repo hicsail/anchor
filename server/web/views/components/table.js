@@ -21,8 +21,6 @@ $(document).ready(function() {
       rangeStart = rangeEnd - pageRange;
     }
 
-    console.log(rangeStart,rangeEnd);
-
     if(rangeStart > 1) {
       $('#b1').show();
       $('#b2').show();
@@ -82,6 +80,13 @@ $(document).ready(function() {
       updateTable(result.data);
       updatePageButtons();
     }
+  });
+
+  $(".pagination-link").click(async function() {
+    currentPage = Number($(this).html());
+    let result = await getData(currentPage);
+    updateTable(result.data);
+    updatePageButtons();
   });
 
 

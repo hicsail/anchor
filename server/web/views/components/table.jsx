@@ -84,23 +84,26 @@ class Table extends React.Component {
     render () {
         return (
             <div>
-                <div id="grid" className="ag-theme-balham" style={{
-                    height: '500px',
-                    width: '100%'
-                }}/>
-                {this.pagination()}
+                <div className="box">
+                    <div id="grid" className="ag-theme-balham" style={{
+                        height: '500px',
+                        width: '100%'
+                    }}/>
+                </div>
+                <div className="box">
+                    {this.pagination()}
+                </div>
                 <script type={"text/javascript"}
-                    charSet={"utf-8"}
-                    dangerouslySetInnerHTML={
-                        this.grid(
-                            this.props.columns,
-                            this.props.rows.data,
-                            this.props.url
-                        )
-                    }/>
+                        charSet={"utf-8"}
+                        dangerouslySetInnerHTML={
+                            this.grid(
+                                this.props.columns,
+                                this.props.rows.data,
+                                this.props.url
+                            )
+                        }/>
                 <script type={"text/javascript"} src="/public/js/components/table.js" charSet={"utf-8"}/>
             </div>
-
         );
     }
 }
