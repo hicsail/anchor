@@ -20,15 +20,17 @@ class Table extends React.Component {
             rowSelection: 'single',
         };
         
-        function sizeToFit() {
-            gridOptions.api.sizeColumnsToFit();
-        }
+        var url = "${this.props.url}";
+        var currentPage = ${this.props.rows.pages.current};
+        var totalPage = ${this.props.rows.pages.total};
+        var pageRange = ${5};
+
         
         document.addEventListener('DOMContentLoaded', function() {
             
             var gridDiv = document.querySelector('#grid');
             new agGrid.Grid(gridDiv, gridOptions);
-            sizeToFit();
+            
         });`;
 
         return {__html: scriptHtml};
@@ -37,11 +39,44 @@ class Table extends React.Component {
     pagination() {
         const pageData = this.props.rows.pages;
         console.log(pageData);
-        let previousButton;
 
+        let previousButton;
+        if(pageData.hasPrev) {
+            previousButton = <a id="previousButton" className="pagination-previous">Previous</a>
+        } else {
+            previousButton = <a id="previousButton" disabled className="pagination-previous is-disabled">Previous</a>
+        }
+
+        let nextButton;
+        if(pageData.hasNext) {
+            nextButton = <a id="nextButton" className="pagination-next">Next page</a>
+        } else {
+            nextButton = <a id="nextButton" disabled className="pagination-next">Next page</a>
+        }
+
+        let paginationParent;
+        let paginationList = [];
+        const pageRange = 5;
+        paginationList.push(<li><a id="b1" style={{display: 'none'}} className="pagination-link is-current" aria-label="Goto page 1">1</a></li>);
+        paginationList.push(<li><span id="b2" style={{display: 'none'}} className="pagination-ellipsis">&hellip;</span></li>);
+        for(let i = 1; i <= pageRange; i++) {
+            let style = i <= pageData.total?{}:{display: 'none'};
+            let className = 'pagination-link';
+            if(i === 1) {
+                className += ' is-current';
+            }
+            paginationList.push(<li><a id={'b' + (i + 2)} style={style} className={className} aria-label={`Goto page ${i}`}>{i}</a></li>);
+        }
+        let lastStyle = pageData.total > 5?{}:{display: 'none'};
+        paginationList.push(<li><span id="b8" style={lastStyle} className="pagination-ellipsis">&hellip;</span></li>);
+        paginationList.push(<li><a id="b9" style={lastStyle} className="pagination-link" aria-label={`Goto page ${pageData.total}`}>{pageData.total}</a></li>);
+
+        paginationParent = <ul className="pagination-list">{paginationList}</ul>;
         return (
             <nav className="pagination" role="navigation" aria-label="pagination">
-
+                {previousButton}
+                {nextButton}
+                {paginationParent}
             </nav>
         )
     }
@@ -54,33 +89,6 @@ class Table extends React.Component {
                     width: '100%'
                 }}/>
                 {this.pagination()}
-                <nav className="pagination" role="navigation" aria-label="pagination">
-                    <a className="pagination-previous">Previous</a>
-                    <a className="pagination-next">Next page</a>
-                    <ul className="pagination-list">
-                        <li>
-                            <a className="pagination-link" aria-label="Goto page 1">1</a>
-                        </li>
-                        <li>
-                            <span className="pagination-ellipsis">&hellip;</span>
-                        </li>
-                        <li>
-                            <a className="pagination-link" aria-label="Goto page 45">45</a>
-                        </li>
-                        <li>
-                            <a className="pagination-link is-current" aria-label="Page 46" aria-current="page">46</a>
-                        </li>
-                        <li>
-                            <a className="pagination-link" aria-label="Goto page 47">47</a>
-                        </li>
-                        <li>
-                            <span className="pagination-ellipsis">&hellip;</span>
-                        </li>
-                        <li>
-                            <a className="pagination-link" aria-label="Goto page 86">86</a>
-                        </li>
-                    </ul>
-                </nav>
                 <script type={"text/javascript"}
                     charSet={"utf-8"}
                     dangerouslySetInnerHTML={
@@ -90,6 +98,7 @@ class Table extends React.Component {
                             this.props.url
                         )
                     }/>
+                <script type={"text/javascript"} src="/public/js/components/table.js" charSet={"utf-8"}/>
             </div>
 
         );
