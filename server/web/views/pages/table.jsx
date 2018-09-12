@@ -20,7 +20,7 @@ class TableView extends React.Component {
                     </div>
                     <div className="hero-body">
                         <div className="columns">
-                            <div className="column is-3">
+                            <div className="column is-12-mobile is-3-tablet is-2-desktop">
                                 <Sidebar credentials={this.props.credentials} sidebar={this.props.sidebar}/>
                             </div>
                             <div className="column is-9">
