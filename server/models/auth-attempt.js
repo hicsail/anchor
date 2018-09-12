@@ -78,6 +78,7 @@ AuthAttempt.sidebar = {
 
 AuthAttempt.columns = [
   { headerName: 'Id', field: '_id' },
+  { headerName: 'Username', field: 'username' },
   { headerName: 'Browser', field: 'browser' },
   { headerName: 'ip', field: 'ip' },
   { headerName: 'os', field: 'os' },

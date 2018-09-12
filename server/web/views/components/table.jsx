@@ -12,24 +12,43 @@ class Table extends React.Component {
         // setup the grid after the page has finished loading
         var columnDefs =${JSON.stringify(columnDefs)};
         var rowData = ${JSON.stringify(rows)};
-        
+        var sort = '_id';
         var gridOptions = {
             columnDefs,
             rowData,
             enableColResize: true,
             rowSelection: 'single',
+            enableSorting: true,
+            onSortChanged: (grid) => {
+                let sortModel = grid.api.getSortModel();
+                if(sortModel.length > 0) {
+                    sort = (sortModel[0].sort==='asc'?'':'-')+sortModel[0].colId
+                    updateTable().then();
+                } else {
+                    sort = '_id'
+                }
+            }
         };
         
         var url = "${this.props.url}";
         var currentPage = ${this.props.rows.pages.current};
         var totalPage = ${this.props.rows.pages.total};
         var pageRange = ${5};
+        
+        function autoSizeAll() {
+            var allColumnIds = [];
+            gridOptions.columnApi.getAllColumns().forEach(function(column) {
+                allColumnIds.push(column.colId);
+            });
+            gridOptions.columnApi.autoSizeColumns(allColumnIds);
+        }
 
         
         document.addEventListener('DOMContentLoaded', function() {
             
             var gridDiv = document.querySelector('#grid');
             new agGrid.Grid(gridDiv, gridOptions);
+            autoSizeAll();
             
         });`;
 
