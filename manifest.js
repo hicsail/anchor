@@ -120,12 +120,12 @@ const manifest = {
         plugin: 'hapi-cron',
         options: {
           jobs: [{
-            name: 'backup',
+            name: 'backups',
             time: '0 0 0 * * *',
             timezone: 'America/New_York',
             request: {
               method: 'POST',
-              url: '/api/backup/internal',
+              url: '/api/backups/internal',
               allowInternals: true
             }
           }]

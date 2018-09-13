@@ -10,6 +10,7 @@ class LayoutView extends React.Component {
                     <title>{`${this.props.projectName} - ${this.props.pageName}`}</title>
                     <meta name="viewport" content="width=device-width, initial-scale=1"/>
                     <link rel="stylesheet" href="/public/css/lib/bulma.min.css"/>
+                    <link rel="stylesheet" href="/public/css/lib/bulma-checkradio.min.css"/>
                     <link rel="stylesheet" href="/public/css/lib/ag-grid.css"/>
                     <link rel="stylesheet" href="/public/css/lib/ag-theme-balham.css"/>
 

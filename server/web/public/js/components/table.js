@@ -4,7 +4,6 @@ async function getData() {
 }
 
 async function updateTable() {
-  console.log(currentPage);
   let result = await getData(currentPage);
   updateTableRows(result.data);
   updatePageButtons();

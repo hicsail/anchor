@@ -8,7 +8,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path: '/api/backup',
+    path: '/api/backups',
     options: {
       tags: ['api','backups'],
       description: 'Get a paginated list of all backups.',
@@ -24,7 +24,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path: '/api/backup/internal',
+    path: '/api/backups/internal',
     options: {
       auth: false,
       isInternal: true
@@ -37,7 +37,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'GET',
-    path: '/api/backup/{id}/data',
+    path: '/api/backups/{id}/data',
     options: {
       tags: ['api','backups'],
       description: 'Get a backup by ID',
@@ -58,7 +58,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path: '/api/backup/data',
+    path: '/api/backups/data',
     options: {
       tags: ['api','backups'],
       description: 'Create a backup with Data',
@@ -85,7 +85,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path: '/api/backup/restore/{id}',
+    path: '/api/backups/restore/{id}',
     options: {
       tags: ['api','backups'],
       description: 'Restore backup by ID',

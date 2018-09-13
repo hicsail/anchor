@@ -19,6 +19,7 @@ Gulp.task('css', () => {
 
   Gulp.src([
     './node_modules/bulma/css/bulma.min.css',
+    './node_modules/bulma-extensions/bulma-checkradio/dist/css/bulma-checkradio.min.css',
     './node_modules/select2/dist/css/select2.min.css'
   ]).pipe(Gulp.dest('./server/web/public/css/lib/'));
 });

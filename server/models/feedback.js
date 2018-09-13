@@ -45,10 +45,21 @@ Feedback.schema = Joi.object({
 
 Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: Feedback.payload
+    payload: Feedback.payload,
+    disabled: true
   },
   update: {
-    payload: Feedback.payload
+    payload: Feedback.payload,
+    disabled: true
+  },
+  getAll: {
+    disabled: true
+  },
+  getId: {
+    disabled: true
+  },
+  delete: {
+    disabled: true
   }
 });
 

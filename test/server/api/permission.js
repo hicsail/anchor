@@ -76,7 +76,7 @@ lab.experiment('GET /api/permissions/available', () => {
   });
 });
 
-lab.experiment('POST /api/role', () => {
+lab.experiment('POST /api/roles', () => {
 
   let request;
 
@@ -84,7 +84,7 @@ lab.experiment('POST /api/role', () => {
 
     request = {
       method: 'POST',
-      url: '/api/role',
+      url: '/api/roles',
       payload: {
         name: 'testRole',
         permissions: {},
@@ -122,7 +122,7 @@ lab.experiment('POST /api/role', () => {
   });
 });
 
-lab.experiment('PUT /api/role', () => {
+lab.experiment('PUT /api/roles', () => {
 
   let request;
 
@@ -132,7 +132,7 @@ lab.experiment('PUT /api/role', () => {
 
     request = {
       method: 'PUT',
-      url: '/api/role/' + role._id.toString(),
+      url: '/api/roles/' + role._id.toString(),
       payload: {
         name: 'testRole',
         permissions: {}

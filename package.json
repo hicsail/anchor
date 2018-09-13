@@ -40,6 +40,7 @@
     "bcrypt": "3.x.x",
     "boom": "7.x.x",
     "bulma": "^0.7.1",
+    "bulma-extensions": "^3.0.0",
     "confidence": "3.x.x",
     "dotenv": "6.x.x",
     "glue": "5.x.x",

@@ -5,7 +5,7 @@ const Fixtures = require('../fixtures');
 const Hapi = require('hapi');
 const Lab = require('lab');
 const Manifest = require('../../../manifest');
-const BackupApi = require('../../../server/api/backup');
+const BackupApi = require('../../../server/api/backups');
 const Permissions = require('../../../server/api/permissions');
 
 //const Backup = require('../../../server/models/backup');
@@ -49,7 +49,7 @@ lab.after(async () => {
   await server.stop();
 });
 
-lab.experiment('POST /api/backup', () => {
+lab.experiment('POST /api/backups', () => {
 
   let request;
 
@@ -57,7 +57,7 @@ lab.experiment('POST /api/backup', () => {
 
     request = {
       method: 'POST',
-      url: '/api/backup',
+      url: '/api/backups',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -77,7 +77,7 @@ lab.experiment('POST /api/backup', () => {
   });
 });
 
-lab.experiment('POST /api/backup/internal', () => {
+lab.experiment('POST /api/backups/internal', () => {
 
   let request;
 
@@ -85,7 +85,7 @@ lab.experiment('POST /api/backup/internal', () => {
 
     request = {
       method: 'POST',
-      url: '/api/backup/internal',
+      url: '/api/backups/internal',
       allowInternals: true
     };
   });
@@ -103,7 +103,7 @@ lab.experiment('POST /api/backup/internal', () => {
   });
 });
 
-lab.experiment('GET /api/backup/{id}/data', () => {
+lab.experiment('GET /api/backups/{id}/data', () => {
 
   let request;
 
@@ -111,7 +111,7 @@ lab.experiment('GET /api/backup/{id}/data', () => {
 
     request = {
       method: 'GET',
-      url: '/api/backup/',
+      url: '/api/backups/',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -122,7 +122,7 @@ lab.experiment('GET /api/backup/{id}/data', () => {
 
     const backupRequest = {
       method: 'POST',
-      url: '/api/backup/internal',
+      url: '/api/backups/internal',
       allowInternals: true
     };
 
@@ -140,7 +140,7 @@ lab.experiment('GET /api/backup/{id}/data', () => {
   });
 });
 
-lab.experiment('POST /api/backup/data', () => {
+lab.experiment('POST /api/backups/data', () => {
 
   let request;
 
@@ -148,7 +148,7 @@ lab.experiment('POST /api/backup/data', () => {
 
     request = {
       method: 'POST',
-      url: '/api/backup/data',
+      url: '/api/backups/data',
       payload: {
         filename: 'test',
         data: {}
@@ -172,7 +172,7 @@ lab.experiment('POST /api/backup/data', () => {
   });
 });
 
-lab.experiment('POST /api/backup/restore/{id}', () => {
+lab.experiment('POST /api/backups/restore/{id}', () => {
 
   let backupRequest;
   let request;
@@ -181,7 +181,7 @@ lab.experiment('POST /api/backup/restore/{id}', () => {
 
     backupRequest = {
       method: 'POST',
-      url: '/api/backup',
+      url: '/api/backups',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -189,7 +189,7 @@ lab.experiment('POST /api/backup/restore/{id}', () => {
 
     request = {
       method: 'POST',
-      url: '/api/backup/restore/',
+      url: '/api/backups/restore/',
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
