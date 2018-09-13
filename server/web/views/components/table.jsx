@@ -42,7 +42,6 @@ class Table extends React.Component {
             });
             gridOptions.columnApi.autoSizeColumns(allColumnIds);
         }
-
         
         document.addEventListener('DOMContentLoaded', function() {
             
@@ -57,7 +56,6 @@ class Table extends React.Component {
 
     pagination() {
         const pageData = this.props.rows.pages;
-        console.log(pageData);
 
         let previousButton;
         if(pageData.hasPrev) {
@@ -104,8 +102,20 @@ class Table extends React.Component {
         return (
             <div>
                 <div className="box">
+                    <div className="level">
+                        <div className="level-left">
+                            <div className="level-item">
+                                <a className="button" id="download">
+                                <span className="icon">
+                                  <i className="fas fa-download"></i>
+                                </span>
+                                    <span>Download</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <div id="grid" className="ag-theme-balham" style={{
-                        height: '500px',
+                        height: '400px',
                         width: '100%'
                     }}/>
                 </div>

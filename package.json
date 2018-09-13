@@ -29,6 +29,7 @@
     "node": "9.x.x"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.3.1",
     "ag-grid": "^18.x.x",
     "ajv": "^5.5.2",
     "babel-cli": "^6.26.0",

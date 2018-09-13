@@ -7,3 +7,4 @@ server/logs
 server/web/public/css/lib
 server/web/public/js/lib
 .DS_Store
+server/web/public/css/webfonts

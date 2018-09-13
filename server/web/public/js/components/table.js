@@ -72,6 +72,10 @@ $('#nextButton').click(async function() {
   }
 });
 
+$('#download').click(async function() {
+  gridOptions.api.exportDataAsCsv();
+});
+
 $("#previousButton").click(async function() {
   if(currentPage > 1) {
     currentPage -= 1;
