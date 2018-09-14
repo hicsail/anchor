@@ -114,10 +114,10 @@ User.schema = Joi.object({
 });
 
 User.payload = Joi.object({
-  username: Joi.string().token().lowercase().invalid('root').required(),
-  password: Joi.string().required(),
-  email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required()
+  username: Joi.string().token().lowercase().invalid('root').required().label('Username'),
+  password: Joi.string().required().label('Password'),
+  email: Joi.string().email().lowercase().required().label('Email'),
+  name: Joi.string().required().label('Name')
 });
 
 User.permissionPayload =  Joi.object({
@@ -139,6 +139,7 @@ User.columns = [
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
+    disabled: true,
     payload: User.payload
   },
   update: {

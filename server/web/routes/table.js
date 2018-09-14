@@ -1,11 +1,12 @@
 'use strict';
 const Boom = require('boom');
+const Joi = require('joi');
 
 const register = function (server, serverOptions) {
 
   server.route({
     method: 'GET',
-    path: '/view/{collectionName}',
+    path: '/{collectionName}',
     options: {
       auth: {
         strategies: ['simple','session','token'],
@@ -23,25 +24,28 @@ const register = function (server, serverOptions) {
 
           return await model;
         }
+      }, {
+        assign: 'data',
+        method: async function (request,h) {
+
+          const url = `/api/${request.params.collectionName}`;
+          const dataRequest = {
+            method: 'GET',
+            url,
+            headers: request.headers
+          };
+
+          return await server.inject(dataRequest);
+        }
       }]
     },
-    handler: async function (request, h) {
-
-      const url = `/api/${request.params.collectionName}`;
-
-      const dataRequest = {
-        method: 'GET',
-        url,
-        headers: request.headers
-      };
-
-      const data = await server.inject(dataRequest);
+    handler: function (request, h) {
 
       const props = {
         table: {
-          url,
+          url: `/api/${request.params.collectionName}`,
           columns: request.pre.model.columns,
-          rows: data.result
+          rows: request.pre.data.result
         },
         projectName: 'Anchor',
         credentials: request.auth.credentials,
@@ -49,6 +53,54 @@ const register = function (server, serverOptions) {
       };
 
       return h.view('table',props);
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/{collectionName}/create',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      },
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            throw Boom.notFound('Model not found');
+          }
+
+          return model;
+        }
+      },{
+        assign: 'disabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.create.disabled) {
+            throw Boom.notFound('Model create is disabled');
+          }
+
+          return h.continue;
+        }
+      }]
+    },
+    handler: function (request, h) {
+
+      const props = {
+        projectName: 'Anchor',
+        credentials: request.auth.credentials,
+        sidebar: server.plugins['hapi-anchor-model'].sidebar,
+        schema: Joi.describe(request.pre.model.routes.create.payload),
+        url: '/api/' + request.pre.model.collectionName
+      };
+
+      return h.view('create', props);
     }
   });
 };

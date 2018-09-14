@@ -27,7 +27,7 @@ class Sidebar extends React.Component {
         let itemList = [];
 
         for (let model of this.state.models) {
-            itemList.push(<li><a className="sidebar-item" href={`/view/${model.collectionName}`}>{model.name}</a></li>)
+            itemList.push(<li><a className="sidebar-item" href={`/${model.collectionName}`}>{model.name}</a></li>)
         }
         return itemList;
     }

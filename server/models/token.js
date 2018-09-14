@@ -44,7 +44,7 @@ Token.schema = Joi.object({
 });
 
 Token.payload = Joi.object({
-  description: Joi.string().required(),
+  description: Joi.string().required().label('Description'),
   permission: Joi.any()
 });
 
