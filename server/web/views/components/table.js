@@ -23,6 +23,9 @@ function updatePageButtons() {
   if(rangeEnd > totalPage) {
     rangeEnd = totalPage + 1;
     rangeStart = rangeEnd - pageRange;
+    if(rangeStart <= 1) {
+      rangeStart = 1
+    }
   }
 
   if(rangeStart > 1) {
