@@ -47,6 +47,7 @@ const register = function (server, serverOptions) {
           columns: request.pre.model.columns,
           rows: request.pre.data.result
         },
+        routes: request.pre.model.routes,
         projectName: 'Anchor',
         credentials: request.auth.credentials,
         sidebar: server.plugins['hapi-anchor-model'].sidebar

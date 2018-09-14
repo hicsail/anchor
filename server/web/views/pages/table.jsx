@@ -26,6 +26,7 @@ class TableView extends React.Component {
                             <div className="column is-9">
                                 <div className="container">
                                     <Table
+                                        routes={this.props.routes}
                                         url={this.props.table.url}
                                         rows={this.props.table.rows}
                                         columns={this.props.table.columns}

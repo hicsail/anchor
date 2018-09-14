@@ -76,6 +76,10 @@ $('#download').click(async function() {
   gridOptions.api.exportDataAsCsv();
 });
 
+$('#create').click(function() {
+  window.location.pathname += '/create'
+});
+
 $("#previousButton").click(async function() {
   if(currentPage > 1) {
     currentPage -= 1;

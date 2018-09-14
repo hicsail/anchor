@@ -7,6 +7,22 @@ class Table extends React.Component {
         super(props);
     }
 
+    createButton() {
+        if(this.props.routes.create.disabled) {
+            return(<div/>);
+        }
+        return (
+            <div className="level-item">
+                <a className="button is-info" id="create">
+                    <span className="icon">
+                        <i className="fas fa-plus"/>
+                    </span>
+                    <span>Create</span>
+                </a>
+            </div>
+        )
+    }
+
     grid(columnDefs, rows, url) {
         const scriptHtml =`
         // setup the grid after the page has finished loading
@@ -104,6 +120,7 @@ class Table extends React.Component {
                 <div className="box">
                     <div className="level">
                         <div className="level-left">
+                            {this.createButton()}
                             <div className="level-item">
                                 <a className="button" id="download">
                                 <span className="icon">
