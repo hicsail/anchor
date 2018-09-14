@@ -134,7 +134,7 @@ User.columns = [
   { headerName: 'Name', field: 'name' },
   { headerName: 'Username', field: 'username' },
   { headerName: 'Email', field: 'email' },
-  { headerName: 'Created At', field: 'createdAt' }
+  { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
 ];
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {

@@ -71,8 +71,8 @@ Token.columns = [
     children: [
       { headerName: 'Id', field: '_id' },
       { headerName: 'Description', field: 'description' },
-      { headerName: 'Last Active', field: 'lastActive' },
-      { headerName: 'Created At', field: 'createdAt' }
+      { headerName: 'Last Active', field: 'lastActive', render: (x) => new Date(x).toLocaleString() },
+      { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
     ]
   },
   {

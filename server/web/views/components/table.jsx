@@ -5,6 +5,20 @@ class Table extends React.Component {
 
     constructor (props) {
         super(props);
+        for(let x of this.props.rows.data) {
+            for(let column of this.props.columns) {
+                if(column.children) {
+                    for(let child of column.children) {
+                        if(child.render) {
+                            x[child.field] = child.render(x[child.field])
+                        }
+                    }
+                }
+                if(column.render) {
+                    x[column.field] = column.render(x[column.field])
+                }
+            }
+        }
     }
 
     createButton() {
@@ -23,7 +37,7 @@ class Table extends React.Component {
         )
     }
 
-    grid(columnDefs, rows, url) {
+    grid(columnDefs, rows) {
         const scriptHtml =`
         // setup the grid after the page has finished loading
         var columnDefs =${JSON.stringify(columnDefs)};
@@ -124,7 +138,7 @@ class Table extends React.Component {
                             <div className="level-item">
                                 <a className="button" id="download">
                                 <span className="icon">
-                                  <i className="fas fa-download"></i>
+                                  <i className="fas fa-download"/>
                                 </span>
                                     <span>Download</span>
                                 </a>
@@ -145,7 +159,6 @@ class Table extends React.Component {
                             this.grid(
                                 this.props.columns,
                                 this.props.rows.data,
-                                this.props.url
                             )
                         }/>
                 <script type={"text/javascript"} src="/public/js/components/table.js" charSet={"utf-8"}/>

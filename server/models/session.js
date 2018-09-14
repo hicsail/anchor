@@ -114,8 +114,8 @@ Session.columns = [
       { headerName: 'Browser', field: 'browser' },
       { headerName: 'ip', field: 'ip' },
       { headerName: 'os', field: 'os' },
-      { headerName: 'Last Active', field: 'lastActive' },
-      { headerName: 'Created At', field: 'createdAt' }
+      { headerName: 'Last Active', field: 'lastActive', render: (x) => new Date(x).toLocaleString() },
+      { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
     ]
   },
   {
