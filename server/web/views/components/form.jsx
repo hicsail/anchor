@@ -13,8 +13,9 @@ class Form extends React.Component {
           let field = children[key];
           field.key = key;
           switch (field.type) {
+              case 'date':
               case 'string':
-                  fields.push(<TextInput field={field}/>);
+                  fields.push(<TextInput viewOnly={this.props.viewOnly} field={field} value={this.props.data[field.key]}/>);
                   break;
           }
       }
