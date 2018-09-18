@@ -97,20 +97,20 @@ User.collectionName = 'users';
 
 User.schema = Joi.object({
   _id: Joi.object(),
-  isActive: Joi.boolean().default(true),
-  username: Joi.string().token().lowercase().required(),
-  password: Joi.string(),
-  name: Joi.string(),
-  inStudy: Joi.boolean().default(true),
-  email: Joi.string().email().lowercase().required(),
+  isActive: Joi.boolean().default(true).label('Is Active'),
+  username: Joi.string().token().lowercase().required().label('Username'),
+  password: Joi.string().label('Password'),
+  name: Joi.string().label('Name'),
+  inStudy: Joi.boolean().default(true).label('In Study'),
+  email: Joi.string().email().lowercase().required().label('Email'),
   permissions: Joi.object(),
   roles: Joi.array().items(Joi.string()),
   resetPassword: Joi.object({
     token: Joi.string().required(),
     expires: Joi.date().required()
   }),
-  createdAt: Joi.date(),
-  updatedAt: Joi.date()
+  createdAt: Joi.date().label('Created At'),
+  updatedAt: Joi.date().label('Updated At')
 });
 
 User.payload = Joi.object({

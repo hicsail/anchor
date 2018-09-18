@@ -20,7 +20,6 @@ class TextInput extends React.Component {
                 this.value = 'No Date'
             }
         }
-
     }
 
     render () {
