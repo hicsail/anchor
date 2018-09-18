@@ -11,21 +11,24 @@ const register = function (server, serverOptions) {
     method: 'GET',
     path: '/api/permissions/available',
     options: {
-      auth: {
-        strategies: ['simple','session','token']
-      }
+      auth: false
     },
     handler: function (request, h) {
 
       const permissions = [];
+      const permissionMap = {};
+      let count = 0;
 
       for (const model of  server.plugins['hapi-anchor-model'].modelsArray) {
         for (const route in AnchorModel.routeMap) {
-          if (!model.routes[route].disabled) {
+          if (!model.routes[route].disabled && route !== 'getMy') {
             const method = AnchorModel.routeMap[route].method.toUpperCase();
             const path = AnchorModel.routeMap[route].path.replace(/{collectionName}/g,model.collectionName);
             const tag = model.collectionName;
-            permissions.push({ method, path, tag, key: method + path.replace(/{/g,'').replace(/}/g,'').split('/').join('-') });
+            const key = method + path.replace(/{/g,'').replace(/}/g,'').split('/').join('-');
+            permissions.push({ method, path, tag, key });
+            permissionMap[key] = count;
+            count += 1;
           }
         }
       }
@@ -33,10 +36,19 @@ const register = function (server, serverOptions) {
       server.table().forEach((route) => {
 
         if (route.path.indexOf('{collectionName}') === -1) {
-          const method = route.method.toUpperCase();
-          const path = route.path;
-          const tag = path.split('/')[2];
-          permissions.push({ method, path, tag, key: method + path.split('/').join('-') });
+          if (route.settings.auth && route.settings.auth.mode === 'required') {
+            const method = route.method.toUpperCase();
+            const path = route.path;
+            const tag = path.split('/')[2];
+            const key = method + path.replace(/{/g,'').replace(/}/g,'').split('/').join('-');
+            if (permissionMap[key]) {
+              permissions[permissionMap[key]] = { method, path, tag, key };
+            }
+            else {
+              permissions.push({ method, path, tag, key });
+              count += 1;
+            }
+          }
         }
       });
 
@@ -145,7 +157,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'POST',
-    path:'/api/role',
+    path:'/api/roles',
     config: {
       auth: {
         strategies: ['simple','session','token']
@@ -207,7 +219,7 @@ const register = function (server, serverOptions) {
 
   server.route({
     method: 'PUT',
-    path:'/api/role/{id}',
+    path:'/api/roles/{id}',
     config: {
       auth: {
         strategies: ['simple','session','token']
@@ -337,8 +349,7 @@ module.exports = {
     'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-auth-jwt2',
-    'hapi-anchor-model',
-    'hapi-remote-address'
+    'hapi-anchor-model'
   ],
   register
 };

@@ -4,6 +4,16 @@ const UUID = require('uuid/v4');
 
 class Crypto {
 
+  static async genSalt(rounds) {
+
+    return await Bcrypt.genSalt(rounds);
+  }
+
+  static async hash(key,salt) {
+
+    return await Bcrypt.hash(key,salt);
+  }
+
   static async generateKeyHash() {
 
     const key = UUID();

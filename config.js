@@ -29,6 +29,10 @@ const config = {
     forIp: 50,
     forIpAndUser:7
   },
+  onesignal: {
+    appId: process.env.ONESIGNAL_APP_ID,
+    apiKey: process.env.ONESIGNAL_API_KEY
+  },
   port: {
     web: {
       $filter: 'env',

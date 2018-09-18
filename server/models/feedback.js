@@ -45,14 +45,22 @@ Feedback.schema = Joi.object({
 
 Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Feedback.payload
+    payload: Feedback.payload,
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Feedback.payload
+    payload: Feedback.payload,
+    disabled: true
+  },
+  getAll: {
+    disabled: true
+  },
+  getId: {
+    disabled: true
+  },
+  delete: {
+    disabled: true
   }
-
 });
 
 Feedback.lookups = [{
@@ -62,6 +70,11 @@ Feedback.lookups = [{
   as: 'user',
   one: true
 }];
+
+Feedback.sidebar = {
+  name: 'Feedback',
+  disabled: true
+};
 
 Feedback.payload = Joi.object({
   title: Joi.string().required(),

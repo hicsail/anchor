@@ -12,6 +12,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/signup',
     options: {
+      tags: ['api','auth'],
+      description: 'Sign up for a new user account.',
       auth: false,
       validate: {
         payload: User.payload
@@ -92,6 +94,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/root',
     options: {
+      tags: ['api','auth'],
+      description: 'Creation of Root User Account',
       auth: false,
       validate: {
         payload: User.rootSignUpPayload
@@ -113,7 +117,7 @@ const register = function (server, serverOptions) {
     handler: async function (request, h) {
 
       request.payload.username = 'root';
-      request.payload.name = 'root';
+      request.payload.name = 'Root';
 
       const user = (await User.insertOne({
         _id: User.ObjectId('000000000000000000000000'),

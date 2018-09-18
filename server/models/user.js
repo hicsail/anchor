@@ -1,7 +1,7 @@
 'use strict';
 const AnchorModel = require('../anchor/anchor-model');
 const Assert = require('assert');
-const Bcrypt = require('bcrypt');
+const Crypto = require('../crypto');
 const Hoek = require('hoek');
 const Joi = require('joi');
 
@@ -10,8 +10,8 @@ class User extends AnchorModel {
   static async generatePasswordHash(password) {
 
     Assert.ok(password, 'Missing pasword arugment.');
-    const salt = await (Bcrypt.genSalt(10));
-    const hash = await (Bcrypt.hash(password,salt));
+    const salt = await Crypto.genSalt(10);
+    const hash = await Crypto.hash(password,salt);
 
     return { password, hash };
 
@@ -66,7 +66,7 @@ class User extends AnchorModel {
       return;
     }
 
-    const passwordMatch = await Bcrypt.compare(password,user.password);
+    const passwordMatch = await Crypto.compare(password,user.password);
 
     if (passwordMatch) {
       return user;
@@ -97,12 +97,12 @@ User.collectionName = 'users';
 
 User.schema = Joi.object({
   _id: Joi.object(),
-  isActive: Joi.boolean().default(true),
-  username: Joi.string().token().lowercase().required(),
-  password: Joi.string(),
-  name: Joi.string(),
-  inStudy: Joi.boolean().default(true),
-  email: Joi.string().email().lowercase().required(),
+  isActive: Joi.boolean().default(true).label('Is Active'),
+  username: Joi.string().token().lowercase().required().label('Username'),
+  password: Joi.string().label('Password'),
+  name: Joi.string().label('Name'),
+  inStudy: Joi.boolean().default(true).label('In Study'),
+  email: Joi.string().email().lowercase().required().label('Email'),
   permissions: Joi.object(),
   roles: Joi.array().items(Joi.string()),
   resetPassword: Joi.object({
@@ -110,17 +110,15 @@ User.schema = Joi.object({
     expires: Joi.date().required()
   }),
   playerIds: Joi.array().items(Joi.string()),
-  createdAt: Joi.date(),
-  updatedAt: Joi.date()
+  createdAt: Joi.date().label('Created At'),
+  updatedAt: Joi.date().label('Updated At')
 });
 
 User.payload = Joi.object({
-  username: Joi.string().token().lowercase().invalid('root').required(),
-  password: Joi.string().required(),
-  email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required(),
-  permissions: Joi.object(),
-  roles: Joi.array().items(Joi.string())
+  username: Joi.string().token().lowercase().invalid('root').required().label('Username'),
+  password: Joi.string().required().label('Password'),
+  email: Joi.string().email().lowercase().required().label('Email'),
+  name: Joi.string().required().label('Name')
 });
 
 User.permissionPayload =  Joi.object({
@@ -132,41 +130,30 @@ User.rootSignUpPayload = Joi.object({
   password: Joi.string().required()
 });
 
-User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+User.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'Name', field: 'name' },
+  { headerName: 'Username', field: 'username' },
+  { headerName: 'Email', field: 'email' },
+  { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
+];
 
+User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    auth:true,
-    disabled: false,
+    disabled: true,
     payload: User.payload
   },
   update: {
-    disabled: false,
-    payload: User.payload,
-    auth: true
-  },
-  get: {
-    disabled: false,
-    auth: true
-  },
-  getMy: {
-    disabled: false,
-    auth: true
-  },
-  getId: {
-    disabled: false,
-    auth: true
-  },
-  insertMany: {
-    disabled: false,
-    auth: false,
     payload: User.payload
   },
-  delete: {
-    disabled: false,
-    auth: true
+  insertMany: {
+    payload: User.payload
   }
-
 });
+
+User.sidebar = {
+  name: 'Users'
+};
 
 User.lookups = [{
   from: require('./role'),

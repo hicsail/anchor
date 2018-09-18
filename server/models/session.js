@@ -77,17 +77,19 @@ Session.schema = Joi.object({
 
 Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Session.payload
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Session.payload
+    disabled: true
   },
   delete: {
-    disabled: false
+    disabled: true
   }
 });
+
+Session.sidebar = {
+  name: 'Sessions'
+};
 
 Session.lookups = [{
   from: require('./user'),
@@ -103,6 +105,28 @@ Session.lookups = [{
     operator: '$in'
   }]
 }];
+
+Session.columns = [
+  {
+    headerName: 'Session',
+    children: [
+      { headerName: 'Id', field: '_id' },
+      { headerName: 'Browser', field: 'browser' },
+      { headerName: 'ip', field: 'ip' },
+      { headerName: 'os', field: 'os' },
+      { headerName: 'Last Active', field: 'lastActive', render: (x) => new Date(x).toLocaleString() },
+      { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
+    ]
+  },
+  {
+    headerName: 'User',
+    children: [
+      { headerName: 'Name', field: 'user.name' },
+      { headerName: 'Username', field: 'user.username' },
+      { headerName: 'Email', field: 'user.email' }
+    ]
+  }
+];
 
 Session.indexes = [
   { key: { userId: 1 } }

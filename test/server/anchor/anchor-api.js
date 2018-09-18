@@ -6,6 +6,7 @@ const Fixtures = require('../fixtures');
 const Hapi = require('hapi');
 const Lab = require('lab');
 const Manifest = require('../../../manifest');
+const Permissions = require('../../../server/api/permissions');
 const Session = require('../../../server/models/session');
 const User = require('../../../server/models/user');
 
@@ -29,6 +30,7 @@ lab.before(async () => {
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
   plugins.push(Auth);
+  plugins.push(Permissions);
   plugins.push(AnchorApi);
 
   await server.register(plugins);

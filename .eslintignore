@@ -2,3 +2,4 @@ node_modules/*
 .idea/
 server/web/public/*
 docs/*
+server/web/views/**/*.js

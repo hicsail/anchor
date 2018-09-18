@@ -118,7 +118,7 @@ lab.experiment('PUT /api/tokens/{id}/active', () => {
   });
 });
 
-lab.experiment('PUT /api/tokens/{id}/deactive', () => {
+lab.experiment('PUT /api/tokens/{id}/inactive', () => {
 
   let request;
 
@@ -130,7 +130,7 @@ lab.experiment('PUT /api/tokens/{id}/deactive', () => {
 
     request = {
       method: 'PUT',
-      url:  `/api/tokens/${token._id}/deactive`,
+      url:  `/api/tokens/${token._id}/inactive`,
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }

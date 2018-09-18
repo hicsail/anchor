@@ -7,6 +7,7 @@ const Hapi = require('hapi');
 const Fixtures = require('./fixtures');
 const Lab = require('lab');
 const Manifest = require('../../manifest');
+const Permissions = require('../../server/api/permissions');
 const JWT = require('jsonwebtoken');
 const lab = exports.lab = Lab.script();
 const Role = require('../../server/models/role');
@@ -31,6 +32,7 @@ lab.before(async () => {
     });
 
   plugins.push(Auth);
+  plugins.push(Permissions);
   plugins.push({ plugin: require('../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
 
   await server.register(plugins);

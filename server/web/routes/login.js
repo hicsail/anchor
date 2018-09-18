@@ -1,132 +1,107 @@
 'use strict';
-const internals = {};
-const Config = require('../../../config');
+const Boom = require('boom');
 
-internals.applyRoutes = function (server, next) {
-
-  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
+const register = function (server, serverOptions) {
 
   server.route({
     method: 'GET',
     path: '/login',
-    config: {
+    options: {
       auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
+        strategies: ['simple','session','token'],
+        mode: 'try'
       }
     },
-    handler: function (request, reply) {
+    handler: function (request, h) {
 
       if (request.auth.isAuthenticated) {
-        if (request.query.returnUrl) {
-          return reply.redirect(request.query.returnUrl);
-        }
-        return reply.redirect('/');
+        return h.redirect('/');
       }
-      return reply.view('login/login', {
-        projectName: Config.get('/projectName'),
-        title: 'Login',
-        baseUrl: Config.get('/baseUrl')
-      });
+
+      return h.view('login');
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/signup',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      }
+    },
+    handler: function (request, h) {
+
+      if (request.auth.isAuthenticated) {
+        return h.redirect('/');
+      }
+
+      return h.view('signup');
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/setup',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      },
+      pre: [{
+        assign: 'rootUserCheck',
+        method: async function (request, h) {
+
+          const root = await require('../../models/user').findById('000000000000000000000000');
+          if (root) {
+            throw Boom.notFound();
+          }
+        }
+      }]
+    },
+    handler: function (request, h) {
+
+      if (request.auth.isAuthenticated) {
+        return h.redirect('/');
+      }
+
+      return h.view('setup');
     }
   });
 
   server.route({
     method: 'GET',
     path: '/logout',
-    config: {
+    options: {
       auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
+        strategies: ['simple','session','token'],
+        mode: 'try'
       }
     },
-    handler: function (request, reply) {
+    handler: async function (request, h) {
 
-      const credentials = request.auth.credentials || { session: {} };
-      const session = credentials.session;
+      const logoutRequest = {
+        method: 'DELETE',
+        url: '/api/logout',
+        headers: request.headers
+      };
 
-      Session.findByIdAndDelete(session._id, (err, sessionDoc) => {
+      await server.inject(logoutRequest);
 
-        if (err) {
-          return reply(err);
-        }
-
-        request.cookieAuth.clear();
-
-        return reply.redirect('/');
-      });
+      return h.redirect('/');
     }
   });
-
-  server.route({
-    method: 'GET',
-    path: '/forgot',
-    config: {
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
-      }
-    },
-    handler: function (request, reply) {
-
-      if (request.auth.isAuthenticated) {
-        return reply.redirect('/');
-      }
-      return reply.view('login/forgot');
-
-    }
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/reset',
-    config: {
-      auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
-      }
-    },
-    handler: function (request, reply) {
-
-      if (request.auth.isAuthenticated) {
-        return reply.redirect('/');
-      }
-      return reply.view('login/reset');
-
-    }
-  });
-
-  next();
 };
 
-exports.register = function (server, options, next) {
-
-  server.dependency(['auth'], internals.applyRoutes);
-
-  next();
-};
-
-exports.register.attributes = {
-  name: 'login/index',
-  dependencies: 'visionary'
+module.exports = {
+  name: 'web-login',
+  dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'auth',
+    'hapi-anchor-model'
+  ],
+  register
 };

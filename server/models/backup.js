@@ -34,18 +34,25 @@ Backup.payload = Joi.object({
 
 Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Backup.payload
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Backup.payload
+    disabled: true
   },
   delete: {
-    disabled: false,
-    payload: Backup.payload
+    disabled: true
   }
 });
+
+Backup.sidebar = {
+  name: 'Backups'
+};
+
+Backup.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'File name', field: 'filename' },
+  { headerName: 'Created At', field: 'createdAt' }
+];
 
 Backup.lookups = [{
   from: require('./user'),

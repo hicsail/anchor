@@ -44,7 +44,7 @@ Token.schema = Joi.object({
 });
 
 Token.payload = Joi.object({
-  description: Joi.string().required(),
+  description: Joi.string().required().label('Description'),
   permission: Joi.any()
 });
 
@@ -54,17 +54,36 @@ Token.isActivePayload = Joi.object({
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
     payload: Token.payload
   },
   update: {
-    auth: true,
     payload: Token.payload
-  },
-  delete: {
-    disabled: false
   }
 });
+
+Token.sidebar = {
+  name: 'Tokens'
+};
+
+Token.columns = [
+  {
+    headerName: 'Token',
+    children: [
+      { headerName: 'Id', field: '_id' },
+      { headerName: 'Description', field: 'description' },
+      { headerName: 'Last Active', field: 'lastActive', render: (x) => new Date(x).toLocaleString() },
+      { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
+    ]
+  },
+  {
+    headerName: 'User',
+    children: [
+      { headerName: 'Name', field: 'user.name' },
+      { headerName: 'Username', field: 'user.username' },
+      { headerName: 'Email', field: 'user.email' }
+    ]
+  }
+];
 
 Token.lookups = [{
   from: require('./user'),

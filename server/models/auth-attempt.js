@@ -62,17 +62,28 @@ AuthAttempt.schema = Joi.object({
 
 AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: AuthAttempt.paylaod
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: AuthAttempt.payload
+    disabled: true
   },
   delete: {
-    disabled: false
+    disabled: true
   }
 });
+
+AuthAttempt.sidebar = {
+  name: 'Auth Attempts'
+};
+
+AuthAttempt.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'Username', field: 'username' },
+  { headerName: 'Browser', field: 'browser' },
+  { headerName: 'ip', field: 'ip' },
+  { headerName: 'os', field: 'os' },
+  { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
+];
 
 AuthAttempt.lookups = [];
 

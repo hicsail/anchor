@@ -14,6 +14,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/login',
     options: {
+      tags: ['api','auth'],
+      description: 'Log in with username and password.',
       auth: false,
       plugins: {
         'hapi-auth-cookie': {
@@ -91,6 +93,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/login/forgot',
     options: {
+      tags: ['api','auth'],
+      description: 'Send Password Reset Email, Sets Key to reset password.',
       auth: false,
       validate: {
         payload: {
@@ -150,6 +154,8 @@ const register = function (server, serverOptions) {
     method: 'POST',
     path: '/api/login/reset',
     options: {
+      tags: ['api','auth'],
+      description: 'Verify Key to reset new password',
       auth: false,
       validate: {
         payload: {
@@ -211,6 +217,8 @@ const register = function (server, serverOptions) {
     method: 'DELETE',
     path: '/api/logout',
     options: {
+      tags: ['api','auth'],
+      description: 'Remove current session to logout user',
       auth: {
         strategies: ['session','simple'],
         mode: 'try'

@@ -46,15 +46,10 @@ Role.schema = Joi.object({
 
 Role.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: false,
-    payload: Role.payload
+    disabled: true
   },
   update: {
-    disabled: false,
-    payload: Role.payload
-  },
-  delete: {
-    disabled:false
+    disabled: true
   }
 });
 
@@ -69,6 +64,16 @@ Role.payload = Joi.object({
     operator: Joi.string()
   }))
 });
+
+Role.sidebar = {
+  name: 'Roles'
+};
+
+Role.columns = [
+  { headerName: 'Id', field: '_id' },
+  { headerName: 'Name', field: 'name' },
+  { headerName: 'Permissions', field: 'permissions' }
+];
 
 Role.indexes = [
   { key: { name: 1, unique: 1 } }
