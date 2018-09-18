@@ -29,9 +29,9 @@ lab.experiment('Notification Model', () => {
       onesignalId: '123456789',
       playerIds: ['1'],
       title: 'Hello',
-      subtitle: 'World',
-      message: 'Message',
-      increaseBadgeNumber: 1
+      message: 'World',
+      deliveryAt: '2017-01-01T00:00:00.000Z01',
+      data: {}
     };
 
     const notification = await Notification.create(document);
@@ -40,9 +40,9 @@ lab.experiment('Notification Model', () => {
     Code.expect(notification.onesignalId).to.equal('123456789');
     Code.expect(notification.playerIds).to.equal(['1']);
     Code.expect(notification.title).to.equal('Hello');
-    Code.expect(notification.subtitle).to.equal('World');
-    Code.expect(notification.message).to.equal('Message');
-    Code.expect(notification.increaseBadgeNumber).to.equal(1);
+    Code.expect(notification.message).to.equal('World');
+    Code.expect(notification.deliveryAt).to.equal('2017-01-01T00:00:00.000Z01');
+    Code.expect(notification.data).to.equal({});
 
   });
 });
