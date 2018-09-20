@@ -21,7 +21,7 @@ class Form extends React.Component {
                   fields.push(<TextInput viewOnly={this.props.viewOnly} field={field} value={value}/>);
                   break;
               case 'boolean':
-                  fields.push(<BooleanInput field={field} value={this.props.data[field.key]}/>);
+                  fields.push(<BooleanInput viewOnly={this.props.viewOnly} field={field} value={this.props.data[field.key]}/>);
           }
       }
       return fields;

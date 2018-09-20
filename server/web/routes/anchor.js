@@ -165,6 +165,68 @@ const register = function (server, serverOptions) {
       return h.view('view', props);
     }
   });
+
+  server.route({
+    method: 'GET',
+    path: '/{collectionName}/{id}/edit',
+    options: {
+      auth: {
+        strategies: ['simple','session','token'],
+        mode: 'try'
+      },
+      pre: [{
+        assign: 'model',
+        method: function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            throw Boom.notFound('Model not found');
+          }
+
+          return model;
+        }
+      },{
+        assign: 'disabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+
+          if (model.routes.getId.disabled) {
+            throw Boom.notFound('Model get is disabled');
+          }
+
+          return h.continue;
+        }
+      }, {
+        assign: 'data',
+        method: async function (request,h) {
+
+          const url = `/api/${request.params.collectionName}/${request.params.id}`;
+          const dataRequest = {
+            method: 'GET',
+            url,
+            headers: request.headers
+          };
+
+          return (await server.inject(dataRequest)).result;
+        }
+      }]
+    },
+    handler: function (request, h) {
+
+      const props = {
+        projectName: 'Anchor',
+        credentials: request.auth.credentials,
+        sidebar: server.plugins['hapi-anchor-model'].sidebar,
+        schema: Joi.describe(request.pre.model.routes.update.payload),
+        data: request.pre.data,
+        url: `/api/${request.pre.model.collectionName}/${request.pre.data._id}`
+      };
+
+      return h.view('edit', props);
+    }
+  });
 };
 
 module.exports = {

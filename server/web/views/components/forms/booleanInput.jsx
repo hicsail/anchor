@@ -9,15 +9,28 @@ class BooleanInput extends React.Component {
   }
 
   render () {
-    return (
-      <div className="field">
-        <label className="label">{this.props.field.label?this.props.field.label:this.props.field.key}</label>
-        <div className="control">
-          <div className="buttons has-addons">
-            <span className={this.yesClass}>Yes</span>
-            <span className={this.noClass}>No</span>
+    let view;
+    if(this.props.viewOnly) {
+      view =
+        <div className="field">
+          <label className="label">{this.props.field.label?this.props.field.label:this.props.field.key}</label>
+          <div className="control">
+            <div className="buttons has-addons">
+              <span className={this.yesClass}>Yes</span>
+              <span className={this.noClass}>No</span>
+            </div>
           </div>
         </div>
+    } else {
+      view = <label className="checkbox">
+        <input type="checkbox" key={this.props.field.key} name={this.props.field.key}/>
+        <span style={{paddingLeft: '10px'}}>{this.props.field.label?this.props.field.label:this.props.field.key}</span>
+      </label>
+    }
+
+    return (
+      <div>
+          {view}
       </div>
     )
   }

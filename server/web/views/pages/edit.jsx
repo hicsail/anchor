@@ -5,7 +5,7 @@ const Navbar = require('../components/navbar.jsx');
 const Sidebar = require('../components/sidebar.jsx');
 const Form = require('../components/form');
 
-class ViewPage extends React.Component {
+class EditView extends React.Component {
   constructor (props) {
     super(props)
   }
@@ -23,23 +23,23 @@ class ViewPage extends React.Component {
                             </div>
                             <div className="column is-9">
                                 <div className="container">
-                                    <form id="createForm">
+                                    <form id="editForm">
                                         <div className="box">
-                                            <Form schema={this.props.schema} data={this.props.data} viewOnly={true}/>
+                                            <Form schema={this.props.schema} data={this.props.data} viewOnly={false}/>
                                         </div>
+                                        <br/>
+                                        <input id="edit" className="button is-info" type="submit" value="Submit"/>
                                     </form>
-                                    <br/>
-                                    <div className="box">
-                                        <a className="button is-info" href={this.props.data._id + '/edit'}>Edit</a>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
+                <script dangerouslySetInnerHTML={{__html: `const url = '${this.props.url}'`}}/>
+                <script src="/public/js/pages/edit.js"/>
             </Layout>
         );
     }
 }
 
-module.exports = ViewPage;
+module.exports = EditView;
