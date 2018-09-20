@@ -34,7 +34,7 @@ class Navbar extends React.Component {
     render () {
         return (
             <div>
-                <nav className="navbar is-white has-shadow">
+                <nav className="navbar is-white has-shadow" style={{backgroundColor: 'white'}}>
                     <div className="navbar-brand">
                         <a className="navbar-item" href="https://bulma.io">
                             {this.props.projectName}
@@ -49,6 +49,9 @@ class Navbar extends React.Component {
                         <div className="navbar-start">
                             <a className="navbar-item" href="/">
                                 Home
+                            </a>
+                            <a className="navbar-item" href="/dashboard">
+                                Dashboard
                             </a>
                         </div>
                         {this.endMenu()}
