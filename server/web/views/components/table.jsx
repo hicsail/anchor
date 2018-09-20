@@ -38,8 +38,7 @@ class Table extends React.Component {
     }
 
     grid(columnDefs, rows) {
-        const scriptHtml =`
-        // setup the grid after the page has finished loading
+        const scriptHtml =` 
         var columnDefs =${JSON.stringify(columnDefs)};
         var rowData = ${JSON.stringify(rows)};
         var sort = '_id';
@@ -57,8 +56,25 @@ class Table extends React.Component {
                 } else {
                     sort = '_id'
                 }
+            },
+            components: {
+                'buttonCellRenderer': ButtonCellRenderer
             }
         };
+        
+        function ButtonCellRenderer() {}
+
+        // init method gets the details of the cell to be rendere
+        ButtonCellRenderer.prototype.init = function(params) {
+            this.eGui = document.createElement('div');
+            var link = '<a class="button is-light is-small" href="${this.props.url.split('/').pop()}/' + params.value + '">'+ params.colDef.headerName +'</a>';
+            this.eGui.innerHTML = link;
+        };
+
+        ButtonCellRenderer.prototype.getGui = function() {
+            return this.eGui;
+        };
+
         
         var url = "${this.props.url}";
         var currentPage = ${this.props.rows.pages.current};

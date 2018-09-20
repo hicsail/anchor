@@ -51,7 +51,8 @@ Backup.sidebar = {
 Backup.columns = [
   { headerName: 'Id', field: '_id' },
   { headerName: 'File name', field: 'filename' },
-  { headerName: 'Created At', field: 'createdAt' }
+  { headerName: 'Created At', field: 'createdAt' },
+  { headerName: 'View', field: '_id', cellRenderer: 'buttonCellRenderer' }
 ];
 
 Backup.lookups = [{

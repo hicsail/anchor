@@ -43,6 +43,11 @@ Feedback.schema = Joi.object({
   }))
 });
 
+Feedback.payload = Joi.object({
+  title: Joi.string().required(),
+  description: Joi.string().required()
+});
+
 Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     payload: Feedback.payload,
@@ -76,10 +81,27 @@ Feedback.sidebar = {
   disabled: true
 };
 
-Feedback.payload = Joi.object({
-  title: Joi.string().required(),
-  description: Joi.string().required()
-});
+Feedback.columns = [
+  {
+    headerName: 'Feedback',
+    children: [
+      { headerName: 'Id', field: '_id' },
+      { headerName: 'Title', field: 'title' },
+      { headerName: 'Description', field: 'description' },
+      { headerName: 'Resolved', field: 'resolved' },
+      { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() },
+      { headerName: 'Updated At', field: 'updatedAt', render: (x) => new Date(x).toLocaleString() }
+    ]
+  },
+  {
+    headerName: 'User',
+    children: [
+      { headerName: 'Name', field: 'user.name' },
+      { headerName: 'Username', field: 'user.username' },
+      { headerName: 'Email', field: 'user.email' }
+    ]
+  }
+];
 
 Feedback.indexes = [
   { key: { title: 1 } }

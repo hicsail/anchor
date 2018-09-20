@@ -115,7 +115,8 @@ Session.columns = [
       { headerName: 'ip', field: 'ip' },
       { headerName: 'os', field: 'os' },
       { headerName: 'Last Active', field: 'lastActive', render: (x) => new Date(x).toLocaleString() },
-      { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() }
+      { headerName: 'Created At', field: 'createdAt', render: (x) => new Date(x).toLocaleString() },
+      { headerName: 'View', field: '_id', cellRenderer: 'buttonCellRenderer' }
     ]
   },
   {

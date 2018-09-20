@@ -72,7 +72,8 @@ Role.sidebar = {
 Role.columns = [
   { headerName: 'Id', field: '_id' },
   { headerName: 'Name', field: 'name' },
-  { headerName: 'Permissions', field: 'permissions' }
+  { headerName: 'Permissions', field: 'permissions' },
+  { headerName: 'View', field: '_id', cellRenderer: 'buttonCellRenderer' }
 ];
 
 Role.indexes = [

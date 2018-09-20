@@ -8,7 +8,7 @@ $( "#create" ).click(function( event ) {
     url: url,
     data: data,
     success: (result) => {
-      window.location.pathname = 'users'
+      window.location.pathname = window.location.pathname.split('/').slice(0,-1).join('/');
     },
     dataType: 'json'
   })

@@ -88,7 +88,8 @@ Invite.columns = [
       { headerName: 'Expires At', field: 'expiredAt' },
       { headerName: 'Status', field: 'status' },
       { headerName: 'Created At', field: 'createdAt' },
-      { headerName: 'Updated At', field: 'updatedAt' }
+      { headerName: 'Updated At', field: 'updatedAt' },
+      { headerName: 'View', field: '_id', cellRenderer: 'buttonCellRenderer' }
     ]
   },
   {
