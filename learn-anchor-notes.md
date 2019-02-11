@@ -1,3 +1,8 @@
+#Notes on Learning Anchor
+
+The notes below were written for the Power Market project. Examples are available at:
+https://github.com/hicsail/power-market/tree/master/server.
+
 ## Add a New Database Object (here, a "capacitor") 
 1. Edit the **manifest.js** file.
     * Add the model.
