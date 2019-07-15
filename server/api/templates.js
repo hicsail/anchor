@@ -12,7 +12,7 @@ internals.applyRoutes = function (server, next) {
   const Template = server.plugins['hicsail-hapi-mongo-models'].Template;
   const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
-
+  // Used in the frontend of the backend
   server.route({
     method: 'GET',
     path: '/table/templates',

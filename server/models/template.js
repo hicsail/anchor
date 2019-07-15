@@ -5,6 +5,7 @@ const MongoModels = require('hicsail-mongo-models');
 
 class Template extends MongoModels {
 
+  // Called in api POST calls usually to add a new record. Add new arguments as needed.
   static create(name, userId, callback) {
 
     const document = {
@@ -35,12 +36,14 @@ Template.schema = Joi.object({
   time: Joi.date().required()
 });
 
+// Used in api POST calls or PUT calls to validate what is in the body to make the new model
 Template.payload = Joi.object({
   name: Joi.string().required()
 });
 
 
 
+// Search indices
 Template.indexes = [
   { key: { name: 1 } },
   { key: { userId: 1 } }

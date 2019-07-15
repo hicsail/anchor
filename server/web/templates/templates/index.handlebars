@@ -15,7 +15,8 @@
                   <th>Name</th>
                   <th>Study ID</th>
                   <th>Template Name</th>
-                <th>Created At</th>
+                  <th>Created At</th>
+                  {{!-- The fields to show of your model --}}
                 {{#role user 'admin'}}
                   <th>Edit</th>
                   <th>Delete</th>
@@ -46,9 +47,10 @@
       ajax: {
         url: "/api/table/templates",
         data: function (d) {
-          d.fields = "username name name time studyID userId";
+          d.fields = "username name name time studyID userId"; // The fields you request from the api which can be used below
         }
       },
+      // What is shown in the columns respectively
       "columns": [
         {
           data: "user.username",
