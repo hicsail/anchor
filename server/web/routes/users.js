@@ -40,7 +40,8 @@ internals.applyRoutes = function (server, next) {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
         title: 'Users',
-        baseUrl: Config.get('/baseUrl')
+        baseUrl: Config.get('/baseUrl'),
+        role: Config.get('/role')
       });
     }
   });

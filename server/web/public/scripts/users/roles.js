@@ -30,19 +30,19 @@ $(document).ready(() => {
         data: 'email'
       },
       {
-        data: 'roles.clinician',
+        data: 'roles.analyst',
         render: function (data, type, row) {
-          if (row.roles.clinician) {
-            return '<h4><span class="badge badge-primary">Clinician</span></h4>';
+          if (row.roles.analyst) {
+            return '<h4><span class="badge badge-secondary">Analyst</span></h4>';
           }
           return '';
         }
       },
       {
-        data: 'roles.analyst',
+        data: 'roles.clinician',
         render: function (data, type, row) {
-          if (row.roles.analyst) {
-            return '<h4><span class="badge badge-secondary">Analyst</span></h4>';
+          if (row.roles.clinician) {
+            return '<h4><span class="badge badge-primary">Clinician</span></h4>';
           }
           return '';
         }
@@ -56,6 +56,7 @@ $(document).ready(() => {
           return '';
         }
       },
+
       {
         data: 'roles.admin',
         render: function (data, type, row) {
@@ -87,20 +88,6 @@ $(document).ready(() => {
       const rowData = table.row(this).data();
       $('#roleCard').show();
       $('#username').text(rowData.username);
-      if (rowData.roles.clinician) {
-        $('#clinician').addClass('btn-danger').removeClass('btn-primary');
-        $('#clinician').text('Demote');
-        $('#clinician').unbind('click').click(() => {
-          demote(rowData._id, 'clinician');
-        });
-      }
-      else {
-        $('#clinician').addClass('btn-primary').removeClass('btn-danger');
-        $('#clinician').text('Promote');
-        $('#clinician').unbind('click').click(() => {
-          promote(rowData._id, 'clinician');
-        });
-      }
       if (rowData.roles.analyst) {
         $('#analyst').addClass('btn-danger').removeClass('btn-secondary');
         $('#analyst').text('Demote');
@@ -113,6 +100,20 @@ $(document).ready(() => {
         $('#analyst').text('Promote');
         $('#analyst').unbind('click').click(() => {
           promote(rowData._id, 'analyst');
+        });
+      }
+      if (rowData.roles.clinician) {
+        $('#clinician').addClass('btn-danger').removeClass('btn-primary');
+        $('#clinician').text('Demote');
+        $('#clinician').unbind('click').click(() => {
+          demote(rowData._id, 'clinician');
+        });
+      }
+      else {
+        $('#clinician').addClass('btn-primary').removeClass('btn-danger');
+        $('#clinician').text('Promote');
+        $('#clinician').unbind('click').click(() => {
+          promote(rowData._id, 'clinician');
         });
       }
       if (rowData.roles.researcher) {

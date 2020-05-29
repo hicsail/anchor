@@ -11,14 +11,13 @@
             <table id="userTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
               <thead>
               <tr>
+
                 <th>Username</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Clinician</th>
-                <th>Analyst</th>
-                <th>Researcher</th>
-                <th>Admin</th>
-                <th>Root</th>
+                {{#each role}}
+                  <th>{{this.name}}</th>
+                {{/each}}
               </tr>
               </thead>
             </table>
@@ -30,20 +29,18 @@
             <thead>
             <tr>
               <th>Username</th>
-              <th>Clinician</th>
-              <th>Analyst</th>
-              <th>Researcher</th>
-              <th>Admin</th>
-              <th>Root</th>
+              {{#each role}}
+                <th>{{this.name}}</th>
+              {{/each}}
             </tr>
             <tbody>
             <tr>
               <td id="username">username</td>
               <td>
-                <button id="clinician" class="btn btn-primary">Promote</button>
+                <button id="analyst" class="btn btn-primary">Promote</button>
               </td>
               <td>
-                <button id="analyst" class="btn btn-secondary">Promote</button>
+                <button id="clinician" class="btn btn-secondary">Promote</button>
               </td>
               <td>
                 {{#if user.roles.root}}
