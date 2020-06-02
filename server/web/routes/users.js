@@ -39,9 +39,8 @@ internals.applyRoutes = function (server, next) {
 
       User.find({}, (err, users) => {
 
-        console.log(users);
         if (err) {
-          console.log('error');
+          Boom.notFound(err);
         }
 
         if (!users) {
