@@ -12,69 +12,6 @@ $(document).ready(() => {
     dom: 'Bfrtip',
     buttons: [
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
-    ],
-    ajax: {
-      url: '/api/table/users',
-      data: function (d) {
-        d.fields = 'name email username roles';
-      }
-    },
-    columns: [
-      {
-        data: 'username'
-      },
-      {
-        data: 'name'
-      },
-      {
-        data: 'email'
-      },
-      {
-        data: 'roles.analyst',
-        render: function (data, type, row) {
-          if (row.roles.analyst) {
-            return '<h4><span class="badge badge-secondary">Analyst</span></h4>';
-          }
-          return '';
-        }
-      },
-      {
-        data: 'roles.clinician',
-        render: function (data, type, row) {
-          if (row.roles.clinician) {
-            return '<h4><span class="badge badge-primary">Clinician</span></h4>';
-          }
-          return '';
-        }
-      },
-      {
-        data: 'roles.researcher',
-        render: function (data, type, row) {
-          if (row.roles.researcher) {
-            return '<h4><span class="badge badge-info">Researcher</span></h4>';
-          }
-          return '';
-        }
-      },
-
-      {
-        data: 'roles.admin',
-        render: function (data, type, row) {
-          if (row.roles.admin) {
-            return '<h4><span class="badge badge-warning">Admin</span></h4>';
-          }
-          return '';
-        }
-      },
-      {
-        data: 'roles.root',
-        render: function (data, type, row) {
-          if (row.roles.root) {
-            return '<h4><span class="badge badge-dark">Root</span></h4>';
-          }
-          return '';
-        }
-      }
     ]
   });
   $('#roleCard').hide();

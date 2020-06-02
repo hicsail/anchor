@@ -3,6 +3,7 @@ const internals = {};
 const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
+const Boom = require('boom');
 
 internals.applyRoutes = function (server, next) {
 
@@ -36,12 +37,25 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      return reply.view('users/roles', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),
-        title: 'Users',
-        baseUrl: Config.get('/baseUrl'),
-        role: Config.get('/role')
+      User.find({}, (err, users) => {
+
+        console.log(users);
+        if (err) {
+          console.log('error');
+        }
+
+        if (!users) {
+          Boom.notFound('Document not found.');
+        }
+
+        return reply.view('users/roles', {
+          user: request.auth.credentials.user,
+          usersList: users,
+          projectName: Config.get('/projectName'),
+          title: 'Users',
+          baseUrl: Config.get('/baseUrl'),
+          role: Config.get('/role')
+        });
       });
     }
   });
