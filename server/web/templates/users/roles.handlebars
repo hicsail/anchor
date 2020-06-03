@@ -20,36 +20,16 @@
                 </tr>
               </thead>
               <tbody>
-                {{#each usersList}}
+                {{#each usersList as |user|}}
                   <tr>
-                    <td>{{this.username}}</td>
-                    <td>{{this.name}}</td>
-                    <td>{{this.email}}</td>
-                    <td>
-                      {{#if this.roles.analyst}}
-                        <h4><span class="badge badge-secondary">Analyst</span></h4>
-                      {{/if}}
-                    </td>
-                    <td>
-                      {{#if this.roles.clinician}}
-                        <h4><span class="badge badge-primary">Clinician</span></h4>
-                      {{/if}}
-                    </td>
-                    <td>
-                      {{#if this.roles.researcher}}
-                      <h4><span class="badge badge-info">Researcher</span></h4>
-                      {{/if}}
-                    </td>
-                    <td>
-                      {{#if this.roles.admin}}
-                        <h4><span class="badge badge-warning">Admin</span></h4>
-                      {{/if}}
-                    </td>
-                    <td>
-                      {{#if this.roles.root}}
-                        <h4><span class="badge badge-dark">Root</span></h4>
-                      {{/if}}
-                    </td>
+                    <td>{{user.username}}</td>
+                    <td>{{user.name}}</td>
+                    <td>{{user.email}}</td>
+                    {{#each ../role as |role|}}
+                        {{#with role}}                                                 
+                            <td><h4><span class="badge badge-secondary">{{userHasRole user name}}</span></h4></td>                          
+                        {{/with}}                        
+                    {{/each}}           
                   </tr>
                 {{/each}}
               </tbody>

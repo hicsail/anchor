@@ -2,8 +2,6 @@
 
 $(document).ready(() => {
   const table = $('#userTable').DataTable({
-    processing: true,
-    serverSide: true,
     scrollX: true,
     scrollY: '500px',
     scrollCollapse: true,
@@ -22,7 +20,7 @@ $(document).ready(() => {
     else {
       table.$('tr.selected').removeClass('selected');
       $(this).addClass('selected');
-      const rowData = table.row(this).data();
+      const rowData = table.row(this).data();      
       $('#roleCard').show();
       $('#username').text(rowData.username);
       if (rowData.roles.analyst) {
