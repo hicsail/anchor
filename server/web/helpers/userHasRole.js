@@ -1,14 +1,12 @@
 'use strict';
 
-const userHasRole = function (user, roleName) {  
+module.exports = (user, roleName, options) => { //this is a Block Helper
 
-  if (user.roles[roleName]){
-  	return roleName;  	
+  if (user.roles[roleName]) {
+    return options.fn(this);
   }
-  else {
-  	return '';
-  }
+  return options.inverse(this);
 };
 
-module.exports = userHasRole;
+
 

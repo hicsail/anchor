@@ -26,10 +26,12 @@
                     <td>{{user.name}}</td>
                     <td>{{user.email}}</td>
                     {{#each ../role as |role|}}
-                        {{#with role}}                                                 
-                            <td><h4><span class="badge badge-secondary">{{userHasRole user name}}</span></h4></td>                          
-                        {{/with}}                        
-                    {{/each}}           
+                      <td>
+                        <label>
+                          <input class="roleCheck" id="{{name}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify user._id}})" {{#userHasRole user name}}checked{{/userHasRole}}>
+                        </label>
+                      </td>
+                    {{/each}}
                   </tr>
                 {{/each}}
               </tbody>
@@ -37,46 +39,6 @@
           </div>
         </div>
         <br>
-        <div class="card" id="roleCard" style="padding: 20px">
-          <table class="table table-striped table-bordered" cellspacing="0" width="100%">
-            <thead>
-              <tr>
-                <th>Username</th>
-                {{#each role}}
-                  <th>{{this.name}}</th>
-                {{/each}}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td id="username">username</td>
-                <td>
-                  <button id="analyst" class="btn btn-primary">Promote</button>
-                </td>
-                <td>
-                  <button id="clinician" class="btn btn-secondary">Promote</button>
-                </td>
-                <td>
-                  {{#if user.roles.root}}
-                    <button id="researcher" class="btn btn-info">Promote</button>
-                  {{else if user.roles.admin}}
-                    <button id="researcher" class="btn btn-info">Promote</button>
-                  {{else}}
-                    <button id="researcher" hidden class="btn btn-info">Promote</button>
-                  {{/if}}
-                </td>
-                <td>
-                  {{#if user.roles.root}}
-                    <button id="admin" class="btn btn-warning">Promote</button>
-                  {{else}}
-                    <button id="admin" hidden class="btn btn-warning">Promote</button>
-                  {{/if}}
-                </td>
-                <td id="root"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   </div>
