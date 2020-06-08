@@ -12,20 +12,6 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ]
   });
-
-  // $(".roleCheck").click(function(cb){
-  //
-  //   let role = $(this).attr("id");
-  //   if($(this).is(':checked')) {
-  //     console.log(cb.target);
-  //     console.log("checked!");
-  //     // promote(, role);
-  //   }
-  //   else {
-  //     console.log("not checked !")
-  //     // demote(, role);
-  //   }
-  // });
 });
 
 function onCheckboxClicked(cb, id) {
