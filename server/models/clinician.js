@@ -1,6 +1,6 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
 class Clinician {
 

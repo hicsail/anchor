@@ -1,9 +1,9 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 const User = require('./user');
 
-class Invite extends MongoModels {
+class Invite extends AnchorModel {
 
   static create(name, email, description, userId, callback) {
 
@@ -29,7 +29,7 @@ class Invite extends MongoModels {
 }
 
 
-Invite.collection = 'invite';
+Invite.collectionName = 'invite';
 
 
 Invite.schema = Joi.object({

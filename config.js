@@ -57,6 +57,24 @@ const config = {
     },
     autoIndex: true
   },
+  hapiAnchorModel: {
+    mongodb: {
+      connection: {
+        uri: {
+          $filter: 'env',
+          production: process.env.MONGODB_URI,
+          $default: 'mongodb://localhost:27017/'
+        },
+        db: {
+          $filter: 'env',
+          production: process.env.MONGODB_DB_NAME,
+          test: 'anchor-test',
+          $default: 'anchor'
+        }
+      }
+    },
+    autoIndex: true
+  },
   nodemailer: {
     host: 'smtp.gmail.com',
     port: 465,

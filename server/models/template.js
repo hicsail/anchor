@@ -1,9 +1,9 @@
 /* $lab:coverage:off$ */
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
-class Template extends MongoModels {
+class Template extends AnchorModel {
 
   static create(name, userId, callback) {
 
@@ -25,7 +25,7 @@ class Template extends MongoModels {
 }
 
 
-Template.collection = 'templates';
+Template.collectionName = 'templates';
 
 
 Template.schema = Joi.object({

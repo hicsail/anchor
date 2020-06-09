@@ -1,11 +1,12 @@
 'use strict';
 const Confidence = require('confidence');
 const Config = require('./config');
+const Package = require('./package.json');
+const Path = require('path');
 
 const criteria = {
   env: process.env.NODE_ENV
 };
-
 
 const manifest = {
   $meta: 'This file defines the plot device.',
@@ -13,89 +14,40 @@ const manifest = {
     debug: {
       request: ['error']
     },
-    connections: {
-      routes: {
-        security: true
-      }
-    }
+    routes: {
+      security: true,
+      cors: true
+    },
+    port: Config.get('/port/web')
   },
-  connections: [{
-    port: Config.get('/port/web'),
-    labels: ['web'],
-    routes: { cors: true }
-  }],
-  registrations: [
-    {
-      plugin: 'hapi-auth-basic'
-    },
-    {
-      plugin: 'hapi-auth-cookie'
-    },
-    {
-      plugin: 'hapi-auth-jwt2'
-    },
-    {
-      plugin: 'lout'
-    },
-    {
-      plugin: 'inert'
-    },
-    {
-      plugin: 'vision'
-    },
-    {
-      plugin: {
-        register: 'visionary',
-        options: {
-          engines: { handlebars: 'handlebars' },
-          path: './server/web/templates',
-          layout: 'layout',
-          layoutPath: './server/web/layouts',
-          partialsPath: './server/web/partials',
-          helpersPath: './server/web/helpers'
-        }
-      }
-    },
-    {
-      plugin: {
-        register: 'hicsail-hapi-mongo-models',
-        options: {
-          mongodb: Config.get('/hapiMongoModels/mongodb'),
-          models: {
-            AuthAttempt: './server/models/auth-attempt',
-            Backup: './server/models/backup',
-            Event: './server/models/event',
-            Feedback: './server/models/feedback',
-            Invite: './server/models/invite',
-            Session: './server/models/session',
-            Token: './server/models/token',
-            User: './server/models/user'
-          },
-          autoIndex: Config.get('/hapiMongoModels/autoIndex')
-        }
-      }
-    },
-    {
-      plugin: {
-        register: 'hapi-cron',
-        options: {
-          jobs: [{
-            name: 'backup',
-            time: '0 0 * * * *', //every hour
-            timezone: 'America/New_York',
-            request: {
-              method: 'POST',
-              url: '/api/backups/internal',
-              allowInternals: true
-            }
-          }]
-        }
-      }
-    },
-    {
-      plugin: './server/auth'
-    },
-    {
+  register: {
+    plugins: [
+      {
+        plugin:'inert'
+      },
+      {
+        plugin: 'vision'
+      },
+      {
+        plugin: 'hapi-auth-cookie'
+      },
+      {
+        plugin: 'hapi-auth-jwt2'
+      },
+      {
+        plugin: 'hapi-auth-basic'
+      },
+      {
+        plugin: 'hapi-remote-address'
+      },
+      {
+        plugin: './server/anchor/hapi-anchor-model.js',
+        options: Config.get('/hapiAnchorModel')
+      },
+      {
+        plugin: './server/auth.js'
+      },
+      /*{
       plugin: './server/mailer'
     },
     {
@@ -238,21 +190,98 @@ const manifest = {
     },
     {
       plugin: './server/web/routes/users'
-    }
-  ]
+    },*/
+    {
+      plugin: './server/web/routes/index'
+    },
+    {
+      plugin: './server/web/routes/signup'
+    },
+    {
+      plugin: './server/api/signup',      
+    },          
+      
+      /*{
+         plugin: 'visionary',          
+         options: {
+          engines: { html: 'handlebars' },
+          relativeTo: __dirname,
+          path: './server/web/templates',
+          //layout: 'layout',
+          layoutPath: './server/web/layouts',
+          partialsPath: './server/web/partials',
+          helpersPath: './server/web/helpers'                 
+        }
+      },*/      
+      {
+        plugin: 'hapi-cron',
+        options: {
+          jobs: [{
+            name: 'backups',
+            time: '0 0 0 * * *',
+            timezone: 'America/New_York',
+            request: {
+              method: 'POST',
+              url: '/api/backups/internal',
+              allowInternals: true
+            }
+          }]
+        }
+      },
+      {
+        plugin: 'hapi-swagger',
+        options: {
+          securityDefinitions: {
+            'basic': {
+              'type': 'apiKey',
+              'name': 'Authorization',
+              'in': 'header'
+            }
+          },
+          security: [{ 'basic': [] }],
+          info: {
+            title: 'Anchor API Documentation',
+            version: Package.version,
+            description: `Anchor API`
+          },
+          grouping: 'tags',
+          sortTags: 'name',
+          tags: [
+            {
+              name: 'anchor-api',
+              description: 'endpoints auto generator for each Anchor Model.'
+            }, {
+              name: 'auth',
+              description: 'endpoints to sign up, login or logout.'
+            }, {
+              name: 'backups',
+              description: 'endpoints auto generated for backup api'
+            }, {
+              name: 'invites',
+              description: 'endpoints auto generated for invite api'
+            }, {
+              name: 'permissions',
+              description: 'endpoints auto generated for permissions api'
+            }, {
+              name: 'tokens',
+              description: 'endpoints auto generated for tokens api'
+            }
+          ]
+        }
+      }
+    ]
+  }
 };
 
-
 const store = new Confidence.Store(manifest);
-
 
 exports.get = function (key) {
 
   return store.get(key, criteria);
 };
 
-
 exports.meta = function (key) {
 
   return store.meta(key, criteria);
 };
+

@@ -2,10 +2,10 @@
 const Async = require('async');
 const Config = require('../../config');
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
 
-class AuthAttempt extends MongoModels {
+class AuthAttempt extends AnchorModel {
   static create(ip, username, application, callback) {
 
     const document = {
@@ -68,7 +68,7 @@ class AuthAttempt extends MongoModels {
 }
 
 
-AuthAttempt.collection = 'authAttempts';
+AuthAttempt.collectionName = 'authAttempts';
 
 
 AuthAttempt.schema = Joi.object({
@@ -87,3 +87,4 @@ AuthAttempt.indexes = [
 
 
 module.exports = AuthAttempt;
+

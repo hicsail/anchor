@@ -2,121 +2,77 @@
 const Async = require('async');
 const Config = require('../config');
 
+//const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
+//const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
+//const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
-const internals = {};
+const Session = require('./models/session');
+const Token = require('./models/token');
+const User = require('./models/user');
+//const internals = {};
 
 
-internals.applyStrategy = function (server, next) {
-
-  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
-  const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
-  const User = server.plugins['hicsail-hapi-mongo-models'].User;
+const register = function (server, options) {  
 
   server.auth.strategy('simple', 'basic', {
-    validateFunc: function (request, username, password, callback) {
+    validate: async function (request, username, password) {
 
-      Async.auto({
-        session: function (done) {
+      const session = await Session.findByCredentials(username, password);
 
-          Session.findByCredentials(username, password, done);
-        },
-        user: ['session', function (results, done) {
+      if (!session) {
+          return { isValid: false };
+      }
 
-          if (!results.session) {
-            return done();
-          }
+      const user = await User.findById(session.userId);
 
-          User.findById(results.session.userId, done);
-        }],
-        scope: ['user', function (results, done) {
+      if (!user) {
+          return { isValid: false };
+      }
 
-          if (!results.user || !results.user.roles) {
-            return done();
-          }
-
-          done(null, Object.keys(results.user.roles));
-        }],
-        updateSession: ['scope', function (results, done) {
-
-          if (!results.scope) {
-            return done();
-          }
-
-          const update = {
-            $set: {
-              lastActive: new Date()
-            }
-          };
-
-          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return callback(err);
+      const update = {
+        $set: {
+          lastActive: new Date()
         }
+      };
 
-        if (!results.session) {
-          return callback(null, false);
-        }
+      await Session.findByIdAndUpdate(session._id.toString(), update);
 
-        callback(null, Boolean(results.user), results);
-      });
+      const credentials = {
+        session,
+        user
+        //Object.keys(user.roles)
+      };
+
+      return { credentials, isValid: true };      
     }
   });
 
-  server.auth.strategy('jwt', 'jwt', {
+  /*server.auth.strategy('jwt', 'jwt', {
     key: Config.get('/authSecret'),
     verifyOptions: { algorithms: ['HS256'] },
-    validateFunc: function (decoded, request, callback) {
+    validate: async function (decoded, request) {
 
-      Async.auto({
-        token: function (done) {
+      const token = await Token.findOne({tokenId: decoded,active: true});
 
-          Token.findOne({
-            tokenId: decoded,
-            active: true
-          }, done);
-        },
-        updateToken: ['token', function (results,done) {
+      if (!token) {
+        return { isValid: false };
+      }
 
-          if (!results.token) {
-            return done();
-          }
-          Token.findByIdAndUpdate(results.token._id,{
-            $set: {
-              lastUsed: new Date()
-            }
-          },done);
-        }],
-        user: ['token', function (results, done) {
+      await Token.findByIdAndUpdate(token._id.toString(), { $set: {lastUsed: new Date()} });
 
-          if (!results.token) {
-            return done();
-          }
+      const user = await User.findById(token.userId);
 
-          User.findById(results.token.userId, done);
-        }],
-        scope: ['user', function (results, done) {
+      if (!user) {
+        return { isValid: false };
+      }
 
-          if (!results.user || !results.user.roles) {
-            return done();
-          }
+      const credentials = {
+        token,
+        user
+        //Object.keys(user.roles)
+      };
 
-          done(null, Object.keys(results.user.roles));
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return callback(err);
-        }
-
-        if (!results.token) {
-          return callback(null, false);
-        }
-
-        callback(null, Boolean(results.user), results);
-      });
+      return { credentials, isValid: true };      
     }
   });
 
@@ -130,76 +86,66 @@ internals.applyStrategy = function (server, next) {
     ttl: 60000 * 30, //30 Minutes
     redirectTo: '/login',
     appendNext: 'returnUrl',
-    validateFunc: function (request, data, callback) {
+    validate: async function (request, data) {
 
-      Async.auto({
-        session: function (done) {
+      const id = data._id;
+      const key = data.key;
 
-          const id = data._id;
-          const key = data.key;
+      const session = await Session.findByCredentials(id, key);
 
-          Session.findByCredentials(id, key, done);
-        },
-        user: ['session', function (results, done) {
+      if (!session) {
+        return { isValid: true };
+      }
 
-          if (!results.session) {
-            return done();
-          }
+      const user = await User.findById(session.userId);
 
-          User.findById(results.session.userId, done);
-        }],
-        scope: ['user', function (results, done) {
+      if (!user) {
+        return { isValid: true };
+      }
 
-          if (!results.user || !results.user.roles) {
-            return done();
-          }
-
-          done(null, Object.keys(results.user.roles));
-        }],
-        updateSession: ['scope', function (results, done) {
-
-          if (!results.scope) {
-            return done();
-          }
-
-          const update = {
-            $set: {
-              lastActive: new Date()
-            }
-          };
-
-          Session.findByIdAndUpdate(results.session._id.toString(), update, done);
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return callback(err);
+      const update = {
+        $set: {
+          lastActive: new Date()
         }
+      };
 
-        if (!results.session) {
-          return callback(null, false);
-        }
+      await Session.findByIdAndUpdate(session._id.toString(), update);
 
-        callback(null, Boolean(results.user), results);
-      });
+      const credentials = {
+        session,
+        user        
+      };
+
+      return { credentials, isValid: true };
+
+      
     }
-  });
-
-
-  next();
+  });*/
+  
 };
 
-exports.register = function (server, options, next) {
+/*exports.register = function (server, options, next) {
 
   server.dependency('hicsail-hapi-mongo-models', internals.applyStrategy);
 
   next();
+};*/
+
+module.exports = {
+  name: 'auth',
+  dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'hapi-anchor-model'
+  ],
+  register,  
 };
 
 
-exports.preware = internals.preware;
+//exports.preware = internals.preware;
 
 
-exports.register.attributes = {
+/*exports.register.attributes = {
   name: 'auth'
-};
+};*/

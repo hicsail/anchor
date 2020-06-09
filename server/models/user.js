@@ -1,118 +1,96 @@
 'use strict';
-const Async = require('async');
-const Bcrypt = require('bcrypt');
+const Assert = require('assert')
+const Crypto = require('../crypto');
 const Clinician = require('./clinician');
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const Hoek = require('hoek');
+const AnchorModel = require('../anchor/anchor-model');
 
 
-class User extends MongoModels {
-  static generatePasswordHash(password, callback) {
+class User extends AnchorModel {
+  static async generatePasswordHash(password) {
 
-    Async.auto({
-      salt: function (done) {
+    Assert.ok(password, 'Missing pasword arugment.');
+    const salt = await Crypto.genSalt(10);
+    const hash = await Crypto.hash(password,salt);
 
-        Bcrypt.genSalt(10, done);
-      },
-      hash: ['salt', function (results, done) {
-
-        Bcrypt.hash(password, results.salt, done);
-      }]
-    }, (err, results) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, {
-        password,
-        hash: results.hash
-      });
-    });
+    return { password, hash };    
   }
 
-  static create(username, password, email, name, callback) {
+  static async create(username, password, email, name) {
+    
+    Assert.ok(username, 'Missing username arugment.');
+    Assert.ok(password, 'Missing pasword arugment.');
+    Assert.ok(email, 'Missing email arugment.');
+    Assert.ok(name, 'Missing name arugment.');
 
     const self = this;
 
-    Async.auto({
-      passwordHash: this.generatePasswordHash.bind(this, password),
-      newUser: ['passwordHash', function (results, done) {
-
-        const document = {
-          isActive: true,
-          inStudy: true,
-          username: username.toLowerCase(),
-          password: results.passwordHash.hash,
-          email: email.toLowerCase(),
-          name,
-          roles: {},
-          studyID: null,
-          timeCreated: new Date()
-        };
-
-        self.insertOne(document, done);
-      }]
-    }, (err, results) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      results.newUser[0].password = results.passwordHash.password;
-
-      callback(null, results.newUser[0]);
+    const passwordHash = await this.generatePasswordHash(password);    
+    const document =  new this({
+      isActive: true,
+      inStudy: true,
+      username: username.toLowerCase(),
+      password: passwordHash,
+      email: email.toLowerCase(),
+      name,
+      roles: {},
+      studyID: null,
+      timeCreated: new Date()  
     });
+    
+    const users = await self.insertOne(document);
+
+    users[0].password = passwordHash.password;
+
+    return users[0];    
   }
 
-  static findByCredentials(username, password, callback) {
+  static async findByCredentials(username, password) {
 
     const self = this;
 
-    Async.auto({
-      user: function (done) {
+    Assert.ok(username,'Missing username argument.');
+    Assert.ok(password,'Missing password argument.');
 
-        const query = {
-          isActive: true
-        };
+    const query = { isActive: true };
 
-        if (username.indexOf('@') > -1) {
-          query.email = username.toLowerCase();
-        }
-        else {
-          query.username = username.toLowerCase();
-        }
+    if (username.indexOf('@') > -1) {
+      query.email = username.toLowerCase();
+    }
+    else {
+      query.username = username.toLowerCase();
+    }
 
-        self.findOne(query, done);
-      },
-      passwordMatch: ['user', function (results, done) {
+    const user = await this.findOne(query);
 
-        if (!results.user) {
-          return done(null, false);
-        }
+    if (!user) {
+      return;
+    }
 
-        const source = results.user.password;
-        Bcrypt.compare(password, source, done);
-      }]
-    }, (err, results) => {
+    const passwordMatch = await Crypto.compare(password,user.password);
 
-      if (err) {
-        return callback(err);
-      }
-
-      if (results.passwordMatch) {
-        return callback(null, results.user);
-      }
-
-      callback();
-    });
+    if (passwordMatch) {
+      return user;
+    }    
   }
 
-  static findByUsername(username, callback) {
+  static async findByUsername(username) {
+
+    Assert.ok(username, 'Misisng username argument.');
 
     const query = { username: username.toLowerCase() };
 
-    this.findOne(query, callback);
+    return this.findOne(query);    
+  }
+
+  static async findByEmail(email) {
+
+    Assert.ok(email, 'Misisng email argument.');
+
+    const query = { email: email.toLowerCase() };
+
+    return this.findOne(query);
   }
 
   static highestRole(roles) {
@@ -152,7 +130,7 @@ class User extends MongoModels {
 }
 
 
-User.collection = 'users';
+User.collectionName = 'users';
 
 
 User.schema = Joi.object({

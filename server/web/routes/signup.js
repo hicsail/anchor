@@ -2,47 +2,42 @@
 const internals = {};
 const Config = require('../../../config');
 
-internals.applyRoutes = function (server, next) {
+const register  = function (server, options) {
 
   server.route({
     method: 'GET',
     path: '/signup',
-    config: {
+    options: {
       auth: {
-        mode: 'try',
-        strategy: 'session'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
+        strategies: ['simple'],
+        mode: 'try'
       }
-    },
-    handler: function (request, reply) {
+    },  
+    handler: async function (request, h) {
 
       if (request.auth.isAuthenticated) {
-        return reply.redirect('/');
+        return h.redirect('/');
       }
-      return reply.view('signup/signup',{
+      return h.view('signup/signup',{
         projectName: Config.get('/projectName'),
         title: 'Signup',
         baseUrl: Config.get('/baseUrl')
       });
     }
   });
-
-  next();
+  
 };
 
-exports.register = function (server, options, next) {
-
-  server.dependency(['auth'], internals.applyRoutes);
-
-  next();
-};
-
-
-exports.register.attributes = {
+module.exports = {
   name: 'signup/index',
-  dependencies: 'visionary'
+  /*dependencies: [
+    //'visionary'
+    /*'vision',
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'auth',
+    'hapi-anchor-model'
+  ],*/
+  register
 };

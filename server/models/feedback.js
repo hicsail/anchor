@@ -1,9 +1,9 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
 
-class Feedback extends MongoModels {
+class Feedback extends AnchorModel {
 
   static create(subject,description, userId, callback) {
 
@@ -27,7 +27,7 @@ class Feedback extends MongoModels {
 }
 
 
-Feedback.collection = 'feedback';
+Feedback.collectionName = 'feedback';
 
 
 Feedback.schema = Joi.object({

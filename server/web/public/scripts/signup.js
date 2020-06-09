@@ -15,12 +15,12 @@ $('#signup').click((event) => {
     values[field.name] = field.value;
   });
   if(values['password'] === values['confirmPassword']) {
-    delete values['confirmPassword'];
+    delete values['confirmPassword'];    
     $.ajax({
       type: 'POST',
       url: '/api/signup',
       data: values,
-      success: function (result) {
+      success: function (result) {      
         window.location = '/';
       },
       error: function (result) {

@@ -1,21 +1,22 @@
 'use strict';
-const Async = require('async');
 const Boom = require('boom');
 const Config = require('../../config');
-const internals = {};
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
+const Session = require('../models/session');
+const User = require('../models/user');
+const Invite = require('../models/invite');
+const Mailer = require('../mailer');
 
-internals.applyRoutes = function (server, next) {
-
-  const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
-  const User = server.plugins['hicsail-hapi-mongo-models'].User;
-  const Invite = server.plugins['hicsail-hapi-mongo-models'].Invite;
+const register = function (server, options) {  
 
   server.route({
     method: 'POST',
-    path: '/signup',
-    config: {
+    path: '/api/signup',
+    options: {
+      tags: ['api','auth'],
+      description: 'Sign up for a new user account.',
+      auth: false,
       validate: {
         payload: {
           username: Joi.string().token().lowercase().invalid('root').required(),
@@ -27,144 +28,101 @@ internals.applyRoutes = function (server, next) {
       },
       pre: [{
         assign: 'usernameCheck',
-        method: function (request, reply) {
-
+        method: async function (request, h) {
+          
           const conditions = {
             username: request.payload.username
           };
 
-          User.findOne(conditions, (err, user) => {
+          const user = await User.findByUsername(request.payload.username);
 
-            if (err) {
-              return reply(err);
-            }
+          if (user) {
+            throw Boom.conflict('Username already in use.');
+          }
 
-            if (user) {
-              return reply(Boom.conflict('Username already in use.'));
-            }
-
-            reply(true);
-          });
+          return h.continue;          
         }
       }, {
         assign: 'emailCheck',
-        method: function (request, reply) {
+        method: async function (request, h) {
 
-          const conditions = {
-            email: request.payload.email
-          };
+          const user = await User.findByEmail(request.payload.email);
 
-          User.findOne(conditions, (err, user) => {
-
-            if (err) {
-              return reply(err);
-            }
-
-            if (user) {
-              return reply(Boom.conflict('Email already in use.'));
-            }
-
-            reply(true);
-          });
+          if (user) {
+            throw Boom.conflict('Email already in use.');
+          }
+          
+          return h.continue;          
         }
       },{
         assign: 'passwordCheck',
-        method: function (request, reply) {
+        method: async function (request, h) {
 
           const complexityOptions = Config.get('/passwordComplexity');
-          Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions), (err, value) => {
 
-            if (err) {
-              return reply(Boom.conflict('Password does not meet complexity standards'));
-            }
-            reply(true);
-          });
+          try {
+            await Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions));
+          }
+          catch (err) {
+            throw Boom.conflict('Password does not meet complexity standards');
+          }          
+          return h.continue;
         }
       }]
     },
-    handler: function (request, reply) {
-
-      const mailer = request.server.plugins.mailer;
-
-      Async.auto({
-        user: function (done) {
-
-          const username = request.payload.username;
-          const password = request.payload.password;
-          const email = request.payload.email;
-          const name = request.payload.name;
-
-          User.create(username, password, email, name, done);
-        },
-        welcome: ['user', function (results, done) {
-
-          const emailOptions = {
-            subject: 'Your ' + Config.get('/projectName') + ' account',
-            to: {
-              name: request.payload.name,
-              address: request.payload.email
-            }
-          };
-          const template = 'welcome';
-
-          mailer.sendEmail(emailOptions, template, request.payload, (err) => {
-
-            if (err) {
-              console.warn('sending welcome email failed:', err.stack);
-            }
-          });
-
-          done();
-        }],
-        session: ['user', function (results, done) {
-
-          const userAgent = request.headers['user-agent'];
-          const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
-
-          Session.create(results.user._id.toString(), ip, userAgent, done);
-        }],
-        invite: ['user', function (results, done) {
-
-          const id = request.payload.invite;
-          if (id) {
-            const update = {
-              $set: {
-                status: 'Accepted'
-              }
-            };
-            return Invite.findByIdAndUpdate(id, update, done);
-          }
-          done();
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return reply(err);
+    handler: async function (request, h) {
+      
+      const username = request.payload.username;
+      const password = request.payload.password;
+      const email = request.payload.email;
+      const name = request.payload.name;
+      
+      // create and link account and user documents
+      const user = await User.create(username, password, email, name);      
+      const emailOptions = {
+        subject: 'Your ' + Config.get('/projectName') + ' account',
+        to: {
+          name: request.payload.name,
+          ddress: request.payload.email
         }
+      };     
 
-        const user = results.user;
-        const credentials = results.session._id + ':' + results.session.key;
-        const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
+      try {
+        await Mailer.sendEmail(emailOptions, 'welcome', request.payload);
+      }
+      catch (err) {
+        request.log(['mailer', 'error'], err);
+      }
 
-        request.cookieAuth.set(results.session);
-        reply({
+      // create session
+      const userAgent = request.headers['user-agent'];
+      const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;      
+      const session = await Session.create(user._id.toString(), ip, userAgent);
+      
+      const credentials = session._id + ':' + session.key;
+      const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
+
+      //request.cookieAuth.set(session);      
+      const result = {
           user: {
             _id: user._id,
             username: user.username,
             email: user.email,
             roles: user.roles
           },
-          session: results.session,
+          session: session,
           authHeader
-        });
-      });
+        };
+
+      return result;        
     }
   });
 
   server.route({
     method: 'POST',
     path: '/available',
-    config: {
+    options: {
+      auth: false,
       validate: {
         payload: {
           email: Joi.string().email().lowercase().optional(),
@@ -173,87 +131,58 @@ internals.applyRoutes = function (server, next) {
       },
       pre: [{
         assign: 'vaildInput',
-        method: function (request, reply) {
+        method: async function (request, h) {
 
           const username = request.payload.username;
           const email = request.payload.email;
 
           if (!username && !email) {
-            return reply(Boom.badRequest('invaild submission, submit username and/or email'));
+            throw Boom.badRequest('invaild submission, submit username and/or email');
           }
-          reply(true);
+          return h.continue;
         }
       }]
     },
-    handler: function (request, reply) {
+    handler: async function (request, h) {
 
-      Async.auto({
-        usernameFind: function (done) {
+      const username = request.payload.username;      
+      const user1 = await User.findOne({ username });
 
-          const username = request.payload.username;
+      if (user1 && username) {
+        throw Boom.conflict('username already in use');
+      }
 
+      const email = request.payload.email;
+      const user2 = await User.findOne({ email });
 
-          User.findOne({ username }, done);
-        },
-        username: ['usernameFind', function (results, done) {
+      if (user2 && email) {
+        throw Boom.conflict('email already in use');
+      }
 
-          if (request.payload.username) {
-            if (results.usernameFind) {
-              return done(null,false);
-            }
-            return done(null,true);
-          }
-          return done();
-        }],
-        emailFind: function (done) {
+      if (user1 && !user2) {
+        return {email:false, username:true};
+      }
+      else if (!user1 && user2) {
+        return {email:true, username:false};
+      }
+      else if (user1 && user2) {
+        return {email:true, username:true};  
+      }
 
-          const email = request.payload.email;
-
-          User.findOne({ email }, done);
-        },
-        email: ['emailFind', function (results, done) {
-
-          if (request.payload.email) {
-            if (results.emailFind) {
-              return done(null,false);
-            }
-            return done(null,true);
-          }
-          return done();
-        }]
-      }, (err, results) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        if (results.email === undefined) {
-          delete results.email;
-        }
-
-        if (results.username === undefined) {
-          delete results.username;
-        }
-
-        delete results.usernameFind;
-        delete results.emailFind;
-
-        reply(results);
-      });
+      return {email:false, username:false};        
     }
   });
-  next();
+  
 };
 
-
-exports.register = function (server, options, next) {
-
-  server.dependency(['auth', 'mailer', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
-
-  next();
-};
-
-
-exports.register.attributes = {
-  name: 'signup'
+module.exports = {
+  name: 'signup',
+  dependencies: [
+    'hapi-auth-basic',
+    'hapi-auth-cookie',
+    'hapi-auth-jwt2',
+    'hapi-anchor-model',
+    'auth',    
+  ],
+  register
 };

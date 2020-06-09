@@ -2,9 +2,9 @@
 const Config = require('../../config');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
-class Token extends MongoModels {
+class Token extends AnchorModel {
 
   static create(tokenName, userId,callback) {
 

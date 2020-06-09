@@ -1,9 +1,9 @@
 'use strict';
 const Joi = require('joi');
-const MongoModels = require('hicsail-mongo-models');
+const AnchorModel = require('../anchor/anchor-model');
 
 
-class Backup extends MongoModels {
+class Backup extends AnchorModel {
 
   static create(backupId, zip, s3, callback, time = (new Date())) {
 
@@ -26,7 +26,7 @@ class Backup extends MongoModels {
 }
 
 
-Backup.collection = 'backups';
+Backup.collectionName = 'backups';
 
 
 Backup.schema = Joi.object({
