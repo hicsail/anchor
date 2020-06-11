@@ -25,12 +25,21 @@
                     <td>{{user.username}}</td>
                     <td>{{user.name}}</td>
                     <td>{{user.email}}</td>
+
                     {{#each ../role as |role|}}
-                      <td>
-                        <label>
-                          <input class="roleCheck" id="{{name}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify user._id}})" {{#userHasRole user name}}checked{{/userHasRole}}>
-                        </label>
-                      </td>
+                      {{#if user.roles.root}}
+                        <td>
+                          <label>
+                            <input class="roleCheck" id="{{name}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify user._id}})" disabled {{#userHasRole user name}}checked{{/userHasRole}}>
+                          </label>
+                        </td>
+                      {{else}}
+                        <td>
+                          <label>
+                            <input class="roleCheck" id="{{name}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify user._id}})" {{#userHasRole user name}}checked{{/userHasRole}}>
+                          </label>
+                        </td>
+                      {{/if}}
                     {{/each}}
                   </tr>
                 {{/each}}
