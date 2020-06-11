@@ -742,14 +742,20 @@ internals.applyRoutes = function (server, next) {
         }
       },
       pre: [{
+        assign: 'canChangeRoles',
+        method: function (request, reply){
+
+          User.highestRole(request.auth.credentials.user.roles) > User.highestRole({ [request.params.role]: true }) ?
+            reply(true) :
+            reply(Boom.conflict('Unable to promote the same or higher access level than yourself'));
+        }
+      },{
         assign: 'notYou',
         method: function (request, reply) {
 
-          if (request.auth.credentials.user._id === request.params.id) {
-            reply(Boom.conflict('Unable to promote yourself'));
-          }
-
-          reply(true);
+          request.auth.credentials.user._id === request.params.id ?
+            reply(Boom.conflict('Unable to promote yourself')) :
+            reply(true);
         }
       },{
         assign: 'user',
@@ -821,14 +827,20 @@ internals.applyRoutes = function (server, next) {
         }
       },
       pre: [{
+        assign: 'canChangeRoles',
+        method: function (request, reply){
+
+          User.highestRole(request.auth.credentials.user.roles) > User.highestRole({ [request.params.role]: true }) ?
+            reply(true) :
+            reply(Boom.conflict('Unable to demote the same or higher access level than yourself'));
+        }
+      },{
         assign: 'notYou',
         method: function (request, reply) {
 
-          if (request.auth.credentials.user._id === request.params.id) {
-            reply(Boom.conflict('Unable to promote yourself'));
-          }
-
-          reply(true);
+          request.auth.credentials.user._id === request.params.id ?
+            reply(Boom.conflict('Unable to promote yourself')) :
+            reply(true);
         }
       },{
         assign: 'user',

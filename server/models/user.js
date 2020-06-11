@@ -117,6 +117,8 @@ class User extends MongoModels {
 
   static highestRole(roles) {
 
+    console.log('LOUIS TEST');
+    console.log(roles);
     if (roles.root) {
       return 5;
     }
