@@ -745,9 +745,9 @@ internals.applyRoutes = function (server, next) {
         assign: 'canChangeRoles',
         method: function (request, reply){
 
-          User.highestRole(request.auth.credentials.user.roles) > User.highestRole({ [request.params.role]: true }) ?
+          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
             reply(true) :
-            reply(Boom.conflict('Unable to promote same/higher access level than your own'));
+            reply(Boom.conflict('Unable to promote a higher access level than your own'));
         }
       },{
         assign: 'notYou',
@@ -830,9 +830,9 @@ internals.applyRoutes = function (server, next) {
         assign: 'canChangeRoles',
         method: function (request, reply){
 
-          User.highestRole(request.auth.credentials.user.roles) > User.highestRole({ [request.params.role]: true }) ?
+          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
             reply(true) :
-            reply(Boom.conflict('Unable to demote the same/higher access level than your own'));
+            reply(Boom.conflict('Unable to demote a higher access level than your own'));
         }
       },{
         assign: 'notYou',
