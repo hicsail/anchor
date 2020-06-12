@@ -1,5 +1,4 @@
 'use strict';
-const internals = {};
 const Config = require('../../../config');
 const path = require('path');
 
@@ -10,7 +9,7 @@ const register = function (server, options) {
     path: '/',
     options: {
       auth: {
-        strategies: ['simple'],
+        strategies: ['simple', 'session'],
         mode: 'try'
       }
     },    
@@ -37,7 +36,7 @@ module.exports = {
     'vision',
     //'visionary'
     /*'vision',
-    'hapi-auth-basic',
+     'hapi-auth-basic',
     'hapi-auth-cookie',
     'hapi-auth-jwt2',
     'auth',

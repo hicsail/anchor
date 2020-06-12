@@ -238,7 +238,7 @@ class AnchorModel {
 
     return fields;
   }
-
+  
   /**
    * Finds documents and returns an array of model instances
    * @async
@@ -606,7 +606,7 @@ class AnchorModel {
     const page = args.shift();
     const limit = args.shift();
     const options = args.pop() || {};
-
+    
     const output = {
       data: undefined,
       pages: {

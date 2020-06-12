@@ -139,22 +139,14 @@ const manifest = {
       options: {
         routes: { prefix: '/api' }
       }
-    },
-    {
-      plugin: './server/web/routes/account'
-    },
-    {
-      plugin: './server/web/routes/authAttempts'
-    },
+    },   
     {
       plugin: './server/web/routes/backup'
     },
     {
       plugin: './server/web/routes/clinician'
     },
-    {
-      plugin: './server/web/routes/dashboard'
-    },
+    
     {
       plugin: './server/web/routes/events'
     },
@@ -163,28 +155,16 @@ const manifest = {
     },
     {
       plugin: './server/web/routes/feedback'
-    },
-    {
-      plugin: './server/web/routes/index'
-    },
+    },    
     {
       plugin: './server/web/routes/invite'
-    },
-    {
-      plugin: './server/web/routes/login'
-    },
+    },    
     {
       plugin: './server/web/routes/public'
-    },
-    {
-      plugin: './server/web/routes/sessions'
-    },
+    },    
     {
       plugin: './server/web/routes/setup'
-    },
-    {
-      plugin: './server/web/routes/signup'
-    },
+    },   
     {
       plugin: './server/web/routes/tokens'
     },
@@ -192,15 +172,39 @@ const manifest = {
       plugin: './server/web/routes/users'
     },*/
     {
+      plugin: './server/web/routes/sessions'
+    },
+    {
+      plugin: './server/web/routes/authAttempts'
+    },
+    {
+      plugin: './server/web/routes/account'
+    },
+    {
+      plugin: './server/web/routes/dashboard'
+    },
+    {
+      plugin: './server/web/routes/login'
+    },
+    {
       plugin: './server/web/routes/index'
     },
     {
       plugin: './server/web/routes/signup'
     },
     {
-      plugin: './server/api/signup',      
-    },          
+      plugin: './server/api/signup'      
+    },
+    {
+      plugin: './server/api/login'      
+    }, 
+    {
+      plugin: './server/api/auth-attempts',
       
+    },
+    {
+      plugin: './server/api/sessions',     
+    },      
       /*{
          plugin: 'visionary',          
          options: {

@@ -16,9 +16,11 @@ $('#login').click((event) => {
     url: '/api/login',
     data: values,
     success: function (result) {
+      console.log("is success")      
       location.reload();
     },
     error: function (result) {
+      console.log("hereeee")
       errorAlert(result.responseJSON.message);
     }
   });

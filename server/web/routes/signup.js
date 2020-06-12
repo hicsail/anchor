@@ -1,5 +1,4 @@
 'use strict';
-const internals = {};
 const Config = require('../../../config');
 
 const register  = function (server, options) {

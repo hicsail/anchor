@@ -46,20 +46,20 @@
       ],
       ajax: {
         url: "/api/table/sessions",
-        data: function (d) {
+        data: function (d) {          
           d.fields = "userId ip os browser lastActive time";
         }
       },
       "columns": [
         {
-          data: "user.username",
+          data: "user[0].username",
           defaultContent: ""
         },
         {
-          data: "user.studyID",
+          data: "user[0].studyID",
           render: function (data, type, row) {
-            if (row.user.studyID > 0) {
-              return row.user.studyID;
+            if (row.user[0].studyID > 0) {
+              return row.user[0].studyID;
             }
             return '';
           }

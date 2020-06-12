@@ -1,16 +1,9 @@
 'use strict';
 const Async = require('async');
 const Config = require('../config');
-
-//const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
-//const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
-//const User = server.plugins['hicsail-hapi-mongo-models'].User;
-
 const Session = require('./models/session');
 const Token = require('./models/token');
 const User = require('./models/user');
-//const internals = {};
-
 
 const register = function (server, options) {  
 
@@ -39,8 +32,8 @@ const register = function (server, options) {
 
       const credentials = {
         session,
-        user
-        //Object.keys(user.roles)
+        user,
+        scope: Object.keys(user.roles)
       };
 
       return { credentials, isValid: true };      
@@ -68,13 +61,13 @@ const register = function (server, options) {
 
       const credentials = {
         token,
-        user
-        //Object.keys(user.roles)
+        user,
+        scoep: Object.keys(user.roles)
       };
 
       return { credentials, isValid: true };      
     }
-  });
+  });*/
 
 
   server.auth.strategy('session', 'cookie', {
@@ -85,8 +78,8 @@ const register = function (server, options) {
     keepAlive: true,
     ttl: 60000 * 30, //30 Minutes
     redirectTo: '/login',
-    appendNext: 'returnUrl',
-    validate: async function (request, data) {
+    //appendNext: 'returnUrl',
+    validateFunc: async function (request, data) {
 
       const id = data._id;
       const key = data.key;
@@ -94,13 +87,13 @@ const register = function (server, options) {
       const session = await Session.findByCredentials(id, key);
 
       if (!session) {
-        return { isValid: true };
+        return { valid: false };
       }
 
       const user = await User.findById(session.userId);
 
       if (!user) {
-        return { isValid: true };
+        return { valid: false };
       }
 
       const update = {
@@ -113,14 +106,15 @@ const register = function (server, options) {
 
       const credentials = {
         session,
-        user        
+        user,
+        scope: Object.keys(user.roles)        
       };
 
-      return { credentials, isValid: true };
+      return { credentials, valid: true };
 
       
     }
-  });*/
+  });
   
 };
 
