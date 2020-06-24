@@ -4,6 +4,8 @@ const Clinician = require('../models/clinician');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
+const PermissionConfig = require('../../PermissionConfig');
+const Authorization = require('../web/helpers/authorization');
 
 const internals = {};
 
@@ -128,15 +130,24 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-
   server.route({
     method: 'GET',
     path: '/users',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        strategies: ['simple', 'jwt', 'session']
       },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['GET/api/users']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ],
       validate: {
         query: {
           fields: Joi.string(),
@@ -171,9 +182,19 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: 'admin'
-      }
+        strategies: ['simple', 'jwt', 'session']
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['GET/api/users/{id}']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -227,13 +248,21 @@ internals.applyRoutes = function (server, next) {
     path: '/users',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         payload: User.payload
       },
       pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['POST/api/users']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        },
         {
           assign: 'usernameCheck',
           method: function (request, reply) {
@@ -315,8 +344,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: 'admin'
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         params: {
@@ -329,6 +357,15 @@ internals.applyRoutes = function (server, next) {
         }
       },
       pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['GET/api/users/{id}']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        },
         {
           assign: 'usernameCheck',
           method: function (request, reply) {
@@ -407,8 +444,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}/participation',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         params: {
@@ -418,7 +454,18 @@ internals.applyRoutes = function (server, next) {
           inStudy: Joi.boolean().required(),
           studyID: Joi.number().required()
         }
-      }
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['PUT/api/users/{id}/participation']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -551,8 +598,7 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}/password',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         params: {
@@ -563,6 +609,15 @@ internals.applyRoutes = function (server, next) {
         }
       },
       pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['PUT/api/users/{id}/password']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        },
         {
           assign: 'password',
           method: function (request, reply) {
@@ -699,14 +754,24 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000')
         }
-      }
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['DELETE/api/users/{id}']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -895,14 +960,12 @@ internals.applyRoutes = function (server, next) {
   next();
 };
 
-
 exports.register = function (server, options, next) {
 
   server.dependency(['auth', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
 
   next();
 };
-
 
 exports.register.attributes = {
   name: 'users'

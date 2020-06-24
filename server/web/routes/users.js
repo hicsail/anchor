@@ -4,6 +4,8 @@ const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
+const PermissionConfig = require('../../../PermissionConfig');
+const Authorization = require('../helpers/authorization');
 
 internals.applyRoutes = function (server, next) {
 
@@ -31,9 +33,19 @@ internals.applyRoutes = function (server, next) {
     path: '/roles',
     config: {
       auth: {
-        strategy: 'session',
-        scope: ['root', 'admin', 'researcher']
-      }
+        strategy: 'session'
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['/roles']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -64,9 +76,19 @@ internals.applyRoutes = function (server, next) {
     path: '/participation',
     config: {
       auth: {
-        strategy: 'session',
-        scope: ['root', 'admin', 'researcher']
-      }
+        strategy: 'session'
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['/participation']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -84,9 +106,19 @@ internals.applyRoutes = function (server, next) {
     path: '/users/create',
     config: {
       auth: {
-        strategy: 'session',
-        scope: ['root', 'admin','researcher']
-      }
+        strategy: 'session'
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['/users/create']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -104,14 +136,24 @@ internals.applyRoutes = function (server, next) {
     path: '/change-password/{id}',
     config: {
       auth: {
-        strategy: 'session',
-        scope: ['root', 'admin']
+        strategy: 'session'
       },
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000')
         }
-      }
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['/change-password/{id}']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -129,9 +171,19 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategy: 'session',
-        scope: ['root','admin']
-      }
+        strategy: 'session'
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['/users/{id}']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -158,9 +210,19 @@ internals.applyRoutes = function (server, next) {
     path: '/users/clinicians/{id}',
     config: {
       auth: {
-        strategy: 'session',
-        scope: ['root','admin']
-      }
+        strategy: 'session'
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, reply) => {
+
+            Authorization(request, PermissionConfig['/users/clinicians/{id}']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
+          }
+        }
+      ]
     },
     handler: function (request, reply) {
 
@@ -175,7 +237,6 @@ internals.applyRoutes = function (server, next) {
 
   next();
 };
-
 
 exports.register = function (server, options, next) {
 

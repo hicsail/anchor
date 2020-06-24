@@ -117,6 +117,14 @@ class User extends MongoModels {
 
   static highestRole(roles) {
 
+    if (Array.isArray(roles)) {//if array, convert to hashtable
+      const hm = {};
+      roles.forEach((role) => {
+
+        hm[role] = true;
+      });
+      roles = hm;
+    }
     if (roles.root) {
       return 5;
     }
