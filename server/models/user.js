@@ -115,6 +115,34 @@ class User extends MongoModels {
     this.findOne(query, callback);
   }
 
+  static lowestRole(roles){
+
+    if (Array.isArray(roles)){
+      const hm = {};
+      roles.forEach((role) => {
+
+        hm[role] = true;
+      });
+      roles = hm;
+    }
+    if (roles.analyst) {
+      return 1;
+    }
+    else if (roles.clinician) {
+      return 2;
+    }
+    else if (roles.researcher) {
+      return 3;
+    }
+    else if (roles.admin) {
+      return 4;
+    }
+    else if (roles.root) {
+      return 5;
+    }
+    return 0;
+  }
+
   static highestRole(roles) {
 
     if (Array.isArray(roles)) {//if array, convert to hashtable
