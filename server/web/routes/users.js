@@ -4,7 +4,7 @@ const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
-const PermissionConfig = require('../../../PermissionConfig');
+const PermissionConfigTable = require('../../../permission-config');
 const Authorization = require('../helpers/authorization');
 
 internals.applyRoutes = function (server, next) {
@@ -40,7 +40,7 @@ internals.applyRoutes = function (server, next) {
           assign: 'Authorization',
           method: (request, reply) => {
 
-            Authorization(request, PermissionConfig['/roles']) ?
+            Authorization(request, PermissionConfigTable['/roles']) ?
               reply(true) :
               reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
           }
@@ -83,7 +83,7 @@ internals.applyRoutes = function (server, next) {
           assign: 'Authorization',
           method: (request, reply) => {
 
-            Authorization(request, PermissionConfig['/participation']) ?
+            Authorization(request, PermissionConfigTable['/participation']) ?
               reply(true) :
               reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
           }
@@ -113,7 +113,7 @@ internals.applyRoutes = function (server, next) {
           assign: 'Authorization',
           method: (request, reply) => {
 
-            Authorization(request, PermissionConfig['/users/create']) ?
+            Authorization(request, PermissionConfigTable['/users/create']) ?
               reply(true) :
               reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
           }
@@ -148,7 +148,7 @@ internals.applyRoutes = function (server, next) {
           assign: 'Authorization',
           method: (request, reply) => {
 
-            Authorization(request, PermissionConfig['/change-password/{id}']) ?
+            Authorization(request, PermissionConfigTable['/change-password/{id}']) ?
               reply(true) :
               reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
           }
@@ -178,7 +178,7 @@ internals.applyRoutes = function (server, next) {
           assign: 'Authorization',
           method: (request, reply) => {
 
-            Authorization(request, PermissionConfig['/users/{id}']) ?
+            Authorization(request, PermissionConfigTable['/users/{id}']) ?
               reply(true) :
               reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
           }
@@ -217,7 +217,7 @@ internals.applyRoutes = function (server, next) {
           assign: 'Authorization',
           method: (request, reply) => {
 
-            Authorization(request, PermissionConfig['/users/clinicians/{id}']) ?
+            Authorization(request, PermissionConfigTable['/users/clinicians/{id}']) ?
               reply(true) :
               reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
           }
