@@ -1,23 +1,22 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
+const Feedback = require('../models/feedback');
 const User = require('../models/user');
-const Session = require('../models/session');
 
-
-const register = function (server, options) {  
+const register = function (server, options) { 
 
   server.route({
     method: 'GET',
-    path: '/api/table/sessions',
+    path: '/api/table/feedback',
     options: {
       auth: {
-        strategies: ['simple', 'session']
+        strategies: ['simple', 'session'],        
       },
       validate: {
         query: Joi.any()
       }
-    },
+    },    
     handler: async function (request, h) {
 
       const accessLevel = User.highestRole(request.auth.credentials.user.roles);
@@ -53,7 +52,7 @@ const register = function (server, options) {
         query.username = request.auth.credentials.user.username;
       }
 
-      let userFields = 'studyID username';
+      /*let userFields = 'studyID username';
       if (accessLevel === 1) {
         //if analyst remove PHI
         userFields = userFields.split(' ');
@@ -68,7 +67,7 @@ const register = function (server, options) {
         }
         userFields = userFields.join(' ');
       }
-      userFields = User.fieldsAdapter(userFields);               
+      userFields = User.fieldsAdapter(userFields);*/
 
       const lookups = [{
         from: User,
@@ -76,22 +75,22 @@ const register = function (server, options) {
         foreign: '_id',
         as: 'user',
         one: false                
-      }];          
+      }];      
 
-      const sessions = await Session.pagedLookup(query,page,limit,lookups);
-      
+      const feedbacks = await Feedback.pagedLookup(query,page,limit,lookups);
+
       return {
         draw: request.query.draw,
-        recordsTotal: sessions.data.length,
-        recordsFiltered: sessions.items.total,
-        data: sessions.data          
-      };     
+        recordsTotal: feedbacks.data.length,
+        recordsFiltered: feedbacks.items.total,
+        data: feedbacks.data          
+      };      
     }
   });
 
   server.route({
     method: 'GET',
-    path: '/api/sessions',
+    path: '/api/feedback',
     options: {
       auth: {
         strategies: ['simple', 'session'],
@@ -105,7 +104,7 @@ const register = function (server, options) {
           page: Joi.number().default(1)
         }
       }
-    },
+    },    
     handler: async function (request, h) {
 
       const query = {};
@@ -114,102 +113,108 @@ const register = function (server, options) {
       const limit = request.query.limit;
       const page = request.query.page;
 
-      const sessions = await Session.pagedFind(query, page, limit);
+      const feedbacks = await Feedback.pagedFind(query, page, limit);
 
-      return sessions;      
-    }
-  });
-
-
-  server.route({
-    method: 'GET',
-    path: '/api/sessions/my',
-    options: {
-      auth: {
-        strategies: ['simple', 'session']
-      }
-    },
-    handler: async function (request, h) {
-
-      const id = request.auth.credentials.user._id.toString();
-
-      const session = await Session.find({ userId: id });
-
-      if (!session) {
-        throw Boom.notFound('Document not found.');
-      }
-
-      return session;      
-    }
-  });
-
-
-  server.route({
-    method: 'GET',
-    path: '/api/sessions/{id}',
-    options: {
-      auth: {
-        strategies: ['simple', 'session'],
-        scope: ['root','admin','researcher']
-      }
-    },
-    handler: async function (request, h) {      
-      
-      const session = await Session.findById(request.params.id);
-
-      if (!session) {
-        throw Boom.notFound('Document not found.');
-      }
-
-      return session;      
+      return feedbacks;      
     }
   });
 
   server.route({
-    method: 'DELETE',
-    path: '/api/sessions/my/{id}',
+    method: 'POST',
+    path: '/api/feedback',
     options: {
       auth: {
         strategies: ['simple', 'session']
       },
-      pre: [{
-        assign: 'current',
-        method: async function (request,h) {
-
-          const currentSession = request.auth.credentials.session._id.toString();
-
-          if (currentSession === request.params.id) {
-
-            throw Boom.badRequest('Unable to close your current session. You can use logout instead.');
-          }
-
-          return h.continue;
-        }
-      }]
+      validate: {
+        payload: Feedback.payload
+      }
     },
     handler: async function (request, h) {
 
-      const id = request.params.id;
-      const userId = request.auth.credentials.user._id.toString();
+      const feedback = Feedback.create(request.payload.subject,request.payload.description, request.auth.credentials.user._id.toString());
 
-      const filter = {
-        _id: Session.ObjectID(id),
-        userId
-      };
-
-      const session = await Session.findOneAndDelete(filter);
-
-      if (!session) {
-        throw Boom.notFound('Document not found.');
-      }
-
-      return ({ message: 'Success' });      
+      return feedback;      
     }
   });
 
   server.route({
+    method: 'GET',
+    path: '/api/feedback/unresolved',
+    options: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root', 'admin', 'researcher']
+      }
+    },
+    handler: async function (request, h) {
+
+      const total = await Feedback.count({ resolved: false });
+
+      return total;      
+    }
+  });
+
+  server.route({
+    method: 'PUT',
+    path: '/api/feedback/{id}',
+    options: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root','admin','researcher']
+      },
+      validate: {
+        payload: {
+          resolved: Joi.boolean().required(),
+          comment: Joi.string().required()
+        }
+      }
+    },
+    handler: async function (request, h) {
+
+      const id = request.params.id;
+      const update = {
+        $set: {
+          resolved: request.payload.resolved,
+          comment: request.payload.comment
+        }
+      };
+
+      const feedback = await Feedback.findByIdAndUpdate(id, update);
+
+      if (!feedback) {
+          throw Boom.notFound('feedback not found.');          
+      }
+
+      return feedback;      
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/api/feedback/{id}',
+    options: {
+      auth: {
+        strategies: ['simple', 'session'],
+        scope: ['root', 'admin', 'researcher']
+      }
+    },
+    handler: async function (request, h) {
+
+      const feedback = await Feedback.findById(request.params.id);
+
+      if (!feedback) {
+        throw Boom.notFound('feedback not found.'); 
+      }
+
+      return feedback;      
+    }
+  });
+
+
+  server.route({
     method: 'DELETE',
-    path: '/api/sessions/{id}',
+    path: '/api/feedback/{id}',
     options: {
       auth: {
         strategies: ['simple', 'session'],
@@ -218,19 +223,19 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const session = await Session.findByIdAndDelete(request.params.id);
+      const feedback = await Feedback.findByIdAndDelete(request.params.id);
 
-      if (!session) {
-        throw Boom.notFound('Document not found.');
+      if (!feedback) {
+        throw Boom.notFound('feedback not found.'); 
       }
 
-      return ({ message: 'Success.' });      
+      return { message: 'Success.' };      
     }
   });  
 };
 
 module.exports = {
-  name: 'sessions',
+  name: 'feedbacks',
   dependencies: [
     'hapi-anchor-model',
     'auth',    

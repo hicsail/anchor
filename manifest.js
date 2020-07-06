@@ -172,6 +172,9 @@ const manifest = {
       plugin: './server/web/routes/users'
     },*/
     {
+      plugin: './server/web/routes/feedbacks'
+    },
+    {
       plugin: './server/web/routes/sessions'
     },
     {
@@ -204,7 +207,10 @@ const manifest = {
     },
     {
       plugin: './server/api/sessions',     
-    },      
+    },
+    {
+      plugin: './server/api/feedbacks',     
+    },     
       /*{
          plugin: 'visionary',          
          options: {

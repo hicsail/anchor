@@ -1,11 +1,16 @@
 'use strict';
 const Joi = require('joi');
+const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 
 
 class Feedback extends AnchorModel {
 
-  static create(subject,description, userId, callback) {
+  static async create(subject,description, userId) {
+
+    Assert.ok(subject,'Missing subject');
+    Assert.ok(description, 'Missing description');
+    Assert.ok(userId,'Missing userid');
 
     const document = {
       subject,
@@ -15,14 +20,9 @@ class Feedback extends AnchorModel {
       time: new Date()
     };
 
-    this.insertOne(document, (err, docs) => {
+    const feedback =  await this.insertOne(document);
 
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    return feedback[0];    
   }
 }
 
