@@ -14,6 +14,6 @@ module.exports = {
   'PUT/api/users/{id}/participation': ['root', 'admin', 'researcher'],
   'PUT/api/users/{id}/password': ['root','admin'],
   'DELETE/api/users/{id}': ['root','admin'],
-  '$DEFAULT_SCOPE': ['root', 'admin', 'researcher', 'clinician', 'analyst']
+  '$DEFAULT_SCOPE': ['root', 'adminx', 'researcher', 'clinician', 'analyst']
 };
 

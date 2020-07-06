@@ -171,19 +171,9 @@ internals.applyRoutes = function (server, next) {
     path: '/users/{id}',
     config: {
       auth: {
-        strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/users/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+        strategy: 'session',
+        scope: PermissionConfigTable['/users/{id}'] //I am unsure whether you want to use pre or scope...
+      }
     },
     handler: function (request, reply) {
 
