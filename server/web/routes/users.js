@@ -5,7 +5,6 @@ const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
 const PermissionConfigTable = require('../../../permission-config');
-const Authorization = require('../helpers/authorization');
 
 internals.applyRoutes = function (server, next) {
 
@@ -33,19 +32,9 @@ internals.applyRoutes = function (server, next) {
     path: '/roles',
     config: {
       auth: {
-        strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/roles']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+        strategy: 'session',
+        scope: PermissionConfigTable['GET/roles'] || ['root', 'admin', 'researcher']
+      }
     },
     handler: function (request, reply) {
 
@@ -76,19 +65,9 @@ internals.applyRoutes = function (server, next) {
     path: '/participation',
     config: {
       auth: {
-        strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/participation']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+        strategy: 'session',
+        scope: PermissionConfigTable['GET/participation'] || ['root', 'admin', 'researcher']
+      }
     },
     handler: function (request, reply) {
 
@@ -106,19 +85,9 @@ internals.applyRoutes = function (server, next) {
     path: '/users/create',
     config: {
       auth: {
-        strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/users/create']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+        strategy: 'session',
+        scope: PermissionConfigTable['GET/users/create'] || ['root', 'admin', 'researcher']
+      }
     },
     handler: function (request, reply) {
 
@@ -136,24 +105,14 @@ internals.applyRoutes = function (server, next) {
     path: '/change-password/{id}',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable['GET/change-password/{id}'] || ['root', 'admin']
       },
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000')
         }
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/change-password/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -172,7 +131,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['/users/{id}'] //I am unsure whether you want to use pre or scope...
+        scope: PermissionConfigTable['GET/users/{id}'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -200,19 +159,9 @@ internals.applyRoutes = function (server, next) {
     path: '/users/clinicians/{id}',
     config: {
       auth: {
-        strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/users/clinicians/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+        strategy: 'session',
+        scope: PermissionConfigTable['GET/users/clinicians/{id}'] || ['root', 'admin']
+      }
     },
     handler: function (request, reply) {
 
