@@ -34,6 +34,9 @@
       {{/role}}
       <a class="nav-link text-light" href="../sessions">Sessions</a>
       <a class="nav-link text-light" href="../users">Users</a>
+      {{#role user 'admin'}}
+        <a class="nav-link text-light" href="../scopes">Routing & Scopes</a>
+      {{/role}}
     </li>
   </ul>
   {{#role user 'researcher'}}

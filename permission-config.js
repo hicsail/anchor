@@ -6,7 +6,7 @@ module.exports = {
   'GET/authAttempts': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
   'GET/backups': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
   'GET/change-password/{id}': ['root', 'admin'],
-  'GET/clinican': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
+  'GET/clinician': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
   'GET/dashboard': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
   'GET/docs': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
   'GET/docs/css/{path*}': ['root', 'admin', 'researcher', 'analyst', 'clinician'],

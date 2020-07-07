@@ -174,6 +174,26 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/scopes',
+    config: {
+      auth: {
+        strategy: 'session'
+      }
+    },
+    handler: function (request, reply) {
+
+      console.log('boop');
+      return reply.view('users/scopes', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName'),
+        title: 'Routing & Scopes',
+        baseUrl: Config.get('/baseUrl')
+      });
+    }
+  });
+
   next();
 };
 
