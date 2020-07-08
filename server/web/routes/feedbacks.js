@@ -69,16 +69,3 @@ module.exports = {
   ],
   register
 };
-
-
-/*exports.register = function (server, options, next) {
-
-  server.dependency(['auth'], internals.applyRoutes);
-
-  next();
-};
-
-exports.register.attributes = {
-  name: 'feedbackList',
-  dependencies: 'visionary'
-};*/

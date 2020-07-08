@@ -28,15 +28,6 @@ const register  = function (server, options) {
 };
 
 module.exports = {
-  name: 'signup/index',
-  /*dependencies: [
-    //'visionary'
-    /*'vision',
-    'hapi-auth-basic',
-    'hapi-auth-cookie',
-    'hapi-auth-jwt2',
-    'auth',
-    'hapi-anchor-model'
-  ],*/
+  name: 'signup/index',  
   register
 };

@@ -19,8 +19,7 @@ const register = function (server, options) {
       }
     },
     handler: async function (request, h) {
-
-      console.log("request.auth.credentials", request.auth.credentials)
+          
       const accessLevel = User.highestRole(request.auth.credentials.user.roles);
       const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
       const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];

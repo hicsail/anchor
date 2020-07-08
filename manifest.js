@@ -172,6 +172,9 @@ const manifest = {
       plugin: './server/web/routes/users'
     },*/
     {
+      plugin: './server/web/routes/users'
+    },
+    {
       plugin: './server/web/routes/feedbacks'
     },
     {
@@ -210,6 +213,9 @@ const manifest = {
     },
     {
       plugin: './server/api/feedbacks',     
+    }, 
+    {
+      plugin: './server/api/users',     
     },     
       /*{
          plugin: 'visionary',          
