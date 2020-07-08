@@ -618,7 +618,8 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
-      return ({ message: 'Success.' });      
+      return ({ message: 'Success.' });
+            
     }
   });
 

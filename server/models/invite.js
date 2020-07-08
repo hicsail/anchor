@@ -1,11 +1,17 @@
 'use strict';
 const Joi = require('joi');
+const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 const User = require('./user');
 
 class Invite extends AnchorModel {
 
-  static create(name, email, description, userId, callback) {
+  static async create(name, email, description, userId) {
+
+    Assert.ok(name, 'Missing name argument.');
+    Assert.ok(email, 'Missing email argument.');
+    Assert.ok(description, 'Missing description argument.');
+    Assert.ok(userId, 'Missing userId argument.');
 
     const document = {
       name,
@@ -17,14 +23,9 @@ class Invite extends AnchorModel {
       expiredAt: new Date(new Date().getTime() + 1000 * 86400 * 7) //7 days
     };
 
-    this.insertOne(document, (err, docs) => {
+    const invites = await this.insertOne(document);   
 
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    return invites[0];   
   }
 }
 
