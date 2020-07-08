@@ -172,6 +172,9 @@ const manifest = {
       plugin: './server/web/routes/users'
     },*/
     {
+      plugin: './server/web/routes/events'
+    },
+    {
       plugin: './server/web/routes/invite'
     },
     {
@@ -222,6 +225,9 @@ const manifest = {
     },
     {
       plugin: './server/api/invites',     
+    }, 
+    {
+      plugin: './server/api/events',     
     },      
       /*{
          plugin: 'visionary',          

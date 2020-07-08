@@ -1,11 +1,15 @@
 'use strict';
 const Joi = require('joi');
+const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 
 
 class Event extends AnchorModel {
 
-  static create(name, userId, callback) {
+  static async create(name, userId) {
+
+    Assert.ok(name, 'Missing name argument.');    
+    Assert.ok(userId, 'Missing userId argument.');
 
     const document = {
       name: name.toUpperCase(),
@@ -13,14 +17,9 @@ class Event extends AnchorModel {
       time: new Date()
     };
 
-    this.insertOne(document, (err, docs) => {
+    const events = await this.insertOne(document);   
 
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    return events[0];    
   }
 }
 
