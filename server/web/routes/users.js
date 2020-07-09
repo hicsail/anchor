@@ -5,7 +5,7 @@ const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
 const PermissionConfigTable = require('../../../permission-config');
-const DEFAULT_ROLES = require('/server/helper/getDefaultRoles');
+const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 

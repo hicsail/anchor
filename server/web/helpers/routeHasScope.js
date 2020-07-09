@@ -1,8 +1,8 @@
 'use strict';
 
-module.exports = (cb, roleName, options) => {
+module.exports = (scope, role, options) => {
 
-  return cb.includes(roleName) ?
+  return scope.includes(role) ?
     options.fn(this) :
     options.inverse(this);
 };

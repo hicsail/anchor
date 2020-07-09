@@ -15,7 +15,7 @@
                   <th>Name</th>
                   <th>Email</th>
                   {{#each role}}
-                    <th>{{this.name}}</th>
+                    <th>{{this}}</th>
                   {{/each}}
                 </tr>
               </thead>
@@ -26,10 +26,10 @@
                     <td>{{userRow.name}}</td>
                     <td>{{userRow.email}}</td>
 
-                    {{#each ../role as |role|}}
+                    {{#each ../role as |r|}}
                         <td>
                           <label>
-                            <input class="roleCheck" id="{{role.name}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify userRow._id}})" {{#disableCB ../../user userRow role}}disabled{{/disableCB}} {{#userHasRole userRow name}}checked{{/userHasRole}}>
+                            <input class="roleCheck" id="{{r}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify userRow._id}})" {{#disableCB ../../user userRow r}}disabled{{/disableCB}} {{#userHasRole userRow r}}checked{{/userHasRole}}>
                           </label>
                         </td>
                     {{/each}}

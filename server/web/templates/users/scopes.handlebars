@@ -14,23 +14,25 @@
                   <th>Path</th>
                   <th>Method</th>
                   {{#each role}}
-                    <th>{{this.name}}</th>
+                    <th>{{this}}</th>
                   {{/each}}
                 </tr>
               </thead>
               <tbody>
-                {{#each route as |routeRow path|}}
-                  <tr>
-                    <td>{{routePath @key}}</td>
-                    <td>{{routeMethod @key}}</td>
-                    {{#each ../role as |role|}}
-                      <td>
-                        <label>
-                          <input class="scopeCheck" id="{{role.name}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify routeRow}}, {{jsonify path}})" {{#routeHasScope ../this role.name}}checked{{/routeHasScope}}>
-                        </label>
-                      </td>
-                    {{/each}}
-                  </tr>
+                {{#each route as |routeRow method|}}
+                  {{#each routeRow as |scope path|}}
+                    <tr>
+                      <td>{{path}}</td>
+                      <td>{{method}}</td>
+                      {{#each ../../role as |r|}}
+                        <td>
+                          <label>
+                            <input class="scopeCheck" id="{{r}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify scope}}, {{jsonify path}}, {{jsonify method}})" {{#routeHasScope scope r}}checked{{/routeHasScope}}>
+                          </label>
+                        </td>
+                      {{/each}}
+                    </tr>
+                  {{/each}}
                 {{/each}}
               </tbody>
             </table>

@@ -25,10 +25,10 @@ Composer((err, server) => {
         }
       }
     });
-    PermissionConfig.createTable(server, (result) => {
-
-      console.log(result);
-    });
+    // PermissionConfig.createTable(server, (result) => {
+    //
+    //   console.log(result);
+    // });
     console.log('Started the plot device on port ' + server.info.port);
   });
 });

@@ -15,48 +15,34 @@ $(document).ready(() => {
   });
 });
 
-function onCheckboxClicked(cb, scope, path) {
+function onCheckboxClicked(cb, scope, path, method) {
   let role = $(cb).attr("id");
-  console.log(path);
   cb.checked ?
-    add(role, scope, path).then(result => {
-      console.log(result);
-      $(cb).prop("checked", !cb.checked);
-    }, err => {
-      console.error(err);
-    }) :
-    remove(role, scope, path).then(result => {
-      console.log(result);
-      $(cb).prop('checked', !cb.checked);
-    }, err => {
-      console.error(err);
-    })
+    add(role, scope, path, method) :
+    remove(role, scope, path, method);
+  $(cb).prop('checked', !cb.checked);
 }
 
-async function add(role, scope, path){
+function add(role, scope, path, method){
   scope.push(role);
-  await updateScope(path, scope, 'PUT')
+  updateScope(path, scope, method)
 }
 
-async function remove(role, scope, path){
+function remove(role, scope, path, method){
   scope.splice(scope.indexOf(role), 1);
-  await updateScope(path, scope, 'DELETE')
+  updateScope(path, scope, method)
 }
 
-async function updateScope(path, scope, method) {
-  return new Promise( (resolve, reject) => {
-    $.ajax({
-      url: '/api/users/scopes/' + scope + '/' + path,
-      type: method,
-      data: {test: 'Louis'},
-      success: function (result) {
-        successAlert('User Updated');
-        resolve(result);
-      },
-      error: function (result) {
-        errorAlert(result.responseJSON.message);
-        reject(result);
-      }
-    });
+function updateScope(path, scope, method) {
+  console.log(path, scope, method);
+  $.ajax({
+    url: '/api/users/' + scope + '/' + path + '/' + method,
+    type: 'PUT',
+    success: function (result) {
+      successAlert('Route\'s Scope Updated');
+    },
+    error: function (result) {
+      errorAlert(result.responseJSON.message);
+    }
   });
 }

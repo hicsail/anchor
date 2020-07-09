@@ -1,7 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
-const PermissionConfigTable = require('/permission-config');
+const PermissionConfigTable = require('../../../permission-config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -10,8 +10,7 @@ internals.applyRoutes = function (server, next) {
     path: '/account',
     config: {
       auth: {
-        strategy: 'session',
-        scope: PermissionConfigTable['GET/account']
+        strategy: 'session'
       }
     },
     handler: function (request, reply) {

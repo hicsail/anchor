@@ -1,6 +1,8 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
+const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
+
 
 internals.applyRoutes = function (server, next) {
 

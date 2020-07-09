@@ -5,7 +5,7 @@ const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const PermissionConfigTable = require('../../permission-config');
-const DEFAULT_ROLES = require('/server/helper/getDefaultRoles');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -886,34 +886,31 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  // server.route({
-  //   method: 'PUT',
-  //   path: '/users/scopes/{scope}/{path}',
-  //   config: {
-  //     auth: {
-  //       strategies: ['simple', 'jwt', 'session']
-  //     },
-  //     validate: {
-  //       params: {
-  //         id: Joi.string().invalid('000000000000000000000000')
-  //       }
-  //     },
-  //     pre: [{
-  //       assign: 'canChangeScope',
-  //       method: function (request, reply){
-  //
-  //         console.log(request.payload);
-  //         User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
-  //           reply(true) :
-  //           reply(Boom.conflict('Unable to promote a higher access level than your own'));
-  //       }
-  //     }]
-  //   },
-  //   handler: function (request, reply) {
-  //
-  //     PermissionConfigTable[request.params.path] = request.params.scope
-  //   }
-  // });
+  server.route({
+    method: 'PUT',
+    path: '/users/{scope}/{path}/{method}',
+    config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session']
+      },
+      pre: [{
+        assign: 'canChangeScope',
+        method: function (request, reply){
+
+          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
+            reply(true) :
+            reply(Boom.conflict('Unable to change higher scope permissions than your role'));
+        }
+      }]
+    },
+    handler: function (request, reply) {
+
+      console.log('old scope is ' + request.params.scope);
+      PermissionConfigTable[request.params.method][request.params.path] = request.params.scope;
+      console.log('new scope is ' + request.params.scope);
+      return reply(true);
+    }
+  });
 
   next();
 };
