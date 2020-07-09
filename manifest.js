@@ -172,6 +172,9 @@ const manifest = {
       plugin: './server/web/routes/users'
     },*/
     {
+      plugin: './server/web/routes/clinician',
+    },
+    {
       plugin: './server/web/routes/events'
     },
     {
@@ -228,6 +231,9 @@ const manifest = {
     }, 
     {
       plugin: './server/api/events',     
+    },
+    {
+      plugin: './server/api/clinician',     
     },      
       /*{
          plugin: 'visionary',          
