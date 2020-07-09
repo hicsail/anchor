@@ -1,4 +1,5 @@
 'use strict';
+const Assert = require('assert');
 const Config = require('../../config');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
@@ -6,9 +7,13 @@ const AnchorModel = require('../anchor/anchor-model');
 
 class Token extends AnchorModel {
 
-  static create(tokenName, userId,callback) {
+  static async create(tokenName, userId) {
 
-    const id = MongoModels.ObjectID().toString();
+    Assert.ok(tokenName, 'Missing tokenName arugment.');
+    Assert.ok(userId, 'Missing userId arugment.');    
+
+    const id = AnchorModel.ObjectID().toString();
+
     const document = {
       tokenName,
       userId,
@@ -18,20 +23,15 @@ class Token extends AnchorModel {
       active: true,
       lastUsed: null
     };
+   
+    const tokens = await this.insertOne(document);    
 
-    this.insertOne(document, (err, docs) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    return tokens[0];   
   }
 }
 
 
-Token.collection = 'tokens';
+Token.collectionName = 'tokens';
 
 
 Token.schema = Joi.object({
