@@ -1,11 +1,16 @@
 'use strict';
+const Assert = require('assert');
 const Joi = require('joi');
 const AnchorModel = require('../anchor/anchor-model');
 
 
 class Backup extends AnchorModel {
 
-  static create(backupId, zip, s3, callback, time = (new Date())) {
+  static async create(backupId, zip, s3, time = (new Date())) {
+
+    //Assert.ok(backupId, 'Missing backupId argument.');    
+    //Assert.ok(zip, 'Missing zip argument.');
+    //Assert.ok(s3, 'Missing s3 argument.');
 
     const document = {
       backupId,
@@ -14,14 +19,9 @@ class Backup extends AnchorModel {
       time
     };
 
-    this.insertOne(document, (err, docs) => {
-
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, docs[0]);
-    });
+    const docs = await this.insertOne(document);
+    
+    return docs[0];   
   }
 }
 
