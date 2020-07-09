@@ -5,6 +5,7 @@ const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
 const PermissionConfigTable = require('../../../permission-config');
+const DEFAULT_ROLES = require('/server/helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -54,7 +55,7 @@ internals.applyRoutes = function (server, next) {
           projectName: Config.get('/projectName'),
           title: 'Users',
           baseUrl: Config.get('/baseUrl'),
-          role: Config.get('/role')
+          role: DEFAULT_ROLES
         });
       });
     }
@@ -184,12 +185,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      console.log('boop');
       return reply.view('users/scopes', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
         title: 'Routing & Scopes',
-        baseUrl: Config.get('/baseUrl')
+        baseUrl: Config.get('/baseUrl'),
+        route: PermissionConfigTable,
+        role: DEFAULT_ROLES
       });
     }
   });

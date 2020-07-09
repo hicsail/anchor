@@ -5,10 +5,10 @@ const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('/server/helper/getDefaultRoles');
 
 const internals = {};
 
-const roleObject = Config.get('/role');
 
 
 internals.applyRoutes = function (server, next) {
@@ -135,7 +135,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable['GET/api/users'] || ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/users'] || DEFAULT_ROLES
       },
       validate: {
         query: {
@@ -735,10 +735,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(roleObject.map((role) => {
-
-            return role.name;
-          })))
+          role: Joi.string().valid(...(DEFAULT_ROLES))
         }
       },
       pre: [{
@@ -783,7 +780,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
-      if (request.params.role in Config.get('/role')){
+      if (request.params.role in DEFAULT_ROLES){
         reply(user);
       }
 
@@ -820,10 +817,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(roleObject.map((role) => {
-
-            return role.name;
-          })))
+          role: Joi.string().valid(...(DEFAULT_ROLES))
         }
       },
       pre: [{
@@ -869,7 +863,7 @@ internals.applyRoutes = function (server, next) {
 
       const user = request.pre.user;
 
-      !request.params.role in Config.get('/role') ?
+      !request.params.role in DEFAULT_ROLES ?
         reply(user) :
         delete user.roles[request.params.role];
 
@@ -891,6 +885,35 @@ internals.applyRoutes = function (server, next) {
       });
     }
   });
+
+  // server.route({
+  //   method: 'PUT',
+  //   path: '/users/scopes/{scope}/{path}',
+  //   config: {
+  //     auth: {
+  //       strategies: ['simple', 'jwt', 'session']
+  //     },
+  //     validate: {
+  //       params: {
+  //         id: Joi.string().invalid('000000000000000000000000')
+  //       }
+  //     },
+  //     pre: [{
+  //       assign: 'canChangeScope',
+  //       method: function (request, reply){
+  //
+  //         console.log(request.payload);
+  //         User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
+  //           reply(true) :
+  //           reply(Boom.conflict('Unable to promote a higher access level than your own'));
+  //       }
+  //     }]
+  //   },
+  //   handler: function (request, reply) {
+  //
+  //     PermissionConfigTable[request.params.path] = request.params.scope
+  //   }
+  // });
 
   next();
 };
