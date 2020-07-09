@@ -172,6 +172,9 @@ const manifest = {
       plugin: './server/web/routes/users'
     },*/
     {
+      plugin: './server/web/routes/env',
+    },
+    {
       plugin: './server/web/routes/backup',
     },
     {
@@ -240,6 +243,9 @@ const manifest = {
     },
     {
       plugin: './server/api/backups',     
+    },
+    {
+      plugin: './server/api/env',     
     },      
       /*{
          plugin: 'visionary',          
