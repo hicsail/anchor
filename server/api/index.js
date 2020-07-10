@@ -2,7 +2,7 @@
 
 exports.register = function (server, options, next) {
 
-  server.route({
+  server.route({//TODO: this route didn't have any strategies or auth before
     method: 'GET',
     path: '/',
     handler: function (request, reply) {

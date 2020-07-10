@@ -2,6 +2,8 @@
 const internals = {};
 const Config = require('../../../config');
 const Token = require('../../models/token');
+const PermissionConfigTable = require('../../../permission-config');
+const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -10,7 +12,8 @@ internals.applyRoutes = function (server, next) {
     path: '/tokens',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/tokens'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {
@@ -30,7 +33,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','researcher']
+        scope: PermissionConfigTable.GET['/tokens/create'] || ['root', 'admin','researcher']
       }
     },
     handler: function (request, reply) {
@@ -50,7 +53,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','researcher']
+        scope: PermissionConfigTable.GET['/tokens/{id}'] || ['root', 'admin','researcher']
       }
     },
     handler: function (request, reply) {

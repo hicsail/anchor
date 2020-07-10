@@ -14,7 +14,8 @@ internals.applyRoutes = function (server, next) {
     path: '/users',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/users'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {
@@ -34,7 +35,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['GET/roles'] || ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/roles'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {
@@ -67,7 +68,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['GET/participation'] || ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/participation'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {
@@ -87,7 +88,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['GET/users/create'] || ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/users/create'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {
@@ -107,7 +108,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['GET/change-password/{id}'] || ['root', 'admin']
+        scope: PermissionConfigTable.GET['/change-password/{id}'] || ['root', 'admin']
       },
       validate: {
         params: {
@@ -132,7 +133,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['GET/users/{id}'] || ['root', 'admin']
+        scope: PermissionConfigTable.GET['/users/{id}'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -161,7 +162,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['GET/users/clinicians/{id}'] || ['root', 'admin']
+        scope: PermissionConfigTable.GET['/users/clinicians/{id}'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -180,7 +181,8 @@ internals.applyRoutes = function (server, next) {
     path: '/scopes',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/scopes'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {

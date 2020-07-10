@@ -14,14 +14,17 @@ Composer((err, server) => {
     x.forEach((item) => {
 
       if (item.hasOwnProperty('path')){//processing routes in server
+        if (item.path.includes('templates')){
+          console.log('templates');
+        }
         const path = item.path;
         const method = item.method;
-        // console.log(path, method);
+        console.log(path, method);
         if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
-          // console.log(item.settings.auth.access[0].scope.selection);
+          console.log(item.settings.auth.access[0].scope.selection);
         }
         else {//routes don't have scope, assign default value to each route [‘root’, ‘admin’ ,’researcher’, ‘analyst’,’ clinician‘]
-          // console.log('[‘root’, ‘admin’ ,’researcher’, ‘analyst’,’ clinician‘]');
+          console.log('[‘root’, ‘admin’ ,’researcher’, ‘analyst’,’ clinician‘]');
         }
       }
     });

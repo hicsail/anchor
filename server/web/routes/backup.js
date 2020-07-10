@@ -1,6 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
+const PermissionConfigTable = require('../../../permission-config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -10,7 +11,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.GET['/backups'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {

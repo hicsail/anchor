@@ -1,7 +1,8 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-
+const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -16,7 +17,8 @@ internals.applyRoutes = function (server, next) {
     path: '/table/feedback',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.GET['/api/table/feedback'] || DEFAULT_ROLES
       },
       validate: {
         query: Joi.any()
@@ -97,7 +99,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/feedback'] || ['root', 'admin', 'researcher']
       },
       validate: {
         query: {
@@ -132,7 +134,8 @@ internals.applyRoutes = function (server, next) {
     path: '/feedback',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.POST['/api/feedback'] || DEFAULT_ROLES
       },
       validate: {
         payload: Feedback.payload
@@ -157,7 +160,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/feedback/unresolved'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {
@@ -179,7 +182,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        scope: PermissionConfigTable.PUT['/api/feedback/{id}'] || ['root','admin','researcher']
       },
       validate: {
         payload: {
@@ -219,7 +222,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/feedback/{id}'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {
@@ -246,7 +249,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin']
+        scope: PermissionConfigTable.DELETE['/api/feedback/{id}'] || ['root','admin']
       }
     },
     handler: function (request, reply) {

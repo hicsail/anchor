@@ -3,6 +3,8 @@ const internals = {};
 const Async = require('async');
 const Config = require('../../../config');
 const Event = require('../../models/event');
+const PermissionConfigTable = require('../../../permission-config');
+const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -11,7 +13,8 @@ internals.applyRoutes = function (server, next) {
     path: '/events',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/events'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {
@@ -38,7 +41,8 @@ internals.applyRoutes = function (server, next) {
     path: '/events/name/{name}',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/events/name/{name}'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {
@@ -82,7 +86,8 @@ internals.applyRoutes = function (server, next) {
     path: '/events/user/{userId}',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/events/user/{userId}'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {

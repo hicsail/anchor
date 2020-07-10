@@ -1,17 +1,22 @@
 'use strict';
 const Config = require('../../config');
 const Joi = require('joi');
-
+const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 const internals = {};
 
 
 internals.applyRoutes = function (server, next) {
 
-  server.route({
+  server.route({//TODO: this route didn't have any strategies or auth before
     method: 'POST',
     path: '/contact',
     config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.POST['/api/contact'] || DEFAULT_ROLES
+      },
       validate: {
         payload: {
           name: Joi.string().required(),

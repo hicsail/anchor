@@ -2,6 +2,7 @@
 const internals = {};
 const Config = require('../../../config');
 const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
+const PermissionConfigTable = require('../../../permission-config');
 
 
 internals.applyRoutes = function (server, next) {
@@ -12,7 +13,8 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         mode: 'try',
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/'] || DEFAULT_ROLES
       },
       plugins: {
         'hapi-auth-cookie': {

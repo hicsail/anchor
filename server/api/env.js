@@ -3,6 +3,8 @@ const Env = require('dotenv');
 const Fs = require('fs');
 const Joi = require('joi');
 const Path = require('path');
+const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -14,7 +16,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['admin','root']
+        scope: PermissionConfigTable.GET['/api/env'] || ['admin','root']
       }
     },
     handler: function (request, reply) {
@@ -29,7 +31,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['admin','root']
+        scope: PermissionConfigTable.GET['/api/env/{name}'] || ['admin','root']
       }
     },
     handler: function (request, reply) {
@@ -44,7 +46,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['admin','root']
+        scope: PermissionConfigTable.POST['/api/env'] || ['admin','root']
       },
       validate: {
         payload: Joi.object()

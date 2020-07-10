@@ -1,7 +1,8 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-
+const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -16,7 +17,8 @@ internals.applyRoutes = function (server, next) {
     path: '/table/sessions',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.GET['/api/table/sessions'] || DEFAULT_ROLES
       },
       validate: {
         query: Joi.any()
@@ -97,7 +99,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/sessions'] || ['root', 'admin', 'researcher']
       },
       validate: {
         query: {
@@ -133,7 +135,8 @@ internals.applyRoutes = function (server, next) {
     path: '/sessions/my',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.GET['/api/sessions/my'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {
@@ -162,7 +165,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        scope: PermissionConfigTable.GET['/api/sessions/{id}'] || ['root','admin','researcher']
       }
     },
     handler: function (request, reply) {
@@ -187,7 +190,8 @@ internals.applyRoutes = function (server, next) {
     path: '/sessions/my/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.DELETE['/api/sessions/my/{id}'] || DEFAULT_ROLES
       },
       pre: [{
         assign: 'current',
@@ -236,7 +240,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin']
+        scope: PermissionConfigTable.DELETE['/api/sessions/{id}'] || ['root','admin']
       }
     },
     handler: function (request, reply) {

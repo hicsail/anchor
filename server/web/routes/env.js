@@ -2,6 +2,7 @@
 const internals = {};
 const Config = require('../../../config');
 const Env = require('dotenv');
+const PermissionConfigTable = require('../../../permission-config');
 
 internals.applyRoutes = function (server, next) {
 
@@ -11,7 +12,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.GET['/env'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {

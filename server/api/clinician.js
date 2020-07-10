@@ -5,7 +5,8 @@ const MongoModels = require('hicsail-mongo-models');
 const Joi = require('joi');
 
 const internals = {};
-
+const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -17,7 +18,8 @@ internals.applyRoutes = function (server, next) {
     path: '/table/clinicians',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.GET['/api/table/clinicians'] || DEFAULT_ROLES
       },
       validate: {
         query: Joi.any()
@@ -61,7 +63,8 @@ internals.applyRoutes = function (server, next) {
     path: '/table/clinicians/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.GET['/api/table/clinicians/{id}'] || DEFAULT_ROLES
       },
       validate: {
         query: Joi.any()
@@ -105,7 +108,8 @@ internals.applyRoutes = function (server, next) {
     path: '/select2/clinicians',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.GET['/api/select2/clinicians'] || DEFAULT_ROLES
       },
       validate: {
         query: {
@@ -152,7 +156,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/clinicians'] || ['root', 'admin', 'researcher']
       },
       validate: {
         query: {
@@ -190,7 +194,8 @@ internals.applyRoutes = function (server, next) {
     path: '/clinicians/my',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.GET['/api/clinicians/my'] || DEFAULT_ROLES
       },
       validate: {
         query: {
@@ -230,7 +235,8 @@ internals.applyRoutes = function (server, next) {
     path: '/clinicians/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.PUT['/api/clinicians/{id}'] || DEFAULT_ROLES
       },
       pre: [
         {
@@ -293,7 +299,8 @@ internals.applyRoutes = function (server, next) {
     path: '/clinicians/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.DELETE['/api/clinicians/{id}'] || DEFAULT_ROLES
       },
       pre: [
         {
@@ -357,7 +364,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        scope: PermissionConfigTable.PUT['/api/clinicians/{userId}/{clinicianId}'] || ['root','admin','researcher']
       },
       pre: [
         {
@@ -438,7 +445,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        scope:PermissionConfigTable.DELETE['/api/clinicians/{userId}/{clinicianId}'] || ['root','admin','researcher']
       },
       pre: [
         {

@@ -17,27 +17,25 @@ $(document).ready(() => {
 
 function onCheckboxClicked(cb, scope, path, method) {
   let role = $(cb).attr("id");
-  cb.checked ?
-    add(role, scope, path, method) :
-    remove(role, scope, path, method);
-  $(cb).prop('checked', !cb.checked);
+  if (cb.checked) {
+    updateScope(path, role, method);
+    $(cb).prop('checked', true);
+  }
+  else {
+    updateScope(path, role, method);
+    $(cb).prop('checked', false);
+  }
 }
 
-function add(role, scope, path, method){
-  scope.push(role);
-  updateScope(path, scope, method)
-}
-
-function remove(role, scope, path, method){
-  scope.splice(scope.indexOf(role), 1);
-  updateScope(path, scope, method)
-}
-
-function updateScope(path, scope, method) {
-  console.log(path, scope, method);
+function updateScope(path, role, method) {
   $.ajax({
-    url: '/api/users/' + scope + '/' + path + '/' + method,
+    url: '/api/users/scopes',
     type: 'PUT',
+    data: {
+      method: method,
+      path: path,
+      role: role
+    },
     success: function (result) {
       successAlert('Route\'s Scope Updated');
     },

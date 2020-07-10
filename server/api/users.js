@@ -172,7 +172,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable['GET/api/users/{id}'] || ['admin']
+        scope: PermissionConfigTable.GET['/api/users/{id}'] || ['admin']
       }
     },
     handler: function (request, reply) {
@@ -228,7 +228,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable['POST/api/users'] || ['root','admin','researcher']
+        scope: PermissionConfigTable.POST['/api/users'] || ['root','admin','researcher']
       },
       validate: {
         payload: User.payload
@@ -316,7 +316,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable['PUT/api/users/{id}'] || ['admin']
+        scope: PermissionConfigTable.PUT['/api/users/{id}'] || ['admin']
       },
       validate: {
         params: {
@@ -408,7 +408,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable['PUT/api/users/{id}/participation'] || ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.PUT['/api/users/{id}/participation'] || ['root', 'admin', 'researcher']
       },
       validate: {
         params: {
@@ -552,7 +552,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable['PUT/api/users/{id}/password'] || ['root','admin']
+        scope: PermissionConfigTable.PUT['/api/users/{id}/password'] || ['root','admin']
       },
       validate: {
         params: {
@@ -700,7 +700,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable['DELETE/api/users/{id}'] || ['root','admin']
+        scope: PermissionConfigTable.DELETE['/api/users/{id}'] || ['root','admin']
       },
       validate: {
         params: {
@@ -888,7 +888,7 @@ internals.applyRoutes = function (server, next) {
 
   server.route({
     method: 'PUT',
-    path: '/users/{scope}/{path}/{method}',
+    path: '/users/scopes',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
@@ -905,9 +905,13 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      console.log('old scope is ' + request.params.scope);
-      PermissionConfigTable[request.params.method][request.params.path] = request.params.scope;
-      console.log('new scope is ' + request.params.scope);
+      const pathScopeReference = PermissionConfigTable[request.payload.method][request.payload.path];
+      if (pathScopeReference.includes(request.payload.role)){
+        pathScopeReference.splice(pathScopeReference.indexOf(request.payload.role), 1);
+      }
+      else {
+        pathScopeReference.push(request.payload.role);
+      }
       return reply(true);
     }
   });

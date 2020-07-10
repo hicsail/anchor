@@ -2,6 +2,8 @@
 const internals = {};
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
+const PermissionConfigTable = require('../../../permission-config');
+const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -10,7 +12,8 @@ internals.applyRoutes = function (server, next) {
     path: '/invite',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/invite'] || DEFAULT_ROLES
       }
     },
     handler: function (request, reply) {
@@ -30,7 +33,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','clinician','researcher']
+        scope: PermissionConfigTable.GET['/invite/create'] || ['root', 'admin','clinician','researcher']
       }
     },
     handler: function (request, reply) {
@@ -50,7 +53,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root','admin']
+        scope: PermissionConfigTable.GET['/invite/edit/{id}'] || ['root','admin']
       }
     },
     handler: function (request, reply) {
@@ -78,7 +81,8 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         mode: 'try',
-        strategy: 'session'
+        strategy: 'session',
+        scope: PermissionConfigTable.GET['/invite/{id}'] || DEFAULT_ROLES
       },
       plugins: {
         'hapi-auth-cookie': {

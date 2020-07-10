@@ -5,7 +5,7 @@ module.exports = {
     '/': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/account': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/authAttempts': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/backups': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
+    '/backups': ['root', 'admin'],
     '/change-password/{id}': ['root', 'admin'],
     '/clinician': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/dashboard': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
@@ -106,7 +106,7 @@ module.exports = {
     '/api/login/token': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/signup': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/tokens': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/users': ['root','admin','researcher'],
+    '/api/users': ['root','admin','researcher']
   },
   PUT: {
     '/api/backups/{id}': ['root','admin'],

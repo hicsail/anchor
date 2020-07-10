@@ -5,6 +5,8 @@ const Config = require('../../config');
 const internals = {};
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
+const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -16,6 +18,10 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/signup',
     config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.POST['/api/signup'] || DEFAULT_ROLES
+      },
       validate: {
         payload: {
           username: Joi.string().token().lowercase().invalid('root').required(),
@@ -165,6 +171,10 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/available',
     config: {
+      auth: {
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.POST['/api/available'] || DEFAULT_ROLES
+      },
       validate: {
         payload: {
           email: Joi.string().email().lowercase().optional(),

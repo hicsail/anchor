@@ -7,7 +7,8 @@ const Exec = require('child_process').exec;
 const Fs = require('fs');
 const Joi = require('joi');
 const Path = require('path');
-
+const PermissionConfigTable = require('../../permission-config');
+const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -21,7 +22,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/table/backups'] || ['root', 'admin', 'researcher']
       },
       validate: {
         query: Joi.any()
@@ -58,7 +59,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/backups'] || ['root', 'admin', 'researcher']
       },
       validate: {
         query: {
@@ -93,7 +94,11 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/backups/internal',
     config: {
-      isInternal: true
+      isInternal: true,
+      auth: {
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.POST['/api/backups/internal'] || DEFAULT_ROLES
+      }
     },
     handler: function (request, reply) {
 
@@ -102,13 +107,13 @@ internals.applyRoutes = function (server, next) {
   });
 
 
-  server.route({
+  server.route({ //TODO: this route didn't have any strategies or auth before
     method: 'POST',
     path: '/backups',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.POST['/api/backups'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -123,7 +128,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.GET['/api/backups/refresh'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -142,7 +147,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.PUT['/api/backups/{id}'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -200,7 +205,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.DELETE['/api/backups/{id}'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
