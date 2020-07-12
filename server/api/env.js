@@ -4,7 +4,6 @@ const Fs = require('fs');
 const Joi = require('joi');
 const Path = require('path');
 const PermissionConfigTable = require('../../permission-config');
-const DEFAULT_ROLES = require('../helper/getDefaultRoles');
 
 const internals = {};
 

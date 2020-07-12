@@ -12,13 +12,12 @@ internals.applyRoutes = function (server, next) {
   const User = server.plugins['hicsail-hapi-mongo-models'].User;
 
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'GET',
     path: '/table/templates',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         query: Joi.any()
@@ -95,7 +94,7 @@ internals.applyRoutes = function (server, next) {
   });
 
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'GET',
     path: '/templates',
     config: {
@@ -132,7 +131,7 @@ internals.applyRoutes = function (server, next) {
   });
 
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'GET',
     path: '/templates/{id}',
     config: {
@@ -158,7 +157,7 @@ internals.applyRoutes = function (server, next) {
   });
 
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'POST',
     path: '/templates',
     config: {
@@ -186,7 +185,7 @@ internals.applyRoutes = function (server, next) {
   });
 
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'PUT',
     path: '/templates/{id}',
     config: {
@@ -221,7 +220,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'DELETE',
     path: '/templates/{id}',
     config: {

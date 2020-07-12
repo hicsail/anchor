@@ -21,10 +21,6 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/login',
     config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/login'] || DEFAULT_ROLES
-      },
       validate: {
         payload: {
           username: Joi.string().lowercase().required(),
@@ -130,10 +126,6 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/login/forgot',
     config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/login/forgot'] || DEFAULT_ROLES
-      },
       validate: {
         payload: {
           email: Joi.string().email().lowercase().required()
@@ -213,10 +205,6 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/login/token',
     config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/login/token'] || DEFAULT_ROLES
-      },
       validate: {
         payload: {
           token: Joi.string().required(),
@@ -310,10 +298,6 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/login/reset',
     config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/login/reset'] || DEFAULT_ROLES
-      },
       validate: {
         payload: {
           key: Joi.string().required(),

@@ -6,7 +6,7 @@ const Template = require('../../models/template');
 
 internals.applyRoutes = function (server, next) {
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'GET',
     path: '/templates',
     config: {
@@ -23,7 +23,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'GET',
     path: '/templates/create',
     config: {
@@ -40,7 +40,7 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
-  server.route({//TODO: this route doesn't exist in server.table
+  server.route({
     method: 'GET',
     path: '/templates/{id}',
     config: {

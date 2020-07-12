@@ -10,7 +10,6 @@ class PermissionConfig extends MongoModels{
     this.insertOne(doc, (err, res) => {
 
       if (err){
-        console.log('err');
         callback(err);
       }
       callback(res);

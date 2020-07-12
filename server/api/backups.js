@@ -94,11 +94,7 @@ internals.applyRoutes = function (server, next) {
     method: 'POST',
     path: '/backups/internal',
     config: {
-      isInternal: true,
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/backups/internal'] || DEFAULT_ROLES
-      }
+      isInternal: true
     },
     handler: function (request, reply) {
 
@@ -107,13 +103,13 @@ internals.applyRoutes = function (server, next) {
   });
 
 
-  server.route({ //TODO: this route didn't have any strategies or auth before
+  server.route({
     method: 'POST',
     path: '/backups',
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/backups'] || ['root', 'admin']
+        scope: ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -138,8 +134,6 @@ internals.applyRoutes = function (server, next) {
       reply(true);
     }
   });
-
-
 
   server.route({
     method: 'PUT',

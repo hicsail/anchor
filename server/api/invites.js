@@ -227,12 +227,6 @@ internals.applyRoutes = function (server, next) {
   server.route({
     method: 'PUT',
     path: '/invite/{id}/reject',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.PUT['/api/invite/{id}/reject'] || DEFAULT_ROLES
-      }
-    },
     handler: function (request, reply) {
 
       const id = request.params.id;

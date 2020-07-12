@@ -2,7 +2,6 @@
 
 module.exports = {
   GET : {
-    '/': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/account': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/authAttempts': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/backups': ['root', 'admin'],
@@ -92,19 +91,10 @@ module.exports = {
   },
   POST: {
     '/setup': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/available': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/backups': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/backups/internal': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/contact': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/events/{name}': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/env': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/feedback': ['root', 'admin'],
     '/api/invite': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/login': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/login/forgot': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/login/reset': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/login/token': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
-    '/api/signup': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/tokens': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/users': ['root','admin','researcher']
   },
@@ -114,7 +104,6 @@ module.exports = {
     '/api/clinicians/{userId}/{clinicianId}': ['root','admin','researcher'],
     '/api/feedback/{id}': ['root', 'admin', 'researcher'],
     '/api/invite/{id}': ['root', 'admin', 'researcher'],
-    '/api/invite/{id}/reject': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/tokens/{id}': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/users/my/password': ['root', 'admin', 'researcher', 'analyst', 'clinician'],
     '/api/users/{id}': ['admin'],

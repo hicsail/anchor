@@ -11,6 +11,7 @@ $('#login').click((event) => {
   $.each($('#loginForm').serializeArray(), (i, field) => {
     values[field.name] = field.value;
   });
+  console.log('CLICKED');
   $.ajax({
     type: 'POST',
     url: '/api/login',
