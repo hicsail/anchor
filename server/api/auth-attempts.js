@@ -2,7 +2,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const PermissionConfigTable = require('../../permission-config');
-const DEFAULT_ROLES = require('../helper/getDefaultRoles');
+const DefaultRoles = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -19,7 +19,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/auth-attempts'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/api/table/auth-attempts'] || DefaultRoles
       },
       validate: {
         query: Joi.any()

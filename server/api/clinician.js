@@ -6,7 +6,7 @@ const Joi = require('joi');
 
 const internals = {};
 const PermissionConfigTable = require('../../permission-config');
-const DEFAULT_ROLES = require('../helper/getDefaultRoles');
+const DefaultRoles = require('../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -19,7 +19,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/clinicians'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/api/table/clinicians'] || DefaultRoles
       },
       validate: {
         query: Joi.any()
@@ -64,7 +64,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/clinicians/{id}'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/api/table/clinicians/{id}'] || DefaultRoles
       },
       validate: {
         query: Joi.any()
@@ -109,7 +109,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/select2/clinicians'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/api/select2/clinicians'] || DefaultRoles
       },
       validate: {
         query: {
@@ -195,7 +195,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/clinicians/my'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/api/clinicians/my'] || DefaultRoles
       },
       validate: {
         query: {
@@ -236,7 +236,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.PUT['/api/clinicians/{id}'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.PUT['/api/clinicians/{id}'] || DefaultRoles
       },
       pre: [
         {
@@ -300,7 +300,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/clinicians/{id}'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.DELETE['/api/clinicians/{id}'] || DefaultRoles
       },
       pre: [
         {

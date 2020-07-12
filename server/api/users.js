@@ -5,7 +5,7 @@ const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const PermissionConfigTable = require('../../permission-config');
-const DEFAULT_ROLES = require('../helper/getDefaultRoles');
+const DefaultRoles = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -134,7 +134,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/users'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/users'] || DefaultRoles
       },
       validate: {
         query: {
@@ -734,7 +734,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(DEFAULT_ROLES))
+          role: Joi.string().valid(...(DefaultRoles))
         }
       },
       pre: [{
@@ -779,7 +779,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
-      if (request.params.role in DEFAULT_ROLES){
+      if (request.params.role in DefaultRoles){
         reply(user);
       }
 
@@ -816,7 +816,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(DEFAULT_ROLES))
+          role: Joi.string().valid(...(DefaultRoles))
         }
       },
       pre: [{
@@ -862,7 +862,7 @@ internals.applyRoutes = function (server, next) {
 
       const user = request.pre.user;
 
-      !request.params.role in DEFAULT_ROLES ?
+      !request.params.role in DefaultRoles ?
         reply(user) :
         delete user.roles[request.params.role];
 

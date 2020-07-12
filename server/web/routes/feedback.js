@@ -5,7 +5,7 @@ const Config = require('../../../config');
 const Feedback = require('../../models/feedback');
 const User = require('../../models/user');
 const PermissionConfigTable = require('../../../permission-config');
-const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
+const DefaultRoles = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -15,7 +15,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/feedback'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/feedback'] || DefaultRoles
       }
     },
     handler: function (request, reply) {

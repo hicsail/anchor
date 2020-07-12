@@ -3,7 +3,7 @@ const internals = {};
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
 const PermissionConfigTable = require('../../../permission-config');
-const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
+const DefaultRoles = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -13,7 +13,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/invite'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/invite'] || DefaultRoles
       }
     },
     handler: function (request, reply) {
@@ -82,7 +82,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/invite/{id}'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/invite/{id}'] || DefaultRoles
       },
       plugins: {
         'hapi-auth-cookie': {

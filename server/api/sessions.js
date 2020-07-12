@@ -2,7 +2,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const PermissionConfigTable = require('../../permission-config');
-const DEFAULT_ROLES = require('../helper/getDefaultRoles');
+const DefaultRoles = require('../helper/getDefaultRoles');
 
 const internals = {};
 
@@ -18,7 +18,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/sessions'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/api/table/sessions'] || DefaultRoles
       },
       validate: {
         query: Joi.any()
@@ -136,7 +136,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/sessions/my'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/api/sessions/my'] || DefaultRoles
       }
     },
     handler: function (request, reply) {
@@ -191,7 +191,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/sessions/my/{id}'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.DELETE['/api/sessions/my/{id}'] || DefaultRoles
       },
       pre: [{
         assign: 'current',

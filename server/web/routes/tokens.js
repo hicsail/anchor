@@ -3,7 +3,7 @@ const internals = {};
 const Config = require('../../../config');
 const Token = require('../../models/token');
 const PermissionConfigTable = require('../../../permission-config');
-const DEFAULT_ROLES = require('../../helper/getDefaultRoles');
+const DefaultRoles = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -13,7 +13,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/tokens'] || DEFAULT_ROLES
+        scope: PermissionConfigTable.GET['/tokens'] || DefaultRoles
       }
     },
     handler: function (request, reply) {
