@@ -6,6 +6,7 @@ const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const PermissionConfigTable = require('../../permission-config');
 const DefaultRoles = require('../helper/getDefaultRoles');
+const fs = require('fs');
 
 const internals = {};
 
@@ -904,32 +905,60 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      const x = server.table()[0].table;
-      x.forEach((item) => {
-
-        if (item.hasOwnProperty('path')){//processing routes in server
-          if (item.path.includes('templates')){
-            console.log('templates');
-          }
-          const path = item.path;
-          const method = item.method;
-          if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
-            // console.log(item.settings.auth.access[0].scope.selection);
-          }
-          else {//routes don't have scope, assign default value to each route [‘root’, ‘admin’ ,’researcher’, ‘analyst’,’ clinician‘]
-            // console.log('[‘root’, ‘admin’ ,’researcher’, ‘analyst’,’ clinician‘]');
-          }
-        }
-      });
+      // const x = server.table()[0].table;
+      // x.forEach((item) => {
+      //
+      //   if (item.hasOwnProperty('path')){//processing routes in server
+      //     if (item.path.includes('templates')){
+      //       console.log('templates');
+      //     }
+      //     const path = item.path;
+      //     const method = item.method;
+      //     if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
+      //       // console.log(item.settings.auth.access[0].scope.selection);
+      //     }
+      //     else {//routes don't have scope, assign default value to each route [‘root’, ‘admin’ ,’researcher’, ‘analyst’,’ clinician‘]
+      //       // console.log('[‘root’, ‘admin’ ,’researcher’, ‘analyst’,’ clinician‘]');
+      //     }
+      //   }
+      // });
       // PermissionConfig.createTable(server, (result) => {
       //   console.log(result);
       // });
+
+      //update scope of route
       const pathScopeReference = PermissionConfigTable[request.payload.method][request.payload.path];
       if (pathScopeReference.includes(request.payload.role)){
         pathScopeReference.splice(pathScopeReference.indexOf(request.payload.role), 1);
       }
       else {
         pathScopeReference.push(request.payload.role);
+      }
+
+      const methodPath = request.payload.method + request.payload.path;
+      const data = {
+        [methodPath]: pathScopeReference
+      };
+      console.log(methodPath);
+      const configuredRoute = JSON.stringify(data, null, 2);
+
+      try {
+        if (fs.existsSync('test.json')){
+          const i = require('../../test.json');
+          if (i.hasOwnProperty(methodPath)){
+          }
+          else {
+            fs.writeFileSync('test.json', configuredRoute, { flag: 'a+' });
+          }
+        }
+        else {
+          fs.writeFileSync('test.json', configuredRoute, { flag: 'wx' }); //fails if the path exists
+        }
+      } catch (err){
+        if (err) {
+          console.error(err);
+          throw err;
+        }
       }
       return reply(true);
     }
