@@ -1,7 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
-const PermissionConfigTable = require('../../../permission-config');
+const PermissionConfigTable = require('../../../permission-config.json');
 const DefaultRoles = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {

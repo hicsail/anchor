@@ -1,6 +1,6 @@
 'use strict';
 const Boom = require('boom');
-const PermissionConfigTable = require('../../permission-config');
+const PermissionConfigTable = require('../../permission-config.json');
 const DefaultRoles = require('../helper/getDefaultRoles');
 
 const internals = {};

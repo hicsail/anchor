@@ -3,7 +3,7 @@ const Async = require('async');
 const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
-const PermissionConfigTable = require('../../permission-config');
+const PermissionConfigTable = require('../../permission-config.json');
 const DefaultRoles = require('../helper/getDefaultRoles');
 
 const internals = {};

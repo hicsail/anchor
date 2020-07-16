@@ -5,7 +5,7 @@ const User = require('../../models/user');
 const Config = require('../../../config');
 const Boom = require('boom');
 const PasswordComplexity = require('joi-password-complexity');
-const PermissionConfigTable = require('../../../permission-config');
+const PermissionConfigTable = require('../../../permission-config.json');
 const DefaultRoles = require('../../helper/getDefaultRoles');
 
 const internals = {};

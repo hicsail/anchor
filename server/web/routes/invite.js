@@ -2,7 +2,7 @@
 const internals = {};
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
-const PermissionConfigTable = require('../../../permission-config');
+const PermissionConfigTable = require('../../../permission-config.json');
 const DefaultRoles = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {

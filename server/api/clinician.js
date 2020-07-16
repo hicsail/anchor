@@ -5,7 +5,7 @@ const MongoModels = require('hicsail-mongo-models');
 const Joi = require('joi');
 
 const internals = {};
-const PermissionConfigTable = require('../../permission-config');
+const PermissionConfigTable = require('../../permission-config.json');
 const DefaultRoles = require('../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {

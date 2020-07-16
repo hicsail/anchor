@@ -1,5 +1,6 @@
 'use strict';
 const Composer = require('./index');
+const InitPC = require('./server/helper/initPermissionConfig');
 
 Composer((err, server) => {
 
@@ -9,6 +10,7 @@ Composer((err, server) => {
 
   server.start(() => {
 
+    InitPC(server);
     console.log('Started the plot device on port ' + server.info.port);
   });
 });

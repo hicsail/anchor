@@ -7,7 +7,7 @@ const Exec = require('child_process').exec;
 const Fs = require('fs');
 const Joi = require('joi');
 const Path = require('path');
-const PermissionConfigTable = require('../../permission-config');
+const PermissionConfigTable = require('../../permission-config.json');
 
 const internals = {};
 
