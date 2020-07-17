@@ -6,14 +6,13 @@ const DefaultRoles = require('./getDefaultRoles');
 module.exports = (server) => {
 
   try {
-
     const data = {};
     const x = server.table()[0].table;
     x.forEach((item) => {
 
       if (item.hasOwnProperty('path')){//processing routes in server
         const path = item.path;
-        const method = item.method;
+        const method = item.method.toUpperCase();
         if (!data.hasOwnProperty(method)){
           data[method] = {};
         }

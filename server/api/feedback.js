@@ -1,8 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('../helper/getDefaultRoles');
+const ScopeArray = require('../helpers/getScopes');
 
 const internals = {};
 
@@ -18,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/feedback'] || DefaultRoles
+        scope: ScopeArray('/api/table/feedback', 'GET')
       },
       validate: {
         query: Joi.any()
@@ -99,7 +98,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/feedback'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/feedback', 'GET', ['root', 'admin', 'researcher'])
       },
       validate: {
         query: {
@@ -135,7 +134,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/feedback'] || DefaultRoles
+        scope: ScopeArray('/api/feedback', 'POST')
       },
       validate: {
         payload: Feedback.payload
@@ -160,7 +159,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/feedback/unresolved'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/feedback/unresolved', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -182,7 +181,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.PUT['/api/feedback/{id}'] || ['root','admin','researcher']
+        scope: ScopeArray('/api/feedback/{id}', 'PUT', ['root','admin','researcher'])
       },
       validate: {
         payload: {
@@ -222,7 +221,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/feedback/{id}'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/feedback/{id}', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -249,7 +248,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/feedback/{id}'] || ['root','admin']
+        scope: ScopeArray('/api/feedback/{id}', 'DELETE', ['root','admin'])
       }
     },
     handler: function (request, reply) {

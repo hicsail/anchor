@@ -1,8 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('../helper/getDefaultRoles');
+const ScopeArray = require('../helpers/getScopes');
 
 const internals = {};
 
@@ -19,7 +18,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/auth-attempts'] || DefaultRoles
+        scope: ScopeArray('/api/table/auth-attempts', 'GET')
       },
       validate: {
         query: Joi.any()
@@ -85,7 +84,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/auth-attempts'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/auth-attempts', 'GET', ['root', 'admin', 'researcher'])
       },
       validate: {
         query: {
@@ -121,7 +120,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/auth-attempts/{id}'] || ['admin']
+        scope: ScopeArray('/api/auth-attempts/{id}', 'GET', ['admin'])
       }
     },
     handler: function (request, reply) {
@@ -148,7 +147,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/auth-attempts/{id}'] || ['root','admin']
+        scope: ScopeArray('/api/auth-attempts/{id}', 'DELETE', ['root','admin'])
       }
     },
     handler: function (request, reply) {

@@ -4,8 +4,9 @@ const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
+const ScopeArray = require('../../helpers/getScopes');
+const DefaultRoles = require('../../helpers/getDefaultRoles');
 const PermissionConfigTable = require('../../../permission-config.json');
-const DefaultRoles = require('../../helper/getDefaultRoles');
 
 internals.applyRoutes = function (server, next) {
 
@@ -15,7 +16,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/users'] || DefaultRoles
+        scope: ScopeArray('/users', 'GET')
       }
     },
     handler: function (request, reply) {
@@ -35,7 +36,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/roles'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/roles', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -68,7 +69,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/participation'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/participation', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -88,7 +89,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/users/create'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/users/create', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -108,7 +109,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/change-password/{id}'] || ['root', 'admin']
+        scope: ScopeArray('/change-password/{id}', 'GET', ['root', 'admin'])
       },
       validate: {
         params: {
@@ -133,7 +134,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/users/{id}'] || ['root', 'admin']
+        scope: ScopeArray('/users/{id}', 'GET', ['root', 'admin'])
       }
     },
     handler: function (request, reply) {
@@ -162,7 +163,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/users/clinicians/{id}'] || ['root', 'admin']
+        scope: ScopeArray('/users/clinicians/{id}', 'GET', ['root', 'admin'])
       }
     },
     handler: function (request, reply) {
@@ -182,7 +183,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/scopes'] || DefaultRoles
+        scope: ScopeArray('/scopes', 'GET')
       }
     },
     handler: function (request, reply) {

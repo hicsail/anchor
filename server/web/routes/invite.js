@@ -2,8 +2,7 @@
 const internals = {};
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
-const PermissionConfigTable = require('../../../permission-config.json');
-const DefaultRoles = require('../../helper/getDefaultRoles');
+const ScopeArray = require('../../helpers/getScopes');
 
 internals.applyRoutes = function (server, next) {
 
@@ -13,7 +12,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/invite'] || DefaultRoles
+        scope: ScopeArray('/invite', 'GET')
       }
     },
     handler: function (request, reply) {
@@ -33,7 +32,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/invite/create'] || ['root', 'admin','clinician','researcher']
+        scope: ScopeArray('/invite/create', 'GET', ['root', 'admin','clinician','researcher'])
       }
     },
     handler: function (request, reply) {
@@ -53,7 +52,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/invite/edit/{id}'] || ['root','admin']
+        scope: ScopeArray('/invite/edit/[id}', 'GET', ['root','admin'])
       }
     },
     handler: function (request, reply) {
@@ -82,7 +81,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/invite/{id}'] || DefaultRoles
+        scope: ScopeArray('/invite/{id}', 'GET')
       },
       plugins: {
         'hapi-auth-cookie': {

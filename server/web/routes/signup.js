@@ -1,8 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
-const PermissionConfigTable = require('../../../permission-config.json');
-const DefaultRoles = require('../../helper/getDefaultRoles');
+const ScopeArray = require('../../helpers/getScopes');
 
 internals.applyRoutes = function (server, next) {
 
@@ -13,7 +12,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/signup'] || DefaultRoles
+        scope: ScopeArray('/signup', 'GET')
       },
       plugins: {
         'hapi-auth-cookie': {

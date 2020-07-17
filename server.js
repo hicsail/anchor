@@ -1,6 +1,6 @@
 'use strict';
 const Composer = require('./index');
-const InitPC = require('./server/helper/initPermissionConfig');
+const InitPC = require('./server/helpers/initPermissionConfig');
 
 Composer((err, server) => {
 

@@ -1,8 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
-const PermissionConfigTable = require('../../../permission-config.json');
-const DefaultRoles = require('../../helper/getDefaultRoles');
+const ScopeArray = require('../../helpers/getScopes');
 
 internals.applyRoutes = function (server, next) {
 
@@ -12,7 +11,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/users'] || DefaultRoles
+        scope: ScopeArray('/account', 'GET')
       }
     },
     handler: function (request, reply) {

@@ -5,8 +5,7 @@ const User = require('../../models/user');
 const Config = require('../../../config');
 const Boom = require('boom');
 const PasswordComplexity = require('joi-password-complexity');
-const PermissionConfigTable = require('../../../permission-config.json');
-const DefaultRoles = require('../../helper/getDefaultRoles');
+const ScopeArray = require('../../helpers/getScopes');
 
 const internals = {};
 
@@ -20,7 +19,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/setup'] || DefaultRoles
+        scope: ScopeArray('/setup', 'GET')
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -54,7 +53,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.POST['/setup'] || DefaultRoles
+        scope: ScopeArray('/setup', 'POST')
       },
       validate: {
         payload: {

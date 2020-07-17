@@ -1,7 +1,6 @@
 'use strict';
 const Boom = require('boom');
-const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('../helper/getDefaultRoles');
+const ScopeArray = require('../helpers/getScopes');
 
 const internals = {};
 
@@ -18,7 +17,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/logout'] || DefaultRoles
+        scope: ScopeArray('/api/logout', 'DELETE')
       },
       plugins: {
         'hapi-auth-cookie': {

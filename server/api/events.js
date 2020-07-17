@@ -1,9 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('../helper/getDefaultRoles');
-
+const ScopeArray = require('../helpers/getScopes');
 const internals = {};
 
 
@@ -18,7 +16,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/events'] || DefaultRoles
+        scope: ScopeArray('/api/table/events', 'GET')
       },
       validate: {
         query: Joi.any()
@@ -99,7 +97,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/events'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/events', 'GET', ['root', 'admin', 'researcher'])
       },
       validate: {
         query: {
@@ -136,7 +134,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/events/{name}'] || DefaultRoles
+        scope: ScopeArray('/api/events/{name}', 'POST')
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -169,7 +167,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple','jwt','session'],
-        scope: PermissionConfigTable.GET['/events/name/{name}'] || ['root','admin','researcher']
+        scope: ScopeArray('/api/events/name/{name}', 'GET', ['root','admin','researcher'])
       }
     },
     handler: function (request, reply) {
@@ -192,7 +190,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/events/user/{userId}'] || ['root','admin','researcher']
+        scope: ScopeArray('/api/events/user/{userId}', 'GET', ['root','admin','researcher'])
       }
     },
     handler: function (request, reply) {
@@ -216,7 +214,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/events/{id}'] || ['root','admin']
+        scope: ScopeArray('/api/events/{id}', 'DELETE', ['root','admin'])
       }
     },
     handler: function (request, reply) {

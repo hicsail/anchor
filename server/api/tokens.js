@@ -1,8 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('../helper/getDefaultRoles');
+const ScopeArray = require('../helpers/getScopes');
 
 const internals = {};
 
@@ -18,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/table/tokens'] || DefaultRoles
+        scope: ScopeArray('/api/table/tokens', 'GET')
       },
       validate: {
         query: Joi.any()
@@ -103,7 +102,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/tokens'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/tokens', 'GET', ['root', 'admin', 'researcher'])
       },
       validate: {
         query: {
@@ -140,7 +139,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/tokens'] || DefaultRoles
+        scope: ScopeArray('/api/tokens', 'POST')
       },
       validate: {
         payload: Token.payload
@@ -166,7 +165,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.PUT['/api/tokens/{id}'] || DefaultRoles
+        scope: ScopeArray('/api/tokens/{id}', 'PUT')
       },
       validate: {
         payload: Token.payload
@@ -204,7 +203,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/tokens/{id}'] || ['root','admin']
+        scope: ScopeArray('/api/tokens/{id}', 'DELETE', ['root','admin'])
       }
     },
     handler: function (request, reply) {

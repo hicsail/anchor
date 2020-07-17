@@ -1,8 +1,7 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
-const PermissionConfigTable = require('../../../permission-config.json');
-const DefaultRoles = require('../../helper/getDefaultRoles');
+const ScopeArray = require('../../helpers/getScopes');
 
 internals.applyRoutes = function (server, next) {
 
@@ -15,7 +14,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/login'] || DefaultRoles
+        scope: ScopeArray('/login', 'GET')
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -46,7 +45,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/logout'] || DefaultRoles
+        scope: ScopeArray('/logout', 'GET')
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -79,7 +78,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/forgot'] || DefaultRoles
+        scope: ScopeArray('/forgot', 'GET')
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -104,7 +103,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/reset'] || DefaultRoles
+        scope: ScopeArray('/reset', 'GET')
       },
       plugins: {
         'hapi-auth-cookie': {

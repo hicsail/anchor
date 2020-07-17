@@ -4,8 +4,9 @@ const Clinician = require('../models/clinician');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
+const ScopeArray = require('../helpers/getScopes');
 const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('../helper/getDefaultRoles');
+const DefaultRoles = require('../helpers/getDefaultRoles');
 // eslint-disable-next-line hapi/hapi-capitalize-modules
 const fs = require('fs');
 
@@ -136,7 +137,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/users'] || DefaultRoles
+        scope: ScopeArray('/api/users', 'GET')
       },
       validate: {
         query: {
@@ -173,7 +174,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.GET['/api/users/{id}'] || ['admin']
+        scope: ScopeArray('/api/users/{id}', 'GET', ['admin'])
       }
     },
     handler: function (request, reply) {
@@ -229,7 +230,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.POST['/api/users'] || ['root','admin','researcher']
+        scope: ScopeArray('/api/users', 'POST', ['root','admin','researcher'])
       },
       validate: {
         payload: User.payload
@@ -317,7 +318,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.PUT['/api/users/{id}'] || ['admin']
+        scope: ScopeArray('/api/users/{id}', 'PUT', ['admin'])
       },
       validate: {
         params: {
@@ -409,7 +410,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.PUT['/api/users/{id}/participation'] || ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/users/{id}/participation', 'PUT', ['root', 'admin', 'researcher'])
       },
       validate: {
         params: {
@@ -553,7 +554,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.PUT['/api/users/{id}/password'] || ['root','admin']
+        scope: ScopeArray('/api/users/{id}/password', 'PUT', ['root','admin'])
       },
       validate: {
         params: {
@@ -701,7 +702,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: PermissionConfigTable.DELETE['/api/users/{id}'] || ['root','admin']
+        scope: ScopeArray('/api/users/{id}', 'DELETE', ['root','admin'])
       },
       validate: {
         params: {

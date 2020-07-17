@@ -2,8 +2,7 @@
 const internals = {};
 const Config = require('../../../config');
 const Token = require('../../models/token');
-const PermissionConfigTable = require('../../../permission-config.json');
-const DefaultRoles = require('../../helper/getDefaultRoles');
+const ScopeArray = require('../../helpers/getScopes');
 
 internals.applyRoutes = function (server, next) {
 
@@ -13,7 +12,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/tokens'] || DefaultRoles
+        scope: ScopeArray('/tokens', 'GET')
       }
     },
     handler: function (request, reply) {
@@ -33,7 +32,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/tokens/create'] || ['root', 'admin','researcher']
+        scope: ScopeArray('/tokens/create', 'GET', ['root', 'admin','researcher'])
       }
     },
     handler: function (request, reply) {
@@ -53,7 +52,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable.GET['/tokens/{id}'] || ['root', 'admin','researcher']
+        scope: ScopeArray('/tokens/{id}', 'GET', ['root', 'admin','researcher'])
       }
     },
     handler: function (request, reply) {
