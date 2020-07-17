@@ -52,7 +52,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/invite/edit/[id}', 'GET', ['root','admin'])
+        scope: ScopeArray('/invite/edit/{id}', 'GET', ['root','admin'])
       }
     },
     handler: function (request, reply) {

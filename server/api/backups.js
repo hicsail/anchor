@@ -123,7 +123,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/backups', 'GET', ['root', 'admin'])
+        scope: ScopeArray('/api/backups/refresh', 'GET', ['root', 'admin'])
       }
     },
     handler: function (request, reply) {

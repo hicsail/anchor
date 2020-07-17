@@ -1,6 +1,6 @@
 'use strict';
 const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('.//getDefaultRoles');
+const DefaultRoles = require('./getDefaultRoles');
 
 module.exports = (path, method, scope) => {
 
