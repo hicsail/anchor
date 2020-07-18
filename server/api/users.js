@@ -905,7 +905,11 @@ internals.applyRoutes = function (server, next) {
         }
       }]
     },
-    handler: function (request, reply) {
+    handler: function (request, reply) {//TODO: write the corresponding checks update the RouteScope table with the corresponding changes.
+      // first you have to look up the table by method and path of routes to see if it already exists in the
+      // table, if so you should update the already existing document by calling the right mongo method.
+      //   if it doesn't exist you should create a new document in the collection by calling insert method.
+
 
       //update scope of route
       const pathScopeReference = PermissionConfigTable[request.payload.method][request.payload.path];
