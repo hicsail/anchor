@@ -59,6 +59,17 @@ AuthAttempt.schema = Joi.object({
   createdAt: Joi.date().default(new Date(), 'time of creation')
 });
 
+AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {  
+  create: {
+    disabled: true
+  },
+  update: {
+    disabled: true
+  }  
+});
+
+AuthAttempt.lookups = [];
+
 AuthAttempt.indexes = [
   { key: { ip: 1, username: 1 } },
   { key: { username: 1 } }

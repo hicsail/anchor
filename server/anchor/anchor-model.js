@@ -929,6 +929,36 @@ class AnchorModel {
 AnchorModel.routes = {
   auth: true,
   disabled: false,
+  getAllTable: {
+    auth: false,
+    disabled: false,
+    payload: null,
+    handler: async (request,h) => {
+      
+      const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
+      const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
+      const limit = Number(request.query.length);
+      const page = Math.ceil(Number(request.query.start) / limit) + 1;         
+
+      const model = request.pre.model;
+      const query = {};
+      //const limit = request.query.limit;
+      //const page = request.query.page;
+      const options = {
+        sort: sort
+        //sort: model.sortAdapter(request.query.sort)
+      };
+      const results =  await model.pagedLookup(query, page, limit, options, model.lookups);
+
+      return {
+        draw: request.query.draw,
+        recordsTotal: results.data.length,
+        recordsFiltered: results.items.total,
+        data: results.data        
+      };      
+    },
+    query: null
+  },
   create: {
     auth: false,
     disabled: false,
@@ -980,7 +1010,7 @@ AnchorModel.routes = {
   },
   update: {
     disabled: false,
-    payload: null,
+    payload: {},
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1052,6 +1082,10 @@ AnchorModel.routes = {
 };
 
 AnchorModel.routeMap = {
+  getAllTable: {
+    method: 'GET',
+    path: '/api/table/{collectionName}'
+  },
   create: {
     method: 'POST',
     path: '/api/{collectionName}'
@@ -1066,11 +1100,11 @@ AnchorModel.routeMap = {
   },
   update: {
     method: 'PUT',
-    path: '/api/{collectionName}'
+    path: '/api/{collectionName}/{id}'
   },
   delete: {
     method: 'DELETE',
-    path: '/api/{collectionName}'
+    path: '/api/{collectionName}/{id}'
   },
   getMy: {
     method: 'GET',

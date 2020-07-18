@@ -6,70 +6,7 @@ const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 
-const register = function (server, options) { 
-
-  server.route({
-    method: 'GET',
-    path: '/api/table/users',
-    options: {
-      auth: {
-        strategies: ['simple', 'session']
-      },
-      validate: {
-        query: Joi.any()
-      }
-    },
-    handler: async function (request, h) {
-
-      const accessLevel = User.highestRole(request.auth.credentials.user.roles);
-      const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
-      const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
-      const limit = Number(request.query.length);
-      const page = Math.ceil(Number(request.query.start) / limit) + 1;
-      let fields = request.query.fields;
-
-      const query = {
-        username: { $regex: request.query['search[value]'].toLowerCase() }
-      };
-      //no role
-      if (accessLevel === 0) {
-        query._id = request.auth.credentials.user._id;
-      }
-      //analyst
-      else if (accessLevel === 1) {
-        if (fields) {
-          fields = fields.split(' ');
-          let length = fields.length;
-          for (let i = 0; i < length; ++i) {
-            if (User.PHI().indexOf(fields[i]) !== -1) {
-
-              fields.splice(i, 1);
-              i--;
-              length--;
-            }
-          }
-          fields = fields.join(' ');
-        }
-        query.inStudy = true;
-      }
-      //clinician
-      else if (accessLevel === 2) {
-        query._id = {
-          $in: request.auth.credentials.user.roles.clinician.userAccess
-        };
-      }
-
-      const users = await User.pagedFind(query, page, limit);
-
-      return ({
-        draw: request.query.draw,
-        recordsTotal: users.data.length,
-        recordsFiltered: users.items.total,
-        data: users.data        
-      });      
-    }
-  });
-
+const register = function (server, options) {
 
   server.route({
     method: 'GET',
@@ -111,40 +48,7 @@ const register = function (server, options) {
     }
   });
 
-
-  server.route({
-    method: 'GET',
-    path: '/api/users',
-    options: {
-      auth: {
-        strategies: ['simple', 'session'],
-        scope: ['root', 'admin', 'researcher']
-      },
-      validate: {
-        query: {
-          fields: Joi.string(),
-          sort: Joi.string().default('_id'),
-          limit: Joi.number().default(20),
-          page: Joi.number().default(1)
-        }
-      }
-    },
-    handler: async function (request, h) {
-
-      const query = {};
-      const fields = request.query.fields;
-      const sort = request.query.sort;
-      const limit = request.query.limit;
-      const page = request.query.page;
-
-      const users = await User.pagedFind(query, page, limit);
-
-      return users;      
-    }
-  });
-
-
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/api/users/{id}',
     options: {
@@ -163,10 +67,10 @@ const register = function (server, options) {
 
       return user;      
     }
-  });
+  });*/
 
 
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/api/users/my',
     options: {
@@ -187,7 +91,7 @@ const register = function (server, options) {
 
       return user;       
     }
-  });
+  });*/
 
 
   server.route({

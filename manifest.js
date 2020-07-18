@@ -47,6 +47,9 @@ const manifest = {
       {
         plugin: './server/auth.js'
       },
+      {
+        plugin: './server/anchor/anchor-api'
+      },
       /*{
       plugin: './server/mailer'
     },

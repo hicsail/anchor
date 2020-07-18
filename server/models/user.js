@@ -162,6 +162,19 @@ User.payload = Joi.object({
   name: Joi.string().required()
 });
 
+User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: true,
+    payload: User.payload
+  },
+  update: {
+    disabled: true,
+    payload: User.payload
+  },
+  insertMany: {
+    payload: User.payload
+  }
+});
 
 User.indexes = [
   { key: { username: 1, unique: 1 } },

@@ -16,70 +16,6 @@ const unlink =  util.promisify(Fs.unlink);
 const register = function (server, options) {  
 
   server.route({
-    method: 'GET',
-    path: '/api/table/backups',
-    options: {
-      auth: {
-        strategies: ['simple', 'session'],
-        scope: ['root', 'admin', 'researcher']
-      },
-      validate: {
-        query: Joi.any()
-      }
-    },
-    handler: async function (request, h) {
-
-      const query = {};
-      const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
-      const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
-      const limit = Number(request.query.length);
-      const page = Math.ceil(Number(request.query.start) / limit) + 1;
-      const fields = request.query.fields;
-
-      const results  = await Backup.pagedFind(query, page, limit);
-
-      return{
-        draw: request.query.draw,
-        recordsTotal: results.data.length,
-        recordsFiltered: results.items.total,
-        data: results.data        
-      };      
-    }
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/api/backups',
-    options: {
-      auth: {
-        strategies: ['simple', 'session'],
-        scope: ['root', 'admin', 'researcher']
-      },
-      validate: {
-        query: {
-          fields: Joi.string(),
-          sort: Joi.string().default('_id'),
-          limit: Joi.number().default(20),
-          page: Joi.number().default(1)
-        }
-      }
-    },
-    handler: async function (request, h) {
-
-      const query = {};
-      const fields = request.query.fields;
-      const sort = request.query.sort;
-      const limit = request.query.limit;
-      const page = request.query.page;
-
-      const results  = await Backup.pagedFind(query, page, limit);
-
-      return results;     
-    }
-  });
-
-
-  server.route({
     method: 'POST',
     path: '/api/backups/internal',
     config: {
@@ -91,7 +27,6 @@ const register = function (server, options) {
     }
   });
 
-
   server.route({
     method: 'POST',
     path: '/api/backups',
@@ -102,7 +37,7 @@ const register = function (server, options) {
       }
     },
     handler: async function (request, h) {
-
+      
       return await backup(request, h);
     }
   });
@@ -162,7 +97,7 @@ const register = function (server, options) {
       }
     },
     handler: async function (request, h) {
-
+      
       const backup = await Backup.findById(request.params.id);
 
       if (!backup) {

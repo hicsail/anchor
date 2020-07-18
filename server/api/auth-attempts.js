@@ -6,7 +6,7 @@ const AuthAttempt = require('../models/auth-attempt');
 
 const register = function (server, options) {
 
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/api/table/auth-attempts',
     options: {
@@ -63,9 +63,9 @@ const register = function (server, options) {
           data: authAttempts.data          
       })     
     }
-  });
+  });*/
 
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/api/auth-attempts',
     options: {
@@ -95,9 +95,9 @@ const register = function (server, options) {
 
       return authAttempts;      
     }
-  });
+  });*/
 
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/api/auth-attempts/{id}',
     options: {
@@ -116,10 +116,10 @@ const register = function (server, options) {
 
       return authAttempt;      
     }
-  });
+  });*/
 
 
-  server.route({
+  /*server.route({
     method: 'DELETE',
     path: '/api/auth-attempts/{id}',    
     options: {
@@ -138,7 +138,7 @@ const register = function (server, options) {
 
       return ({ message: 'Success.' });      
     }
-  });  
+  });*/  
 };
 
 module.exports = {

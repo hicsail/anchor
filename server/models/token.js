@@ -4,19 +4,20 @@ const Config = require('../../config');
 const Joi = require('joi');
 const JWT = require('jsonwebtoken');
 const AnchorModel = require('../anchor/anchor-model');
+const Hoek = require('hoek');
 
 class Token extends AnchorModel {
 
-  static async create(tokenName, userId) {
+  static async create(doc) {
 
-    Assert.ok(tokenName, 'Missing tokenName arugment.');
-    Assert.ok(userId, 'Missing userId arugment.');    
+    Assert.ok(doc.tokenName, 'Missing tokenName arugment.');
+    Assert.ok(doc.userId, 'Missing userId arugment.');    
 
     const id = AnchorModel.ObjectID().toString();
 
     const document = {
-      tokenName,
-      userId,
+      tokenName: doc.tokenName,
+      userId: doc.userId,
       token: JWT.sign(id,Config.get('/authSecret')),
       tokenId: id,
       time: new Date(),
@@ -44,10 +45,28 @@ Token.schema = Joi.object({
   lastUsed: Joi.date().required()
 });
 
-Token.payload = Joi.object({
-  tokenName: Joi.string().required(),
-  active: Joi.boolean().default(true)
+Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {   
+  create: {
+    payload: {      
+      tokenName: Joi.string().required(),
+      active: Joi.boolean().default(true)   
+    } 
+  },
+  update: {
+    payload: {      
+      tokenName: Joi.string().required(),
+      active: Joi.boolean().default(true)   
+    }    
+  }   
 });
+
+Token.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: false               
+}]; 
 
 
 Token.indexes = [

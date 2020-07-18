@@ -3,6 +3,8 @@ const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
 const User = require('./user');
+const Hoek = require('hoek');
+
 
 class Invite extends AnchorModel {
 
@@ -41,11 +43,26 @@ Invite.schema = Joi.object({
   time: Joi.date().required()
 });
 
-Invite.payload = Joi.object({
-  email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required(),
-  description: Joi.string().optional()
+Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {   
+  create: {
+    disabled: true
+  },
+  update: {
+    payload: {
+      email: Joi.string().email().lowercase().required(),
+      name: Joi.string().required(),
+      description: Joi.string().optional()
+    }    
+  }   
 });
+
+Invite.lookups = [{
+  from: User,
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: false               
+}];  
 
 
 Invite.indexes = [

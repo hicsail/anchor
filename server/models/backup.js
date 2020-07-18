@@ -2,7 +2,7 @@
 const Assert = require('assert');
 const Joi = require('joi');
 const AnchorModel = require('../anchor/anchor-model');
-
+const Hoek = require('hoek');
 
 class Backup extends AnchorModel {
 
@@ -37,11 +37,23 @@ Backup.schema = Joi.object({
   time: Joi.date().required()
 });
 
+Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {  
+  create: {
+    disabled: true
+  },
+  update: {
+    disabled: true
+  },
+  delete: {
+    disabled: true
+  }   
+});
 
 Backup.indexes = [
   { key: { backupId: 1 } },
   { key: { time: 1 } }
 ];
 
+Backup.lookups = [];
 
 module.exports = Backup;

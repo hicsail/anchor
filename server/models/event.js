@@ -2,7 +2,7 @@
 const Joi = require('joi');
 const Assert = require('assert');
 const AnchorModel = require('../anchor/anchor-model');
-
+const Hoek = require('hoek');
 
 class Event extends AnchorModel {
 
@@ -38,6 +38,19 @@ Event.payload = Joi.object({
   name: Joi.string().required()
 });
 
+Event.routes = Hoek.applyToDefaults(AnchorModel.routes, {   
+  delete: {
+    disabled: true
+  }   
+});
+
+Event.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: true                
+}];  
 
 Event.indexes = [
   { key: { name: 1 } },

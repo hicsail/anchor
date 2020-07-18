@@ -82,6 +82,13 @@ Session.schema = Joi.object({
   os: Joi.string().required()
 });
 
+Session.lookups = [{
+  from: require('./user'),
+  local: 'userId',
+  foreign: '_id',
+  as: 'user',
+  one: false               
+}]; 
 
 Session.indexes = [
   { key: { userId: 1, application: 1 } }

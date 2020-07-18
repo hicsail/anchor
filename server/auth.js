@@ -40,7 +40,7 @@ const register = function (server, options) {
     }
   });
 
-  /*server.auth.strategy('jwt', 'jwt', {
+  server.auth.strategy('jwt', 'jwt', {
     key: Config.get('/authSecret'),
     verifyOptions: { algorithms: ['HS256'] },
     validate: async function (decoded, request) {
@@ -67,7 +67,7 @@ const register = function (server, options) {
 
       return { credentials, isValid: true };      
     }
-  });*/
+  });
 
 
   server.auth.strategy('session', 'cookie', {
