@@ -5,8 +5,19 @@ const DefaultRoles = require('../helpers/getDefaultRoles');
 
 class RouteScope extends MongoModels{ //TODO: write the corresponding methods for the RouteScope model
 
-  static update(data){//update the routeScope collection in the database
+  static updateScope(path, method, newScope) {//update the routeScope collection in the database
 
+    const condition = {
+      path,
+      method
+    };
+    this.updateOne(condition, { scope: newScope }, (err, result) => {
+
+      if (err){
+        throw err;
+      }
+      return result;
+    });
   }
 
   static delete(){//delete the routeScope collection in the database
@@ -15,26 +26,55 @@ class RouteScope extends MongoModels{ //TODO: write the corresponding methods fo
 
   static findByPath(path){//returns an array of object routes with the specified path along with its respective method and scope
 
+    const condition = {
+      path
+    };
+    this.find(condition, (err, routes) => {
+
+      if (err){
+        throw err;
+      }
+      return routes;
+    });
   }
 
   static findByMethod(method){//returns an array of object routes with the specified method along with its respective path and scope
 
-  }
-
-  static findByPathAndMethod(path, method){//returns the scope of the specified path and method.
-
-  }
-
-  static create(server, callback){//create a fresh new collection in the database
-
-    const doc = {
+    const condition = {
+      method
     };
-    this.insertOne(doc, (err, res) => {
+    this.find(condition, (err, routes) => {
+
+      if (err){
+        throw err;
+      }
+      return routes;
+    });
+  }
+
+  static findByPathAndMethod(path, method, callback) {//returns the scope of the specified path and method.
+
+    const condition = {
+      path,
+      method
+    };
+    this.findOne(condition, (err, route) => {
 
       if (err){
         callback(err);
       }
-      callback(res);
+      callback(route);
+    });
+  }
+
+  static insert(routeData) {//create a fresh new collection in the database
+
+    return this.insertOne(routeData, (err, result) => {
+
+      if (err) {
+        throw err;
+      }
+      return result;
     });
   }
 }

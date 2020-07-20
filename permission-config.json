@@ -152,11 +152,11 @@
       "root"
     ],
     "/": [
-      "analyst",
       "clinician",
-      "researcher",
+      "root",
       "admin",
-      "root"
+      "researcher",
+      "analyst"
     ],
     "/api/auth-attempts": [
       "root",

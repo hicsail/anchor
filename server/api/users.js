@@ -1,4 +1,5 @@
 'use strict';
+const Async = require('async');
 const Boom = require('boom');
 const Clinician = require('../models/clinician');
 const Config = require('../../config');
@@ -7,6 +8,7 @@ const PasswordComplexity = require('joi-password-complexity');
 const ScopeArray = require('../helpers/getScopes');
 const PermissionConfigTable = require('../../permission-config.json');
 const DefaultRoles = require('../helpers/getDefaultRoles');
+const RouteScope = require('../models/route-scope');
 // eslint-disable-next-line hapi/hapi-capitalize-modules
 const fs = require('fs');
 
@@ -897,7 +899,7 @@ internals.applyRoutes = function (server, next) {
       },
       pre: [{
         assign: 'canChangeScope',
-        method: function (request, reply){
+        method: function (request, reply) {
 
           User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
             reply(true) :
@@ -910,43 +912,66 @@ internals.applyRoutes = function (server, next) {
       // table, if so you should update the already existing document by calling the right mongo method.
       //   if it doesn't exist you should create a new document in the collection by calling insert method.
 
-
       //update scope of route
       const pathScopeReference = PermissionConfigTable[request.payload.method][request.payload.path];
-      if (pathScopeReference.includes(request.payload.role)){
+      if (pathScopeReference.includes(request.payload.role)) {
         pathScopeReference.splice(pathScopeReference.indexOf(request.payload.role), 1);
       }
       else {
         pathScopeReference.push(request.payload.role);
       }
-      try {
-        if (fs.existsSync('permission-config.json')){
-          const file = require('../../permission-config.json');
-          if (!file.hasOwnProperty(request.payload.method)){
-            file[request.payload.method] = {};
-          }
-          file[request.payload.method][request.payload.path] = pathScopeReference;
-          fs.writeFileSync('permission-config.json', JSON.stringify(file, null, 2));
-        }
-        else {
-          const data = {
-            [request.payload.method]: {
-              [request.payload.path]: pathScopeReference
+
+      Async.auto({
+        updateRouteScopeTable: function (callback) {
+
+          RouteScope.findByPathAndMethod(request.payload.path, request.payload.method, (err, routeData) => {
+
+            if (err) {
+              throw err;
             }
-          };
-          fs.writeFileSync('permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' }); //fails if the path exists
-        }
-      }
-      catch (err){
-        if (err) {
-          console.error(err);
-          throw err;
-        }
-      }
-      return reply(true);
+            if (routeData) {
+              RouteScope.updateScope(request.payload.path, request.payload.method, pathScopeReference);
+            }
+            else {
+              const newRouteData = {
+                method: request.payload.method,
+                path: request.payload.path,
+                scope: pathScopeReference
+              };
+              RouteScope.insert(newRouteData);
+            }
+          });
+        },
+        updatePermissionConfig: ['updateRouteScopeTable', function (callback) {
+
+          try {
+            if (fs.existsSync('permission-config.json')) {
+              const file = require('../../permission-config.json');
+              if (!file.hasOwnProperty(request.payload.method)) {
+                file[request.payload.method] = {};
+              }
+              file[request.payload.method][request.payload.path] = pathScopeReference;
+              fs.writeFileSync('permission-config.json', JSON.stringify(file, null, 2));
+            }
+            else {
+              const data = {
+                [request.payload.method]: {
+                  [request.payload.path]: pathScopeReference
+                }
+              };
+              fs.writeFileSync('permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' }); //fails if the path exists
+            }
+          } catch (err) {
+            if (err) {
+              console.error(err);
+              throw err;
+            }
+          }
+          return reply(true);
+        }]
+      });
     }
   });
-
   next();
 };
 
