@@ -11,7 +11,7 @@ class RouteScope extends MongoModels{ //TODO: write the corresponding methods fo
       path,
       method
     };
-    this.updateOne(condition, { scope: newScope }, (err, result) => {
+    this.updateOne(condition, newScope, (err, result) => {
 
       if (err){
         throw err;
@@ -63,7 +63,7 @@ class RouteScope extends MongoModels{ //TODO: write the corresponding methods fo
       if (err){
         callback(err);
       }
-      callback(route);
+      callback(null, route);
     });
   }
 

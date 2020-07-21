@@ -1,18 +1,18 @@
 {
   "GET": {
     "/account": [
-      "analyst",
       "clinician",
       "researcher",
       "admin",
-      "root"
+      "root",
+      "analyst"
     ],
     "/api": [
-      "analyst",
       "clinician",
       "researcher",
       "admin",
-      "root"
+      "root",
+      "analyst"
     ],
     "/authAttempts": [
       "analyst",

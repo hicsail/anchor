@@ -9,6 +9,7 @@ const ScopeArray = require('../helpers/getScopes');
 const PermissionConfigTable = require('../../permission-config.json');
 const DefaultRoles = require('../helpers/getDefaultRoles');
 const RouteScope = require('../models/route-scope');
+const PermissionConfigFile = require('../../permission-config.json');
 // eslint-disable-next-line hapi/hapi-capitalize-modules
 const fs = require('fs');
 
@@ -913,12 +914,12 @@ internals.applyRoutes = function (server, next) {
       //   if it doesn't exist you should create a new document in the collection by calling insert method.
 
       //update scope of route
-      const pathScopeReference = PermissionConfigTable[request.payload.method][request.payload.path];
-      if (pathScopeReference.includes(request.payload.role)) {
-        pathScopeReference.splice(pathScopeReference.indexOf(request.payload.role), 1);
+      const scope = PermissionConfigTable[request.payload.method][request.payload.path];
+      if (scope.includes(request.payload.role)) {
+        scope.splice(scope.indexOf(request.payload.role), 1);
       }
       else {
-        pathScopeReference.push(request.payload.role);
+        scope.push(request.payload.role);
       }
 
       Async.auto({
@@ -927,48 +928,49 @@ internals.applyRoutes = function (server, next) {
           RouteScope.findByPathAndMethod(request.payload.path, request.payload.method, (err, routeData) => {
 
             if (err) {
-              throw err;
+              callback(err, null);
             }
+            console.log(routeData);
             if (routeData) {
-              RouteScope.updateScope(request.payload.path, request.payload.method, pathScopeReference);
+              console.log('route found!');
+              RouteScope.updateScope(request.payload.path, request.payload.method, { $set: { scope } });
+              callback(null, 'Route Scope Updated');
             }
             else {
               const newRouteData = {
                 method: request.payload.method,
                 path: request.payload.path,
-                scope: pathScopeReference
+                scope
               };
               RouteScope.insert(newRouteData);
+              callback(null, 'New Route Scope was Created in DB with updated Scopes');
             }
           });
         },
-        updatePermissionConfig: ['updateRouteScopeTable', function (callback) {
+        updatePermissionConfig: function (callback) {
 
           try {
-            if (fs.existsSync('permission-config.json')) {
-              const file = require('../../permission-config.json');
-              if (!file.hasOwnProperty(request.payload.method)) {
-                file[request.payload.method] = {};
-              }
-              file[request.payload.method][request.payload.path] = pathScopeReference;
-              fs.writeFileSync('permission-config.json', JSON.stringify(file, null, 2));
+            if (!PermissionConfigFile.hasOwnProperty(request.payload.method)) {
+              PermissionConfigFile[request.payload.method] = {};
             }
-            else {
-              const data = {
-                [request.payload.method]: {
-                  [request.payload.path]: pathScopeReference
-                }
-              };
-              fs.writeFileSync('permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' }); //fails if the path exists
-            }
-          } catch (err) {
-            if (err) {
-              console.error(err);
-              throw err;
-            }
+            PermissionConfigFile[request.payload.method][request.payload.path] = scope;
+            fs.writeFileSync('permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
+          }
+          catch (err) {
+            console.error(err);
+            callback(err);
           }
           return reply(true);
-        }]
+        }
+      }, (err, result) => {
+
+        console.log('LOUIS');
+        if (result) {
+          console.log(result);
+        }
+        return err ?
+          reply(Boom.conflict(err)) :
+          reply(true);
       });
     }
   });
