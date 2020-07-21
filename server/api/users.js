@@ -930,9 +930,7 @@ internals.applyRoutes = function (server, next) {
             if (err) {
               callback(err, null);
             }
-            console.log(routeData);
             if (routeData) {
-              console.log('route found!');
               RouteScope.updateScope(request.payload.path, request.payload.method, { $set: { scope } });
               callback(null, 'Route Scope Updated');
             }
@@ -955,20 +953,19 @@ internals.applyRoutes = function (server, next) {
             }
             PermissionConfigFile[request.payload.method][request.payload.path] = scope;
             fs.writeFileSync('permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
+            callback(null, 'Config file updated successfully');
           }
           catch (err) {
             console.error(err);
             callback(err);
           }
-          return reply(true);
         }
       }, (err, result) => {
 
-        console.log('LOUIS');
         if (result) {
           console.log(result);
         }
-        return err ?
+        err ?
           reply(Boom.conflict(err)) :
           reply(true);
       });

@@ -8,11 +8,11 @@
       "analyst"
     ],
     "/api": [
+      "analyst",
       "clinician",
       "researcher",
       "admin",
-      "root",
-      "analyst"
+      "root"
     ],
     "/authAttempts": [
       "analyst",
