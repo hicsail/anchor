@@ -5,7 +5,7 @@ const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const ScopeArray = require('../helpers/getScopes');
-const PermissionConfigTable = require('../../permission-config.json');
+const PermissionConfigTable = require('../permission-config.json');
 const DefaultRoles = require('../helpers/getDefaultRoles');
 // eslint-disable-next-line hapi/hapi-capitalize-modules
 const fs = require('fs');
@@ -920,13 +920,13 @@ internals.applyRoutes = function (server, next) {
         pathScopeReference.push(request.payload.role);
       }
       try {
-        if (fs.existsSync('permission-config.json')){
-          const file = require('../../permission-config.json');
+        if (fs.existsSync('server/permission-config.json')){
+          const file = require('../permission-config.json');
           if (!file.hasOwnProperty(request.payload.method)){
             file[request.payload.method] = {};
           }
           file[request.payload.method][request.payload.path] = pathScopeReference;
-          fs.writeFileSync('permission-config.json', JSON.stringify(file, null, 2));
+          fs.writeFileSync('server/permission-config.json', JSON.stringify(file, null, 2));          
         }
         else {
           const data = {
@@ -934,7 +934,7 @@ internals.applyRoutes = function (server, next) {
               [request.payload.path]: pathScopeReference
             }
           };
-          fs.writeFileSync('permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' }); //fails if the path exists
+          fs.writeFileSync('server/permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' });          
         }
       }
       catch (err){
