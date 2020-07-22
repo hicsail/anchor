@@ -6,7 +6,7 @@ const User = require('../../models/user');
 const Boom = require('boom');
 const ScopeArray = require('../../helpers/getScopes');
 const DefaultRoles = require('../../helpers/getDefaultRoles');
-const PermissionConfigTable = require('../../../permission-config.json');
+const PermissionConfigTable = require('../../permission-config.json');
 
 internals.applyRoutes = function (server, next) {
 

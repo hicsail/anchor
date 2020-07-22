@@ -25,7 +25,7 @@ module.exports = (server) => {
       }
     });
 
-    fs.writeFileSync('permission-config.json', JSON.stringify(data, null, 2));
+    fs.writeFileSync('server/permission-config.json', JSON.stringify(data, null, 2));
   }
   catch (err){
     console.error(err);
