@@ -34,10 +34,10 @@
     ],
     "/dashboard": [
       "analyst",
+      "root",
       "clinician",
       "researcher",
-      "admin",
-      "root"
+      "admin"
     ],
     "/docs": [
       "analyst",
@@ -145,11 +145,11 @@
       "root"
     ],
     "/users": [
-      "analyst",
-      "clinician",
       "researcher",
       "admin",
-      "root"
+      "root",
+      "analyst",
+      "clinician"
     ],
     "/": [
       "clinician",

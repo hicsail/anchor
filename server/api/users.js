@@ -921,7 +921,6 @@ internals.applyRoutes = function (server, next) {
       else {
         scope.push(request.payload.role);
       }
-
       Async.auto({
         updateRouteScopeTable: function (callback) {
 
@@ -959,12 +958,38 @@ internals.applyRoutes = function (server, next) {
             console.error(err);
             callback(err);
           }
-        }
+        },
+        checkConfigurableScope: ['updateRouteScopeTable', 'updatePermissionConfig', function (results, callback){//checks for hard coded values for the scope of the route definition
+          //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
+          // console.log(JSON.stringify(results));
+          const x = server.table()[0].table;
+          x.forEach((item) => {
+
+            if (item.hasOwnProperty('path')){//processing routes in server
+              const path = item.path;
+              const method = item.method.toUpperCase();
+              if (path === request.payload.path && method === request.payload.method){
+                console.log(item.settings.auth.access[0].scope.selection);
+                console.log(scope);
+                console.log(item.settings.auth.access[0].scope.selection === scope);
+                item.settings.auth.access[0].scope.selection === scope ? //this doesn't work because arrays can be out of order
+                  callback(null, 'Scope is configurable') :
+                  callback('Scope is not configurable');
+              }
+              // if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
+              //   data[method][path] = item.settings.auth.access[0].scope.selection;
+              // }
+              // else {//routes don't have scope, assign default value to each route
+              //   data[method][path] = DefaultRoles;
+              // }
+            }
+          });
+        }]
       }, (err, result) => {
 
-        if (result) {
-          console.log(result);
-        }
+        // if (result) {
+        //   console.log(result);
+        // }
         err ?
           reply(Boom.conflict(err)) :
           reply(true);
