@@ -962,28 +962,34 @@ internals.applyRoutes = function (server, next) {
         checkConfigurableScope: ['updateRouteScopeTable', 'updatePermissionConfig', function (results, callback){//checks for hard coded values for the scope of the route definition
           //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
           // console.log(JSON.stringify(results));
-          const x = server.table()[0].table;
-          x.forEach((item) => {
-
+          for (const item of server.table()[0].table){
             if (item.hasOwnProperty('path')){//processing routes in server
               const path = item.path;
               const method = item.method.toUpperCase();
               if (path === request.payload.path && method === request.payload.method){
                 console.log(item.settings.auth.access[0].scope.selection);
                 console.log(scope);
-                console.log(item.settings.auth.access[0].scope.selection === scope);
-                item.settings.auth.access[0].scope.selection === scope ? //this doesn't work because arrays can be out of order
-                  callback(null, 'Scope is configurable') :
-                  callback('Scope is not configurable');
+                const set = new Set();
+                scope.forEach((role) => {
+
+                  set.add(role);
+                });
+                let configurableScope = true;
+                item.settings.auth.access[0].scope.selection.some((role) => {
+
+                  console.log(set, role);
+                  if (!set.has(role)){
+                    configurableScope = false;
+                    callback('Scope is not configurable');
+                    return true;//breaking out of the some() loop
+                  }
+                });
+                if (configurableScope){
+                  return callback(null, 'Scope is configurable');
+                }
               }
-              // if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
-              //   data[method][path] = item.settings.auth.access[0].scope.selection;
-              // }
-              // else {//routes don't have scope, assign default value to each route
-              //   data[method][path] = DefaultRoles;
-              // }
             }
-          });
+          }
         }]
       }, (err, result) => {
 
