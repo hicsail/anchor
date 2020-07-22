@@ -1,8 +1,18 @@
 'use strict';
-// import * as PermissionConfigTable from '../../../../../permission-config';//importing it doesn't work for some reason
 
 $(document).ready(() => {
   $('#routeTable').DataTable({
+    scrollX: true,
+    scrollY: '500px',
+    scrollCollapse: true,
+    stateSave: true,
+    lengthChange: false,
+    dom: 'Bfrtip',
+    buttons: [
+      'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+    ]
+  });
+  $('#UnconfigurableRouteTable').DataTable({
     scrollX: true,
     scrollY: '500px',
     scrollCollapse: true,

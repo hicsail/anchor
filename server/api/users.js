@@ -967,8 +967,6 @@ internals.applyRoutes = function (server, next) {
               const path = item.path;
               const method = item.method.toUpperCase();
               if (path === request.payload.path && method === request.payload.method){
-                console.log(item.settings.auth.access[0].scope.selection);
-                console.log(scope);
                 const set = new Set();
                 scope.forEach((role) => {
 
@@ -977,7 +975,6 @@ internals.applyRoutes = function (server, next) {
                 let configurableScope = true;
                 item.settings.auth.access[0].scope.selection.some((role) => {
 
-                  console.log(set, role);
                   if (!set.has(role)){
                     configurableScope = false;
                     callback('Scope is not configurable');
@@ -993,9 +990,6 @@ internals.applyRoutes = function (server, next) {
         }]
       }, (err, result) => {
 
-        // if (result) {
-        //   console.log(result);
-        // }
         err ?
           reply(Boom.conflict(err)) :
           reply(true);
