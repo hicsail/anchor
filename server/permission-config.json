@@ -163,10 +163,10 @@
     ],
     "/": [
       "root",
-      "clinician",
       "admin",
       "analyst",
-      "researcher"
+      "researcher",
+      "clinician"
     ],
     "/api/auth-attempts": [
       "analyst",

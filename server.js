@@ -1,6 +1,6 @@
 'use strict';
 const Composer = require('./index');
-const InitPC = require('./server/helpers/initPermissionConfig');
+const InitPC = require('./server/helpers/initPermissionConfigFile');
 // eslint-disable-next-line hapi/hapi-capitalize-modules
 const fs = require('fs');
 
