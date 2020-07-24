@@ -5,6 +5,8 @@ const Config = require('../../../config');
 const Feedback = require('../../models/feedback');
 const User = require('../../models/user');
 const ScopeArray = require('../../helpers/getScopes');
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -14,7 +16,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/feedback', 'GET')
+        scope: ScopeArray('/feedback', 'GET', defaultScopes)
       }
     },
     handler: function (request, reply) {

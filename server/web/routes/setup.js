@@ -6,6 +6,8 @@ const Config = require('../../../config');
 const Boom = require('boom');
 const PasswordComplexity = require('joi-password-complexity');
 const ScopeArray = require('../../helpers/getScopes');
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('../../helpers/getRoleNames');
 
 const internals = {};
 
@@ -19,7 +21,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: ScopeArray('/setup', 'GET')
+        scope: ScopeArray('/setup', 'GET', defaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -53,7 +55,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: ScopeArray('/setup', 'POST')
+        scope: ScopeArray('/setup', 'POST', defaultScopes)
       },
       validate: {
         payload: {

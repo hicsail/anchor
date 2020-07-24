@@ -3,7 +3,8 @@ const Boom = require('boom');
 const Clinician = require('../models/clinician');
 const MongoModels = require('hicsail-mongo-models');
 const Joi = require('joi');
-
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('../helpers/getRoleNames');
 const internals = {};
 const ScopeArray = require('../helpers/getScopes');
 
@@ -18,7 +19,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/clinicians', 'GET')
+        scope: ScopeArray('/api/table/clinicians', 'GET', defaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -63,7 +64,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/clinicians/{id}', 'GET')
+        scope: ScopeArray('/api/table/clinicians/{id}', 'GET', defaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -108,7 +109,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/select2/clinicians', 'GET')
+        scope: ScopeArray('/api/select2/clinicians', 'GET', defaultScopes)
       },
       validate: {
         query: {
@@ -194,7 +195,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/clinicians/my', 'GET')
+        scope: ScopeArray('/api/clinicians/my', 'GET', defaultScopes)
       },
       validate: {
         query: {
@@ -235,7 +236,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/clinicians/{id}', 'PUT')
+        scope: ScopeArray('/api/clinicians/{id}', 'PUT', defaultScopes)
       },
       pre: [
         {
@@ -299,7 +300,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/clinicians/{id}', 'DELETE')
+        scope: ScopeArray('/api/clinicians/{id}', 'DELETE', defaultScopes)
       },
       pre: [
         {

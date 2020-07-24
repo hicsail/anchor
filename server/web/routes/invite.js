@@ -3,6 +3,8 @@ const internals = {};
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
 const ScopeArray = require('../../helpers/getScopes');
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -12,7 +14,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/invite', 'GET')
+        scope: ScopeArray('/invite', 'GET', defaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -81,7 +83,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: ScopeArray('/invite/{id}', 'GET')
+        scope: ScopeArray('/invite/{id}', 'GET', defaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {

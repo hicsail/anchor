@@ -2,6 +2,8 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const ScopeArray = require('../helpers/getScopes');
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
 
@@ -17,7 +19,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/tokens', 'GET')
+        scope: ScopeArray('/api/table/tokens', 'GET', defaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -139,7 +141,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/tokens', 'POST')
+        scope: ScopeArray('/api/tokens', 'POST', defaultScopes)
       },
       validate: {
         payload: Token.payload
@@ -165,7 +167,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/tokens/{id}', 'PUT')
+        scope: ScopeArray('/api/tokens/{id}', 'PUT', defaultScopes)
       },
       validate: {
         payload: Token.payload

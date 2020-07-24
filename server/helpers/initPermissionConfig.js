@@ -1,14 +1,14 @@
 'use strict';
 // eslint-disable-next-line hapi/hapi-capitalize-modules
 const fs = require('fs');
-const DefaultRoles = require('./getDefaultRoles');
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('./getRoleNames');
 
 module.exports = (server) => {
 
   try {
     const data = {};
-    const x = server.table()[0].table;
-    x.forEach((item) => {
+    server.table()[0].table.forEach((item) => {
 
       if (item.hasOwnProperty('path')){//processing routes in server
         const path = item.path;
@@ -20,7 +20,7 @@ module.exports = (server) => {
           data[method][path] = item.settings.auth.access[0].scope.selection;
         }
         else {//routes don't have scope, assign default value to each route
-          data[method][path] = DefaultRoles;
+          data[method][path] = defaultScopes;
         }
       }
     });

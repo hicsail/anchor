@@ -2,6 +2,8 @@
 const internals = {};
 const Config = require('../../../config');
 const ScopeArray = require('../../helpers/getScopes');
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -14,7 +16,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: ScopeArray('/login', 'GET')
+        scope: ScopeArray('/login', 'GET', defaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -45,7 +47,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: ScopeArray('/logout', 'GET')
+        scope: ScopeArray('/logout', 'GET', defaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -78,7 +80,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: ScopeArray('/forgot', 'GET')
+        scope: ScopeArray('/forgot', 'GET', defaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {
@@ -103,7 +105,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategy: 'session',
-        scope: ScopeArray('/reset', 'GET')
+        scope: ScopeArray('/reset', 'GET', defaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {

@@ -4,6 +4,8 @@ const Async = require('async');
 const Config = require('../../../config');
 const Event = require('../../models/event');
 const ScopeArray = require('../../helpers/getScopes');
+// eslint-disable-next-line hapi/hapi-capitalize-modules
+const defaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -13,7 +15,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/events', 'GET')
+        scope: ScopeArray('/events', 'GET', defaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -41,7 +43,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/events/name/{name}', 'GET')
+        scope: ScopeArray('/events/name/{name}', 'GET', defaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -86,7 +88,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/events/user/{userId}', 'GET')
+        scope: ScopeArray('/events/user/{userId}', 'GET', defaultScopes)
       }
     },
     handler: function (request, reply) {

@@ -1,18 +1,18 @@
 {
   "GET": {
     "/account": [
+      "root",
       "analyst",
-      "clinician",
-      "researcher",
       "admin",
-      "root"
+      "researcher",
+      "clinician"
     ],
     "/api": [
-      "analyst",
+      "root",
       "clinician",
-      "researcher",
+      "analyst",
       "admin",
-      "root"
+      "researcher"
     ],
     "/authAttempts": [
       "analyst",
@@ -38,7 +38,9 @@
     "/dashboard": [
       "analyst",
       "researcher",
-      "admin"
+      "admin",
+      "clinician",
+      "root"
     ],
     "/docs": [
       "analyst",
@@ -160,11 +162,11 @@
       "root"
     ],
     "/": [
-      "analyst",
+      "root",
       "clinician",
-      "researcher",
       "admin",
-      "root"
+      "analyst",
+      "researcher"
     ],
     "/api/auth-attempts": [
       "analyst",
