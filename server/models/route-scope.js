@@ -1,7 +1,7 @@
 'use strict';
 const Joi = require('joi');
 const MongoModels = require('hicsail-mongo-models');
-const DefaultRoles = require('../helpers/getDefaultRoles');
+const DefaultRoles = require('../helpers/getRoleNames');
 
 class RouteScope extends MongoModels{ //TODO: write the corresponding methods for the RouteScope model
 

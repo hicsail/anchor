@@ -2,10 +2,10 @@
   "GET": {
     "/account": [
       "clinician",
-      "researcher",
       "admin",
       "root",
-      "analyst"
+      "analyst",
+      "researcher"
     ],
     "/api": [
       "analyst",

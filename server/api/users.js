@@ -9,7 +9,7 @@ const ScopeArray = require('../helpers/getScopes');
 const PermissionConfigTable = require('../permission-config.json');
 const DefaultScopes = require('../helpers/getRoleNames');
 const RouteScope = require('../models/route-scope');
-const PermissionConfigFile = require('../../permission-config.json');
+const PermissionConfigFile = require('../permission-config.json');
 const Fs = require('fs');
 
 
@@ -949,7 +949,7 @@ internals.applyRoutes = function (server, next) {
               PermissionConfigFile[request.payload.method] = {};
             }
             PermissionConfigFile[request.payload.method][request.payload.path] = scope;
-            fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
+            Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
             callback(null, 'Config file updated successfully');
           }
           catch (err) {
