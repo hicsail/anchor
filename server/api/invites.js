@@ -4,6 +4,7 @@ const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
 const ScopeArray = require('../helpers/getScopes');
+const DefaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
 
@@ -19,7 +20,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/invite', 'GET')
+        scope: ScopeArray('/api/table/invite', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -136,7 +137,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/invite', 'POST')
+        scope: ScopeArray('/api/invite', 'POST', DefaultScopes)
       },
       validate: {
         payload: Invite.payload

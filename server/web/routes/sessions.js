@@ -2,6 +2,7 @@
 const internals = {};
 const Config = require('../../../config');
 const ScopeArray = require('../../helpers/getScopes');
+const DefaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -11,7 +12,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/sessions', 'GET')
+        scope: ScopeArray('/sessions', 'GET', DefaultScopes)
       }
     },
     handler: function (request, reply) {

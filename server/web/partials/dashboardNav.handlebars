@@ -34,9 +34,6 @@
       {{/role}}
       <a class="nav-link text-light" href="../sessions">Sessions</a>
       <a class="nav-link text-light" href="../users">Users</a>
-      {{#role user 'admin'}}
-        <a class="nav-link text-light" href="../scopes">Routing & Scopes</a>
-      {{/role}}
     </li>
   </ul>
   {{#role user 'researcher'}}
@@ -62,6 +59,7 @@
       <li class="nav-item">
         <a class="nav-link text-light" href="../backups">Backups</a>
         <a class="nav-link text-light" href="../env">Env</a>
+        <a class="nav-link text-light" href="../scopes">Routing & Scopes</a>
       </li>
     </ul>
   {{/role}}

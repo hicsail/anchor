@@ -70,7 +70,6 @@ const manifest = {
             Session: './server/models/session',
             Token: './server/models/token',
             User: './server/models/user',
-            PermissionConfig: './server/models/route-scope'
           },
           autoIndex: Config.get('/hapiMongoModels/autoIndex')
         }

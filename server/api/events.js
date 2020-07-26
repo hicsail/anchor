@@ -3,6 +3,7 @@ const Boom = require('boom');
 const Joi = require('joi');
 const ScopeArray = require('../helpers/getScopes');
 const internals = {};
+const DefaultScopes = require('../helpers/getRoleNames');
 
 
 internals.applyRoutes = function (server, next) {
@@ -16,7 +17,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/events', 'GET')
+        scope: ScopeArray('/api/table/events', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -134,7 +135,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/events/{name}', 'POST')
+        scope: ScopeArray('/api/events/{name}', 'POST', DefaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {

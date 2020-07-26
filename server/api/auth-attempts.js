@@ -2,7 +2,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const ScopeArray = require('../helpers/getScopes');
-
+const DefaultScopes = require('../helpers/getRoleNames');
 const internals = {};
 
 
@@ -18,7 +18,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/auth-attempts', 'GET')
+        scope: ScopeArray('/api/table/auth-attempts', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()

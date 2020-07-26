@@ -3,7 +3,7 @@ const Boom = require('boom');
 const Clinician = require('../models/clinician');
 const MongoModels = require('hicsail-mongo-models');
 const Joi = require('joi');
-
+const DefaultScopes = require('../helpers/getRoleNames');
 const internals = {};
 const ScopeArray = require('../helpers/getScopes');
 
@@ -18,7 +18,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/clinicians', 'GET')
+        scope: ScopeArray('/api/table/clinicians', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -63,7 +63,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/clinicians/{id}', 'GET')
+        scope: ScopeArray('/api/table/clinicians/{id}', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -108,7 +108,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/select2/clinicians', 'GET')
+        scope: ScopeArray('/api/select2/clinicians', 'GET', DefaultScopes)
       },
       validate: {
         query: {
@@ -194,7 +194,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/clinicians/my', 'GET')
+        scope: ScopeArray('/api/clinicians/my', 'GET', DefaultScopes)
       },
       validate: {
         query: {
@@ -235,7 +235,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/clinicians/{id}', 'PUT')
+        scope: ScopeArray('/api/clinicians/{id}', 'PUT', DefaultScopes)
       },
       pre: [
         {
@@ -267,8 +267,7 @@ internals.applyRoutes = function (server, next) {
       const clinician = request.pre.clinician;
       const userId = request.auth.credentials.user._id.toString();
 
-      const userAccess = Clinician.addUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
+      clinician.roles.clinician = Clinician.addUser(clinician.roles.clinician, userId);
 
 
       const update = {
@@ -299,7 +298,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/clinicians/{id}', 'DELETE')
+        scope: ScopeArray('/api/clinicians/{id}', 'DELETE', DefaultScopes)
       },
       pre: [
         {
@@ -331,8 +330,7 @@ internals.applyRoutes = function (server, next) {
       const clinician = request.pre.clinician;
       const userId = request.auth.credentials.user._id.toString();
 
-      const userAccess = Clinician.removeUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
+      clinician.roles.clinician = Clinician.removeUser(clinician.roles.clinician, userId);
 
 
       const update = {
@@ -412,8 +410,7 @@ internals.applyRoutes = function (server, next) {
       const clinician = request.pre.clinician;
       const userId = request.pre.user;
 
-      const userAccess = Clinician.addUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
+      clinician.roles.clinician = Clinician.addUser(clinician.roles.clinician, userId);
 
 
       const update = {
@@ -493,8 +490,7 @@ internals.applyRoutes = function (server, next) {
       const clinician = request.pre.clinician;
       const userId = request.pre.user;
 
-      const userAccess = Clinician.removeUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
+      clinician.roles.clinician = Clinician.removeUser(clinician.roles.clinician, userId);
 
 
       const update = {

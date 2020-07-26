@@ -6,12 +6,12 @@ const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const ScopeArray = require('../helpers/getScopes');
-const PermissionConfigTable = require('../../permission-config.json');
-const DefaultRoles = require('../helpers/getDefaultRoles');
+const PermissionConfigTable = require('../permission-config.json');
+const DefaultScopes = require('../helpers/getRoleNames');
 const RouteScope = require('../models/route-scope');
 const PermissionConfigFile = require('../../permission-config.json');
-// eslint-disable-next-line hapi/hapi-capitalize-modules
-const fs = require('fs');
+const Fs = require('fs');
+
 
 const internals = {};
 
@@ -140,7 +140,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users', 'GET')
+        scope: ScopeArray('/api/users', 'GET', DefaultScopes)
       },
       validate: {
         query: {
@@ -740,7 +740,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(DefaultRoles))
+          role: Joi.string().valid(...(DefaultScopes))
         }
       },
       pre: [{
@@ -785,7 +785,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
-      if (request.params.role in DefaultRoles){
+      if (request.params.role in DefaultScopes){
         reply(user);
       }
 
@@ -822,7 +822,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(DefaultRoles))
+          role: Joi.string().valid(...(DefaultScopes))
         }
       },
       pre: [{
@@ -868,7 +868,7 @@ internals.applyRoutes = function (server, next) {
 
       const user = request.pre.user;
 
-      !request.params.role in DefaultRoles ?
+      !request.params.role in DefaultScopes ?
         reply(user) :
         delete user.roles[request.params.role];
 
@@ -908,10 +908,8 @@ internals.applyRoutes = function (server, next) {
         }
       }]
     },
-    handler: function (request, reply) {//TODO: write the corresponding checks update the RouteScope table with the corresponding changes.
-      // first you have to look up the table by method and path of routes to see if it already exists in the
-      // table, if so you should update the already existing document by calling the right mongo method.
-      //   if it doesn't exist you should create a new document in the collection by calling insert method.
+    handler: function (request, reply) {
+
 
       //update scope of route
       const scope = PermissionConfigTable[request.payload.method][request.payload.path];
@@ -951,7 +949,7 @@ internals.applyRoutes = function (server, next) {
               PermissionConfigFile[request.payload.method] = {};
             }
             PermissionConfigFile[request.payload.method][request.payload.path] = scope;
-            fs.writeFileSync('permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
+            fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
             callback(null, 'Config file updated successfully');
           }
           catch (err) {

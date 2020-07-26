@@ -5,6 +5,7 @@ const Config = require('../../../config');
 const Feedback = require('../../models/feedback');
 const User = require('../../models/user');
 const ScopeArray = require('../../helpers/getScopes');
+const DefaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -14,7 +15,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/feedback', 'GET')
+        scope: ScopeArray('/feedback', 'GET', DefaultScopes)
       }
     },
     handler: function (request, reply) {
