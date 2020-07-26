@@ -1,8 +1,6 @@
 'use strict';
-// eslint-disable-next-line hapi/hapi-capitalize-modules
-const fs = require('fs');
-// eslint-disable-next-line hapi/hapi-capitalize-modules
-const defaultScopes = require('./getRoleNames');
+const Fs = require('fs');
+const DefaultScopes = require('./getRoleNames');
 
 module.exports = (server) => {
 
@@ -20,12 +18,12 @@ module.exports = (server) => {
           data[method][path] = item.settings.auth.access[0].scope.selection;
         }
         else {//routes don't have scope, assign default value to each route
-          data[method][path] = defaultScopes;
+          data[method][path] = DefaultScopes;
         }
       }
     });
 
-    fs.writeFileSync('server/permission-config.json', JSON.stringify(data, null, 2));
+    Fs.writeFileSync('server/permission-config.json', JSON.stringify(data, null, 2));
   }
   catch (err){
     console.error(err);

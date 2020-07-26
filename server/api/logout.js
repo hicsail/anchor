@@ -1,8 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const ScopeArray = require('../helpers/getScopes');
-// eslint-disable-next-line hapi/hapi-capitalize-modules
-const defaultScopes = require('../helpers/getRoleNames');
+const DefaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
 
@@ -19,7 +18,7 @@ internals.applyRoutes = function (server, next) {
       auth: {
         mode: 'try',
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/logout', 'DELETE', defaultScopes)
+        scope: ScopeArray('/api/logout', 'DELETE', DefaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {

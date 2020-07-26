@@ -1,5 +1,4 @@
 'use strict';
-// import * as PermissionConfigTable from '../../../../../permission-config';//importing it doesn't work for some reason
 
 $(document).ready(() => {
   $('#routeTable').DataTable({

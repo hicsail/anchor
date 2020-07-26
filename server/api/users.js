@@ -6,9 +6,8 @@ const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const ScopeArray = require('../helpers/getScopes');
 const PermissionConfigTable = require('../permission-config.json');
-const defaultScopes = require('../helpers/getRoleNames');
-// eslint-disable-next-line hapi/hapi-capitalize-modules
-const fs = require('fs');
+const DefaultScopes = require('../helpers/getRoleNames');
+const Fs = require('fs');
 
 const internals = {};
 
@@ -137,7 +136,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users', 'GET', defaultScopes)
+        scope: ScopeArray('/api/users', 'GET', DefaultScopes)
       },
       validate: {
         query: {
@@ -737,7 +736,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(defaultScopes))
+          role: Joi.string().valid(...(DefaultScopes))
         }
       },
       pre: [{
@@ -782,7 +781,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
-      if (request.params.role in defaultScopes){
+      if (request.params.role in DefaultScopes){
         reply(user);
       }
 
@@ -819,7 +818,7 @@ internals.applyRoutes = function (server, next) {
       validate: {
         params: {
           id: Joi.string().invalid('000000000000000000000000'),
-          role: Joi.string().valid(...(defaultScopes))
+          role: Joi.string().valid(...(DefaultScopes))
         }
       },
       pre: [{
@@ -865,7 +864,7 @@ internals.applyRoutes = function (server, next) {
 
       const user = request.pre.user;
 
-      !request.params.role in defaultScopes ?
+      !request.params.role in DefaultScopes ?
         reply(user) :
         delete user.roles[request.params.role];
 
@@ -917,13 +916,13 @@ internals.applyRoutes = function (server, next) {
         pathScopeReference.push(request.payload.role);
       }
       try {
-        if (fs.existsSync('server/permission-config.json')){
+        if (Fs.existsSync('server/permission-config.json')){
           const file = require('../permission-config.json');
           if (!file.hasOwnProperty(request.payload.method)){
             file[request.payload.method] = {};
           }
           file[request.payload.method][request.payload.path] = pathScopeReference;
-          fs.writeFileSync('server/permission-config.json', JSON.stringify(file, null, 2));
+          Fs.writeFileSync('server/permission-config.json', JSON.stringify(file, null, 2));
         }
         else {
           const data = {
@@ -931,7 +930,7 @@ internals.applyRoutes = function (server, next) {
               [request.payload.path]: pathScopeReference
             }
           };
-          fs.writeFileSync('server/permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' });
+          Fs.writeFileSync('server/permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' });
         }
       }
       catch (err){

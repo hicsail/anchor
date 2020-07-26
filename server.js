@@ -1,8 +1,7 @@
 'use strict';
 const Composer = require('./index');
 const InitPC = require('./server/helpers/initPermissionConfigFile');
-// eslint-disable-next-line hapi/hapi-capitalize-modules
-const fs = require('fs');
+const Fs = require('fs');
 
 Composer((err, server) => {
 
@@ -12,7 +11,7 @@ Composer((err, server) => {
 
   server.start(() => {
 
-    if (!fs.existsSync('server/permission-config.json')){
+    if (!Fs.existsSync('server/permission-config.json')){
       InitPC(server);
     }
     console.log('Started the plot device on port ' + server.info.port);
