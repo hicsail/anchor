@@ -45,29 +45,28 @@
           <div style="padding: 20px">
             <table id="UnconfigurableRouteTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
               <thead>
-              <tr>
-                <th>Path</th>
-                <th>Method</th>
-                {{#each role}}
-                  <th>{{this}}</th>
-                {{/each}}
-              </tr>
-              </thead>
-              <tbody>
-              {{#each UnconfigurableRoutes as |routeObject index|}}
                 <tr>
-                  <td>{{routeObject.path}}</td>
-                  <td>{{routeObject.method}}</td>
-                  {{#each ../../role as |r|}}
-                    <td>
-                      <label>
-                        <input class="scopeCheck" id="{{r}}" type="checkbox" disabled {{#routeHasScope routeObject.scope r}}checked{{/routeHasScope}}>
-                      </label>
-                    </td>
+                  <th>Path</th>
+                  <th>Method</th>
+                  {{#each role}}
+                    <th>{{this}}</th>
                   {{/each}}
                 </tr>
-                {{routeObject.path}}
-              {{/each}}
+              </thead>
+              <tbody>
+                {{#each UnconfigurableRoutes as |routeObject|}}
+                  <tr>
+                    <td>{{routeObject.path}}</td>
+                    <td>{{routeObject.method}}</td>
+                    {{#each ../role as |r|}}
+                      <td>
+                        <label>
+                          <input class="scopeCheck" id="{{r}}" type="checkbox" disabled {{#routeHasScope routeObject.scope r}}checked{{/routeHasScope}}>
+                        </label>
+                      </td>
+                    {{/each}}
+                  </tr>
+                {{/each}}
               </tbody>
             </table>
           </div>

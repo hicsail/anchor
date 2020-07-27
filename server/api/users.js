@@ -413,7 +413,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}/participation', 'PUT', ['root', 'admin', 'researcher'])
+        scope: ['root', 'admin', 'researcher']
       },
       validate: {
         params: {
@@ -959,7 +959,6 @@ internals.applyRoutes = function (server, next) {
         },
         checkConfigurableScope: ['updateRouteScopeTable', 'updatePermissionConfig', function (results, callback){//checks for hard coded values for the scope of the route definition
           //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
-          // console.log(JSON.stringify(results));
           for (const item of server.table()[0].table){
             if (item.hasOwnProperty('path')){//processing routes in server
               const path = item.path;
@@ -970,15 +969,18 @@ internals.applyRoutes = function (server, next) {
 
                   set.add(role);
                 });
-                let configurableScope = true;
-                item.settings.auth.access[0].scope.selection.some((role) => {
-
-                  if (!set.has(role)){
-                    configurableScope = false;
-                    callback('Scope is not configurable');
-                    return true;//breaking out of the some() loop
-                  }
-                });
+                let configurableScope = true; //TODO: May not even need CheckConfigurableScope because The unconfigurable routes will be found upon reload of page...
+                // item.settings.auth.access[0].scope.selection.some((role) => {
+                //
+                //   if (!set.has(role)){
+                //     configurableScope = false;
+                //     console.log('looking at route: ', path, method);
+                //     console.log('route\'s scope: ', item.settings.auth.access[0].scope.selection);
+                //     console.log('vs: ', scope);
+                //     callback('Scope is not configurable');
+                //     return true;//breaking out of the some() loop
+                //   }
+                // });
                 if (configurableScope){
                   return callback(null, 'Scope is configurable');
                 }

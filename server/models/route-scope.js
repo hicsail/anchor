@@ -85,7 +85,7 @@ RouteScope.schema = Joi.object({
   _id: Joi.string(),
   method: Joi.string().required().uppercase(),
   scopes: Joi.array().required().max(DefaultRoles.length).min(1),
-  path: Joi.string().required(),//TODO: tighten the schema of the path to follow its pattern
+  path: Joi.string().required(),
   date: Joi.date().required()
 });
 

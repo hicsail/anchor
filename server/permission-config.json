@@ -1,10 +1,10 @@
 {
   "GET": {
     "/account": [
-      "clinician",
       "admin",
       "root",
       "analyst",
+      "clinician",
       "researcher"
     ],
     "/api": [
@@ -675,7 +675,7 @@
     "/api/users/{id}/participation": [
       "root",
       "admin",
-      "researcher"
+      "clinician"
     ],
     "/api/users/{id}/password": [
       "root",

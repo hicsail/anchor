@@ -7,7 +7,7 @@ const Boom = require('boom');
 const ScopeArray = require('../../helpers/getScopes');
 const DefaultScopes = require('../../helpers/getRoleNames');
 const PermissionConfigTable = require('../../permission-config.json');
-const UnconfigurableRoutes = require('../../helpers/getUnconfigurableRoutes');
+const GetUnconfigurableRoutes = require('../../helpers/getUnconfigurableRoutes'); //TODO: Var name to be changed to appropriate one
 
 internals.applyRoutes = function (server, next) {
 
@@ -196,7 +196,7 @@ internals.applyRoutes = function (server, next) {
         baseUrl: Config.get('/baseUrl'),
         route: PermissionConfigTable,
         role: DefaultScopes,
-        UnconfigurableRoutes: UnconfigurableRoutes(DefaultScopes, server, PermissionConfigTable)
+        UnconfigurableRoutes: GetUnconfigurableRoutes(DefaultScopes, server, PermissionConfigTable)
       });
     }
   });

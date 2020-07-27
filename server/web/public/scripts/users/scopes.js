@@ -48,6 +48,7 @@ function updateScope(path, role, method) {
     },
     success: function (result) {
       successAlert('Route\'s Scope Updated');
+      location.reload();
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);
