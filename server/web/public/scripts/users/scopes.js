@@ -37,17 +37,17 @@ function onCheckboxClicked(cb, scope, path, method) {
   }
 }
 
-function updateScope(path, role, method) {
+function updateScope(path, scope, method) {
   $.ajax({
     url: '/api/users/scopes',
     type: 'PUT',
     data: {
       method: method,
       path: path,
-      role: role
+      scope: scope
     },
-    success: function (result) {
-      successAlert('Route\'s Scope Updated');
+    success: function (result) {// trigger the api route that compares between the config file and the server
+      //successAlert('Route\'s Scope Updated');
       location.reload();
     },
     error: function (result) {

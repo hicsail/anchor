@@ -674,8 +674,7 @@
     ],
     "/api/users/{id}/participation": [
       "root",
-      "admin",
-      "clinician"
+      "admin"
     ],
     "/api/users/{id}/password": [
       "root",

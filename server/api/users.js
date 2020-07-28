@@ -413,7 +413,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/users/{id}/participation', 'PUT', ['root', 'admin', 'researcher'])
       },
       validate: {
         params: {
@@ -912,12 +912,12 @@ internals.applyRoutes = function (server, next) {
 
 
       //update scope of route
-      const scope = PermissionConfigTable[request.payload.method][request.payload.path];
-      if (scope.includes(request.payload.role)) {
-        scope.splice(scope.indexOf(request.payload.role), 1);
+      const scopeArray = PermissionConfigTable[request.payload.method][request.payload.path];
+      if (scopeArray.includes(request.payload.scope)) {
+        scopeArray.splice(scopeArray.indexOf(request.payload.scope), 1);
       }
       else {
-        scope.push(request.payload.role);
+        scopeArray.push(request.payload.scope);
       }
       Async.auto({
         updateRouteScopeTable: function (callback) {
@@ -928,14 +928,14 @@ internals.applyRoutes = function (server, next) {
               callback(err, null);
             }
             if (routeData) {
-              RouteScope.updateScope(request.payload.path, request.payload.method, { $set: { scope } });
+              RouteScope.updateScope(request.payload.path, request.payload.method, { $set: { scope: scopeArray } });
               callback(null, 'Route Scope Updated');
             }
             else {
               const newRouteData = {
                 method: request.payload.method,
                 path: request.payload.path,
-                scope
+                scope: scopeArray
               };
               RouteScope.insert(newRouteData);
               callback(null, 'New Route Scope was Created in DB with updated Scopes');
@@ -948,7 +948,7 @@ internals.applyRoutes = function (server, next) {
             if (!PermissionConfigFile.hasOwnProperty(request.payload.method)) {
               PermissionConfigFile[request.payload.method] = {};
             }
-            PermissionConfigFile[request.payload.method][request.payload.path] = scope;
+            PermissionConfigFile[request.payload.method][request.payload.path] = scopeArray;
             Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
             callback(null, 'Config file updated successfully');
           }
@@ -956,38 +956,42 @@ internals.applyRoutes = function (server, next) {
             console.error(err);
             callback(err);
           }
-        },
-        checkConfigurableScope: ['updateRouteScopeTable', 'updatePermissionConfig', function (results, callback){//checks for hard coded values for the scope of the route definition
-          //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
-          for (const item of server.table()[0].table){
-            if (item.hasOwnProperty('path')){//processing routes in server
-              const path = item.path;
-              const method = item.method.toUpperCase();
-              if (path === request.payload.path && method === request.payload.method){
-                const set = new Set();
-                scope.forEach((role) => {
-
-                  set.add(role);
-                });
-                let configurableScope = true; //TODO: May not even need CheckConfigurableScope because The unconfigurable routes will be found upon reload of page...
-                // item.settings.auth.access[0].scope.selection.some((role) => {
-                //
-                //   if (!set.has(role)){
-                //     configurableScope = false;
-                //     console.log('looking at route: ', path, method);
-                //     console.log('route\'s scope: ', item.settings.auth.access[0].scope.selection);
-                //     console.log('vs: ', scope);
-                //     callback('Scope is not configurable');
-                //     return true;//breaking out of the some() loop
-                //   }
-                // });
-                if (configurableScope){
-                  return callback(null, 'Scope is configurable');
-                }
-              }
-            }
-          }
-        }]
+        }
+        // checkConfigurableScope: ['updateRouteScopeTable', 'updatePermissionConfig', function (results, callback){//checks for hard coded values for the scope of the route definition
+        //   //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
+        //   for (const item of server.table()[0].table){
+        //     if (item.hasOwnProperty('path')){//processing routes in server
+        //       const path = item.path;
+        //       const method = item.method.toUpperCase();
+        //       if (path === request.payload.path && method === request.payload.method){
+        //         const set = new Set();
+        //         scope.forEach((role) => {
+        //
+        //           set.add(role);
+        //         });
+        //         let configurableScope = true; //TODO: May not even need CheckConfigurableScope because The unconfigurable routes will be found upon reload of page...
+        //         //TODO: On update of route scopes, still can't distinguish the Unconfigurable routes on reload
+        //         //TODO: When unconfigurable route exist, delete from the top table and insert into the bottom table in Routes & Scopes
+        //         //TODO: Figure out the reload of the HTML page.
+        //
+        //         item.settings.auth.access[0].scope.selection.some((role) => {
+        //
+        //           if (!set.has(role)){
+        //             configurableScope = false;
+        //             console.log('looking at route: ', path, method);
+        //             console.log('route\'s scope: ', item.settings.auth.access[0].scope.selection);
+        //             console.log('vs: ', scope);
+        //             callback('Scope is not configurable');
+        //             return true;//breaking out of the some() loop
+        //           }
+        //         });
+        //         if (configurableScope){
+        //           return callback(null, 'Scope is configurable');
+        //         }
+        //       }
+        //     }
+        //   }
+        // }]
       }, (err, result) => {
 
         err ?
