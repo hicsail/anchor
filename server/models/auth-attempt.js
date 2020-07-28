@@ -14,14 +14,14 @@ class AuthAttempt extends AnchorModel {
     Assert.ok(username, 'Missing username argument.');
     Assert.ok(userAgent, 'Missing userAgent argument.');
 
-    const agentInfo = UserAgent.lookup(document.userAgent);
+    const agentInfo = UserAgent.lookup(userAgent);
     const browser = agentInfo.family;
 
-    document = new this({
+    const document = new this({
       browser,
-      ip: document.ip,
+      ip: ip,
       os: agentInfo.os.toString(),
-      username: document.username
+      username: username
     }); 
 
     const authAttempts = await this.insertOne(document);

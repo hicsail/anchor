@@ -31,7 +31,7 @@ class User extends AnchorModel {
       isActive: true,
       inStudy: true,
       username: username.toLowerCase(),
-      password: passwordHash,
+      password: passwordHash.hash,
       email: email.toLowerCase(),
       name,
       roles: {},
