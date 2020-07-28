@@ -2,67 +2,40 @@
 const Token = require('../../../server/models/token');
 const Code = require('code');
 const Config = require('../../../config');
+const Fixtures = require('../fixtures');
 const Lab = require('lab');
 
-
 const lab = exports.lab = Lab.script();
-const mongoUri = Config.get('/hapiMongoModels/mongodb/uri');
-const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
+const config = Config.get('/hapiAnchorModel/mongodb');
 
+lab.experiment('Token Model', () => {
 
-lab.experiment('Token Class Methods', () => {
+  lab.before(async () => {
 
-  lab.before((done) => {
-
-    Token.connect(mongoUri, mongoOptions, (err, db) => {
-
-      done(err);
-    });
+    await Token.connect(config.connection,config.options);
+    await Fixtures.Db.removeAllData();
   });
 
+  lab.after(async () => {
 
-  lab.after((done) => {
+    await Fixtures.Db.removeAllData();
 
-    Token.deleteMany({}, (err, count) => {
-
-      Token.disconnect();
-
-      done(err);
-    });
+    Token.disconnect();
   });
 
+  lab.test('it returns a new instance when create succeeds', async () => {
 
-  lab.test('it returns a new instance when create succeeds', (done) => {
-
-    Token.create('name', 'userID', (err, result) => {
-
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Token);
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns an error when create fails', (done) => {
-
-    const realInsertOne = Token.insertOne;
-    Token.insertOne = function () {
-
-      const args = Array.prototype.slice.call(arguments);
-      const callback = args.pop();
-
-      callback(Error('insert failed'));
+    const document = {
+      userId: '1234',
+      tokenName: 'sample token'
     };
 
-    Token.create('name', 'userID', (err, result) => {
+    const token = await Token.create(document);
 
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
+    Code.expect(token).to.be.an.instanceOf(Token);
+    Code.expect(token.userId).to.equal('1234');
+    Code.expect(token.tokenName).to.equal('sample token');
 
-      Token.insertOne = realInsertOne;
-
-      done();
-    });
   });
+
 });

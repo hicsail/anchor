@@ -2,67 +2,35 @@
 const Backup = require('../../../server/models/backup');
 const Code = require('code');
 const Config = require('../../../config');
+const Fixtures = require('../fixtures');
 const Lab = require('lab');
 
-
 const lab = exports.lab = Lab.script();
-const mongoUri = Config.get('/hapiMongoModels/mongodb/uri');
-const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
+const config = Config.get('/hapiAnchorModel/mongodb');
 
+lab.experiment('Backup Model', () => {
 
-lab.experiment('Backup Class Methods', () => {
+  lab.before(async () => {
 
-  lab.before((done) => {
-
-    Backup.connect(mongoUri, mongoOptions, (err, db) => {
-
-      done(err);
-    });
+    await Backup.connect(config.connection, config.options);
+    await Fixtures.Db.removeAllData();
   });
 
+  lab.after(async () => {
 
-  lab.after((done) => {
+    await Fixtures.Db.removeAllData();
 
-    Backup.deleteMany({}, (err, count) => {
-
-      Backup.disconnect();
-
-      done(err);
-    });
+    Backup.disconnect();
   });
 
+  lab.test('it returns a new instance when create succeeds', async () => {   
 
-  lab.test('it returns a new instance when create succeeds', (done) => {
+    const backup = await Backup.create('test', true, false);
 
-    Backup.create('backupID', true, true, (err, result) => {
+    Code.expect(backup).to.be.an.instanceOf(Backup);
+    Code.expect(backup.backupId).to.equal('test');
+    Code.expect(backup.zip).to.equal(true);
+    Code.expect(backup.s3).to.equal(false);
 
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Backup);
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns an error when create fails', (done) => {
-
-    const realInsertOne = Backup.insertOne;
-    Backup.insertOne = function () {
-
-      const args = Array.prototype.slice.call(arguments);
-      const callback = args.pop();
-
-      callback(Error('insert failed'));
-    };
-
-    Backup.create('backupID', true, true, (err, result) => {
-
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
-
-      Backup.insertOne = realInsertOne;
-
-      done();
-    });
   });
 });

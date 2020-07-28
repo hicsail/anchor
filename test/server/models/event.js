@@ -2,67 +2,32 @@
 const Event = require('../../../server/models/event');
 const Code = require('code');
 const Config = require('../../../config');
+const Fixtures = require('../fixtures');
 const Lab = require('lab');
 
 
 const lab = exports.lab = Lab.script();
-const mongoUri = Config.get('/hapiMongoModels/mongodb/uri');
-const mongoOptions = Config.get('/hapiMongoModels/mongodb/options');
+const config = Config.get('/hapiAnchorModel/mongodb');
 
+lab.experiment('Event Model', () => {
 
-lab.experiment('Event Class Methods', () => {
+  lab.before(async () => {
 
-  lab.before((done) => {
-
-    Event.connect(mongoUri, mongoOptions, (err, db) => {
-
-      done(err);
-    });
+    await Event.connect(config.connection,config.options);
+    await Fixtures.Db.removeAllData();
   });
 
+  lab.after(async () => {
 
-  lab.after((done) => {
+    await Fixtures.Db.removeAllData();
 
-    Event.deleteMany({}, (err, count) => {
-
-      Event.disconnect();
-
-      done(err);
-    });
+    Event.disconnect();
   });
 
+  lab.test('it returns a new instance when create succeeds', async () => {
 
-  lab.test('it returns a new instance when create succeeds', (done) => {
+    const event = await Event.create('eventName', 'userID');     
+    Code.expect(event).to.be.an.instanceOf(Event);   
 
-    Event.create('eventName', 'userID', (err, result) => {
-
-      Code.expect(err).to.not.exist();
-      Code.expect(result).to.be.an.instanceOf(Event);
-
-      done();
-    });
-  });
-
-
-  lab.test('it returns an error when create fails', (done) => {
-
-    const realInsertOne = Event.insertOne;
-    Event.insertOne = function () {
-
-      const args = Array.prototype.slice.call(arguments);
-      const callback = args.pop();
-
-      callback(Error('insert failed'));
-    };
-
-    Event.create('eventName', 'userID', (err, result) => {
-
-      Code.expect(err).to.be.an.object();
-      Code.expect(result).to.not.exist();
-
-      Event.insertOne = realInsertOne;
-
-      done();
-    });
-  });
+  });  
 });
