@@ -47,8 +47,10 @@ function updateScope(path, scope, method) {
       scope: scope
     },
     success: function (result) {// trigger the api route that compares between the config file and the server
-      //successAlert('Route\'s Scope Updated');
-      location.reload();
+      //TODO: Create API route for comparing the scope in the config file and in server for the specified route's scope.
+      location.reload(); //TODO: move to second ajax call on success
+      // successAlert('Route\'s Scope Updated');
+      console.log('hi');
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

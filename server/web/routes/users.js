@@ -189,14 +189,19 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
+      const unConfigRoutes = GetUnconfigurableRoutes(DefaultScopes, server, PermissionConfigTable);
+      const routes = PermissionConfigTable;
+      for (const route of unConfigRoutes){//Shows only configurable routes on the 'routeTable' table
+        delete routes[route.method][route.path];
+      }
       return reply.view('users/scopes', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
         title: 'Routing & Scopes',
         baseUrl: Config.get('/baseUrl'),
-        route: PermissionConfigTable,
+        routes,
         role: DefaultScopes,
-        UnconfigurableRoutes: GetUnconfigurableRoutes(DefaultScopes, server, PermissionConfigTable)
+        UnconfigurableRoutes: unConfigRoutes
       });
     }
   });
