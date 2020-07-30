@@ -64,7 +64,6 @@ function updateScope(path, scope, method) {
       // //TODO: Create API route for comparing the scope in the config file and in server for the specified route's scope.
       //
       // successAlert('Route\'s Scope Updated');
-      // console.log('hi');
       location.reload()
     },
     error: function (result) {

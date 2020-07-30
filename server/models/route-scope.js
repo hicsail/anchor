@@ -20,38 +20,6 @@ class RouteScope extends MongoModels{ //TODO: write the corresponding methods fo
     });
   }
 
-  static delete(){//delete the routeScope collection in the database
-
-  }
-
-  static findByPath(path){//returns an array of object routes with the specified path along with its respective method and scope
-
-    const condition = {
-      path
-    };
-    this.find(condition, (err, routes) => {
-
-      if (err){
-        throw err;
-      }
-      return routes;
-    });
-  }
-
-  static findByMethod(method){//returns an array of object routes with the specified method along with its respective path and scope
-
-    const condition = {
-      method
-    };
-    this.find(condition, (err, routes) => {
-
-      if (err){
-        throw err;
-      }
-      return routes;
-    });
-  }
-
   static findByPathAndMethod(path, method, callback) {//returns the scope of the specified path and method.
 
     const condition = {
@@ -67,7 +35,7 @@ class RouteScope extends MongoModels{ //TODO: write the corresponding methods fo
     });
   }
 
-  static insert(routeData) {//create a fresh new collection in the database
+  static insert(routeData) {//create a new document in the database containing route scope details
 
     return this.insertOne(routeData, (err, result) => {
 
