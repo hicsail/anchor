@@ -431,6 +431,13 @@
       "researcher",
       "admin",
       "root"
+    ],
+    "/api/users/scopeCheck": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
     ]
   },
   "DELETE": {
@@ -681,11 +688,11 @@
       "admin"
     ],
     "/api/users/{role}/{id}": [
-      "analyst",
       "clinician",
       "researcher",
       "admin",
-      "root"
+      "root",
+      "analyst"
     ]
   }
 }

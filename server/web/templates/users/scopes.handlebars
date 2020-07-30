@@ -54,18 +54,21 @@
                 </tr>
               </thead>
               <tbody>
-                {{#each UnconfigurableRoutes as |routeObject|}}
-                  <tr>
-                    <td>{{routeObject.path}}</td>
-                    <td>{{routeObject.method}}</td>
-                    {{#each ../role as |r|}}
-                      <td>
-                        <label>
-                          <input class="scopeCheck" id="{{r}}" type="checkbox" disabled {{#routeHasScope routeObject.scope r}}checked{{/routeHasScope}}>
-                        </label>
-                      </td>
-                    {{/each}}
-                  </tr>
+                {{#each UnconfigurableRoutes as |routeRow method|}}
+                  {{#each routeRow as |unconfigScope path|}}
+                    {{unconfigScope}}
+                    <tr>
+                      <td>{{path}}</td>
+                      <td>{{method}}</td>
+                      {{#each ../../role as |r|}}
+                        <td>
+                          <label>
+                            <input class="scopeCheck" id="{{r}}" type="checkbox" disabled {{#routeHasScope unconfigScope r}}checked{{/routeHasScope}}>
+                          </label>
+                        </td>
+                      {{/each}}
+                    </tr>
+                  {{/each}}
                 {{/each}}
               </tbody>
             </table>

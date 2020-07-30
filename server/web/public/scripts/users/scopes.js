@@ -42,13 +42,27 @@ function updateScope(path, scope, method) {
     url: '/api/users/scopes',
     type: 'PUT',
     data: {
-      method: method,
-      path: path,
-      scope: scope
+      method,
+      path,
+      scope
     },
     success: function (result) {// trigger the api route that compares between the config file and the server
+      $.ajax({
+        url: '/api/users/scopeCheck',
+        type: 'GET',
+        data: {
+          updatedScope: result
+        },
+        success: function (result){
+          location.reload();
+        },
+        error: function (result){
+          errorAlert(result.responseJSON.message);
+        }
+
+      })
       //TODO: Create API route for comparing the scope in the config file and in server for the specified route's scope.
-      location.reload(); //TODO: move to second ajax call on success
+
       // successAlert('Route\'s Scope Updated');
       console.log('hi');
     },
