@@ -47,24 +47,25 @@ function updateScope(path, scope, method) {
       scope
     },
     success: function (result) {// trigger the api route that compares between the config file and the server
-      $.ajax({
-        url: '/api/users/scopeCheck',
-        type: 'GET',
-        data: {
-          updatedScope: result
-        },
-        success: function (result){
-          location.reload();
-        },
-        error: function (result){
-          errorAlert(result.responseJSON.message);
-        }
-
-      })
-      //TODO: Create API route for comparing the scope in the config file and in server for the specified route's scope.
-
+      // $.ajax({
+      //   url: '/api/users/scopeCheck',
+      //   type: 'GET',
+      //   data: {
+      //     updatedScope: result
+      //   },
+      //   success: function (result){
+      //     location.reload();
+      //   },
+      //   error: function (result){
+      //     errorAlert(result.responseJSON.message);
+      //   }
+      //
+      // })
+      // //TODO: Create API route for comparing the scope in the config file and in server for the specified route's scope.
+      //
       // successAlert('Route\'s Scope Updated');
-      console.log('hi');
+      // console.log('hi');
+      location.reload()
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

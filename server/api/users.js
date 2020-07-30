@@ -910,7 +910,6 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-
       //update scope of route
       const scopeArray = PermissionConfigTable[request.payload.method][request.payload.path];
       if (scopeArray.includes(request.payload.scope)) {
@@ -981,7 +980,7 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply){
 
-      console.log(request.payload.updatedScope);
+      console.log('request received: ', request.payload);
       Async.auto({
         checkConfigurableScope: function (results, callback) {//checks for hard coded values for the scope of the route definition
           //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.

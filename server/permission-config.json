@@ -4,15 +4,14 @@
       "admin",
       "root",
       "analyst",
-      "clinician",
-      "researcher"
+      "researcher",
+      "clinician"
     ],
     "/api": [
       "analyst",
-      "clinician",
-      "researcher",
       "admin",
-      "root"
+      "root",
+      "clinician"
     ],
     "/authAttempts": [
       "analyst",
