@@ -16,49 +16,33 @@ $(document).ready(() => {
 
 function onCheckboxClicked(cb, id) {
   let userRole = $(cb).attr("id");
-  cb.checked?
-    promote(id, userRole).catch( err => {
-      $(cb).prop("checked", !cb.checked);
-    }) :
-    demote(id, userRole).catch( err => {
-      $(cb).prop('checked', !cb.checked);
-    })
+  if (cb.checked) {
+    promote(id, userRole)
+    $(cb).prop("checked", true);
+  }
+  else{
+    demote(id, userRole)
+    $(cb).prop("checked", false);
+  }
 }
 
-async function promote(id, role) {
-  return new Promise( (resolve, reject) => {
-    changeRole(id, role, 'PUT').then(result => {
-      resolve(result);
-    }, err => {
-      reject(err);
-    })
-  })
+function promote(id, role) {
+  changeRole(id, role, 'PUT')
 }
 
-async function demote(id, role) {
-  return new Promise( (resolve, reject) => {
-      changeRole(id, role, 'DELETE').then(result => {
-        resolve(result);
-      }, err => {
-        reject(err);
-      })
+function demote(id, role) {
+  changeRole(id, role, 'DELETE')
+}
+
+function changeRole(id, role, method) {
+  $.ajax({
+    url: '/api/users/' + role + '/' + id,
+    type: method,
+    success: function (result) {
+      successAlert('User Updated');
+    },
+    error: function (result) {
+      errorAlert(result.responseJSON.message);
     }
-  )
-}
-
-async function changeRole(id, role, method) {
-  return new Promise( (resolve, reject) => {
-    $.ajax({
-      url: '/api/users/' + role + '/' + id,
-      type: method,
-      success: function (result) {
-        successAlert('User Updated');
-        resolve(result);
-      },
-      error: function (result) {
-        errorAlert(result.responseJSON.message);
-        reject(result);
-      }
-    });
   });
 }
