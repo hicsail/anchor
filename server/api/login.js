@@ -50,11 +50,12 @@ const register = function (server, options) {
 
           const username = request.payload.username;
           const password = request.payload.password;
-          const ip = request.remoteAddress;
+          const ip = request.info.remoteAddress;
           const user = await User.findByCredentials(username, password);
           const userAgent = request.headers['user-agent'];
 
           if (!user) {
+            
             await AuthAttempt.create(ip, username, userAgent);
 
             throw Boom.badRequest('Credentials are invalid or account is inactive.');
@@ -79,8 +80,7 @@ const register = function (server, options) {
 
       const credentials = request.pre.session._id.toString() + ':' + request.pre.session.key;
       const authHeader = `Basic ${Buffer.from(credentials).toString('base64')}`;
-      console.log("salam")
-      console.log(request.pre.session)
+
       request.cookieAuth.set(request.pre.session);
       return ({
         user: {
@@ -313,19 +313,6 @@ const register = function (server, options) {
     }
   });  
 };
-
-
-/*exports.register = function (server, options, next) {
-
-  server.dependency(['mailer', 'hicsail-hapi-mongo-models'], internals.applyRoutes);
-
-  next();
-};*/
-
-
-/*exports.register.attributes = {
-  name: 'login'
-};*/
 
 module.exports = {
   name: 'api-login',

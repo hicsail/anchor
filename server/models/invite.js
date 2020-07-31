@@ -43,6 +43,13 @@ Invite.schema = Joi.object({
   time: Joi.date().required()
 });
 
+Invite.payload = Joi.object({
+  email: Joi.string().email().lowercase().required(),
+  name: Joi.string().required(),
+  description: Joi.string().optional()
+});
+
+
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {   
   create: {
     disabled: true

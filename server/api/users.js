@@ -109,7 +109,7 @@ const register = function (server, options) {
         {
           assign: 'usernameCheck',
           method: async function (request, h) {
-
+            
             const conditions = {
               username: request.payload.username
             };
@@ -227,7 +227,7 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const id = request.params.id;
+      const id = request.params.id.toString();
       const update = {
         $set: {
           name: request.payload.name,
@@ -237,7 +237,7 @@ const register = function (server, options) {
       };
 
       const user = await User.findByIdAndUpdate(id, update);
-
+      
       if (!user) {
         throw Boom.notFound('Document not found.');
       }
@@ -406,6 +406,7 @@ const register = function (server, options) {
               await Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions));
             }
             catch (err) {
+              
               throw Boom.conflict('Password does not meet complexity standards');
             } 
             
@@ -420,11 +421,16 @@ const register = function (server, options) {
 
             const user = await User.findById(id);
 
+            if (!user) {
+              throw Boom.notFound('User not found.');
+            }
+
             const userRole = User.highestRole(user.roles);
             if (role > userRole) {
               return true;
             }
             else {
+              
               throw Boom.unauthorized('User does not have permission to update this users password');
             }            
           }
@@ -441,6 +447,11 @@ const register = function (server, options) {
       };
 
       const user = await User.findByIdAndUpdate(id, update);
+
+      if (!user) {
+        
+        throw Boom.notFound('User not found.');
+      }
 
       return user;      
     }
@@ -462,7 +473,7 @@ const register = function (server, options) {
       pre: [{
         assign: 'password',
         method: async function (request, h) {
-
+           
           const hash = await User.generatePasswordHash(request.payload.password);
 
           return hash;          
@@ -477,6 +488,7 @@ const register = function (server, options) {
             await Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions));
           }
           catch (err) {
+            
             throw Boom.conflict('Password does not meet complexity standards');
           } 
             
@@ -485,7 +497,7 @@ const register = function (server, options) {
       }]
     },
     handler: async function (request, h) {
-
+      
       const id = request.auth.credentials.user._id.toString();
       const update = {
         $set: {
@@ -494,7 +506,7 @@ const register = function (server, options) {
       };
 
       const user = await User.findByIdAndUpdate(id, update);
-
+      
       return user;      
     }
   });

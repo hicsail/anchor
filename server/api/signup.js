@@ -18,13 +18,7 @@ const register = function (server, options) {
       description: 'Sign up for a new user account.',
       auth: false,
       validate: {
-        payload: {
-          username: Joi.string().token().lowercase().invalid('root').required(),
-          password: Joi.string().required(),
-          email: Joi.string().email().lowercase().required(),
-          name: Joi.string().required(),
-          invite: Joi.string().optional()
-        }
+        payload: User.payload
       },
       pre: [{
         assign: 'usernameCheck',
@@ -37,6 +31,7 @@ const register = function (server, options) {
           const user = await User.findByUsername(request.payload.username);
 
           if (user) {
+            
             throw Boom.conflict('Username already in use.');
           }
 
@@ -45,10 +40,11 @@ const register = function (server, options) {
       }, {
         assign: 'emailCheck',
         method: async function (request, h) {
-
+          
           const user = await User.findByEmail(request.payload.email);
 
           if (user) {
+
             throw Boom.conflict('Email already in use.');
           }
           
@@ -64,6 +60,7 @@ const register = function (server, options) {
             await Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions));
           }
           catch (err) {
+            
             throw Boom.conflict('Password does not meet complexity standards');
           }          
           return h.continue;

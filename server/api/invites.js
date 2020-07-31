@@ -22,7 +22,7 @@ const register  = function (server, options) {
     handler: async function (request, h) {
 
       const invite = await Invite.create(request.payload.name,request.payload.email,request.payload.description, request.auth.credentials.user._id.toString());
-
+      
       const emailOptions = {
         subject: 'You have been invited to ' + Config.get('/projectName'),
         to: {
@@ -41,8 +41,8 @@ const register  = function (server, options) {
       }
       catch (err) {
         request.log(['mailer', 'error'], err);
-      }
-
+      }       
+      
       return invite;     
     }
   });  
