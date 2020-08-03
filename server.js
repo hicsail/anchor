@@ -14,7 +14,7 @@ Composer( (err, server) => {
 
   server.start(() => {
 
-    if (!Fs.existsSync('server/permission-config.json')){
+    if (!Fs.existsSync('server/permission-config.json')){//initialized the permission config file if it doesn't already exist
       InitPC(server);
     }
 

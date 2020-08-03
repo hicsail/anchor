@@ -241,7 +241,7 @@ internals.applyRoutes = function (server, next) {
         projectName: Config.get('/projectName'),
         title: 'Routing & Scopes',
         baseUrl: Config.get('/baseUrl'),
-        routes: ConfigurableRoutes,
+        routes: ConfigurableRoutes, //ConfigurableRoutes are taken from the server.table() and filtered through the config file
         role: DefaultScopes,
         UnconfigurableRoutes
       });
