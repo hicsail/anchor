@@ -225,7 +225,7 @@ internals.applyRoutes = function (server, next) {
               if (!UnconfigurableRoutes.hasOwnProperty(method)){
                 UnconfigurableRoutes[method] = {};
               }
-              UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path]; //TODO: Fix the naming scheme this is confusing
+              UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
               delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
               return true;
             }

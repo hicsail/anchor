@@ -47,9 +47,7 @@ function updateScope(path, scope, method) {
       scope
     },
     success: function (result) {// trigger the api route that compares between the config file and the server
-      console.log('replying with a result to inner ajax call');
-      console.log(result);
-      $.ajax({
+      $.ajax({//API route for comparing the scope for configurability in the config file and in server for the specified route's scope
         url: '/api/users/scopeCheck',
         type: 'GET',
         data: {
@@ -65,7 +63,6 @@ function updateScope(path, scope, method) {
           errorAlert(result.responseJSON.message);
         }
       })
-      //TODO: Create API route for comparing the scope for configurability in the config file and in server for the specified route's scope.
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

@@ -955,46 +955,6 @@ internals.applyRoutes = function (server, next) {
             callback(err);
           }
         }
-        //THE CODE HERE IS A TEST
-        // checkConfigurableScope:['updateRouteScopeTable', 'updatePermissionConfig', function (results, callback) {//checks for hard coded values for the scope of the route definition
-        //   //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
-        //   //TODO: API route for comparing the scope for configurability in the config file and in server for the specified route's scope.
-        //   for (const item of server.table()[0].table) {
-        //     if (item.hasOwnProperty('path')) {//processing routes in server
-        //       const path = item.path;
-        //       const method = item.method.toUpperCase();
-        //       if (path === request.payload.path && method === request.payload.method) {
-        //         console.log(path, method);
-        //         console.log('scope in server: ' + item.settings.auth.access[0].scope.selection);
-        //         console.log('scope in the config file ' + PermissionConfigFile[method][path]);
-        //         const set = new Set();
-        //         scopeArray.forEach((role) => {
-        //
-        //           set.add(role);
-        //         });
-        //         let configurableScope = true;
-        //         //TODO: On update of route scopes, still can't distinguish the Unconfigurable routes on reload
-        //         //TODO: When unconfigurable route exist, delete from the top table and insert into the bottom table in Routes & Scopes
-        //         //TODO: Figure out the reload of the HTML page.
-        //         // item.settings.auth.access[0].scope.selection.some((role) => {
-        //         //
-        //         //   if (!set.has(role)) {
-        //         //     configurableScope = false;
-        //         //     console.log('looking at route: ', path, method);
-        //         //     console.log('route\'s scope: ', item.settings.auth.access[0].scope.selection);
-        //         //     console.log('vs: ', request.payload.updatedScope);
-        //         //     callback('Scope is not configurable');
-        //         //     return true; //breaking out of the some() loop
-        //         //   }
-        //         // });
-        //         if (configurableScope) {
-        //           // return callback(null, 'Scope is configurable');
-        //           return callback(null, 'TESTING MODE');
-        //         }
-        //       }
-        //     }
-        //   }
-        // }]
       }, (err, result) => {
 
         if (err){
@@ -1019,7 +979,6 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply){
 
-      console.log('request received: ', request.payload);
       Async.auto({
         checkConfigurableScope: function (results, callback) {//checks for hard coded values for the scope of the route definition
           //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
@@ -1028,33 +987,12 @@ internals.applyRoutes = function (server, next) {
               const path = item.path;
               const method = item.method.toUpperCase();
               if (path === request.payload.path && method === request.payload.method) {
-                console.log(path, method);
-                console.log('scope in server: ' + item.settings.auth.access[0].scope.selection);
-                console.log('scope in the config file ' + PermissionConfigFile[method][path]);
                 const set = new Set();
                 request.payload.scopeArray.forEach((role) => {
 
                   set.add(role);
                 });
-                let configurableScope = true;
-                //TODO: On update of route scopes, still can't distinguish the Unconfigurable routes on reload
-                //TODO: When unconfigurable route exist, delete from the top table and insert into the bottom table in Routes & Scopes
-                //TODO: Figure out the reload of the HTML page.
-
-                // item.settings.auth.access[0].scope.selection.some((role) => {
-                //
-                //   if (!set.has(role)) {
-                //     configurableScope = false;
-                //     console.log('looking at route: ', path, method);
-                //     console.log('route\'s scope: ', item.settings.auth.access[0].scope.selection);
-                //     console.log('vs: ', request.payload.updatedScope);
-                //     callback('Scope is not configurable');
-                //     return true;//breaking out of the some() loop
-                //   }
-                // });
-                if (configurableScope) {
-                  return callback(null, 'Scope is configurable');
-                }
+                return callback(null, 'Scope is configurable');
               }
             }
           }
