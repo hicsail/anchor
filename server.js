@@ -1,6 +1,6 @@
 'use strict';
 const Composer = require('./index');
-const InitPC = require('./server/helpers/initPermissionConfigFile');
+const InitPC = require('./server/helpers/initPermissionConfigTable');
 const Fs = require('fs');
 const DefaultScopes = require('./server/helpers/getRoleNames');
 const RouteScope = require('./server/models/route-scope');

@@ -3,7 +3,7 @@ const Async = require('async');
 const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
-const ScopeArray = require('../helpers/getScopes');
+const PermissionConfigTable = require('../permission-config.json');
 const DefaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
@@ -20,7 +20,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/invite', 'GET', DefaultScopes)
+        scope: PermissionConfigTable.GET['/api/table/invite'] || DefaultScopes
       },
       validate: {
         query: Joi.any()
@@ -101,7 +101,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/invite', 'GET', ['root', 'admin', 'researcher'])
+        scope: PermissionConfigTable.GET['/api/invite'] || ['root', 'admin', 'researcher']
       },
       validate: {
         query: {
@@ -137,7 +137,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/invite', 'POST', DefaultScopes)
+        scope: PermissionConfigTable.POST['/api/invite'] || DefaultScopes
       },
       validate: {
         payload: Invite.payload
@@ -192,7 +192,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/invite/{id}', 'PUT', ['root','admin','researcher'])
+        scope: PermissionConfigTable.PUT['/api/invite/{id}'] || ['root', 'admin', 'researcher']
       },
       validate: {
         payload: Invite.payload
@@ -257,7 +257,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/invite/{id}', 'GET', ['root', 'admin', 'researcher'])
+        scope: PermissionConfigTable.GET['/api/invite/{id}'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {
@@ -284,7 +284,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/invite/{id}', 'DELETE', ['root','admin','researcher'])
+        scope: PermissionConfigTable.DELETE['/api/invite/{id}'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {

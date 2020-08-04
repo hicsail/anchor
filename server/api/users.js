@@ -5,10 +5,9 @@ const Clinician = require('../models/clinician');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
-const ScopeArray = require('../helpers/getScopes');
 const DefaultScopes = require('../helpers/getRoleNames');
 const RouteScope = require('../models/route-scope');
-const PermissionConfigFile = require('../permission-config.json');
+const PermissionConfigTable = require('../permission-config.json');
 const Fs = require('fs');
 
 
@@ -139,7 +138,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users', 'GET', DefaultScopes)
+        scope:PermissionConfigTable.GET['/api/users'] || DefaultScopes
       },
       validate: {
         query: {
@@ -176,7 +175,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}', 'GET', ['admin'])
+        scope: PermissionConfigTable.GET['/api/users/{id}'] || ['admin']
       }
     },
     handler: function (request, reply) {
@@ -232,7 +231,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users', 'POST', ['root','admin','researcher'])
+        scope: PermissionConfigTable.POST['/api/users'] || ['root', 'admin', 'researcher']
       },
       validate: {
         payload: User.payload
@@ -320,7 +319,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}', 'PUT', ['admin'])
+        scope: PermissionConfigTable.PUT['/api/users/{id}'] || ['admin']
       },
       validate: {
         params: {
@@ -412,7 +411,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}/participation', 'PUT', ['root', 'admin', 'researcher'])
+        scope: PermissionConfigTable.PUT['/api/users/{id}/participation'] || ['root', 'admin', 'researcher']
       },
       validate: {
         params: {
@@ -556,7 +555,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}/password', 'PUT', ['root','admin'])
+        scope: PermissionConfigTable.PUT['/api/users/{id}/password'] || ['root', 'admin']
       },
       validate: {
         params: {
@@ -704,7 +703,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}', 'DELETE', ['root','admin'])
+        scope: PermissionConfigTable.DELETE['/api/users/{id}'] || ['root', 'admin']
       },
       validate: {
         params: {
@@ -909,8 +908,14 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
+      // const scopeArray = server.table()[0].table.find( (route) => {//getting scopes from the server
+      //
+      //   if (route.hasOwnProperty('path')) {//processing routes in server
+      //     return route.path === request.payload.path && route.method.toUpperCase() === request.payload.method;
+      //   }
+      // });
       //update scope of route
-      const scopeArray = PermissionConfigFile[request.payload.method][request.payload.path];
+      const scopeArray = PermissionConfigTable[request.payload.method][request.payload.path]; //getting scopes from permission config
       if (scopeArray.includes(request.payload.scope)) {
         scopeArray.splice(scopeArray.indexOf(request.payload.scope), 1);
       }
@@ -943,11 +948,11 @@ internals.applyRoutes = function (server, next) {
         updatePermissionConfig: function (callback) {//updating the permission-config.js with the update from user inputs in UI
 
           try {
-            if (!PermissionConfigFile.hasOwnProperty(request.payload.method)) {
-              PermissionConfigFile[request.payload.method] = {};
+            if (!PermissionConfigTable.hasOwnProperty(request.payload.method)) {
+              PermissionConfigTable[request.payload.method] = {};
             }
-            PermissionConfigFile[request.payload.method][request.payload.path] = scopeArray;
-            Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigFile, null, 2));
+            PermissionConfigTable[request.payload.method][request.payload.path] = scopeArray;
+            Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
             callback(null, 'Config file updated successfully');
           }
           catch (err) {
@@ -974,7 +979,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ScopeArray('/scopes', 'GET', DefaultScopes)
+        scope: PermissionConfigTable.POST['/api/users/scopeCheck'] || DefaultScopes
       }
     },
     handler: function (request, reply){
@@ -995,9 +1000,9 @@ internals.applyRoutes = function (server, next) {
             const method = route.method.toUpperCase();
             console.log(route.path, route.method);
             console.log('scope in server: ' + route.settings.auth.access[0].scope.selection);
-            console.log('scope in the config file: ' + PermissionConfigFile[method][path]);
+            console.log('scope in the config file: ' + PermissionConfigTable[method][path]);
             const set = new Set();
-            PermissionConfigFile[method][path].forEach((role) => {
+            PermissionConfigTable[method][path].forEach((role) => {
 
               set.add(role);
             });

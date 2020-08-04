@@ -1,7 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-const ScopeArray = require('../helpers/getScopes');
+const PermissionConfigTable = require('../permission-config.json');
 const DefaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
@@ -18,7 +18,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/table/sessions', 'GET', DefaultScopes)
+        scope: PermissionConfigTable.GET['/api/table/sessions'] || DefaultScopes
       },
       validate: {
         query: Joi.any()
@@ -99,7 +99,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/sessions', 'GET', ['root', 'admin', 'researcher'])
+        scope: PermissionConfigTable.GET['/api/sessions'] || ['root', 'admin', 'researcher']
       },
       validate: {
         query: {
@@ -136,7 +136,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/sessions/my', 'GET', DefaultScopes)
+        scope: PermissionConfigTable.GET['/api/sessions/my'] || DefaultScopes
       }
     },
     handler: function (request, reply) {
@@ -165,7 +165,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/sessions/{id}', 'GET', ['root','admin','researcher'])
+        scope: PermissionConfigTable.GET['/api/sessions/{id}'] || ['root', 'admin', 'researcher']
       }
     },
     handler: function (request, reply) {
@@ -191,7 +191,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/sessions/my/{id}', 'DELETE', DefaultScopes)
+        scope: PermissionConfigTable.DELETE['/api/sessions/my/{id}'] || DefaultScopes
       },
       pre: [{
         assign: 'current',
@@ -240,7 +240,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/sessions/{id}', 'DELETE', ['root','admin'])
+        scope: PermissionConfigTable.DELETE['/api/sessions/{id}'] || ['root', 'admin']
       }
     },
     handler: function (request, reply) {
