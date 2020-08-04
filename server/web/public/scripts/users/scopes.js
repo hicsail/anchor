@@ -48,7 +48,7 @@ function updateScope(path, scope, method) {
           path
         },
         success: function (result){
-          successAlert('Refreshing page');
+          successAlert(result);
           location.reload();
         },
         error: function (result){

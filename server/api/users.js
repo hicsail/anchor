@@ -984,7 +984,6 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply){
 
-      console.log('request received: ', request.payload);
       Async.auto({
         checkConfigurableScope: function (callback) {//API route for comparing the scope for configurability in the config file and in server for the specified route's scope.
 
@@ -998,35 +997,33 @@ internals.applyRoutes = function (server, next) {
           if (route) {
             const path = route.path;
             const method = route.method.toUpperCase();
-            console.log(route.path, route.method);
-            console.log('scope in server: ' + route.settings.auth.access[0].scope.selection);
-            console.log('scope in the config file: ' + PermissionConfigTable[method][path]);
             const set = new Set();
             PermissionConfigTable[method][path].forEach((role) => {
 
               set.add(role);
             });
-            const configurableScope = route.settings.auth.access[0].scope.selection.every((role) => {
+            if (route.settings.auth.access[0].scope.selection.length === set.size){
+              const configurableScope = route.settings.auth.access[0].scope.selection.every((role) => {
 
-              return set.has(role);
-            });
-            if (configurableScope) {
-              return callback(null, 'Scope is configurable');
+                return set.has(role);
+              });
+              if (configurableScope) {
+                return callback(null, 'Updated Route\'s Scope');
+              }
             }
-            else {
-              return callback('Scope is not configurable');
-            }
+            return callback('Unable to Update Route\'s scope');
+
           }
-          else {
-            callback('specified route: ' + request.payload.path + ' ' + request.payload.method + ' not found');
-          }
+
+          callback('specified route: ' + request.payload.path + ' ' + request.payload.method + ' not found');
+
         }
       }, (err, result) => {
 
         if (err) {
           return reply(err);
         }
-        return reply(true);
+        reply(result.checkConfigurableScope);
       });
     }
   });

@@ -4,7 +4,8 @@
       "admin",
       "root",
       "analyst",
-      "researcher"
+      "researcher",
+      "clinician"
     ],
     "/api": [
       "analyst",
