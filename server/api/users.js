@@ -1001,8 +1001,6 @@ internals.applyRoutes = function (server, next) {
 
               set.add(role);
             });
-            //TODO: When unconfigurable route exist, delete from the top table and insert into the bottom table in Routes & Scopes
-            //TODO: Figure out the reload of the HTML page.
             const configurableScope = route.settings.auth.access[0].scope.selection.every((role) => {
 
               return set.has(role);
