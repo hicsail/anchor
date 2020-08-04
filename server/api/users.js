@@ -958,7 +958,7 @@ internals.applyRoutes = function (server, next) {
       }, (err, result) => {
 
         if (err){
-          return reply(Boom.conflict(err));
+          return reply(err);
         }
         if (result) {
           console.log(result);
@@ -969,7 +969,7 @@ internals.applyRoutes = function (server, next) {
   });
 
   server.route({
-    method: 'GET',
+    method: 'POST',
     path: '/users/scopeCheck',
     config: {
       auth: {
@@ -979,32 +979,51 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply){
 
+      console.log('request received: ', request.payload);
       Async.auto({
-        checkConfigurableScope: function (results, callback) {//checks for hard coded values for the scope of the route definition
-          //pass these set of routes (which have different scopes in the data base collection and routing table of the server) to the UI template.
-          for (const item of server.table()[0].table) {
-            if (item.hasOwnProperty('path')) {//processing routes in server
-              const path = item.path;
-              const method = item.method.toUpperCase();
-              if (path === request.payload.path && method === request.payload.method) {
-                const set = new Set();
-                request.payload.scopeArray.forEach((role) => {
+        checkConfigurableScope: function (callback) {//API route for comparing the scope for configurability in the config file and in server for the specified route's scope.
 
-                  set.add(role);
-                });
-                return callback(null, 'Scope is configurable');
-              }
+          const route = server.table()[0].table.find( (item) => {
+
+            if (item.hasOwnProperty('path')) {//processing routes in server
+              return item.path === request.payload.path && item.method.toUpperCase() === request.payload.method;
             }
+          });
+
+          if (route) {
+            const path = route.path;
+            const method = route.method.toUpperCase();
+            console.log(route.path, route.method);
+            console.log('scope in server: ' + route.settings.auth.access[0].scope.selection);
+            console.log('scope in the config file: ' + PermissionConfigFile[method][path]);
+            const set = new Set();
+            PermissionConfigFile[method][path].forEach((role) => {
+
+              set.add(role);
+            });
+            //TODO: When unconfigurable route exist, delete from the top table and insert into the bottom table in Routes & Scopes
+            //TODO: Figure out the reload of the HTML page.
+            const configurableScope = route.settings.auth.access[0].scope.selection.every((role) => {
+
+              return set.has(role);
+            });
+            if (configurableScope) {
+              return callback(null, 'Scope is configurable');
+            }
+            else {
+              return callback('Scope is not configurable');
+            }
+          }
+          else {
+            callback('specified route: ' + request.payload.path + ' ' + request.payload.method + ' not found');
           }
         }
       }, (err, result) => {
 
         if (err) {
-          return reply(Boom.conflict(err));
+          return reply(err);
         }
-        if (result) {
-          return reply(true);
-        }
+        return reply(true);
       });
     }
   });

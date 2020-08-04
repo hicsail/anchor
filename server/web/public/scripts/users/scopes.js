@@ -27,14 +27,7 @@ $(document).ready(() => {
 
 function onCheckboxClicked(cb, scope, path, method) {
   let role = $(cb).attr("id");
-  if (cb.checked) {
-    updateScope(path, role, method);
-    $(cb).prop('checked', true);
-  }
-  else {
-    updateScope(path, role, method);
-    $(cb).prop('checked', false);
-  }
+  updateScope(path, role, method);
 }
 
 function updateScope(path, scope, method) {
@@ -49,15 +42,14 @@ function updateScope(path, scope, method) {
     success: function (result) {// trigger the api route that compares between the config file and the server
       $.ajax({//API route for comparing the scope for configurability in the config file and in server for the specified route's scope
         url: '/api/users/scopeCheck',
-        type: 'GET',
+        type: 'POST',
         data: {
           method,
-          path,
-          scopeArray: result //the newly updated scope array from UI
+          path
         },
         success: function (result){
+          successAlert('Refreshing page');
           location.reload();
-          successAlert('Route\'s Scope Updated');
         },
         error: function (result){
           errorAlert(result.responseJSON.message);

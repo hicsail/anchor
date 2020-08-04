@@ -4,8 +4,7 @@
       "admin",
       "root",
       "analyst",
-      "researcher",
-      "clinician"
+      "researcher"
     ],
     "/api": [
       "analyst",
@@ -606,6 +605,13 @@
       "root"
     ],
     "/api/login/token": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/api/users/scopeCheck": [
       "analyst",
       "clinician",
       "researcher",
