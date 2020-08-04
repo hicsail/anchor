@@ -18,8 +18,7 @@ const register = function (server, options) {
         assign: 'current',
         method: async function (request,h) {
 
-          const currentSession = request.auth.credentials.session._id.toString();
-
+          const currentSession = request.auth.credentials.session._id.toString();          
           if (currentSession === request.params.id) {
 
             throw Boom.badRequest('Unable to close your current session. You can use logout instead.');

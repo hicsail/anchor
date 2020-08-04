@@ -97,17 +97,17 @@ const register = function (server, options) {
       }
     },
     handler: async function (request, h) {
-      
-      const backup = await Backup.findById(request.params.id);
+     
+      const backup = await Backup.findById(request.params.id);     
 
       if (!backup) {
-
+              
         throw Boom.notFound('backup not found');
       }
 
-      const path = Path.join(__dirname,`../backups/${backup.backupId}.zip`);
-      await unlink(path);
-
+      const path = Path.join(__dirname,`../backups/${backup.backupId}.zip`);      
+      //await unlink(path);
+      
       await Backup.findByIdAndDelete(request.params.id);
 
       return { message: 'Success' };      

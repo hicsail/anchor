@@ -61,9 +61,9 @@
     "visionary": "6.x.x"
   },
   "devDependencies": {
-    "code": "4.x.x",
+    "code": "5.x.x",
     "coveralls": "3.x.x",
-    "lab": "14.x.x",
+    "lab": "15.x.x",
     "nodemon": "1.x.x",
     "npm-run": "^4.1.2",
     "pre-commit": "1.x.x",
