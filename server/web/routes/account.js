@@ -8,8 +8,7 @@ const register = function (server, options) {
     path: '/account',
     options : {
       auth: {
-        strategies: ['session'],
-        mode: 'try'
+        strategies: ['session']        
       }
     },
     handler: async function (request, h) {
@@ -28,7 +27,7 @@ module.exports = {
   name: 'account',
   dependencies: [
     'inert',
-    'vision',
+    //'vision',
     'auth'    
   ],
   register

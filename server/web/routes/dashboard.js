@@ -8,28 +8,17 @@ const register = function (server, options) {
     path: '/dashboard',
     options : {
       auth: {
-        strategies: ['session'],
-        mode: 'try'
+        strategies: ['session']        
       }
     },
-    handler: async function (request, h) {
+    handler: async function (request, h) {     
 
-      if (request.auth.isAuthenticated) {
-
-        return h.view('dashboard/index', {
-          user: request.auth.credentials.user,
-          projectName: Config.get('/projectName'),
-          title: 'Dashboard',
-          baseUrl: Config.get('/baseUrl')
-        });        
-      } 
-      else {
-        return h.view('login/login', {
-          projectName: Config.get('/projectName'),
-          title: 'Login',
-          baseUrl: Config.get('/baseUrl')
-        });
-      }      
+      return h.view('dashboard/index', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName'),
+        title: 'Dashboard',
+        baseUrl: Config.get('/baseUrl')
+      });             
     }
   });  
 };
@@ -38,7 +27,7 @@ module.exports = {
   name: 'dashboard',
   dependencies: [
     'inert',
-    'vision',
+    //'vision',
     'auth'   
   ],
   register

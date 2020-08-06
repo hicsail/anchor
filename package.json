@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --inspect -e js,md,html,handlebars,css server.js",
     "first-time-setup": "node first-time-setup.js",
-    "test": "lab -c -L --leaks",
+    "test": "lab -c",
     "lint": "lab -dL --leaks",
     "lint-fix": "lab -dL --lint-fix",
     "coveralls": "lab -r lcov | ./node_modules/.bin/coveralls"
@@ -57,7 +57,7 @@
     "slug": "0.9.x",
     "useragent": "2.x.x",
     "uuid": "3.x.x",
-    "vision": "^5.3.3",
+    "vision": "5.3.3",
     "visionary": "6.x.x"
   },
   "devDependencies": {

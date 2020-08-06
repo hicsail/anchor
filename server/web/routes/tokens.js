@@ -53,9 +53,9 @@ const register = function (server, options) {
         scope: ['root', 'admin','researcher']
       }
     },
-    handler: async function (request, h) {
-
-      const token = await Token.findById(request.params.id);
+    handler: async function (request, h) {      
+      
+      const token = await Token.findById(request.params.id);     
 
       return h.view('tokens/edit', {
         user: request.auth.credentials.user,

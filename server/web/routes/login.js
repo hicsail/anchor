@@ -42,7 +42,12 @@ const register  = function (server, options) {
       const credentials = request.auth.credentials || { session: {} };
       const session = credentials.session;
 
-      await Session.findByIdAndDelete(session._id);
+      try {
+        await Session.findByIdAndDelete(session._id);
+      }
+      catch(err) {
+        return err;
+      }
       request.cookieAuth.clear();
 
       return h.redirect('/');      

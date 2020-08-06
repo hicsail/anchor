@@ -8,8 +8,7 @@ const register = function (server, options) {
     path: '/authAttempts',
     options : {
       auth: {
-        strategies: ['simple','session'],
-        mode: 'try'
+        strategies: ['simple','session']        
       }
     },
     handler: async function (request, h) {
@@ -28,7 +27,7 @@ module.exports = {
   name: 'authAttemptsList',
   dependencies: [
     'inert',
-    'vision',
+    //'vision',
     'auth'   
   ],
   register

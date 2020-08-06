@@ -4,6 +4,7 @@ const Async = require('async');
 const Config = require('../../../config');
 const Feedback = require('../../models/feedback');
 const User = require('../../models/user');
+const Boom = require('boom');
 
 const register = function (server, options) {
 
@@ -12,8 +13,7 @@ const register = function (server, options) {
     path: '/feedback',
     options : {
       auth: {
-        strategies: ['session'],
-        mode: 'try'
+        strategies: ['session']        
       }
     },    
     handler: async function (request, h) {
@@ -33,8 +33,7 @@ const register = function (server, options) {
     options : {
       auth: {
         strategies: ['session'],
-        scope: ['root','admin'],
-        mode: 'try'
+        scope: ['root','admin']        
       }
     },    
     handler: async function (request, h) {
@@ -43,7 +42,7 @@ const register = function (server, options) {
 
       if (!feedback) {
 
-        throw Boom.notFound('feedback not found.');      
+        throw Boom.notFound('Feedback not found.');      
       }
 
       const user = await User.findById(feedback.userId);

@@ -70,21 +70,11 @@ const register = function (server, options) {
     method: 'GET',
     path: '/invite/{id}',
     options: {
-      auth: {
-        mode: 'try',
+      auth: {        
         strategies: ['session']
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: false
-        }
-      }
+      }      
     },
-    handler: async function (request, h) {
-
-      if (request.auth.isAuthenticated) {
-        return h.redirect('/');
-      }
+    handler: async function (request, h) {     
 
       const invite = await Invite.findById(request.params.id);
 

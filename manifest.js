@@ -3,6 +3,7 @@ const Confidence = require('confidence');
 const Config = require('./config');
 const Package = require('./package.json');
 const Path = require('path');
+const Handlebars = require('handlebars')
 
 const criteria = {
   env: process.env.NODE_ENV
@@ -43,7 +44,7 @@ const manifest = {
       {
         plugin: './server/anchor/hapi-anchor-model.js',
         options: Config.get('/hapiAnchorModel')
-      },
+      },      
       {
         plugin: './server/auth.js'
       },
@@ -174,6 +175,9 @@ const manifest = {
     {
       plugin: './server/web/routes/users'
     },*/
+    /*{
+      plugin: './server/web/routes/view',
+    },*/
     {
       plugin: './server/web/routes/tokens',
     },
@@ -255,20 +259,8 @@ const manifest = {
     },
     {
       plugin: './server/api/tokens',     
-    },      
-      /*{
-         plugin: 'visionary',          
-         options: {
-          engines: { html: 'handlebars' },
-          relativeTo: __dirname,
-          path: './server/web/templates',
-          //layout: 'layout',
-          layoutPath: './server/web/layouts',
-          partialsPath: './server/web/partials',
-          helpersPath: './server/web/helpers'                 
-        }
-      },*/      
-      {
+    },           
+    {
         plugin: 'hapi-cron',
         options: {
           jobs: [{

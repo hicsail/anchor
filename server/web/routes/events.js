@@ -13,8 +13,8 @@ const register = function (server, options) {
       }
     },
     handler: async function (request, h) {
-
-      const names = await Event.distinct('name');
+      
+      const names = await Event.distinct('name');    
 
       return h.view('events/index', {
         user: request.auth.credentials.user,
