@@ -241,6 +241,10 @@ internals.applyRoutes = function (server, next) {
         title: 'Routing & Scopes',
         baseUrl: Config.get('/baseUrl'),
         routes: ConfigurableRoutes, //ConfigurableRoutes are taken from the server.table() and filtered through the config file
+        GET: ConfigurableRoutes.GET,
+        PUT: ConfigurableRoutes.PUT,
+        DELETE: ConfigurableRoutes.DELETE,
+        POST: ConfigurableRoutes.POST,
         role: DefaultScopes,
         UnconfigurableRoutes
       });
