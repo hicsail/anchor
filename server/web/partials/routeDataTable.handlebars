@@ -1,0 +1,25 @@
+<table id="routeTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th>Path</th>
+      {{#each role}}
+        <th>{{this}}</th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#each routes as |scope path|}}
+      <tr>
+        <td>{{path}}</td>
+        {{#each ../role as |r|}}
+          <td>
+            <label>
+              <input class="scopeCheck" id="{{r}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify scope}}, {{jsonify path}}, {{jsonify method}})" {{#routeHasScope scope r}}checked{{/routeHasScope}}>
+            </label>
+          </td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+

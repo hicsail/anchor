@@ -1,18 +1,7 @@
 'use strict';
 
 $(document).ready(() => {
-  $('#routeTable').DataTable({
-    scrollX: true,
-    scrollY: '500px',
-    scrollCollapse: true,
-    stateSave: true,
-    lengthChange: false,
-    dom: 'Bfrtip',
-    buttons: [
-      'copy', 'csv', 'excel', 'pdf', 'print','colvis'
-    ]
-  });
-  $('#UnconfigurableRouteTable').DataTable({
+  $('.table').DataTable({
     scrollX: true,
     scrollY: '500px',
     scrollCollapse: true,

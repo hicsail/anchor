@@ -235,6 +235,7 @@ internals.applyRoutes = function (server, next) {
       if (AnyUnconfigurable){
         Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
       }
+      console.log(ConfigurableRoutes.GET);
       return reply.view('users/scopes', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
