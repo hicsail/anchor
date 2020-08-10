@@ -47,53 +47,7 @@ const register = function (server, options) {
       });      
     }
   });
-
-  /*server.route({
-    method: 'GET',
-    path: '/api/users/{id}',
-    options: {
-      auth: {
-        strategies: ['simple', 'session'],
-        scope: 'admin'
-      }
-    },
-    handler: async function (request, h) {
-
-      const user = await User.findById(request.params.id);
-
-      if (!user) {
-          throw Boom.notFound('Document not found.');          
-      }
-
-      return user;      
-    }
-  });*/
-
-
-  /*server.route({
-    method: 'GET',
-    path: '/api/users/my',
-    options: {
-      auth: {
-        strategies: ['simple', 'session']
-      }
-    },
-    handler: async function (request, h) {
-
-      const id = request.auth.credentials.user._id.toString();
-      const fields = User.fieldsAdapter('username email roles');
-
-      const user = await User.findById(id, fields);
-
-      if (!user) {
-          throw Boom.notFound('Document not found. That is strange.');          
-      }
-
-      return user;       
-    }
-  });*/
-
-
+  
   server.route({
     method: 'POST',
     path: '/api/users',

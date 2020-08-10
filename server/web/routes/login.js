@@ -9,7 +9,7 @@ const register  = function (server, options) {
     path: '/login',
     options: {
       auth: {
-        strategies: ['simple', 'session'],
+        strategies: ['session'],
         mode: 'try'
       }     
     },

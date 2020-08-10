@@ -1,3 +1,4 @@
+
 'use strict';
 const AuthAttempt = require('../models/auth-attempt');
 const Token = require('../models/token');

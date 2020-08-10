@@ -8,9 +8,9 @@ const User = require('./models/user');
 const register = function (server, options) {  
 
   server.auth.strategy('simple', 'basic', {
-    validate: async function (request, username, password) {
-
-      const session = await Session.findByCredentials(username, password);
+    validate: async function (request, sessionId, sessionKey) {
+      
+      const session = await Session.findByCredentials(sessionId, sessionKey);
 
       if (!session) {
           return { isValid: false };
@@ -20,6 +20,10 @@ const register = function (server, options) {
 
       if (!user) {
           return { isValid: false };
+      }
+
+      if (!user.isActive) {
+        return { isValid: false };
       }
 
       const update = {
@@ -43,11 +47,15 @@ const register = function (server, options) {
   server.auth.strategy('jwt', 'jwt', {
     key: Config.get('/authSecret'),
     verifyOptions: { algorithms: ['HS256'] },
-    validate: async function (decoded, request) {
+    validate: async function (decoded, request) {     
 
-      const token = await Token.findOne({tokenId: decoded,active: true});
+      const token = await Token.findOne({tokenId: decoded, active: true});
 
-      if (!token) {
+      if (!token) {        
+        return { isValid: false };
+      }
+
+      if (!token.active) {
         return { isValid: false };
       }
 
@@ -56,6 +64,10 @@ const register = function (server, options) {
       const user = await User.findById(token.userId);
 
       if (!user) {
+        return { isValid: false };
+      }
+
+      if (!user.isActive) {
         return { isValid: false };
       }
 
@@ -80,7 +92,7 @@ const register = function (server, options) {
     redirectTo: '/login',
     //appendNext: 'returnUrl',
     validateFunc: async function (request, data) {
-
+      
       const id = data._id;
       const key = data.key;
 
@@ -93,6 +105,10 @@ const register = function (server, options) {
       const user = await User.findById(session.userId);
 
       if (!user) {
+        return { valid: false };
+      }
+
+      if (!user.isActive) {
         return { valid: false };
       }
 
@@ -118,13 +134,6 @@ const register = function (server, options) {
   
 };
 
-/*exports.register = function (server, options, next) {
-
-  server.dependency('hicsail-hapi-mongo-models', internals.applyStrategy);
-
-  next();
-};*/
-
 module.exports = {
   name: 'auth',
   dependencies: [
@@ -138,8 +147,3 @@ module.exports = {
 
 
 //exports.preware = internals.preware;
-
-
-/*exports.register.attributes = {
-  name: 'auth'
-};*/

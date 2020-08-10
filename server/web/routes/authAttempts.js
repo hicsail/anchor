@@ -8,7 +8,7 @@ const register = function (server, options) {
     path: '/authAttempts',
     options : {
       auth: {
-        strategies: ['simple','session']        
+        strategies: ['session']        
       }
     },
     handler: async function (request, h) {
