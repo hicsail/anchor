@@ -8,37 +8,37 @@
         <p>Click on routes to change it's scope</p>
         <ul class="nav nav-tabs" id="configMethodTab" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#GET" role="tab" aria-controls="get" aria-selected="true">GET</a>
+            <a class="nav-link active" data-toggle="tab" href="#GET" role="tab">GET</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#POST" role="tab" aria-controls="post" aria-selected="false">POST</a>
+            <a class="nav-link" data-toggle="tab" href="#POST" role="tab">POST</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#DELETE" role="tab" aria-controls="delete" aria-selected="false">DELETE</a>
+            <a class="nav-link" data-toggle="tab" href="#DELETE" role="tab">DELETE</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#PUT" role="tab" aria-controls="put" aria-selected="false">PUT</a>
+            <a class="nav-link" data-toggle="tab" href="#PUT" role="tab">PUT</a>
           </li>
         </ul>
         <div class="card">
           <div style="padding: 20px">
             <div class="tab-content" id="configTabContent">
-              <div class="tab-pane fade show active" id="GET" role="tabpanel" aria-labelledby="get-tab">
+              <div class="tab-pane fade show active" id="GET" role="tabpanel">
                 {{#> routeDataTable role=role method="GET" routes=GET config = true}}
                   GET method routes not found
                 {{/routeDataTable}}
               </div>
-              <div class="tab-pane fade" id="POST" role="tabpanel" aria-labelledby="post-tab">
+              <div class="tab-pane fade" id="POST" role="tabpanel">
                 {{#> routeDataTable role=role method="POST" routes=POST config = true}}
                   POST method routes not found
                 {{/routeDataTable}}
               </div>
-              <div class="tab-pane fade" id="DELETE" role="tabpanel" aria-labelledby="delete-tab">
+              <div class="tab-pane fade" id="DELETE" role="tabpanel">
                 {{#> routeDataTable role=role method="DELETE" routes=DELETE config = true}}
                   DELETE method routes not found
                 {{/routeDataTable}}
               </div>
-              <div class="tab-pane fade" id="PUT" role="tabpanel" aria-labelledby="put-tab">
+              <div class="tab-pane fade" id="PUT" role="tabpanel">
                 {{#> routeDataTable role=role method="PUT" routes=PUT config = true}}
                   PUT method routes not found
                 {{/routeDataTable}}
@@ -51,37 +51,37 @@
         <p>NOTE: Routes below here are unconfigurable, to allow configuration make sure to update the routes with the scope from the Config file</p>
         <ul class="nav nav-tabs" id="unConfigMethodTab" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#GETunconfig" role="tab" aria-controls="get" aria-selected="true">GET</a>
+            <a class="nav-link active" data-toggle="tab" href="#GETunconfig" role="tab">GET</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#POSTunconfig" role="tab" aria-controls="post" aria-selected="false">POST</a>
+            <a class="nav-link" data-toggle="tab" href="#POSTunconfig" role="tab">POST</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#DELETEunconfig" role="tab" aria-controls="delete" aria-selected="false">DELETE</a>
+            <a class="nav-link" data-toggle="tab" href="#DELETEunconfig" role="tab">DELETE</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#PUTunconfig" role="tab" aria-controls="put" aria-selected="false">PUT</a>
+            <a class="nav-link" data-toggle="tab" href="#PUTunconfig" role="tab">PUT</a>
           </li>
         </ul>
         <div class="card">
           <div style="padding: 20px">
             <div class="tab-content" id="unConfigTabContent">
-              <div class="tab-pane fade show active" id="GETunconfig" role="tabpanel" aria-labelledby="get-tab">
+              <div class="tab-pane fade show active" id="GETunconfig" role="tabpanel">
                 {{#> routeDataTable role=role method="GET" routes=GETunconfig config = false}}
                   GET method routes not found
                 {{/routeDataTable}}
               </div>
-              <div class="tab-pane fade" id="POSTunconfig" role="tabpanel" aria-labelledby="post-tab">
+              <div class="tab-pane fade" id="POSTunconfig" role="tabpanel">
                 {{#> routeDataTable role=role method="POST" routes=POSTunconfig config = false}}
                   POST method routes not found
                 {{/routeDataTable}}
               </div>
-              <div class="tab-pane fade" id="DELETEunconfig" role="tabpanel" aria-labelledby="delete-tab">
+              <div class="tab-pane fade" id="DELETEunconfig" role="tabpanel">
                 {{#> routeDataTable role=role method="DELETE" routes=DELETEunconfig config = false}}
                   DELETE method routes not found
                 {{/routeDataTable}}
               </div>
-              <div class="tab-pane fade" id="PUTunconfig" role="tabpanel" aria-labelledby="put-tab">
+              <div class="tab-pane fade" id="PUTunconfig" role="tabpanel">
                 {{#> routeDataTable role=role method="PUT" routes=PUTunconfig config = false}}
                   PUT method routes not found
                 {{/routeDataTable}}

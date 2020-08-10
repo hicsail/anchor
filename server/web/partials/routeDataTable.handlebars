@@ -14,7 +14,7 @@
         {{#each ../role as |r|}}
           <td>
             <label>
-              <input class="scopeCheck" id="{{r}}" type="checkbox" {{#unless ../../config}}disabled{{/unless}}
+              <input class="scopeCheck" id="{{r}}" type="checkbox"  {{#unless ../../config}}disabled{{/unless}}
                      onchange="onCheckboxClicked(this, {{jsonify scope}}, {{jsonify path}}, {{jsonify method}})" {{#routeHasScope scope r}}checked{{/routeHasScope}}>
             </label>
           </td>

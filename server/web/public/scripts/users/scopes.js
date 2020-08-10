@@ -15,8 +15,7 @@ $(document).ready(() => {
 });
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-  $($.fn.dataTable.tables(true)).DataTable()
-    .columns.adjust();
+  $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
 });
 
 function onCheckboxClicked(cb, scope, path, method) {
