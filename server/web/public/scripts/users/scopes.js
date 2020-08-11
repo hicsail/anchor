@@ -18,8 +18,7 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
   $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
 });
 
-function onCheckboxClicked(cb, scope, path, method) {
-  let role = $(cb).attr("id");
+function onCheckboxClicked(cb, scope, path, method, role) {
   updateScope(path, role, method);
 }
 
@@ -41,8 +40,10 @@ function updateScope(path, scope, method) {
           path
         },
         success: function (result){
-          successAlert(result);
+          localStorage.setItem('scopeUpdated', result);
           location.reload();
+          localStorage.getItem('scopeUpdated');
+          localStorage.removeItem('scopeUpdated');
         },
         error: function (result){
           errorAlert(result.responseJSON.message);

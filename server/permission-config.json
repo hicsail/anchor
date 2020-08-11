@@ -154,8 +154,8 @@
       "root",
       "admin",
       "researcher",
-      "analyst",
-      "clinician"
+      "clinician",
+      "analyst"
     ],
     "/api/auth-attempts": [
       "root",

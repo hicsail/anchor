@@ -908,12 +908,6 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      // const scopeArray = server.table()[0].table.find( (route) => {//getting scopes from the server
-      //
-      //   if (route.hasOwnProperty('path')) {//processing routes in server
-      //     return route.path === request.payload.path && route.method.toUpperCase() === request.payload.method;
-      //   }
-      // });
       //update scope of route
       const scopeArray = PermissionConfigTable[request.payload.method][request.payload.path]; //getting scopes from permission config
       if (scopeArray.includes(request.payload.scope)) {
@@ -966,7 +960,6 @@ internals.applyRoutes = function (server, next) {
           return reply(err);
         }
         if (result) {
-          console.log(result);
           return reply(scopeArray);
         }
       });
