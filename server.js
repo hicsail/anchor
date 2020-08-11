@@ -5,15 +5,12 @@ const Fs = require('fs');
 const DefaultScopes = require('./server/helpers/getRoleNames');
 const RouteScope = require('./server/models/route-scope');
 const Async = require('async');
-const GetRoutes = require('./server/helpers/getRoutes');
 
 Composer( (err, server) => {
 
   if (err) {
     throw err;
   }
-
-  GetRoutes('database');
 
   server.start(() => {
 
