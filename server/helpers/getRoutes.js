@@ -1,6 +1,7 @@
 'use strict';
 const PermissionConfigTable = require('../permission-config.json');
 const DefaultScopes = require('../helpers/getRoleNames');
+const RouteScope = require('../models/route-scope');
 
 module.exports = (flag, server = null) => {//method for getting route information from different sources depending on flag. If flag is not "server" the second parameter should be null.
 
@@ -30,7 +31,21 @@ module.exports = (flag, server = null) => {//method for getting route informatio
   case 'permission-config':
     routes = PermissionConfigTable;
     break;
-  case 'database': //TODO: Create function for getting the routes from db
+  case 'database':
+    RouteScope.find({}, (err, result) => {
+
+      if (err){
+        throw err;
+      }
+      result.forEach((routeDoc) => {
+
+        if (!routes.hasOwnProperty(routeDoc.method)){
+          routes[routeDoc.method] = {};
+        }
+        routes[routeDoc.method][routeDoc.path] = routeDoc.scope;
+      });
+    });
+    break;
   }
   return routes;
 };
