@@ -14,6 +14,14 @@ $(document).ready(() => {
   });
 });
 
+window.onload = () => {//after refresh on scope update, get localStorage message for modal
+  const msg = localStorage.getItem('scopeUpdated');
+  if(msg){
+    localStorage.removeItem('scopeUpdated');
+    successAlert(msg);
+  }
+}
+
 $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
   $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
 });
@@ -42,10 +50,9 @@ function updateScope(path, scope, method) {
         success: function (result){
           localStorage.setItem('scopeUpdated', result);
           location.reload();
-          localStorage.getItem('scopeUpdated');
-          localStorage.removeItem('scopeUpdated');
         },
         error: function (result){
+          localStorage.setItem('scopeError', result.responseJSON.message);
           errorAlert(result.responseJSON.message);
         }
       })
