@@ -27,27 +27,22 @@
     "/clinician": [
       "analyst",
       "clinician",
-      "researcher",
-      "admin",
       "root"
     ],
     "/dashboard": [
       "analyst",
       "root",
       "clinician",
-      "researcher",
       "admin"
     ],
     "/docs": [
       "analyst",
       "clinician",
-      "researcher",
-      "admin",
-      "root"
+      "root",
+      "researcher"
     ],
     "/env": [
-      "root",
-      "admin"
+      "root"
     ],
     "/events": [
       "analyst",
@@ -389,8 +384,7 @@
       "analyst",
       "clinician",
       "researcher",
-      "admin",
-      "root"
+      "admin"
     ],
     "/events/name/{name}": [
       "analyst",
