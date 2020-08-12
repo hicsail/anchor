@@ -12,17 +12,14 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ]
   });
-});
-
-window.onload = () => {//after refresh on scope update, get localStorage message for modal
-  const msg = localStorage.getItem('scopeUpdated');
+  const msg = localStorage.getItem('scopeUpdated');//after refresh on scope update, get localStorage message for modal
   if(msg){
     localStorage.removeItem('scopeUpdated');
     successAlert(msg);
   }
-}
+});
 
-$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){//adjusts the columns of the dataTable on switching between navTabs
   $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
 });
 
