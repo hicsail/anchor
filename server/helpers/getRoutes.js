@@ -1,35 +1,22 @@
 'use strict';
 const PermissionConfigTable = require('../permission-config.json');
-const DefaultScopes = require('../helpers/getRoleNames');
 const RouteScope = require('../models/route-scope');
+const GetServerRoutes = require('./getServerRoutes');
 
-module.exports = (flag, server = null) => {//method for getting route information from different sources depending on flag. If flag is not "server" the second parameter should be null.
+module.exports = (flag, server = null, callback) => {//method for getting route information from different sources depending on flag. If flag is not "server" the second parameter should be null.
 
   let routes = {};
   switch (flag){
   case 'server':
-    if (!server){
+    if (!server){//if getting from the server, must include the second parameter containing the server.
       throw 'server flag with no server data';
     }
-    server.table()[0].table.forEach((item) => {
-
-      if (item.hasOwnProperty('path')){//processing routes in server
-        const path = item.path;
-        const method = item.method.toUpperCase();
-        if (!routes.hasOwnProperty(method)){
-          routes[method] = {};
-        }
-        if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
-          routes[method][path] = item.settings.auth.access[0].scope.selection;
-        }
-        else {//routes don't have scope, assign default value to each route
-          routes[method][path] = DefaultScopes;
-        }
-      }
-    });
+    routes = GetServerRoutes(server);
+    callback(routes);
     break;
   case 'permission-config':
     routes = PermissionConfigTable;
+    callback(routes);
     break;
   case 'database':
     RouteScope.find({}, (err, result) => {
@@ -44,8 +31,8 @@ module.exports = (flag, server = null) => {//method for getting route informatio
         }
         routes[routeDoc.method][routeDoc.path] = routeDoc.scope;
       });
+      callback(routes);
     });
     break;
   }
-  return routes;
 };

@@ -1,17 +1,18 @@
 {
   "GET": {
     "/account": [
-      "admin",
-      "root",
       "analyst",
+      "clinician",
       "researcher",
-      "clinician"
+      "admin",
+      "root"
     ],
     "/api": [
       "analyst",
+      "clinician",
+      "researcher",
       "admin",
-      "root",
-      "clinician"
+      "root"
     ],
     "/authAttempts": [
       "analyst",
@@ -27,22 +28,27 @@
     "/clinician": [
       "analyst",
       "clinician",
+      "researcher",
+      "admin",
       "root"
     ],
     "/dashboard": [
       "analyst",
-      "root",
       "clinician",
-      "admin"
+      "researcher",
+      "admin",
+      "root"
     ],
     "/docs": [
       "analyst",
       "clinician",
-      "root",
-      "researcher"
+      "researcher",
+      "admin",
+      "root"
     ],
     "/env": [
-      "root"
+      "root",
+      "admin"
     ],
     "/events": [
       "analyst",
@@ -139,17 +145,17 @@
       "root"
     ],
     "/users": [
+      "analyst",
+      "clinician",
       "researcher",
       "admin",
-      "root",
-      "analyst",
-      "clinician"
+      "root"
     ],
     "/": [
-      "root",
-      "admin",
-      "researcher",
       "clinician",
+      "researcher",
+      "admin",
+      "root",
       "analyst"
     ],
     "/api/auth-attempts": [
@@ -384,7 +390,8 @@
       "analyst",
       "clinician",
       "researcher",
-      "admin"
+      "admin",
+      "root"
     ],
     "/events/name/{name}": [
       "analyst",
@@ -419,13 +426,6 @@
       "researcher"
     ],
     "/api/table/clinicians/{id}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/scopeCheck": [
       "analyst",
       "clinician",
       "researcher",
@@ -681,18 +681,19 @@
     ],
     "/api/users/{id}/participation": [
       "root",
-      "admin"
+      "admin",
+      "researcher"
     ],
     "/api/users/{id}/password": [
       "root",
       "admin"
     ],
     "/api/users/{role}/{id}": [
+      "analyst",
       "clinician",
       "researcher",
       "admin",
-      "root",
-      "analyst"
+      "root"
     ]
   }
 }
