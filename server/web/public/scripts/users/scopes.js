@@ -24,11 +24,12 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){//adjusts the columns o
 });
 
 function onCheckboxClicked(cb, scope, path, method, role) {
+
   updateScope(path, role, method);
 }
 
 function updateScope(path, scope, method) {
-  $.ajax({
+  $.ajax({//triggers api route that updates the scopes of routes in the config
     url: '/api/users/scopes',
     type: 'PUT',
     data: {

@@ -24,22 +24,22 @@
           <div style="padding: 20px">
             <div class="tab-content" id="configTabContent">
               <div class="tab-pane fade show active" id="GET" role="tabpanel">
-                {{#> routeDataTable role=role method="GET" routes=GET config = true}}
+                {{#> routeDataTable role=role method="GET" routes=GET disable = false}}
                   GET method routes not found
                 {{/routeDataTable}}
               </div>
               <div class="tab-pane fade" id="POST" role="tabpanel">
-                {{#> routeDataTable role=role method="POST" routes=POST config = true}}
+                {{#> routeDataTable role=role method="POST" routes=POST disable = false}}
                   POST method routes not found
                 {{/routeDataTable}}
               </div>
               <div class="tab-pane fade" id="DELETE" role="tabpanel">
-                {{#> routeDataTable role=role method="DELETE" routes=DELETE config = true}}
+                {{#> routeDataTable role=role method="DELETE" routes=DELETE disable = false}}
                   DELETE method routes not found
                 {{/routeDataTable}}
               </div>
               <div class="tab-pane fade" id="PUT" role="tabpanel">
-                {{#> routeDataTable role=role method="PUT" routes=PUT config = true}}
+                {{#> routeDataTable role=role method="PUT" routes=PUT disable = false}}
                   PUT method routes not found
                 {{/routeDataTable}}
               </div>
@@ -67,22 +67,22 @@
           <div style="padding: 20px">
             <div class="tab-content" id="unConfigTabContent">
               <div class="tab-pane fade show active" id="GETunconfig" role="tabpanel">
-                {{#> routeDataTable role=role method="GET" routes=GETunconfig config = false}}
+                {{#> routeDataTable role=role method="GET" routes=GETunconfig disable = true}}
                   GET method routes not found
                 {{/routeDataTable}}
               </div>
               <div class="tab-pane fade" id="POSTunconfig" role="tabpanel">
-                {{#> routeDataTable role=role method="POST" routes=POSTunconfig config = false}}
+                {{#> routeDataTable role=role method="POST" routes=POSTunconfig disable = true}}
                   POST method routes not found
                 {{/routeDataTable}}
               </div>
               <div class="tab-pane fade" id="DELETEunconfig" role="tabpanel">
-                {{#> routeDataTable role=role method="DELETE" routes=DELETEunconfig config = false}}
+                {{#> routeDataTable role=role method="DELETE" routes=DELETEunconfig disable = true}}
                   DELETE method routes not found
                 {{/routeDataTable}}
               </div>
               <div class="tab-pane fade" id="PUTunconfig" role="tabpanel">
-                {{#> routeDataTable role=role method="PUT" routes=PUTunconfig config = false}}
+                {{#> routeDataTable role=role method="PUT" routes=PUTunconfig disable = true}}
                   PUT method routes not found
                 {{/routeDataTable}}
               </div>
