@@ -797,13 +797,16 @@ internals.applyRoutes = function (server, next) {
 
       User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
 
-        err ?
-          reply(err) :
+        if (err){
+          reply(err);
+        }
+        else {
           reply({
             _id: updatedUser._id,
             username: updatedUser.username,
             roles: updatedUser.roles
           });
+        }
       });
     }
   });
@@ -876,13 +879,16 @@ internals.applyRoutes = function (server, next) {
 
       User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
 
-        err ?
-          reply(err) :
+        if (err) {
+          reply(err);
+        }
+        else {
           reply({
             _id: updatedUser._id,
             username: updatedUser.username,
             roles: updatedUser.roles
           });
+        }
       });
     }
   });
