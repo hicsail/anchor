@@ -959,9 +959,8 @@ internals.applyRoutes = function (server, next) {
         if (err){
           return reply(err);
         }
-        if (result) {
-          return reply(scopeArray);
-        }
+
+        return reply(true);
       });
     }
   });

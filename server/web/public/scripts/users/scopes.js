@@ -12,11 +12,16 @@ $(document).ready(() => {
       'copy', 'csv', 'excel', 'pdf', 'print','colvis'
     ]
   });
-  const msg = localStorage.getItem('scopeUpdated');//after refresh on scope update, get localStorage message for modal
-  if(msg){
-    localStorage.removeItem('scopeUpdated');
+  const msg = localStorage.getItem('modalMessage');//after refresh on scope update, get localStorage message for modal
+  switch(msg){//switch through modal message received, if unconfigurable message then give an error alert and vice versa.
+  case 'Unable to Update Route\'s scope':
+    errorAlert(msg);
+    break;
+  case 'Updated Route\'s Scope':
     successAlert(msg);
+    break;
   }
+  localStorage.removeItem('scopeUpdated');
 });
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){//adjusts the columns of the dataTable on switching between navTabs
@@ -24,7 +29,6 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){//adjusts the columns o
 });
 
 function onCheckboxClicked(cb, scope, path, method, role) {
-
   updateScope(path, role, method);
 }
 
@@ -46,7 +50,7 @@ function updateScope(path, scope, method) {
           path
         },
         success: function (result){
-          localStorage.setItem('scopeUpdated', result);
+          localStorage.setItem('modalMessage', result);
           location.reload();
         },
         error: function (result){
