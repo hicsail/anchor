@@ -1,7 +1,7 @@
 'use strict';
 const User = require('../../models/user');
 
-module.exports = (user, userRow, role, options) => { //Only disable CB if userRow is root and
+module.exports = (user, userRow, role, options) => { //Checks and disable checkbox if user's role is lower than the specific role in route's scope.
 
   if (userRow.roles.root || User.highestRole(user.roles) < User.highestRole({ [role]: true })){
     return options.fn(this);

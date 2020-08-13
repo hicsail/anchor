@@ -21,18 +21,14 @@ $(document).ready(() => {
     successAlert(msg);
     break;
   }
-  localStorage.removeItem('scopeUpdated');
+  localStorage.removeItem('modalMessage');
 });
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){//adjusts the columns of the dataTable on switching between navTabs
   $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
 });
 
-function onCheckboxClicked(cb, scope, path, method, role) {
-  updateScope(path, role, method);
-}
-
-function updateScope(path, scope, method) {
+function updateScope(path, method, scope) {
   $.ajax({//triggers api route that updates the scopes of routes in the config
     url: '/api/users/scopes',
     type: 'PUT',
@@ -54,7 +50,6 @@ function updateScope(path, scope, method) {
           location.reload();
         },
         error: function (result){
-          localStorage.setItem('scopeError', result.responseJSON.message);
           errorAlert(result.responseJSON.message);
         }
       })

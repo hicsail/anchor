@@ -19,12 +19,12 @@ module.exports = (flag, server = null, callback) => {//method for getting route 
     callback(routes);
     break;
   case 'database':
-    RouteScope.find({}, (err, result) => {
+    RouteScope.find({}, (err, result) => {//finds all routes in routeScope collection
 
       if (err){
         throw err;
       }
-      result.forEach((routeDoc) => {
+      result.forEach((routeDoc) => {//fill up the routes object with routes from the db.
 
         if (!routes.hasOwnProperty(routeDoc.method)){
           routes[routeDoc.method] = {};
