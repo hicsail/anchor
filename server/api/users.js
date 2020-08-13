@@ -745,17 +745,19 @@ internals.applyRoutes = function (server, next) {
         assign: 'canChangeRoles',
         method: function (request, reply){
 
-          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
-            reply(true) :
-            reply(Boom.conflict('Unable to promote a higher access level than your own'));
+          if (User.highestRole(request.auth.credentials.user.roles) < User.highestRole({ [request.params.role]: true })) {
+            return reply(Boom.conflict('Unable to promote a higher access level than your own'));
+          }
+          reply(true);
         }
       },{
         assign: 'notYou',
         method: function (request, reply) {
 
-          request.auth.credentials.user._id === request.params.id ?
-            reply(Boom.conflict('Unable to promote yourself')) :
-            reply(true);
+          if (request.auth.credentials.user._id === request.params.id){
+            return reply(Boom.conflict('Unable to promote yourself'));
+          }
+          reply(true);
         }
       },{
         assign: 'user',
@@ -768,11 +770,11 @@ internals.applyRoutes = function (server, next) {
           User.findById(request.params.id, findOptions, (err, user) => {
 
             if (err) {
-              reply(err);
+              return reply(err);
             }
 
             if (!user) {
-              reply(Boom.notFound('User not found to promote'));
+              return reply(Boom.notFound('User not found to promote'));
             }
 
             reply(user);
@@ -787,9 +789,12 @@ internals.applyRoutes = function (server, next) {
         reply(user);
       }
 
-      request.params.role === 'clinician' ?
-        user.roles.clinician = Clinician.create([]) :
+      if (request.params.role === 'clinician'){
+        user.roles.clinician = Clinician.create([]);
+      }
+      else {
         user.roles[request.params.role] = true;
+      }
 
       const update = {
         $set: {
@@ -830,17 +835,19 @@ internals.applyRoutes = function (server, next) {
         assign: 'canChangeRoles',
         method: function (request, reply){
 
-          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
-            reply(true) :
-            reply(Boom.conflict('Unable to demote a higher access level than your own'));
+          if (User.highestRole(request.auth.credentials.user.roles) < User.highestRole({ [request.params.role]: true })){
+            return reply(Boom.conflict('Unable to demote a higher access level than your own'));
+          }
+          reply(true);
         }
       },{
         assign: 'notYou',
         method: function (request, reply) {
 
-          request.auth.credentials.user._id === request.params.id ?
-            reply(Boom.conflict('Unable to promote yourself')) :
-            reply(true);
+          if (request.auth.credentials.user._id === request.params.id){
+            return reply(Boom.conflict('Unable to promote yourself'));
+          }
+          reply(true);
         }
       },{
         assign: 'user',
@@ -853,11 +860,11 @@ internals.applyRoutes = function (server, next) {
           User.findById(request.params.id, findOptions, (err, user) => {
 
             if (err) {
-              reply(err);
+              return reply(err);
             }
 
             if (!user) {
-              reply(Boom.notFound('User not found to promote'));
+              return reply(Boom.notFound('User not found to promote'));
             }
 
             reply(user);
@@ -868,11 +875,7 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
-
-      !request.params.role in DefaultScopes ?
-        reply(user) :
-        delete user.roles[request.params.role];
-
+      delete user.roles[request.params.role];
       const update = {
         $set: {
           roles: user.roles
@@ -906,9 +909,10 @@ internals.applyRoutes = function (server, next) {
         assign: 'canChangeScope',
         method: function (request, reply) {
 
-          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
-            reply(true) :
-            reply(Boom.conflict('Unable to change higher scope permissions than your role'));
+          if (User.highestRole(request.auth.credentials.user.roles) < User.highestRole({ [request.params.role]: true })){
+            return reply(Boom.conflict('Unable to change higher scope permissions than your role'));
+          }
+          reply(true);
         }
       }]
     },
