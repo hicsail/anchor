@@ -4,7 +4,6 @@ const Clinician = require('../models/clinician');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
-const Authorization = require('../web/helpers/authorization');
 
 const internals = {};
 
@@ -136,17 +135,6 @@ internals.applyRoutes = function (server, next) {
       auth: {
         strategies: ['simple', 'jwt', 'session']
       },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['GET/api/users']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ],
       validate: {
         query: {
           fields: Joi.string(),
@@ -182,18 +170,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['GET/api/users/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -253,15 +230,6 @@ internals.applyRoutes = function (server, next) {
         payload: User.payload
       },
       pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['POST/api/users']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        },
         {
           assign: 'usernameCheck',
           method: function (request, reply) {
@@ -357,15 +325,6 @@ internals.applyRoutes = function (server, next) {
       },
       pre: [
         {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['GET/api/users/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        },
-        {
           assign: 'usernameCheck',
           method: function (request, reply) {
 
@@ -453,18 +412,7 @@ internals.applyRoutes = function (server, next) {
           inStudy: Joi.boolean().required(),
           studyID: Joi.number().required()
         }
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['PUT/api/users/{id}/participation']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -609,15 +557,6 @@ internals.applyRoutes = function (server, next) {
       },
       pre: [
         {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['PUT/api/users/{id}/password']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        },
-        {
           assign: 'password',
           method: function (request, reply) {
 
@@ -759,18 +698,7 @@ internals.applyRoutes = function (server, next) {
         params: {
           id: Joi.string().invalid('000000000000000000000000')
         }
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['DELETE/api/users/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
