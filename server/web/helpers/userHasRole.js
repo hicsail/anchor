@@ -6,6 +6,3 @@ module.exports = (user, roleName, options) => { //Block helper for checking if u
     options.fn(this) :
     options.inverse(this);
 };
-
-
-
