@@ -5,6 +5,7 @@ const Clinician = require('./clinician');
 const Joi = require('joi');
 const Hoek = require('hoek');
 const AnchorModel = require('../anchor/anchor-model');
+const Config = require('../../config');
 
 
 class User extends AnchorModel {
@@ -94,23 +95,22 @@ class User extends AnchorModel {
   }
 
   static highestRole(roles) {
+    
+    let maxAccessLevel = 0;
+    let roleDict = {};
 
-    if (roles.root) {
-      return 5;
+    Config.get('/roles').forEach((roleObj) => { 
+
+        roleDict[roleObj['name']] = roleObj['accessLevel'];
+    });    
+    
+    for (let role in roles) {
+
+        if (roleDict[role] >= maxAccessLevel)
+          maxAccessLevel = roleDict[role];        
     }
-    else if (roles.admin) {
-      return 4;
-    }
-    else if (roles.researcher) {
-      return 3;
-    }
-    else if (roles.clinician) {
-      return 2;
-    }
-    else if (roles.analyst) {
-      return 1;
-    }
-    return 0;
+
+    return maxAccessLevel;    
   }
 
   constructor(attrs) {

@@ -493,609 +493,152 @@ const register = function (server, options) {
     }
   });
 
-  /*server.route({
+  server.route({
     method: 'PUT',
-    path: '/users/clinician/{id}',
-    config: {
+    path: '/api/users/{role}/{id}',
+    options: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         params: {
-          id: Joi.string().invalid('000000000000000000000000')
+          id: Joi.string().invalid('000000000000000000000000'),
+          role: Joi.string().valid(...(Config.get('/roles').map((role) => {
+
+            return role.name;
+          })))
         }
       },
       pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id === request.params.id) {
-            return reply(Boom.conflict('Unable to promote yourself'));
-          }
-
-          reply(true);
+        assign: 'canChangeRoles',
+        method: function (request, h){          
+          return h.continue;
+          /*User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
+            reply(true) :
+            reply(Boom.conflict('Unable to promote a higher access level than your own'));*/
         }
-      }, {
+      },{
+        assign: 'notYou',
+        method: function (request, h) {
+      
+          if (request.auth.credentials.user._id === request.params.id)
+            throw Boom.conflict('Unable to promote yourself.');
+
+          return h.continue;
+        }
+      },{
         assign: 'user',
-        method: function (request, reply) {
+        method: async function (request, h) {
 
           const findOptions = {
             fields: User.fieldsAdapter('username roles')
           };
 
-          User.findById(request.params.id, findOptions, (err, user) => {
+          const user = await User.findById(request.params.id, findOptions);
 
-            if (err) {
-              return reply(err);
-            }
+          if (!user) {
+              throw Boom.notFound('User not found to promote.');
+          }
 
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
+          return user;         
         }
       }]
     },
-    handler: function (request, reply) {
+    handler: async function (request, h) {
 
-      const user = request.pre.user;
+      const user = request.pre.user;     
 
-      if (user.roles.clinician) {
-        return reply(user);
-      }
+      request.params.role === 'clinician' ?
+        user.roles.clinician = Clinician.create([]) :
+        user.roles[request.params.role] = true;
 
-      user.roles.clinician = Clinician.create([]);
       const update = {
         $set: {
           roles: user.roles
         }
       };
 
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
+      const updatedUser = await User.findByIdAndUpdate(request.params.id, update);
 
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
+      return {
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        roles: updatedUser.roles
+      };      
     }
   });
 
   server.route({
     method: 'DELETE',
-    path: '/users/clinician/{id}',
-    config: {
+    path: '/api/users/{role}/{id}',
+    options: {
       auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        strategies: ['simple', 'jwt', 'session']
       },
       validate: {
         params: {
-          id: Joi.string().invalid('000000000000000000000000')
+          id: Joi.string().invalid('000000000000000000000000'),
+          role: Joi.string().valid(...(Config.get('/roles').map((role) => {
+
+            return role.name;
+          })))
         }
       },
       pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id.toString() === request.params.id) {
-            return reply(Boom.conflict('Unable to demote yourself'));
-          }
-          reply(true);
+        assign: 'canChangeRoles',
+        method: function (request, h){
+           return h.continue;
+          /*User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
+            reply(true) :
+            reply(Boom.conflict('Unable to demote a higher access level than your own'));*/
         }
-      }, {
+      },{
+        assign: 'notYou',
+        method: function (request, h) {
+
+          if (request.auth.credentials.user._id === request.params.id)
+            throw Boom.conflict('Unable to demote yourself.');
+
+          return h.continue;
+        }
+      },{
         assign: 'user',
-        method: function (request, reply) {
+        method: async function (request, h) {
 
           const findOptions = {
             fields: User.fieldsAdapter('username roles')
           };
 
-          User.findById(request.params.id, findOptions, (err, user) => {
+          const user = await User.findById(request.params.id, findOptions);
 
-            if (err) {
-              return reply(err);
-            }
-
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
+          if (!user) {
+            throw Boom.notFound('User not found to promote');
+          }
+          return user;          
         }
       }]
     },
-    handler: function (request, reply) {
+    handler: async function (request, h) {
 
       const user = request.pre.user;
 
-      if (!user.roles.clinician) {
-        return reply(user);
-      }
+      delete user.roles[request.params.role];
 
-      delete user.roles.clinician;
       const update = {
         $set: {
           roles: user.roles
         }
       };
 
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
+      const updatedUser = await User.findByIdAndUpdate(request.params.id, update);
 
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
+      return {
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        roles: updatedUser.roles
+      };      
     }
-  });
-
-  server.route({
-    method: 'PUT',
-    path: '/users/analyst/{id}',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
-      },
-      validate: {
-        params: {
-          id: Joi.string().invalid('000000000000000000000000')
-        }
-      },
-      pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id === request.params.id) {
-            return reply(Boom.conflict('Unable to promote yourself'));
-          }
-
-          reply(true);
-        }
-      }, {
-        assign: 'user',
-        method: function (request, reply) {
-
-          const findOptions = {
-            fields: User.fieldsAdapter('username roles')
-          };
-
-          User.findById(request.params.id, findOptions, (err, user) => {
-
-            if (err) {
-              return reply(err);
-            }
-
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
-        }
-      }]
-    },
-    handler: function (request, reply) {
-
-      const user = request.pre.user;
-
-      if (user.roles.analyst) {
-        return reply(user);
-      }
-
-      user.roles.analyst = true;
-      const update = {
-        $set: {
-          roles: user.roles
-        }
-      };
-
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
-    }
-  });
-
-  server.route({
-    method: 'DELETE',
-    path: '/users/analyst/{id}',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
-      },
-      validate: {
-        params: {
-          id: Joi.string().invalid('000000000000000000000000')
-        }
-      },
-      pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id.toString() === request.params.id) {
-            return reply(Boom.conflict('Unable to demote yourself'));
-          }
-          reply(true);
-        }
-      }, {
-        assign: 'user',
-        method: function (request, reply) {
-
-          const findOptions = {
-            fields: User.fieldsAdapter('username roles')
-          };
-
-          User.findById(request.params.id, findOptions, (err, user) => {
-
-            if (err) {
-              return reply(err);
-            }
-
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
-        }
-      }]
-    },
-    handler: function (request, reply) {
-
-      const user = request.pre.user;
-
-      if (!user.roles.analyst) {
-        return reply(user);
-      }
-
-      delete user.roles.analyst;
-      const update = {
-        $set: {
-          roles: user.roles
-        }
-      };
-
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
-    }
-  });
-
-  server.route({
-    method: 'PUT',
-    path: '/users/researcher/{id}',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin']
-      },
-      validate: {
-        params: {
-          id: Joi.string().invalid('000000000000000000000000')
-        }
-      },
-      pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id === request.params.id) {
-            return reply(Boom.conflict('Unable to promote yourself'));
-          }
-
-          reply(true);
-        }
-      }, {
-        assign: 'user',
-        method: function (request, reply) {
-
-          const findOptions = {
-            fields: User.fieldsAdapter('username roles')
-          };
-
-          User.findById(request.params.id, findOptions, (err, user) => {
-
-            if (err) {
-              return reply(err);
-            }
-
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
-        }
-      }]
-    },
-    handler: function (request, reply) {
-
-      const user = request.pre.user;
-
-      if (user.roles.researcher) {
-        return reply(user);
-      }
-
-      user.roles.researcher = true;
-      const update = {
-        $set: {
-          roles: user.roles
-        }
-      };
-
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
-    }
-  });
-
-  server.route({
-    method: 'DELETE',
-    path: '/users/researcher/{id}',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin']
-      },
-      validate: {
-        params: {
-          id: Joi.string().invalid('000000000000000000000000')
-        }
-      },
-      pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id.toString() === request.params.id) {
-            return reply(Boom.conflict('Unable to demote yourself'));
-          }
-          reply(true);
-        }
-      }, {
-        assign: 'user',
-        method: function (request, reply) {
-
-          const findOptions = {
-            fields: User.fieldsAdapter('username roles')
-          };
-
-          User.findById(request.params.id, findOptions, (err, user) => {
-
-            if (err) {
-              return reply(err);
-            }
-
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
-        }
-      }]
-    },
-    handler: function (request, reply) {
-
-      const user = request.pre.user;
-
-      if (!user.roles.researcher) {
-        return reply(user);
-      }
-
-      delete user.roles.researcher;
-      const update = {
-        $set: {
-          roles: user.roles
-        }
-      };
-
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
-    }
-  });
-
-  server.route({
-    method: 'PUT',
-    path: '/users/admin/{id}',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root']
-      },
-      validate: {
-        params: {
-          id: Joi.string().invalid('000000000000000000000000')
-        }
-      },
-      pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id === request.params.id) {
-            return reply(Boom.conflict('Unable to promote yourself'));
-          }
-
-          reply(true);
-        }
-      }, {
-        assign: 'user',
-        method: function (request, reply) {
-
-          const findOptions = {
-            fields: User.fieldsAdapter('username roles')
-          };
-
-          User.findById(request.params.id, findOptions, (err, user) => {
-
-            if (err) {
-              return reply(err);
-            }
-
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
-        }
-      }]
-    },
-    handler: function (request, reply) {
-
-      const user = request.pre.user;
-
-      if (user.roles.admin) {
-        return reply(user);
-      }
-
-      user.roles.admin = true;
-      const update = {
-        $set: {
-          roles: user.roles
-        }
-      };
-
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
-    }
-  });
-
-  server.route({
-    method: 'DELETE',
-    path: '/users/admin/{id}',
-    config: {
-      auth: {
-        strategies: ['simple', 'jwt', 'session'],
-        scope: ['root']
-      },
-      validate: {
-        params: {
-          id: Joi.string().invalid('000000000000000000000000')
-        }
-      },
-      pre: [{
-        assign: 'notYou',
-        method: function (request, reply) {
-
-          if (request.auth.credentials.user._id.toString() === request.params.id) {
-            return reply(Boom.conflict('Unable to demote yourself'));
-          }
-          reply(true);
-        }
-      }, {
-        assign: 'user',
-        method: function (request, reply) {
-
-          const findOptions = {
-            fields: User.fieldsAdapter('username roles')
-          };
-
-          User.findById(request.params.id, findOptions, (err, user) => {
-
-            if (err) {
-              return reply(err);
-            }
-
-            if (!user) {
-              return reply(Boom.notFound('User not found to promote'));
-            }
-
-            reply(user);
-          });
-        }
-      }]
-    },
-    handler: function (request, reply) {
-
-      const user = request.pre.user;
-
-      if (!user.roles.admin) {
-        return reply(user);
-      }
-
-      delete user.roles.admin;
-      const update = {
-        $set: {
-          roles: user.roles
-        }
-      };
-
-      User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
-
-        if (err) {
-          return reply(err);
-        }
-
-        reply({
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          roles: updatedUser.roles
-        });
-      });
-    }
-  });*/  
+  });  
 };
 
 module.exports = {

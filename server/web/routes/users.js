@@ -29,6 +29,44 @@ const register = function (server, options) {
     path: '/roles',
     options: {
       auth: {
+        strategies: ['session']
+      },
+      pre: [
+        {
+          assign: 'Authorization',
+          method: (request, h) => {
+            return h.continue; 
+            /*Authorization(request, PermissionConfigTable['/roles']) ?
+              reply(true) :
+              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));*/
+          }
+        }
+      ]
+    },
+    handler: async function (request, h) {
+
+      const users = await User.find({});
+
+      if (!users) {        
+        throw Boom.notFound('Document not found.');        
+      }
+
+      return h.view('users/roles', {
+        user: request.auth.credentials.user,
+        usersList: users,
+        projectName: Config.get('/projectName'),
+        title: 'Users',
+        baseUrl: Config.get('/baseUrl'),
+        role: Config.get('/roles')
+      });      
+    }
+  });
+
+  /*server.route({
+    method: 'GET',
+    path: '/roles',
+    options: {
+      auth: {
         strategies: ['session'],
         scope: ['root', 'admin', 'researcher']
       }
@@ -42,7 +80,7 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl')
       });
     }
-  });
+  });*/
 
   server.route({
     method: 'GET',

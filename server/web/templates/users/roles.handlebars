@@ -3,69 +3,42 @@
     {{>dashboardNav}}
     <div class="col-sm-9 col-md-10">
       <div style="padding: 30px">
-        <h3>Roles</h3>
-        <hr>
-        <p>Click on user to change permissions</p>
+        <h3>User Roles</h3>
+        <hr>        
         <div class="card">
           <div style="padding: 20px">
             <table id="userTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
               <thead>
-              <tr>
-                <th>Username</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Clinician</th>
-                <th>Analyst</th>
-                <th>Researcher</th>
-                <th>Admin</th>
-                <th>Root</th>
-              </tr>
+                <tr>
+                  <th>Username</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  {{#each role}}
+                    <th>{{this.name}}</th>
+                  {{/each}}
+                </tr>
               </thead>
+              <tbody>
+                {{#each usersList as |userRow|}}
+                  <tr>
+                    <td>{{userRow.username}}</td>
+                    <td>{{userRow.name}}</td>
+                    <td>{{userRow.email}}</td>
+
+                    {{#each ../role as |role|}}
+                        <td>
+                          <label>
+                            <input class="roleCheck" id="{{role.name}}" type="checkbox" onchange="onCheckboxClicked(this, {{json userRow._id}})" {{#disableCB ../../user userRow role}}disabled{{/disableCB}} {{#userHasRole userRow name}}checked{{/userHasRole}}>
+                          </label>
+                        </td>
+                    {{/each}}
+                  </tr>
+                {{/each}}
+              </tbody>
             </table>
           </div>
         </div>
         <br>
-        <div class="card" id="roleCard" style="padding: 20px">
-          <table class="table table-striped table-bordered" cellspacing="0" width="100%">
-            <thead>
-            <tr>
-              <th>Username</th>
-              <th>Clinician</th>
-              <th>Analyst</th>
-              <th>Researcher</th>
-              <th>Admin</th>
-              <th>Root</th>
-            </tr>
-            <tbody>
-            <tr>
-              <td id="username">username</td>
-              <td>
-                <button id="clinician" class="btn btn-primary">Promote</button>
-              </td>
-              <td>
-                <button id="analyst" class="btn btn-secondary">Promote</button>
-              </td>
-              <td>
-                {{#if user.roles.root}}
-                  <button id="researcher" class="btn btn-info">Promote</button>
-                {{else if user.roles.admin}}
-                  <button id="researcher" class="btn btn-info">Promote</button>
-                {{else}}
-                  <button id="researcher" hidden class="btn btn-info">Promote</button>
-                {{/if}}
-              </td>
-              <td>
-                {{#if user.roles.root}}
-                  <button id="admin" class="btn btn-warning">Promote</button>
-                {{else}}
-                  <button id="admin" hidden class="btn btn-warning">Promote</button>
-                {{/if}}
-              </td>
-              <td id="root"></td>
-            </tr>
-            </thead>
-          </table>
-        </div>
       </div>
     </div>
   </div>
