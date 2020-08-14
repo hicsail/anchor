@@ -29,7 +29,7 @@
                     {{#each ../role as |role|}}
                         <td>
                           <label>
-                            <input class="roleCheck" id="{{role.name}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify userRow._id}})" {{#disableCB ../../user userRow role}}disabled{{/disableCB}} {{#userHasRole userRow name}}checked{{/userHasRole}}>
+                            <input class="roleCheck" id="{{role.name}}" type="checkbox" onchange="onCheckboxClicked(this, {{json userRow._id}})" {{#disableCB ../../user userRow role}}disabled{{/disableCB}} {{#userHasRole userRow name}}checked{{/userHasRole}}>
                           </label>
                         </td>
                     {{/each}}
