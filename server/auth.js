@@ -8,15 +8,9 @@ const User = require('./models/user');
 const register = function (server, options) {  
 
   server.auth.strategy('simple', 'basic', {
-    validate: async function (request, sessionId, sessionKey) {
-      
-      const session = await Session.findByCredentials(sessionId, sessionKey);
+    validate: async function (request, username, password) {
 
-      if (!session) {
-          return { isValid: false };
-      }
-
-      const user = await User.findById(session.userId);
+      const user = await User.findByCredentials(username, password);
 
       if (!user) {
           return { isValid: false };
@@ -26,12 +20,21 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
+      const sessionId = request.state.AuthCookie._id.toString();
+      const sessionKey = request.state.AuthCookie.key;
+
+      const session = await Session.findByCredentials(sessionId, sessionKey);
+      
+      if (!session) {         
+          return { isValid: false };
+      }    
+
       const update = {
         $set: {
           lastActive: new Date()
         }
       };
-
+ 
       await Session.findByIdAndUpdate(session._id.toString(), update);
 
       const credentials = {
@@ -92,7 +95,7 @@ const register = function (server, options) {
     redirectTo: '/login',
     //appendNext: 'returnUrl',
     validateFunc: async function (request, data) {
-      
+          
       const id = data._id;
       const key = data.key;
 

@@ -102,7 +102,29 @@ const config = {
     numeric: 1,
     symbol: 1,
     requirementCount: 3
-  }
+  },
+  role:[
+    {
+      'name': 'analyst',
+      'accessLevel': '1'
+    },
+    {
+      'name': 'clinician',
+      'accessLevel': '2'
+    },
+    {
+      'name': 'researcher',
+      'accessLevel': '3'
+    },
+    {
+      'name': 'admin',
+      'accessLevel': '4'
+    },
+    {
+      'name': 'root',
+      'accessLevel': '5'
+    }
+  ]
 };
 
 
