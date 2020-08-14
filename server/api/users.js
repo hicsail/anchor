@@ -4,7 +4,6 @@ const Clinician = require('../models/clinician');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
-const PermissionConfigTable = require('../../permission-config');
 const Authorization = require('../web/helpers/authorization');
 
 const internals = {};

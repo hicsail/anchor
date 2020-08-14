@@ -1,6 +1,5 @@
 'use strict';
 const Composer = require('./index');
-const PermissionConfig = require('./server/models/permission-config');
 
 Composer((err, server) => {
 

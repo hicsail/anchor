@@ -4,7 +4,6 @@ const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
-const PermissionConfigTable = require('../../../permission-config');
 const Authorization = require('../helpers/authorization');
 
 internals.applyRoutes = function (server, next) {
