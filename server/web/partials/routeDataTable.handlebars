@@ -15,7 +15,7 @@
           <td>
             <label>
               <input class="scopeCheck" type="checkbox" {{#if ../../disable}}disabled{{/if}}
-                     onchange="updateScope({{jsonify path}}, {{jsonify ../../method}}, {{jsonify r}})" {{#routeHasScope scope r}}checked{{/routeHasScope}}>
+                     onchange="updateScope({{json path}}, {{json ../../method}}, {{json r}})" {{#routeHasScope scope r}}checked{{/routeHasScope}}>
             </label>
           </td>
         {{/each}}
