@@ -4,7 +4,6 @@ const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
 const Boom = require('boom');
-const Authorization = require('../helpers/authorization');
 
 internals.applyRoutes = function (server, next) {
 
@@ -33,18 +32,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/roles']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -76,18 +64,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/participation']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -106,18 +83,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/users/create']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -141,18 +107,7 @@ internals.applyRoutes = function (server, next) {
         params: {
           id: Joi.string().invalid('000000000000000000000000')
         }
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/change-password/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
@@ -171,7 +126,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: PermissionConfigTable['/users/{id}'] //I am unsure whether you want to use pre or scope...
+        scope: ['root', 'admin']
       }
     },
     handler: function (request, reply) {
@@ -200,18 +155,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session'
-      },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, reply) => {
-
-            Authorization(request, PermissionConfigTable['/users/clinicians/{id}']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));
-          }
-        }
-      ]
+      }
     },
     handler: function (request, reply) {
 
