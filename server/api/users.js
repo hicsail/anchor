@@ -754,12 +754,12 @@ internals.applyRoutes = function (server, next) {
         assign: 'notYou',
         method: function (request, reply) {
 
-          if (request.auth.credentials.user._id === request.params.id){
+          if (request.auth.credentials.user._id === request.params.id) {
             return reply(Boom.conflict('Unable to promote yourself'));
           }
           reply(true);
         }
-      },{
+      }, {
         assign: 'user',
         method: function (request, reply) {
 
@@ -785,8 +785,9 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
-      if (request.params.role in DefaultScopes){
-        reply(user);
+
+      if (user.roles[request.params.role]) {
+        return reply(user);
       }
 
       if (request.params.role === 'clinician'){
@@ -804,16 +805,15 @@ internals.applyRoutes = function (server, next) {
 
       User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
 
-        if (err){
-          reply(err);
+        if (err) {
+          return reply(err);
         }
-        else {
-          reply({
-            _id: updatedUser._id,
-            username: updatedUser.username,
-            roles: updatedUser.roles
-          });
-        }
+
+        reply({
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          roles: updatedUser.roles
+        });
       });
     }
   });
