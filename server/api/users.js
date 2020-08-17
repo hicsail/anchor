@@ -10,7 +10,6 @@ const RouteScope = require('../models/route-scope');
 const PermissionConfigTable = require('../permission-config.json');
 const Fs = require('fs');
 
-
 const internals = {};
 
 
@@ -138,7 +137,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope:PermissionConfigTable.GET['/api/users'] || DefaultScopes
+        scope: PermissionConfigTable.GET['/api/users'] || DefaultScopes
       },
       validate: {
         query: {
@@ -875,6 +874,11 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
+
+      if (!user.roles[request.params.role]) {
+        return reply(user);
+      }
+
       delete user.roles[request.params.role];
       const update = {
         $set: {
@@ -885,15 +889,14 @@ internals.applyRoutes = function (server, next) {
       User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
 
         if (err) {
-          reply(err);
+          return reply(err);
         }
-        else {
-          reply({
-            _id: updatedUser._id,
-            username: updatedUser.username,
-            roles: updatedUser.roles
-          });
-        }
+
+        reply({
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          roles: updatedUser.roles
+        });
       });
     }
   });
@@ -904,17 +907,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
-      },
-      pre: [{
-        assign: 'canChangeScope',
-        method: function (request, reply) {
-
-          if (User.highestRole(request.auth.credentials.user.roles) < User.highestRole({ [request.params.role]: true })){
-            return reply(Boom.conflict('Unable to change higher scope permissions than your role'));
-          }
-          reply(true);
-        }
-      }]
+      }
     },
     handler: function (request, reply) {
 
