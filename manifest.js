@@ -69,7 +69,7 @@ const manifest = {
             Invite: './server/models/invite',
             Session: './server/models/session',
             Token: './server/models/token',
-            User: './server/models/user'
+            User: './server/models/user',
           },
           autoIndex: Config.get('/hapiMongoModels/autoIndex')
         }

@@ -1,6 +1,5 @@
 'use strict';
 
-
 exports.register = function (server, options, next) {
 
   server.route({
@@ -11,7 +10,6 @@ exports.register = function (server, options, next) {
       reply({ message: 'Welcome to the plot device.' });
     }
   });
-
 
   next();
 };

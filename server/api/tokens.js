@@ -1,7 +1,8 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-
+const ScopeArray = require('../helpers/getScopes');
+const DefaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
 
@@ -16,7 +17,8 @@ internals.applyRoutes = function (server, next) {
     path: '/table/tokens',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/table/tokens', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -101,7 +103,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/tokens', 'GET', ['root', 'admin', 'researcher'])
       },
       validate: {
         query: {
@@ -137,7 +139,8 @@ internals.applyRoutes = function (server, next) {
     path: '/tokens',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/tokens', 'POST', DefaultScopes)
       },
       validate: {
         payload: Token.payload
@@ -162,7 +165,8 @@ internals.applyRoutes = function (server, next) {
     path: '/tokens/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/tokens/{id}', 'PUT', DefaultScopes)
       },
       validate: {
         payload: Token.payload
@@ -200,7 +204,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin']
+        scope: ScopeArray('/api/tokens/{id}', 'DELETE', ['root','admin'])
       }
     },
     handler: function (request, reply) {

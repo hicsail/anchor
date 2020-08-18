@@ -2,6 +2,8 @@
 const internals = {};
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
+const ScopeArray = require('../../helpers/getScopes');
+const DefaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -10,7 +12,8 @@ internals.applyRoutes = function (server, next) {
     path: '/invite',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: ScopeArray('/invite', 'GET', DefaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -30,7 +33,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','clinician','researcher']
+        scope: ScopeArray('/invite/create', 'GET', ['root', 'admin','clinician','researcher'])
       }
     },
     handler: function (request, reply) {
@@ -50,7 +53,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root','admin']
+        scope: ScopeArray('/invite/edit/{id}', 'GET', ['root','admin'])
       }
     },
     handler: function (request, reply) {
@@ -78,7 +81,8 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         mode: 'try',
-        strategy: 'session'
+        strategy: 'session',
+        scope: ScopeArray('/invite/{id}', 'GET', DefaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {

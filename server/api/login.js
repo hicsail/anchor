@@ -5,7 +5,6 @@ const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
 
-
 const internals = {};
 
 
@@ -15,7 +14,6 @@ internals.applyRoutes = function (server, next) {
   const Session = server.plugins['hicsail-hapi-mongo-models'].Session;
   const Token = server.plugins['hicsail-hapi-mongo-models'].Token;
   const User = server.plugins['hicsail-hapi-mongo-models'].User;
-
 
   server.route({
     method: 'POST',

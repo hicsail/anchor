@@ -2,6 +2,8 @@
 const internals = {};
 const Config = require('../../../config');
 const Token = require('../../models/token');
+const ScopeArray = require('../../helpers/getScopes');
+const DefaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -10,7 +12,8 @@ internals.applyRoutes = function (server, next) {
     path: '/tokens',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: ScopeArray('/tokens', 'GET', DefaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -30,7 +33,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','researcher']
+        scope: ScopeArray('/tokens/create', 'GET', ['root', 'admin','researcher'])
       }
     },
     handler: function (request, reply) {
@@ -50,7 +53,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','researcher']
+        scope: ScopeArray('/tokens/{id}', 'GET', ['root', 'admin','researcher'])
       }
     },
     handler: function (request, reply) {

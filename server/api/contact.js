@@ -2,7 +2,6 @@
 const Config = require('../../config');
 const Joi = require('joi');
 
-
 const internals = {};
 
 

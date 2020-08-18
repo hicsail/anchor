@@ -1,6 +1,8 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
+const ScopeArray = require('../../helpers/getScopes');
+const DefaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -10,7 +12,8 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         mode: 'try',
-        strategy: 'session'
+        strategy: 'session',
+        scope: ScopeArray('/signup', 'GET', DefaultScopes)
       },
       plugins: {
         'hapi-auth-cookie': {

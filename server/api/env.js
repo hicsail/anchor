@@ -3,6 +3,7 @@ const Env = require('dotenv');
 const Fs = require('fs');
 const Joi = require('joi');
 const Path = require('path');
+const ScopeArray = require('../helpers/getScopes');
 
 const internals = {};
 
@@ -14,7 +15,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['admin','root']
+        scope: ScopeArray('/api/env', 'GET', ['admin','root'])
       }
     },
     handler: function (request, reply) {
@@ -29,7 +30,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['admin','root']
+        scope: ScopeArray('/api/env/{name}', 'GET', ['admin','root'])
       }
     },
     handler: function (request, reply) {
@@ -44,7 +45,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['admin','root']
+        scope: ScopeArray('/api/env', 'POST', ['admin','root'])
       },
       validate: {
         payload: Joi.object()

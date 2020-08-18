@@ -3,7 +3,8 @@ const Async = require('async');
 const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
-
+const ScopeArray = require('../helpers/getScopes');
+const DefaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
 
@@ -18,7 +19,8 @@ internals.applyRoutes = function (server, next) {
     path: '/table/invite',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/table/invite', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -99,7 +101,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/invite', 'GET', ['root', 'admin', 'researcher'])
       },
       validate: {
         query: {
@@ -134,7 +136,8 @@ internals.applyRoutes = function (server, next) {
     path: '/invite',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/invite', 'POST', DefaultScopes)
       },
       validate: {
         payload: Invite.payload
@@ -189,7 +192,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        scope: ScopeArray('/api/invite/{id}', 'PUT', ['root','admin','researcher'])
       },
       validate: {
         payload: Invite.payload
@@ -254,7 +257,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/invite/{id}', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -281,7 +284,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        scope: ScopeArray('/api/invite/{id}', 'DELETE', ['root','admin','researcher'])
       }
     },
     handler: function (request, reply) {

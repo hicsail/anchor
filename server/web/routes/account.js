@@ -1,6 +1,8 @@
 'use strict';
 const internals = {};
 const Config = require('../../../config');
+const ScopeArray = require('../../helpers/getScopes');
+const DefaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -9,7 +11,8 @@ internals.applyRoutes = function (server, next) {
     path: '/account',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: ScopeArray('/account', 'GET', DefaultScopes)
       }
     },
     handler: function (request, reply) {

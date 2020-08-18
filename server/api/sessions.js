@@ -1,7 +1,8 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
-
+const ScopeArray = require('../helpers/getScopes');
+const DefaultScopes = require('../helpers/getRoleNames');
 
 const internals = {};
 
@@ -16,7 +17,8 @@ internals.applyRoutes = function (server, next) {
     path: '/table/sessions',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/table/sessions', 'GET', DefaultScopes)
       },
       validate: {
         query: Joi.any()
@@ -97,7 +99,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: ScopeArray('/api/sessions', 'GET', ['root', 'admin', 'researcher'])
       },
       validate: {
         query: {
@@ -133,7 +135,8 @@ internals.applyRoutes = function (server, next) {
     path: '/sessions/my',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/sessions/my', 'GET', DefaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -162,7 +165,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin','researcher']
+        scope: ScopeArray('/api/sessions/{id}', 'GET', ['root','admin','researcher'])
       }
     },
     handler: function (request, reply) {
@@ -187,7 +190,8 @@ internals.applyRoutes = function (server, next) {
     path: '/sessions/my/{id}',
     config: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: ScopeArray('/api/sessions/my/{id}', 'DELETE', DefaultScopes)
       },
       pre: [{
         assign: 'current',
@@ -236,7 +240,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ['root','admin']
+        scope: ScopeArray('/api/sessions/{id}', 'DELETE', ['root','admin'])
       }
     },
     handler: function (request, reply) {

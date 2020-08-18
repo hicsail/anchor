@@ -4,6 +4,8 @@ const Async = require('async');
 const Config = require('../../../config');
 const Feedback = require('../../models/feedback');
 const User = require('../../models/user');
+const ScopeArray = require('../../helpers/getScopes');
+const DefaultScopes = require('../../helpers/getRoleNames');
 
 internals.applyRoutes = function (server, next) {
 
@@ -12,7 +14,8 @@ internals.applyRoutes = function (server, next) {
     path: '/feedback',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: ScopeArray('/feedback', 'GET', DefaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -32,7 +35,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root','admin']
+        scope: ScopeArray('/feedback/{id}', 'GET', ['root','admin'])
       }
     },
     handler: function (request, reply) {

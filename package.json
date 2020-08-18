@@ -4,7 +4,7 @@
   "description": "A user system API starter",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --inspect -e js,md,html,handlebars,css server.js",
+    "start": "nodemon --inspect -e json,js,md,html,handlebars,css server.js",
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c -L --leaks",
     "lint": "lab -dL --leaks",
@@ -28,7 +28,7 @@
     "adm-zip": "0.4.x",
     "archiver": "2.x.x",
     "async": "2.x.x",
-    "bcrypt": "1.x.x",
+    "bcrypt": "3.x.x",
     "boom": "5.x.x",
     "child_process": "1.x.x",
     "confidence": "3.x.x",

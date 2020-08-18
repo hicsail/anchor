@@ -3,6 +3,10 @@ const internals = {};
 const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
+const Boom = require('boom');
+const ScopeArray = require('../../helpers/getScopes');
+const defaultScopes = require('../../helpers/getRoleNames');
+const PermissionConfigTable = require('../../permission-config.json');
 
 internals.applyRoutes = function (server, next) {
 
@@ -11,7 +15,8 @@ internals.applyRoutes = function (server, next) {
     path: '/users',
     config: {
       auth: {
-        strategy: 'session'
+        strategy: 'session',
+        scope: ScopeArray('/users', 'GET', defaultScopes)
       }
     },
     handler: function (request, reply) {
@@ -31,16 +36,29 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin', 'researcher']
+        scope: ScopeArray('/roles', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
 
-      return reply.view('users/roles', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),
-        title: 'Users',
-        baseUrl: Config.get('/baseUrl')
+      User.find({}, (err, users) => {
+
+        if (err) {
+          Boom.notFound(err);
+        }
+
+        if (!users) {
+          Boom.notFound('Document not found.');
+        }
+
+        return reply.view('users/roles', {
+          user: request.auth.credentials.user,
+          usersList: users,
+          projectName: Config.get('/projectName'),
+          title: 'Users',
+          baseUrl: Config.get('/baseUrl'),
+          role: defaultScopes
+        });
       });
     }
   });
@@ -51,7 +69,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin', 'researcher']
+        scope: ScopeArray('/participation', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -71,7 +89,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin','researcher']
+        scope: ScopeArray('/users/create', 'GET', ['root', 'admin', 'researcher'])
       }
     },
     handler: function (request, reply) {
@@ -91,7 +109,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root', 'admin']
+        scope: ScopeArray('/change-password/{id}', 'GET', ['root', 'admin'])
       },
       validate: {
         params: {
@@ -116,7 +134,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root','admin']
+        scope: ScopeArray('/users/{id}', 'GET', ['root', 'admin'])
       }
     },
     handler: function (request, reply) {
@@ -145,7 +163,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategy: 'session',
-        scope: ['root','admin']
+        scope: ScopeArray('/users/clinicians/{id}', 'GET', ['root', 'admin'])
       }
     },
     handler: function (request, reply) {
@@ -159,9 +177,30 @@ internals.applyRoutes = function (server, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/scopes',
+    config: {
+      auth: {
+        strategy: 'session',
+        scope: ScopeArray('/scopes', 'GET', defaultScopes)
+      }
+    },
+    handler: function (request, reply) {
+
+      return reply.view('users/scopes', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName'),
+        title: 'Routing & Scopes',
+        baseUrl: Config.get('/baseUrl'),
+        route: PermissionConfigTable,
+        role: defaultScopes
+      });
+    }
+  });
+
   next();
 };
-
 
 exports.register = function (server, options, next) {
 
