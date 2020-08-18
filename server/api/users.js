@@ -867,9 +867,7 @@ internals.applyRoutes = function (server, next) {
 
       const user = request.pre.user;
 
-      !request.params.role in DefaultScopes ?
-        reply(user) :
-        delete user.roles[request.params.role];
+      delete user.roles[request.params.role];
 
       const update = {
         $set: {
