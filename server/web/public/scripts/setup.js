@@ -31,7 +31,6 @@ $('#setup').click((event) => {
       });
     },
     error: function (result) {
-      console.log(result);
       errorAlert(result.responseJSON.message);
     }
   });

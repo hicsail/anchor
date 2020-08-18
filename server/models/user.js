@@ -4,7 +4,7 @@ const Bcrypt = require('bcrypt');
 const Clinician = require('./clinician');
 const Joi = require('joi');
 const MongoModels = require('hicsail-mongo-models');
-
+const Config = require('../../config');
 
 class User extends MongoModels {
   static generatePasswordHash(password, callback) {
@@ -115,34 +115,6 @@ class User extends MongoModels {
     this.findOne(query, callback);
   }
 
-  static lowestRole(roles){
-
-    if (Array.isArray(roles)){
-      const hm = {};
-      roles.forEach((role) => {
-
-        hm[role] = true;
-      });
-      roles = hm;
-    }
-    if (roles.analyst) {
-      return 1;
-    }
-    else if (roles.clinician) {
-      return 2;
-    }
-    else if (roles.researcher) {
-      return 3;
-    }
-    else if (roles.admin) {
-      return 4;
-    }
-    else if (roles.root) {
-      return 5;
-    }
-    return 0;
-  }
-
   static highestRole(roles) {
 
     if (Array.isArray(roles)) {//if array, convert to hashtable
@@ -153,22 +125,14 @@ class User extends MongoModels {
       });
       roles = hm;
     }
-    if (roles.root) {
-      return 5;
-    }
-    else if (roles.admin) {
-      return 4;
-    }
-    else if (roles.researcher) {
-      return 3;
-    }
-    else if (roles.clinician) {
-      return 2;
-    }
-    else if (roles.analyst) {
-      return 1;
-    }
-    return 0;
+    let highestRole = 0;
+    Config.get('/role').forEach((roleObject) => {
+
+      if (roles[roleObject.name]){
+        highestRole = Math.max(highestRole, parseInt(roleObject.accessLevel, 10));
+      }
+    });
+    return highestRole;
   }
 
   constructor(attrs) {

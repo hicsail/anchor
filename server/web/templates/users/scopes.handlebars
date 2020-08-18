@@ -6,36 +6,87 @@
         <h3>{{title}}</h3>
         <hr>
         <p>Click on routes to change it's scope</p>
+        <ul class="nav nav-tabs" id="configMethodTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#GET" role="tab">GET</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#POST" role="tab">POST</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#DELETE" role="tab">DELETE</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#PUT" role="tab">PUT</a>
+          </li>
+        </ul>
         <div class="card">
           <div style="padding: 20px">
-            <table id="routeTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
-              <thead>
-                <tr>
-                  <th>Path</th>
-                  <th>Method</th>
-                  {{#each role}}
-                    <th>{{this}}</th>
-                  {{/each}}
-                </tr>
-              </thead>
-              <tbody>
-                {{#each route as |routeRow method|}}
-                  {{#each routeRow as |scope path|}}
-                    <tr>
-                      <td>{{path}}</td>
-                      <td>{{method}}</td>
-                      {{#each ../../role as |r|}}
-                        <td>
-                          <label>
-                            <input class="scopeCheck" id="{{r}}" type="checkbox" onchange="onCheckboxClicked(this, {{jsonify scope}}, {{jsonify path}}, {{jsonify method}})" {{#routeHasScope scope r}}checked{{/routeHasScope}}>
-                          </label>
-                        </td>
-                      {{/each}}
-                    </tr>
-                  {{/each}}
-                {{/each}}
-              </tbody>
-            </table>
+            <div class="tab-content" id="configTabContent">
+              <div class="tab-pane fade show active" id="GET" role="tabpanel">
+                {{#> routeDataTable role=role method="GET" routes=GET disable = false}}
+                  GET method routes not found
+                {{/routeDataTable}}
+              </div>
+              <div class="tab-pane fade" id="POST" role="tabpanel">
+                {{#> routeDataTable role=role method="POST" routes=POST disable = false}}
+                  POST method routes not found
+                {{/routeDataTable}}
+              </div>
+              <div class="tab-pane fade" id="DELETE" role="tabpanel">
+                {{#> routeDataTable role=role method="DELETE" routes=DELETE disable = false}}
+                  DELETE method routes not found
+                {{/routeDataTable}}
+              </div>
+              <div class="tab-pane fade" id="PUT" role="tabpanel">
+                {{#> routeDataTable role=role method="PUT" routes=PUT disable = false}}
+                  PUT method routes not found
+                {{/routeDataTable}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <hr>
+        <p>NOTE: Routes below here are unconfigurable, to allow configuration make sure to update the routes with the scope from the Config file</p>
+        <ul class="nav nav-tabs" id="unConfigMethodTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#GETunconfig" role="tab">GET</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#POSTunconfig" role="tab">POST</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#DELETEunconfig" role="tab">DELETE</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#PUTunconfig" role="tab">PUT</a>
+          </li>
+        </ul>
+        <div class="card">
+          <div style="padding: 20px">
+            <div class="tab-content" id="unConfigTabContent">
+              <div class="tab-pane fade show active" id="GETunconfig" role="tabpanel">
+                {{#> routeDataTable role=role method="GET" routes=GETunconfig disable = true}}
+                  GET method routes not found
+                {{/routeDataTable}}
+              </div>
+              <div class="tab-pane fade" id="POSTunconfig" role="tabpanel">
+                {{#> routeDataTable role=role method="POST" routes=POSTunconfig disable = true}}
+                  POST method routes not found
+                {{/routeDataTable}}
+              </div>
+              <div class="tab-pane fade" id="DELETEunconfig" role="tabpanel">
+                {{#> routeDataTable role=role method="DELETE" routes=DELETEunconfig disable = true}}
+                  DELETE method routes not found
+                {{/routeDataTable}}
+              </div>
+              <div class="tab-pane fade" id="PUTunconfig" role="tabpanel">
+                {{#> routeDataTable role=role method="PUT" routes=PUTunconfig disable = true}}
+                  PUT method routes not found
+                {{/routeDataTable}}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -43,3 +94,5 @@
   </div>
 </div>
 <script type="text/javascript" src="/public/scripts/users/scopes.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.21/datatables.min.js"></script>
+

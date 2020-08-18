@@ -1,0 +1,26 @@
+<table class="table table-striped table-bordered" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th>Path</th>
+      {{#each role}}
+        <th>{{this}}</th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#each routes as |scope path|}}
+      <tr>
+        <td>{{path}}</td>
+        {{#each ../role as |r|}}
+          <td>
+            <label>
+              <input class="scopeCheck" type="checkbox" {{#if ../../disable}}disabled{{/if}}
+                     onchange="updateScope({{json path}}, {{json ../../method}}, {{json r}})" {{#routeHasScope scope r}}checked{{/routeHasScope}}>
+            </label>
+          </td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+

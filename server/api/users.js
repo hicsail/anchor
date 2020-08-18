@@ -1,12 +1,13 @@
 'use strict';
+const Async = require('async');
 const Boom = require('boom');
 const Clinician = require('../models/clinician');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
-const ScopeArray = require('../helpers/getScopes');
-const PermissionConfigTable = require('../permission-config.json');
 const DefaultScopes = require('../helpers/getRoleNames');
+const RouteScope = require('../models/route-scope');
+const PermissionConfigTable = require('../permission-config.json');
 const Fs = require('fs');
 
 const internals = {};
@@ -136,7 +137,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users', 'GET', DefaultScopes)
+        scope: PermissionConfigTable.GET['/api/users'] || DefaultScopes
       },
       validate: {
         query: {
@@ -173,7 +174,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}', 'GET', ['admin'])
+        scope: PermissionConfigTable.GET['/api/users/{id}'] || ['admin']
       }
     },
     handler: function (request, reply) {
@@ -229,7 +230,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users', 'POST', ['root','admin','researcher'])
+        scope: PermissionConfigTable.POST['/api/users'] || ['root', 'admin', 'researcher']
       },
       validate: {
         payload: User.payload
@@ -317,7 +318,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}', 'PUT', ['admin'])
+        scope: PermissionConfigTable.PUT['/api/users/{id}'] || ['admin']
       },
       validate: {
         params: {
@@ -409,7 +410,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}/participation', 'PUT', ['root', 'admin', 'researcher'])
+        scope: PermissionConfigTable.PUT['/api/users/{id}/participation'] || ['root', 'admin', 'researcher']
       },
       validate: {
         params: {
@@ -553,7 +554,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}/password', 'PUT', ['root','admin'])
+        scope: PermissionConfigTable.PUT['/api/users/{id}/password'] || ['root', 'admin']
       },
       validate: {
         params: {
@@ -701,7 +702,7 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session'],
-        scope: ScopeArray('/api/users/{id}', 'DELETE', ['root','admin'])
+        scope: PermissionConfigTable.DELETE['/api/users/{id}'] || ['root', 'admin']
       },
       validate: {
         params: {
@@ -743,19 +744,21 @@ internals.applyRoutes = function (server, next) {
         assign: 'canChangeRoles',
         method: function (request, reply){
 
-          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
-            reply(true) :
-            reply(Boom.conflict('Unable to promote a higher access level than your own'));
+          if (User.highestRole(request.auth.credentials.user.roles) < User.highestRole({ [request.params.role]: true })) {
+            return reply(Boom.conflict('Unable to promote a higher access level than your own'));
+          }
+          reply(true);
         }
       },{
         assign: 'notYou',
         method: function (request, reply) {
 
-          request.auth.credentials.user._id === request.params.id ?
-            reply(Boom.conflict('Unable to promote yourself')) :
-            reply(true);
+          if (request.auth.credentials.user._id === request.params.id) {
+            return reply(Boom.conflict('Unable to promote yourself'));
+          }
+          reply(true);
         }
-      },{
+      }, {
         assign: 'user',
         method: function (request, reply) {
 
@@ -766,11 +769,11 @@ internals.applyRoutes = function (server, next) {
           User.findById(request.params.id, findOptions, (err, user) => {
 
             if (err) {
-              reply(err);
+              return reply(err);
             }
 
             if (!user) {
-              reply(Boom.notFound('User not found to promote'));
+              return reply(Boom.notFound('User not found to promote'));
             }
 
             reply(user);
@@ -781,13 +784,17 @@ internals.applyRoutes = function (server, next) {
     handler: function (request, reply) {
 
       const user = request.pre.user;
-      if (request.params.role in DefaultScopes){
-        reply(user);
+
+      if (user.roles[request.params.role]) {
+        return reply(user);
       }
 
-      request.params.role === 'clinician' ?
-        user.roles.clinician = Clinician.create([]) :
+      if (request.params.role === 'clinician'){
+        user.roles.clinician = Clinician.create([]);
+      }
+      else {
         user.roles[request.params.role] = true;
+      }
 
       const update = {
         $set: {
@@ -797,16 +804,15 @@ internals.applyRoutes = function (server, next) {
 
       User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
 
-        if (err){
-          reply(err);
+        if (err) {
+          return reply(err);
         }
-        else {
-          reply({
-            _id: updatedUser._id,
-            username: updatedUser.username,
-            roles: updatedUser.roles
-          });
-        }
+
+        reply({
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          roles: updatedUser.roles
+        });
       });
     }
   });
@@ -828,17 +834,19 @@ internals.applyRoutes = function (server, next) {
         assign: 'canChangeRoles',
         method: function (request, reply){
 
-          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
-            reply(true) :
-            reply(Boom.conflict('Unable to demote a higher access level than your own'));
+          if (User.highestRole(request.auth.credentials.user.roles) < User.highestRole({ [request.params.role]: true })){
+            return reply(Boom.conflict('Unable to demote a higher access level than your own'));
+          }
+          reply(true);
         }
       },{
         assign: 'notYou',
         method: function (request, reply) {
 
-          request.auth.credentials.user._id === request.params.id ?
-            reply(Boom.conflict('Unable to promote yourself')) :
-            reply(true);
+          if (request.auth.credentials.user._id === request.params.id){
+            return reply(Boom.conflict('Unable to promote yourself'));
+          }
+          reply(true);
         }
       },{
         assign: 'user',
@@ -851,11 +859,11 @@ internals.applyRoutes = function (server, next) {
           User.findById(request.params.id, findOptions, (err, user) => {
 
             if (err) {
-              reply(err);
+              return reply(err);
             }
 
             if (!user) {
-              reply(Boom.notFound('User not found to promote'));
+              return reply(Boom.notFound('User not found to promote'));
             }
 
             reply(user);
@@ -867,10 +875,11 @@ internals.applyRoutes = function (server, next) {
 
       const user = request.pre.user;
 
-      !request.params.role in DefaultScopes ?
-        reply(user) :
-        delete user.roles[request.params.role];
+      if (!user.roles[request.params.role]) {
+        return reply(user);
+      }
 
+      delete user.roles[request.params.role];
       const update = {
         $set: {
           roles: user.roles
@@ -880,15 +889,14 @@ internals.applyRoutes = function (server, next) {
       User.findByIdAndUpdate(request.params.id, update, (err, updatedUser) => {
 
         if (err) {
-          reply(err);
+          return reply(err);
         }
-        else {
-          reply({
-            _id: updatedUser._id,
-            username: updatedUser.username,
-            roles: updatedUser.roles
-          });
-        }
+
+        reply({
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          roles: updatedUser.roles
+        });
       });
     }
   });
@@ -899,53 +907,119 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
-      },
-      pre: [{
-        assign: 'canChangeScope',
-        method: function (request, reply){
-
-          User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
-            reply(true) :
-            reply(Boom.conflict('Unable to change higher scope permissions than your role'));
-        }
-      }]
+      }
     },
     handler: function (request, reply) {
 
-      console.log(request.payload.method, request.payload.path);
       //update scope of route
-      const pathScopeReference = PermissionConfigTable[request.payload.method][request.payload.path];
-      if (pathScopeReference.includes(request.payload.role)){
-        pathScopeReference.splice(pathScopeReference.indexOf(request.payload.role), 1);
+      const scopeArray = PermissionConfigTable[request.payload.method][request.payload.path]; //getting scopes from permission config
+      if (scopeArray.includes(request.payload.scope)) {
+        scopeArray.splice(scopeArray.indexOf(request.payload.scope), 1);
       }
       else {
-        pathScopeReference.push(request.payload.role);
+        scopeArray.push(request.payload.scope);
       }
-      try {
-        if (Fs.existsSync('server/permission-config.json')){
-          const file = require('../permission-config.json');
-          if (!file.hasOwnProperty(request.payload.method)){
-            file[request.payload.method] = {};
-          }
-          file[request.payload.method][request.payload.path] = pathScopeReference;
-          Fs.writeFileSync('server/permission-config.json', JSON.stringify(file, null, 2));
-        }
-        else {
-          const data = {
-            [request.payload.method]: {
-              [request.payload.path]: pathScopeReference
+      Async.auto({
+        updateRouteScopeTable: function (callback) {//updating the routeScope collection with the update from user inputs in UI
+
+          RouteScope.findByPathAndMethod(request.payload.path, request.payload.method, (err, routeData) => {
+
+            if (err) {
+              callback(err, null);
             }
-          };
-          Fs.writeFileSync('server/permission-config.json', JSON.stringify(data, null, 2), { flag: 'wx' });
+            if (routeData) {
+              RouteScope.updateScope(request.payload.path, request.payload.method, { $set: { scope: scopeArray } });
+              callback(null, 'Route Scope Updated');
+            }
+            else {
+              const newRouteData = {
+                method: request.payload.method,
+                path: request.payload.path,
+                scope: scopeArray
+              };
+              RouteScope.insert(newRouteData);
+              callback(null, 'New Route Scope was Created in DB with updated Scopes');
+            }
+          });
+        },
+        updatePermissionConfig: function (callback) {//updating the permission-config.js with the update from user inputs in UI
+
+          try {
+            if (!PermissionConfigTable.hasOwnProperty(request.payload.method)) {
+              PermissionConfigTable[request.payload.method] = {};
+            }
+            PermissionConfigTable[request.payload.method][request.payload.path] = scopeArray;
+            Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
+            callback(null, 'Config file updated successfully');
+          }
+          catch (err) {
+            console.error(err);
+            callback(err);
+          }
         }
+      }, (err, result) => {
+
+        if (err){
+          return reply(err);
+        }
+
+        return reply(true);
+      });
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/users/scopeCheck',
+    config: {
+      auth: {
+        strategy: 'session',
+        scope: PermissionConfigTable.POST['/api/users/scopeCheck'] || DefaultScopes
       }
-      catch (err){
+    },
+    handler: function (request, reply){
+
+      Async.auto({
+        checkConfigurableScope: function (callback) {//API route for comparing the scope for configurability in the config file and in server for the specified route's scope.
+
+          const route = server.table()[0].table.find( (item) => {
+
+            if (item.hasOwnProperty('path')) {//processing routes in server
+              return item.path === request.payload.path && item.method.toUpperCase() === request.payload.method;
+            }
+          });
+
+          if (route) {
+            const path = route.path;
+            const method = route.method.toUpperCase();
+            const set = new Set();
+            PermissionConfigTable[method][path].forEach((role) => {
+
+              set.add(role);
+            });
+            if (route.settings.auth.access[0].scope.selection.length === set.size){
+              const configurableScope = route.settings.auth.access[0].scope.selection.every((role) => {
+
+                return set.has(role);
+              });
+              if (configurableScope) {
+                return callback(null, 'Updated Route\'s Scope');
+              }
+            }
+            return callback('Unable to Update Route\'s scope');
+
+          }
+
+          callback('specified route: ' + request.payload.path + ' ' + request.payload.method + ' not found');
+
+        }
+      }, (err, result) => {
+
         if (err) {
-          console.error(err);
-          throw err;
+          return reply(err);
         }
-      }
-      return reply(true);
+        reply(result.checkConfigurableScope);
+      });
     }
   });
 
