@@ -9,6 +9,7 @@ const DefaultScopes = require('../helpers/getRoleNames');
 const RouteScope = require('../models/route-scope');
 const PermissionConfigTable = require('../permission-config.json');
 const Fs = require('fs');
+const GetServerRoutes = require('../helpers/getServerRoutes');
 
 const internals = {};
 
@@ -907,7 +908,26 @@ internals.applyRoutes = function (server, next) {
     config: {
       auth: {
         strategies: ['simple', 'jwt', 'session']
-      }
+      },
+      pre: [{
+        assign: 'validRoute',
+        method: function (request, reply){
+
+          const method = request.payload.method;
+          const path = request.payload.path;
+          const methodArray = ['GET', 'PUT', 'DELETE', 'POST'];
+          const isValidMethod = methodArray.some((validMethod) => {
+
+            return method === validMethod;
+          });
+          const serverRoute = GetServerRoutes(server);//TODO: printing the server routes when testing does not give all routes.
+          // console.log(GetServerRoutes(server));
+          if (isValidMethod && serverRoute[method][path]){
+            return reply(true);
+          }
+          reply(Boom.notFound('Invalid Route'));
+        }
+      }]
     },
     handler: function (request, reply) {
 
