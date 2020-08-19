@@ -311,3 +311,25 @@ lab.experiment('Update Users Password View', () => {
     });
   });
 });
+
+lab.experiment('Routes and Scopes Page View', () => {
+
+  lab.before((done) => {
+
+    request = {
+      method: 'GET',
+      url: '/scopes'
+    };
+    done();
+  });
+
+  lab.test('it returns successful', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(302);
+      Code.expect(response.result).to.equal('You are being redirected...');
+      done();
+    });
+  });
+});
