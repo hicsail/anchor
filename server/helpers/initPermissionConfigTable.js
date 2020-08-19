@@ -7,7 +7,7 @@ module.exports = (server) => {//initializes the permission-config.json with rout
   try {
     GetRoutes('server', server, ((routes) => {//callback function to write the routes found in server into the permission-config.json
 
-      if (routes){
+      if (typeof routes === 'object'){
         Fs.writeFileSync('server/permission-config.json', JSON.stringify(routes, null, 2));
       }
       else {

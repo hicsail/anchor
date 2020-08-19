@@ -1,149 +1,5 @@
 {
   "GET": {
-    "/account": [
-      "clinician",
-      "researcher",
-      "admin",
-      "root",
-      "analyst"
-    ],
-    "/api": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/authAttempts": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/backups": [
-      "root",
-      "admin"
-    ],
-    "/clinician": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/dashboard": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/docs": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/env": [
-      "root",
-      "admin"
-    ],
-    "/events": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/feedback": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/forgot": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/invite": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/login": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/logout": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/participation": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/reset": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/roles": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/scopes": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/sessions": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/setup": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/signup": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/tokens": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
     "/users": [
       "analyst",
       "clinician",
@@ -151,462 +7,38 @@
       "admin",
       "root"
     ],
-    "/": [
-      "clinician",
-      "researcher",
-      "admin",
-      "root",
-      "analyst"
-    ],
-    "/api/auth-attempts": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/backups": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/clinicians": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/env": [
-      "admin",
-      "root"
-    ],
-    "/api/events": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/feedback": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/invite": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/sessions": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/tokens": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/users": [
+    "/select2/users": [
       "analyst",
       "clinician",
       "researcher",
       "admin",
       "root"
     ],
-    "/change-password/{id}": [
-      "root",
-      "admin"
-    ],
-    "/feedback/{id}": [
-      "root",
-      "admin"
-    ],
-    "/invite/create": [
-      "root",
-      "admin",
-      "clinician",
-      "researcher"
-    ],
-    "/invite/{id}": [
+    "/table/users": [
       "analyst",
       "clinician",
       "researcher",
       "admin",
       "root"
     ],
-    "/public/{param*}": [
+    "/users/my": [
       "analyst",
       "clinician",
       "researcher",
       "admin",
       "root"
-    ],
-    "/tokens/create": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/tokens/{id}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/users/create": [
-      "root",
-      "admin",
-      "researcher"
     ],
     "/users/{id}": [
-      "root",
       "admin"
-    ],
-    "/api/auth-attempts/{id}": [
-      "admin"
-    ],
-    "/api/backups/refresh": [
-      "root",
-      "admin"
-    ],
-    "/api/clinicians/my": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/env/{name}": [
-      "admin",
-      "root"
-    ],
-    "/api/feedback/unresolved": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/feedback/{id}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/invite/{id}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/select2/clinicians": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/select2/users": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/sessions/my": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/sessions/{id}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/table/auth-attempts": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/table/backups": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/table/clinicians": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/table/events": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/table/feedback": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/table/invite": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/table/sessions": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/table/tokens": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/table/users": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/my": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/{id}": [
-      "admin"
-    ],
-    "/docs/css/{path*}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/events/name/{name}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/events/user/{userId}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/invite/edit/{id}": [
-      "root",
-      "admin"
-    ],
-    "/users/clinicians/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/events/name/{name}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/events/user/{userId}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/table/clinicians/{id}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ]
-  },
-  "DELETE": {
-    "/api/logout": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/auth-attempts/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/backups/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/clinicians/{id}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/events/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/feedback/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/invite/{id}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/sessions/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/tokens/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/users/{id}": [
-      "root",
-      "admin"
-    ],
-    "/api/clinicians/{userId}/{clinicianId}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/sessions/my/{id}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/{role}/{id}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
     ]
   },
   "POST": {
-    "/setup": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/available": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/backups": [
-      "root",
-      "admin"
-    ],
-    "/api/contact": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/env": [
-      "admin",
-      "root"
-    ],
-    "/api/feedback": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/invite": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/login": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/signup": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/tokens": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users": [
+    "/users": [
       "root",
       "admin",
       "researcher"
     ],
-    "/api/backups/internal": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/events/{name}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/login/forgot": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/login/reset": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/login/token": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/scopeCheck": [
+    "/users/scopeCheck": [
       "analyst",
       "clinician",
       "researcher",
@@ -615,80 +47,53 @@
     ]
   },
   "PUT": {
-    "/api/backups/{id}": [
+    "/users/my": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/users/scopes": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/users/{id}": [
+      "admin"
+    ],
+    "/users/my/password": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/users/{id}/participation": [
+      "root",
+      "admin",
+      "researcher"
+    ],
+    "/users/{id}/password": [
       "root",
       "admin"
     ],
-    "/api/clinicians/{id}": [
+    "/users/{role}/{id}": [
       "analyst",
       "clinician",
       "researcher",
       "admin",
       "root"
-    ],
-    "/api/feedback/{id}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/invite/{id}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/tokens/{id}": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/my": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/scopes": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/{id}": [
-      "admin"
-    ],
-    "/api/clinicians/{userId}/{clinicianId}": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/invite/{id}/reject": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/my/password": [
-      "analyst",
-      "clinician",
-      "researcher",
-      "admin",
-      "root"
-    ],
-    "/api/users/{id}/participation": [
-      "root",
-      "admin",
-      "researcher"
-    ],
-    "/api/users/{id}/password": [
+    ]
+  },
+  "DELETE": {
+    "/users/{id}": [
       "root",
       "admin"
     ],
-    "/api/users/{role}/{id}": [
+    "/users/{role}/{id}": [
       "analyst",
       "clinician",
       "researcher",
