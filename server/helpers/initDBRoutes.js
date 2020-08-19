@@ -5,6 +5,10 @@ const RouteScope = require('../models/route-scope');
 
 module.exports = (server) => {//initializes the routeScope collection with routes' scope from the server.table()
 
+  if (!server){
+    return null;
+  }
+
   const arrRouteData = []; //array of route's scope data to be inserted to the routeScope collection.
   Async.each(server.table()[0].table, (item, callback) => {//initialize the routeScope collection from the server.table
 

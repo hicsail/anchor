@@ -47,6 +47,14 @@ lab.before((done) => {
 
 lab.experiment('Get Server Routes Helper', () => {
 
+  lab.test('it returns null when no server is passed in', (done) => {
+
+    const result = GetServerRoutes();
+
+    Code.expect(result).to.not.exist();
+    done();
+  });
+
   lab.test('it returns successfully all server routes', (done) => {
 
     const routes = GetServerRoutes(server);
