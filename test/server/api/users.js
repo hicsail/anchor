@@ -2599,8 +2599,8 @@ lab.experiment('Route\'s Scope Configuration', () => {
       callback(Error('find by path and method failed'));
     };
 
-    request.payload.method = 'G';
-    request.payload.path = '/as';
+    request.payload.method = '???';
+    request.payload.path = '???';
     server.inject(request, (response) => {
 
       Code.expect(response.statusCode).to.equal(404);
