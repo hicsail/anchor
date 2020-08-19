@@ -28,11 +28,13 @@ let stub;
 lab.before((done) => {
 
   stub = {
-    User: MakeMockModel()
+    User: MakeMockModel(),
+    RouteScope: MakeMockModel()
   };
 
   const proxy = {};
   proxy[Path.join(process.cwd(), './server/models/user')] = stub.User;
+  proxy[Path.join(process.cwd(), './server/models/route-scope')] = stub.RouteScope;
 
   const ModelsPlugin = {
     register: Proxyquire('hicsail-hapi-mongo-models', proxy),
@@ -1362,6 +1364,17 @@ lab.experiment('Users Plugin Clinician Promote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t promote higher roles', (done) => {
+
+    request.credentials = AuthenticatedAnalyst;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to promote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are promoting yourself', (done) => {
 
@@ -1493,6 +1506,17 @@ lab.experiment('Users Plugin Analyst Promote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t promote higher roles', (done) => {
+
+    request.credentials = AuthenticatedUser;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to promote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are promoting yourself', (done) => {
 
@@ -1624,6 +1648,17 @@ lab.experiment('Users Plugin Researcher Promote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t promote higher roles', (done) => {
+
+    request.credentials = AuthenticatedAnalyst;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to promote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are promoting yourself', (done) => {
 
@@ -1754,6 +1789,17 @@ lab.experiment('Users Plugin Admin Promote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t promote higher roles', (done) => {
+
+    request.credentials = AuthenticatedAnalyst;
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to promote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are promoting yourself', (done) => {
 
@@ -1885,6 +1931,16 @@ lab.experiment('Users Plugin Clinician Demote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t demote higher roles', (done) => {
+
+    request.credentials = AuthenticatedAnalyst;
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to demote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are demoting yourself', (done) => {
 
@@ -2016,6 +2072,16 @@ lab.experiment('Users Plugin Analyst Demote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t demote higher roles', (done) => {
+
+    request.credentials = AuthenticatedUser;
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to demote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are demoting yourself', (done) => {
 
@@ -2146,6 +2212,16 @@ lab.experiment('Users Plugin Researcher Demote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t demote higher roles', (done) => {
+
+    request.credentials = AuthenticatedAnalyst;
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to demote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are demoting yourself', (done) => {
 
@@ -2277,6 +2353,16 @@ lab.experiment('Users Plugin Admin Demote', () => {
     done();
   });
 
+  lab.test('it returns an error when you can\'t demote higher roles', (done) => {
+
+    request.credentials = AuthenticatedAnalyst;
+    server.inject(request, (response) => {
+
+      Code.expect(response.result.statusCode).to.equal(409);
+      Code.expect(response.result.message).to.equal('Unable to demote a higher access level than your own');
+      done();
+    });
+  });
 
   lab.test('it returns an error when you are demoting yourself', (done) => {
 
@@ -2459,6 +2545,107 @@ lab.experiment('Users Plugin Participation', () => {
 
       done();
     });
+  });
+});
+
+lab.experiment('Route\'s Scope Configuration', () => {
+
+  // const scopeOfTestingRoute = PermissionConfigTable.GET['/api'];
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'PUT',
+      url: '/users/scopes',
+      credentials: AuthenticatedRoot,
+      payload: {
+        method: 'GET',
+        path: '/users',
+        scope: 'root'
+      }
+    };
+    done();
+  });
+
+  lab.afterEach((done) => {
+
+    server.inject(request, (response) => {
+
+      request.payload.method = 'GET';
+      request.payload.path = '/users';
+      done();
+    });
+  });
+
+  lab.test('it returns true when successfully updated the scopes array', (done) => {
+
+    stub.RouteScope.findByPathAndMethod = function (path, method, callback){
+
+      callback(null, {
+        method: 'GET', path: '/users', scope: ['analyst', 'clinician', 'researcher', 'admin', 'root']
+      });
+    };
+    server.inject(request, (response) => {
+
+      Code.expect(response.result).to.equal(true);
+      Code.expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+
+  lab.test('it returns an error when finding route scope', (done) => {
+
+    stub.RouteScope.findByPathAndMethod = function (path, method, callback){
+
+      callback(Error('find by path and method failed'));
+    };
+
+    request.payload.method = 'G';
+    request.payload.path = '/as';
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(404);
+      Code.expect(response.result.message).to.equal('Invalid Route');
+      done();
+    });
+  });
+});
+
+lab.experiment('Comparing route scopes in config file and in server', (done) => {
+
+  lab.beforeEach((done) => {
+
+    request = {
+      method: 'POST',
+      url: '/users/scopeCheck',
+      credentials: AuthenticatedRoot,
+      payload: {
+        method: 'GET',
+        path: '/users'
+      }
+    };
+    done();
+  });
+
+  lab.test('it returns successful when scope exists in both ', (done) => {
+
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.equal('Updated Route\'s Scope');
+      done();
+    });
+  });
+
+  lab.test('it returns a message when route not in server', (done) => {
+
+    request.payload.path = '???';
+    request.payload.method = '???';
+    server.inject(request, (response) => {
+
+      Code.expect(response.statusCode).to.equal(200);
+      Code.expect(response.result).to.equal('specified route: ??? ??? not found');
+    });
+    done();
   });
 });
 

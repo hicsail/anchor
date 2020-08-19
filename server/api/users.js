@@ -920,8 +920,7 @@ internals.applyRoutes = function (server, next) {
 
             return method === validMethod;
           });
-          const serverRoute = GetServerRoutes(server);//TODO: printing the server routes when testing does not give all routes.
-          // console.log(GetServerRoutes(server));
+          const serverRoute = GetServerRoutes(server);
           if (isValidMethod && serverRoute[method][path]){
             return reply(true);
           }
@@ -997,10 +996,10 @@ internals.applyRoutes = function (server, next) {
         scope: PermissionConfigTable.POST['/api/users/scopeCheck'] || DefaultScopes
       }
     },
-    handler: function (request, reply){
+    handler: function (request, reply){//Compares scope for configurability in the config file and in server for the specified route's scope.
 
       Async.auto({
-        checkConfigurableScope: function (callback) {//API route for comparing the scope for configurability in the config file and in server for the specified route's scope.
+        checkConfigurableScope: function (callback) {
 
           const route = server.table()[0].table.find( (item) => {
 
@@ -1026,7 +1025,7 @@ internals.applyRoutes = function (server, next) {
                 return callback(null, 'Updated Route\'s Scope');
               }
             }
-            return callback('Unable to Update Route\'s scope');
+            return callback('Unable to Update Route\'s Scope');
 
           }
 
