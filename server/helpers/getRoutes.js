@@ -9,7 +9,7 @@ module.exports = (flag, server = null, callback) => {//method for getting route 
   switch (flag){
   case 'server':
     if (!server){//if getting from the server, must include the second parameter containing the server.
-      throw 'server flag with no server data';
+      return callback('server flag with no server data');
     }
     routes = GetServerRoutes(server);
     callback(routes);
@@ -22,7 +22,7 @@ module.exports = (flag, server = null, callback) => {//method for getting route 
     RouteScope.find({}, (err, result) => {//finds all routes in routeScope collection
 
       if (err){
-        throw err;
+        return callback(err);
       }
       result.forEach((routeDoc) => {//fill up the routes object with routes from the db.
 
