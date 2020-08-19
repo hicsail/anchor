@@ -2610,7 +2610,7 @@ lab.experiment('Route\'s Scope Configuration', () => {
   });
 });
 
-lab.experiment('Comparing route scopes in config file and in server', (done) => {
+lab.experiment('Comparing route scopes in config and server.table', () => {
 
   lab.beforeEach((done) => {
 
