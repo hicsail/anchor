@@ -28,7 +28,7 @@
     "adm-zip": "0.4.x",
     "archiver": "2.x.x",
     "async": "2.x.x",
-    "bcrypt": "1.x.x",
+    "bcrypt": "5.x.x",
     "boom": "5.x.x",
     "child_process": "1.x.x",
     "confidence": "3.x.x",
