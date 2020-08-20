@@ -55,10 +55,23 @@ lab.before((done) => {
 
 lab.experiment('Initialize permission config table', () => {
 
-  lab.test('it returns nothing when successfully ', (done) => {
+  lab.test('it returns true when successfully ', (done) => {
 
-    Code.expect(InitPermissionConfigTable(server)).to.equal(undefined);
-    done();
+    InitPermissionConfigTable(server, (err, result) => {
+
+      Code.expect(err).to.equal(null);
+      Code.expect(result).to.equal(true);
+      done();
+    });
   });
 
+  lab.test('it returns err when server is not passed', (done) => {
+
+    InitPermissionConfigTable(null, (err, result) => {
+
+      Code.expect(result).to.equal(null);
+      Code.expect(err).to.equal('server flag with no server data');
+      done();
+    });
+  });
 });

@@ -3,12 +3,12 @@ const AuthPlugin = require('../../../server/auth');
 const HapiAuthBasic = require('hapi-auth-basic');
 const HapiAuthCookie = require('hapi-auth-cookie');
 const HapiAuthJWT = require('hapi-auth-jwt2');
-const Code = require('code');
+// const Code = require('code');
 const Config = require('../../../config');
 const Hapi = require('hapi');
 const Lab = require('lab');
 const Manifest = require('../../../manifest');
-const InitDBRoutes = require('../../../server/helpers/initDBRoutes');
+// const InitDBRoutes = require('../../../server/helpers/initDBRoutes');
 const UserPlugin = require('../../../server/api/users');
 const MakeMockModel = require('../fixtures/make-mock-model');
 const Path = require('path');
@@ -53,12 +53,17 @@ lab.before((done) => {
   });
 });
 
-lab.experiment('Initializes routeScope database collection', () => {
-
-  lab.test('it returns null when no server is passed in', (done) => {
-
-    const result = InitDBRoutes();
-    Code.expect(result).to.not.exist();
-    done();
-  });
-});
+// lab.experiment('Initializes routeScope database collection', () => {
+//
+//   lab.test('it returns successful when all parameters are passed in', (done) => {
+//
+//     stub.RouteScope.findByPathAndMethod = function (err)
+//     InitDBRoutes(server, (err, result) => {
+//
+//       console.log('printing results: ', result);
+//       Code.expect(err).to.equal(null);
+//       Code.expect(result).to.exist();
+//       done();
+//     });
+//   });
+// });

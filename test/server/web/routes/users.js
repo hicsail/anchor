@@ -323,7 +323,7 @@ lab.experiment('Routes and Scopes Page View', () => {
     done();
   });
 
-  lab.test('it returns successful', (done) => {
+  lab.test('it returns successful when calling route', (done) => {
 
     server.inject(request, (response) => {
 

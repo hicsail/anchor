@@ -44,7 +44,7 @@ internals.applyRoutes = function (server, next) {
       User.find({}, (err, users) => {
 
         if (err) {
-          Boom.notFound(err);
+          return Boom.notFound(err);
         }
 
         if (!users) {
@@ -191,45 +191,43 @@ internals.applyRoutes = function (server, next) {
       const ConfigurableRoutes = {};
       const UnconfigurableRoutes = {};
       let AnyUnconfigurable = false; //checks for if there is any unconfigurable routes at all, if true we update the config file
-      server.table()[0].table.forEach((item) => {
+      server.table()[0].table.forEach((item) => {//processing specifically each routes in server
 
-        if (item.hasOwnProperty('path')){//processing specifically each routes in server
-          const path = item.path;
-          const method = item.method.toUpperCase();
-          if (!ConfigurableRoutes.hasOwnProperty(method)){
-            ConfigurableRoutes[method] = {};
-          }
-
-          if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
-            ConfigurableRoutes[method][path] = item.settings.auth.access[0].scope.selection;
-          }
-          else {//routes don't have scope, assign default value to each route
-            ConfigurableRoutes[method][path] = DefaultScopes;
-          }
-
-          if (!PermissionConfigTable[method][path]){ //check to see if they exist in the config file if not add that route and its scopes to config file.
-            PermissionConfigTable[method][path] = ConfigurableRoutes[method][path];
-          }
-
-          //checking for unconfigurable routes (if the route exists in config file but the scopes are different to the server)
-          const set = new Set();
-          ConfigurableRoutes[method][path].forEach((role) => {
-
-            set.add(role);
-          });
-          AnyUnconfigurable = PermissionConfigTable[method][path].some((role) => {//if a certain route doesn't have the same scope as the one in server means its unconfigurable.
-
-            if (!set.has(role)){
-              console.log('adding unconfigurable route: ', method, path );
-              if (!UnconfigurableRoutes.hasOwnProperty(method)){
-                UnconfigurableRoutes[method] = {};
-              }
-              UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
-              delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
-              return true;
-            }
-          });
+        const path = item.path;
+        const method = item.method.toUpperCase();
+        if (!ConfigurableRoutes.hasOwnProperty(method)){
+          ConfigurableRoutes[method] = {};
         }
+
+        if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
+          ConfigurableRoutes[method][path] = item.settings.auth.access[0].scope.selection;
+        }
+        else {//routes don't have scope, assign default value to each route
+          ConfigurableRoutes[method][path] = DefaultScopes;
+        }
+
+        if (!PermissionConfigTable[method][path]){ //check to see if they exist in the config file if not add that route and its scopes to config file.
+          PermissionConfigTable[method][path] = ConfigurableRoutes[method][path];
+        }
+
+        //checking for unconfigurable routes (if the route exists in config file but the scopes are different to the server)
+        const set = new Set();
+        ConfigurableRoutes[method][path].forEach((role) => {
+
+          set.add(role);
+        });
+        AnyUnconfigurable = PermissionConfigTable[method][path].some((role) => {//if a certain route doesn't have the same scope as the one in server means its unconfigurable.
+
+          if (!set.has(role)){
+            console.log('adding unconfigurable route: ', method, path );
+            if (!UnconfigurableRoutes.hasOwnProperty(method)){
+              UnconfigurableRoutes[method] = {};
+            }
+            UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
+            delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
+            return true;
+          }
+        });
       });
 
       if (AnyUnconfigurable){

@@ -2,22 +2,20 @@
 const Fs = require('fs');
 const GetRoutes = require('../helpers/getRoutes');
 
-module.exports = (server) => {//initializes the permission-config.json with routes and scopes.
+module.exports = (server, callback) => {//initializes the permission-config.json with routes and scopes.
 
   try {
-    GetRoutes('server', server, ((routes) => {//callback function to write the routes found in server into the permission-config.json
+    GetRoutes('server', server, ((err, routes) => {//callback function to write the routes found in server into the permission-config.json
 
-      if (typeof routes === 'object'){
-        Fs.writeFileSync('server/permission-config.json', JSON.stringify(routes, null, 2));
+      if (err) {
+        return callback(err, null);
       }
-      else {
-        console.log('no routes in callback');
-      }
+      Fs.writeFileSync('server/permission-config.json', JSON.stringify(routes, null, 2));
+      callback(null, true);
     }));
   }
   catch (err){
-    console.error(err);
-    throw err;
+    callback(err, null);
   }
 };
 

@@ -9,20 +9,20 @@ module.exports = (flag, server = null, callback) => {//method for getting route 
   switch (flag){
   case 'server':
     if (!server){//if getting from the server, must include the second parameter containing the server.
-      return callback('server flag with no server data');
+      return callback('server flag with no server data', null);
     }
     routes = GetServerRoutes(server);
-    callback(routes);
+    callback(null, routes);
     break;
   case 'permission-config':
     routes = PermissionConfigTable;
-    callback(routes);
+    callback(null, routes);
     break;
   case 'database':
     RouteScope.find({}, (err, result) => {//finds all routes in routeScope collection
 
       if (err){
-        return callback(err);
+        return callback(err, null);
       }
       result.forEach((routeDoc) => {//fill up the routes object with routes from the db.
 
@@ -31,7 +31,7 @@ module.exports = (flag, server = null, callback) => {//method for getting route 
         }
         routes[routeDoc.method][routeDoc.path] = routeDoc.scope;
       });
-      callback(routes);
+      callback(null, routes);
     });
     break;
   }

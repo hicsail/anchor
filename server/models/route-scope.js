@@ -29,7 +29,7 @@ class RouteScope extends MongoModels{
     this.findOne(condition, (err, route) => {
 
       if (err){
-        callback(err);
+        return callback(err);
       }
       callback(null, route);
     });

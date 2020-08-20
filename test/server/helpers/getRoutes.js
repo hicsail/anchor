@@ -57,8 +57,9 @@ lab.experiment('Get Routes Helper', () => {
 
   lab.test('it returns successful when getting server routes', (done) => {
 
-    GetRoutes('server', server, (routes) => {
+    GetRoutes('server', server, (err, routes) => {
 
+      Code.expect(err).to.be.equal(null);
       Code.expect(routes).to.be.an.object();
       Code.expect(routes).to.exist();
       done();
@@ -67,18 +68,19 @@ lab.experiment('Get Routes Helper', () => {
 
   lab.test('it returns an error message when getting server routes with no server param' , (done) => {
 
-    GetRoutes('server', null, (routes) => {
+    GetRoutes('server', null, (err, routes) => {
 
-      Code.expect(routes).to.be.a.string();
-      Code.expect(routes).to.equal('server flag with no server data');
+      Code.expect(err).to.equal('server flag with no server data');
+      Code.expect(routes).to.be.equal(null);
       done();
     });
   });
 
   lab.test('it returns successful when getting permission-config routes', (done) => {
 
-    GetRoutes('permission-config', null, (routes) => {
+    GetRoutes('permission-config', null, (err, routes) => {
 
+      Code.expect(err).to.be.equal(null);
       Code.expect(routes).to.be.an.object();
       Code.expect(routes).to.exist();
       done();
@@ -87,11 +89,27 @@ lab.experiment('Get Routes Helper', () => {
 
   lab.test('it returns successful when getting database routes', (done) => {
 
-    GetRoutes('database', null, (routes) => {
+    GetRoutes('database', null, (err, routes) => {
 
+      Code.expect(err).to.be.equal(null);
       Code.expect(routes).to.be.an.object();
       Code.expect(routes).to.exist();
       done();
     });
   });
+
+  // lab.test('it returns an error message when model method returns error', (done) => {
+  //
+  //   stub.RouteScope.find = function (query, callback) {
+  //
+  //     callback(Error('failed'), null);
+  //   };
+  //
+  //   GetRoutes('database', null, (err, routes) => {
+  //
+  //     // Code.expect(err).to.equal(null);
+  //     // Code.expect(routes).to.equal(null);
+  //     done();
+  //   });
+  // });
 });
