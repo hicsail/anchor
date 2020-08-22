@@ -7,6 +7,7 @@ const Boom = require('boom');
 const PermissionConfigTable = require('../../permission-config.json');
 const DefaultScopes = require('../../helpers/getRoleNames');
 const Fs = require('fs');
+const IsSameScope = require('../../helpers/isSameScope');
 
 internals.applyRoutes = function (server, next) {
 
@@ -210,24 +211,15 @@ internals.applyRoutes = function (server, next) {
           PermissionConfigTable[method][path] = ConfigurableRoutes[method][path];
         }
 
-        //checking for unconfigurable routes (if the route exists in config file but the scopes are different to the server)
-        const set = new Set();
-        ConfigurableRoutes[method][path].forEach((role) => {
-
-          set.add(role);
-        });
-        AnyUnconfigurable = PermissionConfigTable[method][path].some((role) => {//if a certain route doesn't have the same scope as the one in server means its unconfigurable.
-
-          if (!set.has(role)){
-            console.log('adding unconfigurable route: ', method, path );
-            if (!UnconfigurableRoutes.hasOwnProperty(method)){
-              UnconfigurableRoutes[method] = {};
-            }
-            UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
-            delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
-            return true;
+        if (!IsSameScope(ConfigurableRoutes[method][path], PermissionConfigTable[method][path])){
+          AnyUnconfigurable = true;
+          console.log('adding unconfigurable route: ', method, path );
+          if (!UnconfigurableRoutes.hasOwnProperty(method)){
+            UnconfigurableRoutes[method] = {};
           }
-        });
+          UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
+          delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
+        }
       });
 
       if (AnyUnconfigurable){

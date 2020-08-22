@@ -34,16 +34,16 @@
     "/account": [
       "admin",
       "root",
-      "analyst",
       "researcher",
+      "analyst",
       "clinician"
     ],
     "/api": [
       "analyst",
-      "clinician",
       "researcher",
       "admin",
-      "root"
+      "root",
+      "clinician"
     ],
     "/authAttempts": [
       "analyst",

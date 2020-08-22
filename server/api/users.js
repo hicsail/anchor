@@ -10,6 +10,7 @@ const RouteScope = require('../models/route-scope');
 const PermissionConfigTable = require('../permission-config.json');
 const Fs = require('fs');
 const GetServerRoutes = require('../helpers/getServerRoutes');
+const IsSameScope = require('../helpers/isSameScope');
 
 const internals = {};
 
@@ -1011,22 +1012,11 @@ internals.applyRoutes = function (server, next) {
           if (route) {
             const path = route.path;
             const method = route.method.toUpperCase();
-            const set = new Set();
-            PermissionConfigTable[method][path].forEach((role) => {
-
-              set.add(role);
-            });
-            if (route.settings.auth.access[0].scope.selection.length === set.size){
-              const configurableScope = route.settings.auth.access[0].scope.selection.every((role) => {
-
-                return set.has(role);
-              });
-              if (configurableScope) {
-                return callback(null, 'Updated Route\'s Scope');
-              }
+            const configurableScope = IsSameScope(PermissionConfigTable[method][path], route.settings.auth.access[0].scope.selection);
+            if (configurableScope) {
+              return callback(null, 'Updated Route\'s Scope');
             }
             return callback('Unable to Update Route\'s Scope');
-
           }
 
           callback('specified route: ' + request.payload.path + ' ' + request.payload.method + ' not found');
