@@ -1,11 +1,11 @@
 {
   "GET": {
     "/account": [
+      "analyst",
+      "clinician",
       "researcher",
       "admin",
-      "root",
-      "clinician",
-      "analyst"
+      "root"
     ],
     "/api": [
       "analyst",
@@ -253,7 +253,6 @@
       "researcher"
     ],
     "/users/{id}": [
-      "root",
       "admin"
     ],
     "/api/auth-attempts/{id}": [
@@ -261,8 +260,7 @@
     ],
     "/api/backups/refresh": [
       "root",
-      "admin",
-      "researcher"
+      "admin"
     ],
     "/api/clinicians/my": [
       "analyst",

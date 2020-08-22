@@ -1,9 +1,10 @@
 'use strict';
 const Composer = require('./index');
 const InitPC = require('./server/helpers/initPermissionConfigTable');
-const Fs = require('fs');
 const InitDBRoutes = require('./server/helpers/initDBRoutes');
 const PermissionConfigTable = require('./server/permission-config.json');
+const NumberOfRoutes = require('./server/helpers/getNumberOfRoutes');
+const GetServerRoutes = require('./server/helpers/getServerRoutes');
 
 Composer( (err, server) => {
 
@@ -13,10 +14,11 @@ Composer( (err, server) => {
 
   server.start(() => {
 
-    if (!Fs.existsSync('server/permission-config.json') || Object.keys(PermissionConfigTable).length === 0){//initialized the permission config file if it doesn't already exist
+    const serverRoutes = GetServerRoutes(server);
+    if (NumberOfRoutes(serverRoutes) !== NumberOfRoutes(PermissionConfigTable)) {//initialized the permission config file
       InitPC(server, (errMsg, result) => {
 
-        if (errMsg){
+        if (errMsg) {
           console.error(errMsg);
         }
       });

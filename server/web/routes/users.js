@@ -189,15 +189,12 @@ internals.applyRoutes = function (server, next) {
     },
     handler: function (request, reply) {
 
-      const ConfigurableRoutes = {};
-      const UnconfigurableRoutes = {};
+      const ConfigurableRoutes = { 'GET': {}, 'PUT': {}, 'DELETE': {}, 'POST': {} };
+      const UnconfigurableRoutes = { 'GET': {}, 'PUT': {}, 'DELETE': {}, 'POST': {} };
       server.table()[0].table.forEach((route) => {//processing specifically each routes in server
 
         const path = route.path;
         const method = route.method.toUpperCase();
-        if (!ConfigurableRoutes.hasOwnProperty(method)){
-          ConfigurableRoutes[method] = {};
-        }
 
         if (route.settings.hasOwnProperty('auth') && typeof route.settings.auth !== 'undefined' && route.settings.auth.hasOwnProperty('access') ){
           ConfigurableRoutes[method][path] = route.settings.auth.access[0].scope.selection;
