@@ -191,40 +191,34 @@ internals.applyRoutes = function (server, next) {
 
       const ConfigurableRoutes = {};
       const UnconfigurableRoutes = {};
-      let AnyUnconfigurable = false; //checks for if there is any unconfigurable routes at all, if true we update the config file
-      server.table()[0].table.forEach((item) => {//processing specifically each routes in server
+      server.table()[0].table.forEach((route) => {//processing specifically each routes in server
 
-        const path = item.path;
-        const method = item.method.toUpperCase();
+        const path = route.path;
+        const method = route.method.toUpperCase();
         if (!ConfigurableRoutes.hasOwnProperty(method)){
           ConfigurableRoutes[method] = {};
         }
 
-        if (item.settings.hasOwnProperty('auth') && typeof item.settings.auth !== 'undefined' && item.settings.auth.hasOwnProperty('access') ){
-          ConfigurableRoutes[method][path] = item.settings.auth.access[0].scope.selection;
-        }
-        else {//routes don't have scope, assign default value to each route
-          ConfigurableRoutes[method][path] = DefaultScopes;
-        }
+        if (route.settings.hasOwnProperty('auth') && typeof route.settings.auth !== 'undefined' && route.settings.auth.hasOwnProperty('access') ){
+          ConfigurableRoutes[method][path] = route.settings.auth.access[0].scope.selection;
 
-        if (!PermissionConfigTable[method][path]){ //check to see if they exist in the config file if not add that route and its scopes to config file.
-          PermissionConfigTable[method][path] = ConfigurableRoutes[method][path];
+          if (!IsSameScope(ConfigurableRoutes[method][path], PermissionConfigTable[method][path])){
+            console.log('adding unconfigurable route: ', method, path );
+            if (!UnconfigurableRoutes.hasOwnProperty(method)){
+              UnconfigurableRoutes[method] = {};
+            }
+            UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
+            delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
+          }
         }
-
-        if (!IsSameScope(ConfigurableRoutes[method][path], PermissionConfigTable[method][path])){
-          AnyUnconfigurable = true;
-          console.log('adding unconfigurable route: ', method, path );
+        else {//routes don't have scope property defined, hence unconfigurable
           if (!UnconfigurableRoutes.hasOwnProperty(method)){
             UnconfigurableRoutes[method] = {};
           }
-          UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
-          delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
+          UnconfigurableRoutes[method][path] = DefaultScopes;
         }
       });
 
-      if (AnyUnconfigurable){
-        Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
-      }
       return reply.view('users/scopes', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),

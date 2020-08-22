@@ -66,7 +66,7 @@ module.exports = (server, callback) => {//initializes the routeScope collection 
       });
     }
     else {
-      callback('no routes to be updated to server.table()', null);
+      callback('no routes to be updated from server.table()', null);
     }
   });
 };
