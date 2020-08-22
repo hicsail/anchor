@@ -332,4 +332,9 @@ lab.experiment('Routes and Scopes Page View', () => {
       done();
     });
   });
+
+  lab.test('', (done) => {
+
+
+  });
 });
