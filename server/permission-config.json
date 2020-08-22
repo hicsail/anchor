@@ -32,10 +32,11 @@
       "admin"
     ],
     "/account": [
-      "clinician",
       "admin",
       "root",
-      "analyst"
+      "analyst",
+      "researcher",
+      "clinician"
     ],
     "/api": [
       "analyst",

@@ -14,7 +14,7 @@ $(document).ready(() => {
   });
   const msg = localStorage.getItem('modalMessage');//after refresh on scope update, get localStorage message for modal
   switch(msg){//switch through modal message received, if unconfigurable message then give an error alert and vice versa.
-  case 'Unable to Update Route\'s scope':
+  case 'Unable to Update Route\'s Scope':
     errorAlert(msg);
     break;
   case 'Updated Route\'s Scope':
