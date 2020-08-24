@@ -1,10 +1,13 @@
 'use strict';
 const Boom = require('boom');
+const Fs = require('fs');
 const Clinician = require('../models/clinician');
 const User = require('../models/user');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
+const PermissionConfigTable = require('../permission-config.json');
+const RouteScope = require('../models/route-scope');
 
 const register = function (server, options) {
 

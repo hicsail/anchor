@@ -415,12 +415,12 @@ class AnchorModel {
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
-    const doc = args.shift();
+    const doc = args.shift();    
     const defaultOptions = {
       returnOriginal: false
     };
     if (this.timestamps) {
-      doc.updatedAt = new Date();
+      doc.$set.updatedAt = new Date();      
     }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
 

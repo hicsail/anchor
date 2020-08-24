@@ -4,7 +4,7 @@
   "description": "A user system API starter",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --inspect -e js,md,html,handlebars,css server.js",
+    "start": "nodemon --inspect -e json,js,md,html,handlebars,css server.js",
     "first-time-setup": "node first-time-setup.js",
     "test": "lab -c",
     "lint": "lab -dL --leaks",

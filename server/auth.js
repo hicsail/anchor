@@ -12,6 +12,8 @@ const register = function (server, options) {
 
       const user = await User.findByCredentials(username, password);
 
+      console.log("username", username)
+      console.log(user)
       if (!user) {
           return { isValid: false };
       }
@@ -95,7 +97,8 @@ const register = function (server, options) {
     redirectTo: '/login',
     //appendNext: 'returnUrl',
     validateFunc: async function (request, data) {
-          
+       
+      console.log(data)   
       const id = data._id;
       const key = data.key;
 
@@ -147,6 +150,3 @@ module.exports = {
   ],
   register,  
 };
-
-
-//exports.preware = internals.preware;

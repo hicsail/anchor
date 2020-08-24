@@ -34,15 +34,12 @@ function demote(id, role) {
   changeRole(id, role, 'DELETE')
 }
 
-function changeRole(id, role, method) {
-  console.log("id: ", id)
-  console.log("role: ", role)
-  console.log(method)
+function changeRole(id, role, method) {  
   $.ajax({
     url: '/api/users/' + role + '/' + id,
     type: method,
     success: function (result) {
-      successAlert('User Updated');
+      successAlert('User Role Successfully Updated');
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

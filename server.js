@@ -2,6 +2,8 @@
 const Glue = require('glue');
 const Manifest = require('./manifest');
 const path = require('path');
+const InitPC = require('./server/helper/initPermissionConfigFile');
+const Fs = require('fs');
 
 
 process.on('unhandledRejection', (reason, promise) => {
@@ -37,6 +39,10 @@ const main = async function () {
   });  
 
   await server.start();
+
+  if (!Fs.existsSync('server/permission-config.json')){
+    InitPC(server);
+  }
 
   console.log(`Server started on port ${Manifest.get('/server/port')}`);
 };

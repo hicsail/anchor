@@ -2,6 +2,8 @@
 const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
+const defaultScopes = require('../../helper/getRoleNames');
+const PermissionConfigTable = require('../../permission-config.json');
 
 const register = function (server, options) {
 
@@ -62,25 +64,83 @@ const register = function (server, options) {
     }
   });
 
-  /*server.route({
+  server.route({
     method: 'GET',
-    path: '/roles',
+    path: '/scopes',
     options: {
       auth: {
-        strategies: ['session'],
-        scope: ['root', 'admin', 'researcher']
+        strategy: 'session',        
+        scope: ['root']
+        //scope: ScopeArray('/scopes', 'GET', defaultScopes)
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
-      return h.view('users/roles', {
+      const ConfigurableRoutes = {};
+      const UnconfigurableRoutes = {};
+      let AnyUnconfigurable = false; //checks for if there is any unconfigurable routes at all, if true we update the config file
+      server.table().forEach((route) => {
+
+        if (route.hasOwnProperty('path')){//processing specifically each routes in server
+          const path = route.path;
+          const method = route.method.toUpperCase();
+          if (!ConfigurableRoutes.hasOwnProperty(method)){
+            ConfigurableRoutes[method] = {};
+          }
+
+          if (route.settings.hasOwnProperty('auth') && typeof route.settings.auth !== 'undefined' && route.settings.auth.hasOwnProperty('access') ){
+            ConfigurableRoutes[method][path] = route.settings.auth.access[0].scope.selection;
+          }
+          else {//routes don't have scope, assign default value to each route
+            ConfigurableRoutes[method][path] = defaultScopes;
+          }
+
+          if (!PermissionConfigTable[method][path]){ //check to see if they exist in the config file if not add that route and its scopes to config file.
+            PermissionConfigTable[method][path] = ConfigurableRoutes[method][path];
+          }
+
+          //checking for unconfigurable routes (if the route exists in config file but the scopes are different to the server)
+          const set = new Set();
+          ConfigurableRoutes[method][path].forEach((role) => {
+
+            set.add(role);
+          });
+          AnyUnconfigurable = PermissionConfigTable[method][path].some((role) => {//if a certain route doesn't have the same scope as the one in server means its unconfigurable.
+
+            if (!set.has(role)){
+              console.log('adding unconfigurable route: ', method, path );
+              if (!UnconfigurableRoutes.hasOwnProperty(method)){
+                UnconfigurableRoutes[method] = {};
+              }
+              UnconfigurableRoutes[method][path] = ConfigurableRoutes[method][path];
+              delete ConfigurableRoutes[method][path]; //deletes from the configurable route table.
+              return true;
+            }
+          });
+        }
+      });
+
+      if (AnyUnconfigurable){
+        Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
+      }
+      return h.view('users/scopes', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
-        title: 'Users',
-        baseUrl: Config.get('/baseUrl')
-      });
+        title: 'Routing & Scopes',
+        baseUrl: Config.get('/baseUrl'),
+        GET: ConfigurableRoutes.GET,
+        PUT: ConfigurableRoutes.PUT,
+        DELETE: ConfigurableRoutes.DELETE,
+        POST: ConfigurableRoutes.POST,
+        GETunconfig: UnconfigurableRoutes.GET,
+        PUTunconfig: UnconfigurableRoutes.PUT,
+        DELETEunconfig: UnconfigurableRoutes.DELETE,
+        POSTunconfig: UnconfigurableRoutes.POST,
+        role: defaultScopes,
+        UnconfigurableRoutes
+      });      
     }
-  });*/
+  });
 
   server.route({
     method: 'GET',

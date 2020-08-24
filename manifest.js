@@ -224,6 +224,9 @@ const manifest = {
       plugin: './server/web/routes/signup'
     },
     {
+      plugin: './server/api/routeScopes'      
+    },
+    {
       plugin: './server/api/signup'      
     },
     {
