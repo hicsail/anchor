@@ -1,6 +1,6 @@
 'use strict';
 const Boom = require('boom');
-const Clinician = require('../models/clinician');
+const Clinician = require('../models/group-admin');
 const AnchorModel = require('../anchor/anchor-model');
 const Joi = require('joi');
 const User = require('../models/user');
@@ -83,7 +83,7 @@ const register = function (server, options) {
 
   server.route({
     method: 'GET',
-    path: '/api/select2/clinicians',
+    path: '/api/select2/{role}',
     options: {
       auth: {
         strategies: ['simple', 'session']
@@ -96,22 +96,25 @@ const register = function (server, options) {
         }
       }
     },
-    handler: async function (request, h) {
+    handler: async function (request, h) {   
 
       const query = {
         $or: [
           { email: { $regex: request.query.term, $options: 'i' } },
           { name: { $regex: request.query.term, $options: 'i' } },
           { username: { $regex: request.query.term, $options: 'i' } }
-        ],
-        'roles.clinician': { $exists: true }
+        ]        
       };
+
+      var field = "roles." + request.params.role;
+      query[field] = { $exists: true };
+
       const fields = 'name email username';
       const limit = 25;
       const page = 1;
 
       const results  = await User.pagedFind(query, page, limit);
-
+      
       return {
         results: results.data,
         pagination: {
@@ -190,28 +193,28 @@ const register = function (server, options) {
     }
   });
 
-
+  //need to parameterized role
   server.route({
     method: 'PUT',
-    path: '/api/clinicians/{id}',
+    path: '/api/groupAdmins/{role}/{clinicianId}',
     options: {
       auth: {
         strategies: ['simple', 'session']
       },
       pre: [
         {
-          assign: 'clinician',
+          assign: 'admin',
           method: async function (request, h) {
 
-            const user = await User.findById(request.params.id);
+            const user = await User.findById(request.params.clinicianId);
 
             if (!user) {
               throw Boom.notFound('User not found');
             }
 
-            if (!user.roles.clinician) {
+            /*if (!user.roles.clinician) {
               throw Boom.conflict('User is not a clinician');
-            }
+            }*/
 
             return user;            
           }
@@ -220,20 +223,17 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const clinician = request.pre.clinician;
-      const userId = request.auth.credentials.user._id.toString();
-
-      const userAccess = Clinician.addUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
-
+      const admin = request.pre.admin;        
+      
+      admin.roles[request.params.role] = JSON.parse(request.payload['users']);
 
       const update = {
         $set: {
-          roles: clinician.roles
+          roles: admin.roles
         }
       };
 
-      const user = await User.findByIdAndUpdate(request.params.id, update);
+      const user = await User.findByIdAndUpdate(request.params.clinicianId, update);
 
       if (!user) {
         throw Boom.notFound('Document not found.');

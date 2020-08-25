@@ -11,9 +11,7 @@ const register = function (server, options) {
     validate: async function (request, username, password) {
 
       const user = await User.findByCredentials(username, password);
-
-      console.log("username", username)
-      console.log(user)
+      
       if (!user) {
           return { isValid: false };
       }
@@ -96,9 +94,8 @@ const register = function (server, options) {
     ttl: 60000 * 30, //30 Minutes
     redirectTo: '/login',
     //appendNext: 'returnUrl',
-    validateFunc: async function (request, data) {
-       
-      console.log(data)   
+    validateFunc: async function (request, data) {  
+        
       const id = data._id;
       const key = data.key;
 

@@ -188,7 +188,7 @@ const manifest = {
       plugin: './server/web/routes/backup',
     },
     {
-      plugin: './server/web/routes/clinician',
+      plugin: './server/web/routes/groupAdmins',
     },
     {
       plugin: './server/web/routes/events'

@@ -1,7 +1,7 @@
 'use strict';
 const Assert = require('assert')
 const Crypto = require('../crypto');
-const Clinician = require('./clinician');
+const GroupAdmin = require('./group-admin');
 const Joi = require('joi');
 const Hoek = require('hoek');
 const AnchorModel = require('../anchor/anchor-model');
@@ -142,7 +142,7 @@ User.schema = Joi.object({
   inStudy: Joi.boolean().default(true),
   email: Joi.string().email().lowercase().required(),
   roles: Joi.object({
-    clinician: Clinician.schema,
+    //clinician: Clinician.schema,
     analyst: Joi.boolean().required(),
     researcher: Joi.boolean().required(),
     admin: Joi.boolean().required(),

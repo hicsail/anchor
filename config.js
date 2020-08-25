@@ -110,7 +110,8 @@ const config = {
     },
     {
       name: 'clinician',
-      accessLevel: '2'
+      accessLevel: '2',
+      type: 'groupAdmin'
     },
     {
       name: 'researcher',
@@ -118,7 +119,8 @@ const config = {
     },
     {
       name: 'admin',
-      accessLevel: '4'
+      accessLevel: '4',
+      type: 'groupAdmin'
     },
     {
       name: 'root',

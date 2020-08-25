@@ -1,7 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Fs = require('fs');
-const Clinician = require('../models/clinician');
+const GroupAdmin = require('../models/group-admin');
 const User = require('../models/user');
 const Config = require('../../config');
 const Joi = require('joi');
@@ -551,8 +551,8 @@ const register = function (server, options) {
 
       const user = request.pre.user;     
 
-      request.params.role === 'clinician' ?
-        user.roles.clinician = Clinician.create([]) :
+      request.params.role.type  === 'groupAdmin' ?
+        user.roles[request.params.role] = GroupAdmin.create([]) :
         user.roles[request.params.role] = true;
 
       const update = {
