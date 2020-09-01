@@ -21,12 +21,12 @@ const register = function (server, options) {
 
       const results  = await User.find(query);
 
-      let result = []
+      let result = [];
       for (let role of Config.get('/roles')) {
         if (role['type'] === 'groupAdmin') {
           
           const data = {};
-          const query = {}
+          const query = {};
           data['role'] = role['name'];
           
           var field = "roles." + role['name'];
@@ -38,15 +38,10 @@ const register = function (server, options) {
             admin.userAccess = admin.roles[role['name']];
           }          
           data['admins'] = admins;          
-          result.push(data)
+          result.push(data);
         }
       }
-      //console.log(JSON.parse(result))
-      for (let d of result) {
-        for (let ad of d['admins']) {
-          console.log(ad)
-        }
-      }
+      
       return h.view('groupAdmins/index', {
         clinicians: results,
         user: request.auth.credentials.user,
