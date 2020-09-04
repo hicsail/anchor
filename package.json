@@ -49,7 +49,7 @@
     "jsonwebtoken": "8.x.x",
     "lout": "10.x.x",
     "mongo-models": "1.x.x",
-    "mongodb": "2.x.x",
+    "mongodb": "3.x.x",
     "nodemailer": "4.x.x",
     "nodemailer-markdown": "1.0.2",
     "object-assign": "4.x.x",
