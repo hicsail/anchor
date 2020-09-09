@@ -475,7 +475,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root','admin']
+        scope: ['analyst']
       },
       validate: {
         params: {
@@ -550,11 +550,15 @@ const register = function (server, options) {
     handler: async function (request, h) {
 
       const user = request.pre.user;     
+      const role = Config.get('/roles').find(elem => elem.name === request.params.role);
 
-      request.params.role.type  === 'groupAdmin' ?
-        user.roles[request.params.role] = GroupAdmin.create([]) :
+      if (role['type']  === 'groupAdmin') {
+        user.roles[request.params.role] = GroupAdmin.create([]); 
+      }
+      else {
         user.roles[request.params.role] = true;
-
+      }
+      
       const update = {
         $set: {
           roles: user.roles

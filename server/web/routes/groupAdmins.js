@@ -35,7 +35,7 @@ const register = function (server, options) {
           const admins = await User.find(query);
 
           for (let admin of admins) {
-            admin.userAccess = admin.roles[role['name']];
+            admin.userAccess = admin.roles[role['name']]['userAccess'];
           }          
           data['admins'] = admins;          
           result.push(data);

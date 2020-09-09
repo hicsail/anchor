@@ -139,10 +139,9 @@
       "root"
     ],
     "/": [
-      "admin",
-      "admin",
+      "admin",      
       "root",
-      "clinician"
+      "analyst"
     ],
     "/api/clinicians": [
       "root",

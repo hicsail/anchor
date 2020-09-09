@@ -35,12 +35,12 @@ const register = function (server, options) {
         }
       };
  
-      await Session.findByIdAndUpdate(session._id.toString(), update);
+      await Session.findByIdAndUpdate(session._id.toString(), update);            
 
       const credentials = {
         session,
-        user,
-        scope: Object.keys(user.roles)
+        user,        
+        scope: await getPermissions(request, user.roles)
       };
 
       return { credentials, isValid: true };      
@@ -73,11 +73,11 @@ const register = function (server, options) {
       if (!user.isActive) {
         return { isValid: false };
       }
-
+      
       const credentials = {
         token,
         user,
-        scoep: Object.keys(user.roles)
+        scope: await getPermissions(request, user.roles)        
       };
 
       return { credentials, isValid: true };      
@@ -122,19 +122,38 @@ const register = function (server, options) {
       };
 
       await Session.findByIdAndUpdate(session._id.toString(), update);
-
+      
       const credentials = {
         session,
         user,
-        scope: Object.keys(user.roles)        
+        scope: await getPermissions(request, user.roles)               
       };
 
-      return { credentials, valid: true };
-
-      
+      return { credentials, valid: true };      
     }
   });
   
+};
+
+const getPermissions = async function (request, userRoles) {
+
+  let permissions = [];      
+  for (let key in userRoles) {
+    if (typeof userRoles[key] === 'boolean') {
+          permissions.push(key);
+    }
+    else if (request.params.id) {
+      const user = await User.findById(request.params.id); 
+      
+      if (userRoles[key].userAccess.includes(user.username)) {
+        permissions.push(key); 
+      }
+    }
+    else {
+      permissions.push(key);   
+    }       
+  }  
+  return permissions;    
 };
 
 module.exports = {

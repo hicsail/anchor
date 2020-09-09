@@ -196,7 +196,7 @@ const register = function (server, options) {
   //need to parameterized role
   server.route({
     method: 'PUT',
-    path: '/api/groupAdmins/{role}/{clinicianId}',
+    path: '/api/groupAdmins/{role}/{adminId}',
     options: {
       auth: {
         strategies: ['simple', 'session']
@@ -206,7 +206,7 @@ const register = function (server, options) {
           assign: 'admin',
           method: async function (request, h) {
 
-            const user = await User.findById(request.params.clinicianId);
+            const user = await User.findById(request.params.adminId);
 
             if (!user) {
               throw Boom.notFound('User not found');
@@ -224,8 +224,9 @@ const register = function (server, options) {
     handler: async function (request, h) {
 
       const admin = request.pre.admin;        
-      
-      admin.roles[request.params.role] = JSON.parse(request.payload['users']);
+      console.log("role", request.params.role)
+      console.log(admin.roles)
+      admin.roles[request.params.role].userAccess = JSON.parse(request.payload['users']);
 
       const update = {
         $set: {
@@ -233,7 +234,7 @@ const register = function (server, options) {
         }
       };
 
-      const user = await User.findByIdAndUpdate(request.params.clinicianId, update);
+      const user = await User.findByIdAndUpdate(request.params.adminId, update);
 
       if (!user) {
         throw Boom.notFound('Document not found.');

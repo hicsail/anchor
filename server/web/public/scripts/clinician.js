@@ -3,12 +3,13 @@ let table;
 
 function updateUserAccess(adminId, roleName) { 
   const users = $('#' + adminId + "_" + roleName).val();
-  console.log("users" ,users);
+  
   $.ajax({
     type: 'PUT',
     url: '/api/groupAdmins/' + roleName + '/' + adminId,
     data: {users: JSON.stringify(users)},    
-    success: function (result) {      
+    success: function (result) { 
+      successAlert('User Access Successfully Updated');     
       //table.ajax.reload();
     },
     error: function (result) {
