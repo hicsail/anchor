@@ -7,6 +7,20 @@ const Hoek = require('hoek');
 const AnchorModel = require('../anchor/anchor-model');
 const Config = require('../../config');
 
+function  getRolesValidator() {      
+  let roles = {};
+
+  Config.get('/roles').forEach((role) => {
+
+    if (role['type'] === 'groupAdmin') {
+      roles[role['name']] = GroupAdmin.schema;  
+    }
+    else {
+      roles[role['name']] = Joi.boolean();  
+    }        
+  });
+  return roles;   
+}
 
 class User extends AnchorModel {
   static async generatePasswordHash(password) {
@@ -111,7 +125,7 @@ class User extends AnchorModel {
     }
 
     return maxAccessLevel;    
-  }
+  }  
 
   constructor(attrs) {
 
@@ -141,13 +155,7 @@ User.schema = Joi.object({
   name: Joi.string(),
   inStudy: Joi.boolean().default(true),
   email: Joi.string().email().lowercase().required(),
-  roles: Joi.object({
-    //clinician: Clinician.schema,
-    analyst: Joi.boolean().required(),
-    researcher: Joi.boolean().required(),
-    admin: Joi.boolean().required(),
-    root: Joi.boolean().required()
-  }),
+  roles: Joi.object(getRolesValidator()),
   resetPassword: Joi.object({
     token: Joi.string().required(),
     expires: Joi.date().required()
@@ -180,6 +188,5 @@ User.indexes = [
   { key: { username: 1, unique: 1 } },
   { key: { email: 1, unique: 1 } }
 ];
-
 
 module.exports = User;
