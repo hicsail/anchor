@@ -30,18 +30,21 @@ $(document).ready(function() {
     ]    
   });
 
-  $('.userAccess').select2({
+  $('.userAccess').select2({    
     ajax: {
       delay: 250,
       url: '/api/select2/users',
       dataType: 'json',
       processResults: function (data) {
+        const adminId = ($(this)[0]["container"]["id"].split("_")[0]).split("-")[1];        
         var results = [];
         for(var i = 0; i < data.results.length; i++) {
-          results.push({
-            id: data.results[i].username,
-            text: data.results[i].name
-          })
+          if (data.results[i]._id.toString() !== adminId) {
+            results.push({
+              id: data.results[i].username,
+              text: data.results[i].name
+            });
+          }          
         }
         data.results = results;
         return data;
