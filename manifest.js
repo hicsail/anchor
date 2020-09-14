@@ -44,19 +44,22 @@ const manifest = {
       {
         plugin: './server/anchor/hapi-anchor-model.js',
         options: Config.get('/hapiAnchorModel')
-      },      
+      },
       {
         plugin: './server/auth.js'
       },
       {
         plugin: './server/anchor/anchor-api'
-      },     
+      },
+      {
+        plugin: './server/anchor/anchor-web-route'
+      },
       {
         plugin: './server/anchor/hapi-anchor-api'
       },
       {
         plugin: './server/anchor/hapi-anchor-web'
-      },           
+      },
       {
         plugin: 'hapi-cron',
         options: {
