@@ -7,7 +7,56 @@ const register = function (server, serverOptions) {
     options: {
       auth: {
         strategies: ['session']
+      },
+      pre: [{
+        assign: 'model',
+        method: async function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            throw Boom.notFound('Model not found');
+          }
+
+          return await model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.disabled) {
+            throw Boom.forbidden('Route Disabled');
+          }
+          return h.continue;
+        }
+      }, {
+        assign: 'payload',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          const { error, value } = Joi.validate(request.payload,model.routes.create.payload);
+
+          if (error) {
+            throw Boom.badRequest('Incorrect Payload', error);
+          }
+          request.payload = value;
+          return h.continue;
+        }
+      }, {
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.auth) {
+            if (!request.auth.isAuthenticated) {
+              throw Boom.unauthorized('Authentication Required');
+            }
+          }
+          return h.continue;
+        }
       }
+      ]
     },
     handler: async function (request, h) {
 
@@ -20,7 +69,56 @@ const register = function (server, serverOptions) {
     path: '/edit/{collectionName}/{id}',options: {
       auth: {
         strategies: ['session']
+      },
+      pre: [{
+        assign: 'model',
+        method: async function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            throw Boom.notFound('Model not found');
+          }
+
+          return await model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.disabled) {
+            throw Boom.forbidden('Route Disabled');
+          }
+          return h.continue;
+        }
+      }, {
+        assign: 'payload',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          const { error, value } = Joi.validate(request.payload,model.routes.create.payload);
+
+          if (error) {
+            throw Boom.badRequest('Incorrect Payload', error);
+          }
+          request.payload = value;
+          return h.continue;
+        }
+      }, {
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.auth) {
+            if (!request.auth.isAuthenticated) {
+              throw Boom.unauthorized('Authentication Required');
+            }
+          }
+          return h.continue;
+        }
       }
+      ]
     },
     handler: async function (request, h) {
 
@@ -35,7 +133,56 @@ const register = function (server, serverOptions) {
     options: {
       auth: {
         strategies: ['session']
+      },
+      pre: [{
+        assign: 'model',
+        method: async function (request,h) {
+
+          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
+
+          if (!model) {
+            throw Boom.notFound('Model not found');
+          }
+
+          return await model;
+        }
+      }, {
+        assign: 'enabled',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.disabled) {
+            throw Boom.forbidden('Route Disabled');
+          }
+          return h.continue;
+        }
+      }, {
+        assign: 'payload',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          const { error, value } = Joi.validate(request.payload,model.routes.create.payload);
+
+          if (error) {
+            throw Boom.badRequest('Incorrect Payload', error);
+          }
+          request.payload = value;
+          return h.continue;
+        }
+      }, {
+        assign: 'auth',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.auth) {
+            if (!request.auth.isAuthenticated) {
+              throw Boom.unauthorized('Authentication Required');
+            }
+          }
+          return h.continue;
+        }
       }
+      ]
     },
     handler: async function (request, h) {
 
