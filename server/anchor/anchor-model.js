@@ -238,7 +238,7 @@ class AnchorModel {
 
     return fields;
   }
-  
+
   /**
    * Finds documents and returns an array of model instances
    * @async
@@ -415,12 +415,12 @@ class AnchorModel {
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
-    const doc = args.shift();    
+    const doc = args.shift();
     const defaultOptions = {
       returnOriginal: false
     };
     if (this.timestamps) {
-      doc.$set.updatedAt = new Date();      
+      doc.$set.updatedAt = new Date();
     }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
 
@@ -606,7 +606,7 @@ class AnchorModel {
     const page = args.shift();
     const limit = args.shift();
     const options = args.pop() || {};
-    
+
     const output = {
       data: undefined,
       pages: {
@@ -934,11 +934,11 @@ AnchorModel.routes = {
     disabled: false,
     payload: null,
     handler: async (request,h) => {
-      
+
       const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
       const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
       const limit = Number(request.query.length);
-      const page = Math.ceil(Number(request.query.start) / limit) + 1;         
+      const page = Math.ceil(Number(request.query.start) / limit) + 1;
 
       const model = request.pre.model;
       const query = {};
@@ -954,8 +954,8 @@ AnchorModel.routes = {
         draw: request.query.draw,
         recordsTotal: results.data.length,
         recordsFiltered: results.items.total,
-        data: results.data        
-      };      
+        data: results.data
+      };
     },
     query: null
   },
@@ -1078,6 +1078,18 @@ AnchorModel.routes = {
       };
       return await model.pagedLookup(query,page,limit,options,model.lookups);
     }
+  },
+  getTableView: {
+    auth: false,
+    disabled: false
+  },
+  getEditView: {
+    auth: false,
+    disabled: false
+  },
+  getTableView2: {
+    auth: false,
+    disabled: false
   }
 };
 
@@ -1113,7 +1125,20 @@ AnchorModel.routeMap = {
   insertMany: {
     method: 'POST',
     path: '/api/{collectionName}/insertMany'
-  }
+  },
+  getTableView: {
+    method: 'GET',
+    path: '/{collectionName}'
+  },
+  getEditView: {
+    method: 'GET',
+    path: '/edit/{collectionName}/{id}'
+  },
+  getTableView2: {
+    method: 'GET',
+    path: '/create/{collectionName}'
+  },
+
 };
 AnchorModel.timestamps = true;
 
