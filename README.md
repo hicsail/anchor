@@ -12,7 +12,7 @@ A user system API starter with a database administrative system. Bring your own 
 
  - Login system with forgot password and reset password
  - Abusive login attempt detection
- - User roles for analysts, clinicians, researchers, admins
+ - User roles for analysts, clinicians, researchers,, admins
  - Analyst can view anonymized information
  - Clinician can view information of specific users
  - Researcher can view all information
