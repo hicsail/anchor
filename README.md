@@ -31,7 +31,7 @@ If you need to customize any of these functionalities and write your own code fo
 
 ![hoek](https://user-images.githubusercontent.com/32320836/93406070-c42a2f00-f85c-11ea-9225-62ae35da47e6.png)
 
-##User Roles 
+## User Roles 
 
 You can add user roles to the config file. The strcture of user roles in the config file is as follows:
 
