@@ -1087,7 +1087,7 @@ AnchorModel.routes = {
     auth: false,
     disabled: false
   },
-  getTableView2: {
+  insertDocument: {
     auth: false,
     disabled: false
   }
@@ -1134,11 +1134,10 @@ AnchorModel.routeMap = {
     method: 'GET',
     path: '/edit/{collectionName}/{id}'
   },
-  getTableView2: {
+  insertDocument: {
     method: 'GET',
     path: '/create/{collectionName}'
-  },
-
+  }
 };
 AnchorModel.timestamps = true;
 

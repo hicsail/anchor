@@ -1,4 +1,6 @@
 'use strict';
+const Boom = require('boom');
+
 const register = function (server, serverOptions) {
 
   server.route({ //returns the table view template
