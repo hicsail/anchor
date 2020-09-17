@@ -8,17 +8,51 @@
 
 A user system API starter with a database administrative system. Bring your own front-end.
 
+## Default API functionalities supported by anchor
+
+Anchor supports the follwoing API functionalties for every database collection model being exposed to the server so that you don't have to write any code for these basic functionalties including basic database CRUD operations unless you need to add custom code to them.
+
+All the model classes inside `/server/models` directory must have a static property called collectionName having a unique string value and when triggering the default API routes for any of the models, the actual value this static property, collectionName holds must replace the path parameter, {collectionName} in the route url.
+
+For example you can retrieve all the users data in 'users' collection by making an AJAX call to `/api/table/users`.
+
+| Name | Path | Method |Functionality
+|:-----|:--------: |:--------: |:-------- |
+|getAllTable| `/api/table/{collectionName}` | GET | Returns all the documments in the collection along with the metadata [recordsFiltered, recordsTotal, draw] required for rendering datatable on the UI |
+|getAll| `/api/{collectionName}` | GET | Returns all the documments in the collection |
+|create| `/api/{collectionName}` | POST | Inserts a new document (payload) into the collection  |
+|insertMany| `/api/{collectionName}/insertMany` | POST | Inserts a couple of documnts (payload) into the collection |
+|update| `/api/{collectionName}/{id}`| PUT | Updates the document with _id equal to {id} embedded in the path |
+|delete| `/api/{collectionName}/{id}` | DELETE | Deletes the document with _id equal to {id} embedded in the path |
+|getId| `/api/{collectionName}/{id}`| GET | Finds and returns the document with _id equal to {id} embedded in the path |
+|getMy|`/api/{collectionName}/my` | GET | Finds and returns the all documents in the collection with userId equal to the _id of the logged in user in Users collection (all the documents in the collection created by the logged in user 
+
+If you need to customize any of these functionalities and write your own code for any of the routes above, you need to disable the default routes by overriding the default value of 'routes' static property of AnchorModels base class like this: 
+
+![hoek](https://user-images.githubusercontent.com/32320836/93406070-c42a2f00-f85c-11ea-9225-62ae35da47e6.png)
+
+##User Roles 
+
+You can add user roles to the config file. The strcture of user roles in the config file is as follows:
+
+![roles](https://user-images.githubusercontent.com/32320836/93408106-bf1bae80-f861-11ea-9996-e9166c2439f1.png)
+
+Eahc role object in the config file must have a unique name and integer access level. They also could have an optional type property. The value of type could be either 'groupAdmin' or 'ordinary'. If the type property of a role is set to 'groupAdmin', then it means the corresponding role manages only a group of users.
+
+If a role is of type 'groupAdmin', they can only update or delete the documents whose creator users exist in the user access array of the admin with role.
+Anchor looks at all the roles in config file and for those having type of 'groupAdmin' automatically create Fields on the UI for updating their user access.[sreenshot to be added]
+
 ## Features
 
  - Login system with forgot password and reset password
- - Abusive login attempt detection
- - User roles for analysts, clinicians, researchers,, admins
- - Analyst can view anonymized information
- - Clinician can view information of specific users
- - Researcher can view all information
- - Admins can view update and delete all information
+ - Abusive login attempt detection 
+ - Customizable user roles 
+ - Curstomizable scopes for routes 
  - Auto Backups
  - Admin UI to view Database Records
+ - Admin UI to update route scopes
+ - Admin UI to update user roles 
+ - Admin UI to update user Access of different user group admins
  - Custom Event Tracking
  - User Feedback System
  - Email Invites
