@@ -21,6 +21,7 @@ let server;
 let user;
 let session;
 let invite;
+let authenticatedRoot;
 
 lab.before(async () => {
 
@@ -48,6 +49,7 @@ lab.before(async () => {
   await server.start();
   await Fixtures.Db.removeAllData();
 
+  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
   user = await User.create('ren', 'baddog', 'ren@stimpy.show', 'ren');
   invite = await Invite.create('renny', 'mytest@test.com',  'this is a test invitation', user._id.toString());
   session = await Session.create(user._id.toString(), '127.0.0.1', 'Lab');
@@ -74,6 +76,7 @@ lab.experiment('POST /api/invites', () => {
         email: 'newSailor@bu.edu',
         description: 'this is a test invitation'
       },
+      credentials:authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }

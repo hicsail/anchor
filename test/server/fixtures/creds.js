@@ -14,11 +14,13 @@ class Credentials {
   };  
 
   static async createRootUser(password,email) {
-    
+
+    const passwordHash = await User.generatePasswordHash(password);
     const user = (await User.insertOne({
       _id: User._idClass('000000000000000000000000'),
       username: 'root',
-      password,
+      isActive: true,
+      password: passwordHash.hash,
       email,
       name: 'root',
       roles: { root:true, admin:true }     

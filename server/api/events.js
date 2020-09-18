@@ -28,8 +28,8 @@ const register = function (server, options) {
         userId = request.auth.credentials.user._id.toString();
       }
       
-      const event = await Event.create(request.params.name,userId);
-
+      const event = await Event.create(request.params.name, userId);
+      
       return event;      
     }
   });

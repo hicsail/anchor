@@ -242,7 +242,7 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      return h.view('clinician/usersClinicians', {
+      return h.view('groupAdmins/usersClinicians', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
         title: 'User\'s Clinicians',

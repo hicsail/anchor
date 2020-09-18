@@ -58,7 +58,8 @@ lab.experiment('POST /api/events/{name}', () => {
 
     request = {
       method: 'POST',
-      url: '/api/events/{name}',      
+      url: '/api/events/{name}',
+      credentials:authenticatedRoot,      
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
       }     
@@ -90,7 +91,8 @@ lab.experiment('GET /api/events/name/{name}', () => {
 
     request = {
       method: 'GET',
-      url: '/api/events/name/{name}',      
+      url: '/api/events/name/{name}', 
+      credentials: authenticatedRoot,     
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
       }     
@@ -125,7 +127,8 @@ lab.experiment('GET /api/events/user/{userId}', () => {
 
     request = {
       method: 'GET',
-      url: '/api/events/user/{userId}',      
+      url: '/api/events/user/{userId}',
+      credentials: authenticatedRoot,      
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
       }     

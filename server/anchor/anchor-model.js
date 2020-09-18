@@ -420,7 +420,12 @@ class AnchorModel {
       returnOriginal: false
     };
     if (this.timestamps) {
-      doc.$set.updatedAt = new Date();      
+      if (doc.$set) {
+        doc.$set.updatedAt = new Date();
+      }
+      else {
+        doc.updatedAt = new Date();
+      }      
     }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
 

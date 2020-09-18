@@ -475,7 +475,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['analyst']
+        scope: ['root', 'admin']
       },
       validate: {
         params: {

@@ -9,23 +9,23 @@ const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, username, password) {
-
+      
       const user = await User.findByCredentials(username, password);
       
-      if (!user) {
+      if (!user) {          
           return { isValid: false };
       }
 
-      if (!user.isActive) {
+      if (!user.isActive) {        
         return { isValid: false };
       }
-
+      
       const sessionId = request.state.AuthCookie._id.toString();
       const sessionKey = request.state.AuthCookie.key;
-
+      
       const session = await Session.findByCredentials(sessionId, sessionKey);
       
-      if (!session) {         
+      if (!session) {                 
           return { isValid: false };
       }    
 
@@ -95,23 +95,23 @@ const register = function (server, options) {
     redirectTo: '/login',
     //appendNext: 'returnUrl',
     validateFunc: async function (request, data) {  
-        
+      
       const id = data._id;
       const key = data.key;
-
+      
       const session = await Session.findByCredentials(id, key);
-
-      if (!session) {
+      
+      if (!session) {        
         return { valid: false };
       }
 
       const user = await User.findById(session.userId);
 
-      if (!user) {
+      if (!user) {        
         return { valid: false };
       }
 
-      if (!user.isActive) {
+      if (!user.isActive) {        
         return { valid: false };
       }
 
@@ -128,7 +128,7 @@ const register = function (server, options) {
         user,
         scope: await getPermissions(request, user.roles)               
       };
-
+      
       return { credentials, valid: true };      
     }
   });

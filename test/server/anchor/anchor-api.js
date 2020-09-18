@@ -14,6 +14,7 @@ const lab = exports.lab = Lab.script();
 let server;
 let user;
 let session;
+let authenticatedRoot;
 
 lab.before(async () => {
 
@@ -40,6 +41,7 @@ lab.before(async () => {
   await server.start();
   await Fixtures.Db.removeAllData();
 
+  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
   user = await User.create('ren', 'baddog', 'ren@stimpy.show', 'ren');
   session = await Session.create(user._id.toString(), 'test', 'test');
 });
@@ -55,21 +57,22 @@ lab.experiment('GET /api/{collectionName}', () => {
   let request;
 
   lab.beforeEach(() => {
-
+    
     request = {
       method: 'GET',
       url: '/api/users',
+      credentials: authenticatedRoot,
       headers: {
-        authorization: Fixtures.Creds.authHeader(session._id, session.key)
-      }
+        authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id.toString(), authenticatedRoot.session.key)        
+      }      
     };
-
+    
     User.routes.getAll.disabled = false;
     User.routes.getAll.auth = true;
   });
 
   lab.test('it returns HTTP 200 when all is well', async () => {
-    console.log("here arezoo")
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
@@ -100,7 +103,8 @@ lab.experiment('GET /api/{collectionName}', () => {
   lab.test('it returns HTTP 401 when auth is not provided and required', async () => {
 
     delete request.headers;
-
+    delete request.credentials;
+    
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(401);
@@ -141,6 +145,7 @@ lab.experiment('POST /api/{collectionName}', () => {
         tokenName: 'test token',
         active: false        
       },
+      credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -192,6 +197,7 @@ lab.experiment('POST /api/{collectionName}', () => {
   lab.test('it returns HTTP 401 when auth is not provided and required', async () => {
 
     delete request.headers;
+    delete request.credentials; 
 
     const response = await server.inject(request);
 
@@ -231,6 +237,7 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
     request = {
       method: 'GET',
       url: '/api/users/' + user._id.toString(),
+      credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -272,6 +279,7 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
   lab.test('it returns HTTP 401 when auth is not provided and required', async () => {
 
     delete request.headers;
+    delete request.credentials;
 
     const response = await server.inject(request);
 
@@ -281,7 +289,7 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
 
   lab.test('it returns HTTP 404 when model is not found', async () => {
 
-    request.url = '/api/users/' + '000000000000000000000000';
+    request.url = '/api/notFoundModel/' + '000000000000000000000000';
 
     const response = await server.inject(request);
 
@@ -309,6 +317,7 @@ lab.experiment('GET /api/{collectionName}/my', () => {
     request = {
       method: 'GET',
       url: '/api/users/my',
+      credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -350,6 +359,7 @@ lab.experiment('GET /api/{collectionName}/my', () => {
   lab.test('it returns HTTP 401 when auth is not provided and required', async () => {
 
     delete request.headers;
+    delete request.credentials;
 
     const response = await server.inject(request);
 
@@ -549,6 +559,7 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
     request = {
       method: 'GET',
       url: '/api/users/' + user._id.toString(),
+      credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -590,6 +601,7 @@ lab.experiment('GET /api/{collectionName}/{id}', () => {
   lab.test('it returns HTTP 401 when auth is not provided and required', async () => {
 
     delete request.headers;
+    delete request.credentials;
 
     const response = await server.inject(request);
 
@@ -712,6 +724,7 @@ lab.experiment('DELETE /api/{collectionName}/{id}', () => {
     request = {
       method: 'DELETE',
       url: '/api/users/' + user._id.toString(),
+      credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)
       }
@@ -745,6 +758,7 @@ lab.experiment('DELETE /api/{collectionName}/{id}', () => {
   lab.test('it returns HTTP 401 when auth is not provided and required', async () => {
 
     delete request.headers;
+    delete request.credentials;
 
     const response = await server.inject(request);
 
@@ -766,7 +780,7 @@ lab.experiment('DELETE /api/{collectionName}/{id}', () => {
 
   lab.test('it returns HTTP 404 when model is not found', async () => {
 
-    request.url = '/api/users/' + '000000000000000000000000';
+    request.url = '/api/notFoundModel/' + '000000000000000000000000';
 
     const response = await server.inject(request);
 

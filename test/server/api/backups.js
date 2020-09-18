@@ -36,7 +36,7 @@ lab.before(async () => {
   plugins.push(Auth);
   plugins.push(AnchorApi);  
   plugins.push(BackupApi);
-  
+    
   await server.register(plugins);
   await server.start();
   await Fixtures.Db.removeAllData();
@@ -58,7 +58,8 @@ lab.experiment('POST /api/backups', () => {
 
     request = {
       method: 'POST',
-      url: '/api/backups',      
+      url: '/api/backups',
+      credentials: authenticatedRoot,       
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
       }     
@@ -116,6 +117,7 @@ lab.experiment('DELETE /api/backups/{id}', () => {
     request = {
       method: 'DELETE',
       url: '/api/backups/{id}',
+      credentials: authenticatedRoot, 
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
       }         

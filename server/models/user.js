@@ -78,14 +78,14 @@ class User extends AnchorModel {
     }
 
     const user = await this.findOne(query);
-
-    if (!user) {
+    
+    if (!user) {      
       return;
     }
 
     const passwordMatch = await Crypto.compare(password,user.password);
 
-    if (passwordMatch) {
+    if (passwordMatch) {      
       return user;
     }    
   }

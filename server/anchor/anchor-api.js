@@ -513,11 +513,11 @@ const register = function (server,serverOptions) {
       }, {
         assign: 'auth',
         method: function (request,h) {
-          
-          const model = request.pre.model;
 
+          const model = request.pre.model;
           if (model.routes.getAll.auth) {
             if (!request.auth.isAuthenticated) {
+              
               throw Boom.unauthorized('Authentication Required');
             }
             return h.continue;
@@ -525,7 +525,6 @@ const register = function (server,serverOptions) {
           return h.continue;
         }
       }]
-
     },
     handler: async function (request,h) {
       
