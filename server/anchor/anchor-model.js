@@ -3,6 +3,7 @@ const Hoek = require('hoek');
 const Joi = require('joi');
 const Boom = require('boom');
 const Mongodb = require('mongodb');
+const DefaultScopes = require('../helper/getRoleNames');
 
 const argsFromArguments = function (argumentz) {
 
@@ -1081,15 +1082,18 @@ AnchorModel.routes = {
   },
   getTableView: {
     auth: false,
-    disabled: false
+    disabled: false,
+    scope: DefaultScopes
   },
   getEditView: {
     auth: false,
-    disabled: false
+    disabled: false,
+    scope: DefaultScopes
   },
   insertDocument: {
     auth: false,
-    disabled: false
+    disabled: false,
+    scope: DefaultScopes
   }
 };
 
