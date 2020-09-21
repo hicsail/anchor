@@ -47,7 +47,7 @@ const register = function (server, options) {
   });
 
 
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/api/table/groupAdmins/{role}',
     options: {
@@ -83,7 +83,7 @@ const register = function (server, options) {
         data: results.data          
       };       
     }
-  });
+  });*/
 
 
   server.route({
@@ -158,7 +158,7 @@ const register = function (server, options) {
           conditions.push(query);
         }
       }
-      
+
       const query = { $or: conditions};
 
       const fields = request.query.fields;
