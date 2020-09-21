@@ -1,15 +1,16 @@
 'use strict';
 const Boom = require('boom');
-const Clinician = require('../models/group-admin');
+const GroupAdmin = require('../models/group-admin');
 const AnchorModel = require('../anchor/anchor-model');
 const Joi = require('joi');
 const User = require('../models/user');
+const Config = require('../../config');
 
 const register = function (server, options) {
 
   server.route({
     method: 'GET',
-    path: '/api/table/clinicians',
+    path: '/api/table/groupAdmins/{role}',
     options: {
       auth: {
         strategies: ['simple', 'session']
@@ -28,9 +29,11 @@ const register = function (server, options) {
       const userId = AnchorModel.ObjectID(request.auth.credentials.user._id.toString());
 
       const query = {
-        username: { $regex: request.query['search[value]'].toLowerCase() },
-        'roles.clinician.userAccess': { $in: [userId] }
+        username: { $regex: request.query['search[value]'].toLowerCase() }        
       };
+
+      var field = "roles." + request.params.role + ".userAccess";
+      query[field] = { $in: [userId] };
 
       const results  = await User.pagedFind(query, page, limit);
 
@@ -46,7 +49,7 @@ const register = function (server, options) {
 
   server.route({
     method: 'GET',
-    path: '/api/table/clinicians/{id}',
+    path: '/api/table/groupAdmins/{role}',
     options: {
       auth: {
         strategies: ['simple', 'session']
@@ -65,9 +68,11 @@ const register = function (server, options) {
       const userId = MongoModels.ObjectID(request.params.id);
 
       const query = {
-        username: { $regex: request.query['search[value]'].toLowerCase() },
-        'roles.clinician.userAccess': { $in: [userId] }
+        username: { $regex: request.query['search[value]'].toLowerCase() }        
       };
+
+      var field = "roles." + request.params.role + ".userAccess";
+      query[field] = { $in: [userId] };
 
       const results  = await User.pagedFind(query, page, limit);
 
@@ -127,7 +132,7 @@ const register = function (server, options) {
 
   server.route({
     method: 'GET',
-    path: '/api/clinicians',
+    path: '/api/groupAdmins/',
     options: {
       auth: {
         strategies: ['simple', 'session'],
@@ -144,9 +149,18 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const query = {
-        'roles.clinician': { $exists: true }
-      };
+      let conditions = [];
+      for (let role of Config.get('/roles')) {
+        if (role['type'] === 'groupAdmin') {          
+          let query = {};
+          var field = "roles." + role['name'];
+          query[field] = { $exists: true };
+          conditions.push(query);
+        }
+      }
+      
+      const query = { $or: conditions};
+
       const fields = request.query.fields;
       const sort = request.query.sort;
       const limit = request.query.limit;
@@ -161,7 +175,7 @@ const register = function (server, options) {
 
   server.route({
     method: 'GET',
-    path: '/api/clinicians/my',
+    path: '/api/groupAdmins/my/{role}',
     options: {
       auth: {
         strategies: ['simple', 'session']
@@ -183,9 +197,10 @@ const register = function (server, options) {
       const page = request.query.page;
       const userId = MongoModels.ObjectID(request.auth.credentials.user._id.toString());
 
-      const query = {
-        'roles.clinician.userAccess': { $in: [userId] }
-      };
+      const query = {};
+
+      var field = "roles." + request.params.role + ".userAccess";
+      query[field] = { $in: [userId] };
 
       const results = await User.pagedFind(query, page, limit);
 
@@ -245,24 +260,24 @@ const register = function (server, options) {
 
   server.route({
     method: 'DELETE',
-    path: '/api/clinicians/{id}',
+    path: '/api/groupAdmins/{role}/{id}',
     options: {
       auth: {
         strategies: ['simple', 'session']
       },
       pre: [
         {
-          assign: 'clinician',
+          assign: 'admin',
           method: async function (request, h) {
 
             const user = await User.findById(request.params.id);
 
             if (!user) {
               throw Boom.notFound('User not found');
-            }
+            }           
 
-            if (!user.roles.clinician) {
-              throw Boom.conflict('User is not a clinician');
+            if (!user.roles[request.params.role]) {
+              throw Boom.conflict('User is not a ' + request.params.role);
             }
 
             return user;            
@@ -272,16 +287,16 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const clinician = request.pre.clinician;
+      const admin = request.pre.admin;
       const userId = request.auth.credentials.user._id.toString();
 
-      const userAccess = Clinician.removeUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
+      const userAccess = GroupAdmin.removeUser(admin.roles[request.params.role], userId);
+      admin.roles[request.params.role] = userAccess;
 
 
       const update = {
         $set: {
-          roles: clinician.roles
+          roles: admin.roles
         }
       };
 
@@ -298,7 +313,7 @@ const register = function (server, options) {
 
   server.route({
     method: 'PUT',
-    path: '/api/clinicians/{userId}/{clinicianId}',
+    path: '/api/groupAdmins/{role}/{userId}/{adminId}',
     options: {
       auth: {
         strategies: ['simple', 'session'],
@@ -306,17 +321,17 @@ const register = function (server, options) {
       },
       pre: [
         {
-          assign: 'clinician',
+          assign: 'admin',
           method: async function (request, h) {
 
-            const user = await User.findById(request.params.clinicianId);
+            const user = await User.findById(request.params.adminId);
 
             if (!user) {
-              throw Boom.notFound('Clinician not found');
+              throw Boom.notFound('Admin not found');
             }
 
-            if (!user.roles.clinician) {
-              throw Boom.conflict('User is not a clinician');
+            if (!user.roles[request.params.role]) {
+              throw Boom.conflict('User is not a ' + request.params.role);
             }
 
             return user;             
@@ -338,20 +353,20 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const clinician = request.pre.clinician;
+      const admin = request.pre.admin;
       const userId = request.pre.user;
 
-      const userAccess = Clinician.addUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
+      const userAccess = GroupAdmin.addUser(admin.roles[request.params.role], userId);
+      admin.roles[request.params.role] = userAccess;
 
 
       const update = {
         $set: {
-          roles: clinician.roles
+          roles: admin.roles
         }
       };
 
-      const user = await User.findByIdAndUpdate(request.params.clinicianId, update);
+      const user = await User.findByIdAndUpdate(request.params.adminId, update);
 
       if (!user) {
         throw Boom.notFound('Document not found.');
@@ -364,7 +379,7 @@ const register = function (server, options) {
 
   server.route({
     method: 'DELETE',
-    path: '/api/clinicians/{userId}/{clinicianId}',
+    path: '/api/groupAdmins/{role}/{userId}/{adminId}',
     config: {
       auth: {
         strategies: ['simple', 'session'],
@@ -372,17 +387,17 @@ const register = function (server, options) {
       },
       pre: [
         {
-          assign: 'clinician',
+          assign: 'admin',
           method: async function (request, h) {
 
-            const user = await User.findById(request.params.clinicianId);
+            const user = await User.findById(request.params.adminId);
 
             if (!user) {
-              throw Boom.notFound('Clinician not found');
+              throw Boom.notFound('Admin not found');
             }
 
-            if (!user.roles.clinician) {
-              throw Boom.conflict('User is not a clinician');
+            if (!user.roles[request.params.role]) {
+              throw Boom.conflict('User is not a ' + request.params.role);
             }           
 
             return user;             
@@ -404,20 +419,20 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const clinician = request.pre.clinician;
+      const admin = request.pre.admin;
       const userId = request.pre.user;
 
-      const userAccess = Clinician.removeUser(clinician.roles.clinician, userId);
-      clinician.roles.clinician = userAccess;
+      const userAccess = GroupAdmin.removeUser(admin.roles[request.params.role], userId);
+      admin.roles[request.params.role] = userAccess;
 
 
       const update = {
         $set: {
-          roles: clinician.roles
+          roles: admin.roles
         }
       };
 
-      const user = await User.findByIdAndUpdate(request.params.clinicianId, update);
+      const user = await User.findByIdAndUpdate(request.params.adminId, update);
 
       if (!user) {
         throw Boom.notFound('Document not found.');
@@ -429,7 +444,7 @@ const register = function (server, options) {
 };
 
 module.exports = {
-  name: 'clinicians',
+  name: 'groupAdmins',
   dependencies: [
     'hapi-anchor-model',
     'auth',    
