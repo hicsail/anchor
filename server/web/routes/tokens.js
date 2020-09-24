@@ -5,7 +5,7 @@ const Token = require('../../models/token');
 
 const register = function (server, options) {
 
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/tokens',
     options: {
@@ -22,7 +22,7 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl')
       });
     }
-  });
+  });*/
 
   server.route({
     method: 'GET',

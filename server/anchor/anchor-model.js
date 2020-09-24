@@ -960,7 +960,7 @@ AnchorModel.routes = {
     query: null
   },
   create: {
-    auth: false,
+    auth: true,
     disabled: false,
     payload: null,
     handler: async (request,h) => {
@@ -969,6 +969,7 @@ AnchorModel.routes = {
       const payload = request.payload;
 
       if (request.auth.isAuthenticated){
+        
         payload.userId = String(request.auth.credentials.user._id);
       }
       return await model.create(payload);
@@ -1079,16 +1080,20 @@ AnchorModel.routes = {
       return await model.pagedLookup(query,page,limit,options,model.lookups);
     }
   },
-  getTableView: {
-    auth: false,
+  tableView: {
+    auth: true,
+    disabled: false,
+    apiDataSourcePath: '/api/table/{collectionName}',
+    outputDataFields: null,
+    //example would be {delete: ['admin', 'root']', _id: ['admin']}
+    fieldAccessRestriction: null
+  },
+  editView: {
+    auth: true,
     disabled: false
   },
-  getEditView: {
-    auth: false,
-    disabled: false
-  },
-  insertDocument: {
-    auth: false,
+  createView: {
+    auth: true,
     disabled: false
   }
 };
@@ -1126,15 +1131,15 @@ AnchorModel.routeMap = {
     method: 'POST',
     path: '/api/{collectionName}/insertMany'
   },
-  getTableView: {
+  tableView: {
     method: 'GET',
     path: '/{collectionName}'
   },
-  getEditView: {
+  editView: {
     method: 'GET',
     path: '/edit/{collectionName}/{id}'
   },
-  insertDocument: {
+  createView: {
     method: 'GET',
     path: '/create/{collectionName}'
   }

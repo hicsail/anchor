@@ -57,6 +57,17 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       tokenName: Joi.string().required(),
       active: Joi.boolean().default(true)   
     }    
+  },
+  tableView: {
+    outputDataFields: {
+      username: {label: 'Username', from: 'user'},
+      name: {label: 'name', from: 'user'},
+      tokenName: {label: 'Token Name'},
+      active: {label: 'Active'},
+      lastUsed: {label: 'Last Used'},
+      time: {label: 'Time'},
+      token: {label: 'Token'}
+    }
   }   
 });
 
@@ -65,7 +76,7 @@ Token.lookups = [{
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: false               
+  one: true               
 }]; 
 
 
