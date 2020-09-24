@@ -66,7 +66,8 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       active: {label: 'Active'},
       lastUsed: {label: 'Last Used'},
       time: {label: 'Time'},
-      token: {label: 'Token'}
+      token: {label: 'Token', invisible: true},
+      _id: {label: 'ID', invisible: true}
     }
   }   
 });

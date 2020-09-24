@@ -68,9 +68,8 @@ const register = function (server, serverOptions) {
       let outputCols = [];
       let outputData = res.result.data;
 
-      if (model.routes.tableView.outputDataFields !== null) {
+      if (model.routes.tableView.outputDataFields !== null) {        
         
-        //ToDo: process res.result.data so that returned records only containt required fields
         let processedData = [];
         const fields = model.routes.tableView.outputDataFields;
         for (let rec of outputData){
@@ -87,15 +86,23 @@ const register = function (server, serverOptions) {
         }
         outputData = processedData;
         for (let key in fields) {
-          outputCols.push(fields[key]['label'])
+          const col = {'label': fields[key]['label']};
+          if (fields[key]['invisible']){
+            col['invisible'] = true;
+          }
+          outputCols.push(col);
         } 
       }
       else {
         if (outputData.lenght !== 0 ) {
-          outputCols = Object.keys(outputData[0]);                   
+          for (let key of Object.keys(outputData[0])) {
+            outputCols.push({'label': key}); 
+          }                 
         }
         else {
-          outputCols = recursiveFindJoiKeys(model.schema);  
+          for (let key of recursiveFindJoiKeys(model.schema)){
+            outputCols.push({'label': key});
+          }  
         }        
       }
       
