@@ -1152,4 +1152,3 @@ AnchorModel.clients = {};
 AnchorModel.dbs = {};
 
 module.exports = AnchorModel;
-
