@@ -76,7 +76,7 @@ const register = function (server, serverOptions) {
           let doc = {};
           for (let key in fields) {
             if (fields[key]['from']) {
-              doc[key] = rec['user'][key];
+              doc[key] = rec[fields[key]['from']][key];
             }
             else {
               doc[key] = rec[key];
@@ -94,7 +94,7 @@ const register = function (server, serverOptions) {
         } 
       }
       else {
-        if (outputData.lenght !== 0 ) {
+        if (outputData.length !== 0 ) {
           for (let key of Object.keys(outputData[0])) {
             outputCols.push({'label': key}); 
           }                 
