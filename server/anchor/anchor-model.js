@@ -1085,7 +1085,11 @@ AnchorModel.routes = {
     disabled: false,
     apiDataSourcePath: '/api/table/{collectionName}',
     outputDataFields: null,
-    //example would be {delete: ['admin', 'root']', _id: ['admin']}
+    validationSchema: Joi.object({
+      label: Joi.string().required(),
+      from: Joi.string(),
+      invisible: Joi.boolean().default(false)
+    }),    
     fieldAccessRestriction: null
   },
   editView: {

@@ -3,6 +3,7 @@ const Boom = require('boom');
 const Config = require('../../config');
 const highestRole = require('../helper/highestRole');
 const lowestRole = require('../helper/lowestRole');
+const Joi = require('joi');
 
 const register = function (server, serverOptions) {
 
@@ -43,6 +44,26 @@ const register = function (server, serverOptions) {
           if (model.routes.tableView.auth) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
+            }
+          }
+          return h.continue;
+        }
+      }, {
+        assign: 'validateoutputDataFields',
+        method: function (request,h) {
+
+          const model = request.pre.model;
+          const outputDataFields = model.routes.tableView.outputDataFields;
+          let validationSchema = model.routes.tableView.validationSchema;
+
+          if (outputDataFields !== null) {
+            for (let field in outputDataFields) {
+
+              let obj = validationSchema.validate(outputDataFields[field]);
+              if (obj.error) {
+                console.log(obj.error.details[0].message);
+                throw Boom.badRequest('outputDataFields violates the validation schema, ' + obj.error.details[0].message);
+              }
             }
           }
           return h.continue;
@@ -102,7 +123,7 @@ const register = function (server, serverOptions) {
           let doc = {};
           for (let key in fields) {
             if (fields[key]['from']) {
-              doc[key] = rec['user'][key];
+              doc[key] = rec[fields[key]['from']][key];
             }
             else {
               doc[key] = rec[key];
@@ -132,7 +153,7 @@ const register = function (server, serverOptions) {
         baseUrl: Config.get('/baseUrl'),
         title:  capitalizeFirstLetter(request.params.collectionName),
         columns: outputCols,
-        data: outputData,
+        data: outputData
       });
     }
   });
