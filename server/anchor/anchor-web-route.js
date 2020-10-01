@@ -1,10 +1,12 @@
 'use strict';
 const Boom = require('boom');
 const Config = require('../../config');
+const highestRole = require('../helper/highestRole');
+const lowestRole = require('../helper/lowestRole');
 
 const register = function (server, serverOptions) {
 
-  server.route({ 
+  server.route({
     method: 'GET',
     path: '/{collectionName}',
     options: {
@@ -49,7 +51,7 @@ const register = function (server, serverOptions) {
       ]
     },
     handler: async function (request, h) {
-           
+
       const model = request.pre.model;
       let apiDataSource = model.routes.tableView.apiDataSourcePath;
 
@@ -60,18 +62,42 @@ const register = function (server, serverOptions) {
       const req = {
         method: 'GET',
         url: apiDataSource,
-        credentials: request.auth.credentials       
-      };  
+        credentials: request.auth.credentials
+      };
 
       const res = await server.inject(req);
 
       let outputCols = [];
       let outputData = res.result.data;
 
-      if (model.routes.tableView.outputDataFields !== null) {        
-        
+      if (model.routes.tableView.outputDataFields !== null) {
+
         let processedData = [];
         const fields = model.routes.tableView.outputDataFields;
+        let unAddedKeys = new Set();
+
+        for (let key in fields) {
+          const col = {'label': fields[key]['label']};
+          let userRoles = request.auth.credentials.scope;
+          if (fields[key]['accessRoles'] && highestRole(userRoles) < lowestRole(fields[key]['accessRoles'])){//Blocks column option if user role is too low
+            unAddedKeys.add(key);
+            continue;
+          }
+
+          if (fields[key]['invisible']){
+            col['invisible'] = true;
+          }
+
+          outputCols.push(col);
+        }
+
+        //modify fields to remove secured keys.
+        for (let key in fields){
+          if (unAddedKeys.has(key)){
+            delete fields[key];
+          }
+        }
+
         for (let rec of outputData){
           let doc = {};
           for (let key in fields) {
@@ -80,39 +106,33 @@ const register = function (server, serverOptions) {
             }
             else {
               doc[key] = rec[key];
-            } 
+            }
           }
           processedData.push(doc);
         }
         outputData = processedData;
-        for (let key in fields) {
-          const col = {'label': fields[key]['label']};
-          if (fields[key]['invisible']){
-            col['invisible'] = true;
-          }
-          outputCols.push(col);
-        } 
+
       }
       else {
-        if (outputData.lenght !== 0 ) {
+        if (outputData.length !== 0 ) {
           for (let key of Object.keys(outputData[0])) {
-            outputCols.push({'label': key}); 
-          }                 
+            outputCols.push({'label': key});
+          }
         }
         else {
           for (let key of recursiveFindJoiKeys(model.schema)){
             outputCols.push({'label': key});
-          }  
-        }        
+          }
+        }
       }
-      
+
       return h.view('anchor-default-templates/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),               
+        projectName: Config.get('/projectName'),
         baseUrl: Config.get('/baseUrl'),
-        title:  capitalizeFirstLetter(request.params.collectionName), 
+        title:  capitalizeFirstLetter(request.params.collectionName),
         columns: outputCols,
-        data: outputData
+        data: outputData,
       });
     }
   });
@@ -174,8 +194,8 @@ const register = function (server, serverOptions) {
       ]
     },
     handler: async function (request, h) {
-    
-      return h.view('dummy');      
+
+      return h.view('dummy');
     }
 
   });
