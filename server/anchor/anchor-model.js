@@ -3,6 +3,7 @@ const Hoek = require('hoek');
 const Joi = require('joi');
 const Boom = require('boom');
 const Mongodb = require('mongodb');
+const DefaultScopes = require('../helper/getRoleNames');
 
 const argsFromArguments = function (argumentz) {
 
@@ -1083,6 +1084,7 @@ AnchorModel.routes = {
   tableView: {
     auth: true,
     disabled: false,
+    scope: DefaultScopes,
     apiDataSourcePath: '/api/table/{collectionName}',
     outputDataFields: null,
     validationSchema: Joi.object({
@@ -1095,11 +1097,13 @@ AnchorModel.routes = {
   },
   editView: {
     auth: true,
-    disabled: false
+    disabled: false,
+    scope: DefaultScopes
   },
   createView: {
     auth: true,
-    disabled: false
+    disabled: false,
+    scope: DefaultScopes
   }
 };
 

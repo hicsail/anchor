@@ -67,6 +67,16 @@ const register = function (server, serverOptions) {
           }
           return h.continue;
         }
+      }, {
+        assign: 'scopeCheck',
+        method: function (request, h) {
+          const model = request.pre.model.routes.tableView.scope;
+          const userRoles = request.auth.credentials.scope;
+          if (!IsAllowed(userRoles, model)){
+            throw Boom.unauthorized('Insufficient Scope');
+          }
+          return h.continue;
+        }
       }
       ]
     },
