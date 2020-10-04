@@ -969,7 +969,7 @@ AnchorModel.routes = {
       const payload = request.payload;
 
       if (request.auth.isAuthenticated){
-        
+
         payload.userId = String(request.auth.credentials.user._id);
       }
       return await model.create(payload);
@@ -1088,8 +1088,9 @@ AnchorModel.routes = {
     validationSchema: Joi.object({
       label: Joi.string().required(),
       from: Joi.string(),
-      invisible: Joi.boolean().default(false)
-    }),    
+      invisible: Joi.boolean().default(false),
+      accessRoles: Joi.array()
+    }),
     fieldAccessRestriction: null
   },
   editView: {

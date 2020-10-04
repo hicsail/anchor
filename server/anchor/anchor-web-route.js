@@ -1,8 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Config = require('../../config');
-const highestRole = require('../helper/highestRole');
-const lowestRole = require('../helper/lowestRole');
+const IsAllowed = require('../helper/isAllowed');
 const Joi = require('joi');
 
 const register = function (server, serverOptions) {
@@ -98,13 +97,14 @@ const register = function (server, serverOptions) {
         let unAddedKeys = new Set();
 
         for (let key in fields) {
-          const col = {'label': fields[key]['label']};
+
           let userRoles = request.auth.credentials.scope;
-          if (fields[key]['accessRoles'] && highestRole(userRoles) < lowestRole(fields[key]['accessRoles'])){//Blocks column option if user role is too low
+          if (fields[key]['accessRoles'] && !IsAllowed(userRoles, fields[key]['accessRoles'])){//Blocks column option if user role is too low
             unAddedKeys.add(key);
             continue;
           }
 
+          const col = {'label': fields[key]['label']};
           if (fields[key]['invisible']){
             col['invisible'] = true;
           }
@@ -112,7 +112,7 @@ const register = function (server, serverOptions) {
           outputCols.push(col);
         }
 
-        //modify fields to remove secured keys.
+        //modify fields to remove sensitive keys where user permission is too low.
         for (let key in fields){
           if (unAddedKeys.has(key)){
             delete fields[key];
