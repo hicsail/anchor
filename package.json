@@ -28,7 +28,7 @@
     "adm-zip": "0.4.x",
     "archiver": "2.x.x",
     "async": "2.x.x",
-    "bcrypt": "3.x.x",
+    "bcrypt": "^3.0.6",
     "boom": "5.x.x",
     "child_process": "1.x.x",
     "confidence": "3.x.x",
@@ -43,6 +43,7 @@
     "hapi-react-views": "^10.0.0",
     "hapi-remote-address": "1.x.x",
     "hapi-swagger": "9.x.x",
+    "hicsail-mongo-models": "^1.4.0",
     "hoek": "5.x.x",
     "inert": "^5.1.0",
     "joi": "13.x.x",
@@ -67,7 +68,7 @@
     "nodemon": "1.x.x",
     "npm-run": "^4.1.2",
     "pre-commit": "1.x.x",
-    "promptly": "2.x.x",
+    "promptly": "3.0.3",
     "proxyquire": "1.x.x"
   },
   "pre-commit": [
