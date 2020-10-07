@@ -1098,11 +1098,12 @@ AnchorModel.routes = {
   },
   createView: {
     auth: true,
-    disabled: false
+    disabled: false,
+    createSchema: null
   }
 };
 
-AnchorModel.routeMap = {
+AnchorModel.routeMap = {  
   getAllTable: {
     method: 'GET',
     path: '/api/table/{collectionName}'

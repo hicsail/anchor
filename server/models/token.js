@@ -34,7 +34,6 @@ class Token extends AnchorModel {
 
 Token.collectionName = 'tokens';
 
-
 Token.schema = Joi.object({
   _id: Joi.object(),
   tokenName: Joi.string().required(),
@@ -68,6 +67,11 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       time: {label: 'Time'},
       token: {label: 'Token', invisible: true},
       _id: {label: 'ID', invisible: true}
+    }
+  },
+  createView: {
+    createSchema: { 
+      tokenName: 'string:required'
     }
   }   
 });

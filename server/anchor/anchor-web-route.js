@@ -53,6 +53,7 @@ const register = function (server, serverOptions) {
           const model = request.pre.model;
           const outputDataFields = model.routes.tableView.outputDataFields;
           let validationSchema = model.routes.tableView.validationSchema;
+          //console.log(Object.keys(server.plugins['hapi-anchor-model'].models[request.params.collectionName]))
 
           if (outputDataFields !== null) {
             for (let field in outputDataFields) {                        
@@ -201,7 +202,7 @@ const register = function (server, serverOptions) {
 
   });
 
-  server.route({//returns the table view template
+  server.route({
     method: 'GET',
     path: '/create/{collectionName}',
     options: {
@@ -231,19 +232,6 @@ const register = function (server, serverOptions) {
           return h.continue;
         }
       }, {
-        assign: 'payload',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-          const { error, value } = Joi.validate(request.payload,model.routes.create.payload);
-
-          if (error) {
-            throw Boom.badRequest('Incorrect Payload', error);
-          }
-          request.payload = value;
-          return h.continue;
-        }
-      }, {
         assign: 'auth',
         method: function (request,h) {
 
@@ -259,8 +247,16 @@ const register = function (server, serverOptions) {
       ]
     },
     handler: async function (request, h) {
+      const model = request.pre.model;
+      const schema = model.routes.createView.createSchema; 
 
-      return h.view('dummy')
+      return h.view('anchor-default-templates/create', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName'),               
+        baseUrl: Config.get('/baseUrl'),
+        title: capitalizeFirstLetter(request.params.collectionName),
+        createSchema: schema         
+      });
     }
   });
 };
