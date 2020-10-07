@@ -1,0 +1,57 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>Create {{title}}</h3>
+        <hr>
+        <div class="card">
+          <div style="padding: 20px">            
+            <form id="form">
+              <div id="formFields"></div>
+              <button id="create" type="submit" class="btn btn-primary">Create</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var schema;
+$.ajax({
+  url: '/api/createSchema/tokens',
+  type: 'GET',
+  success: function (result){
+    schema = result.schema;
+    console.log(builder.builder)
+    console.log(builder.builder.build(schema));
+    console.log(schema)
+    joiToForm('formFields', builder.builder.build(schema)); 
+    console.log("Tamam")   
+  },
+  error: function (result){    
+    errorAlert(result.responseJSON.message);
+  }
+})
+//console.log(schema)
+//joiToForm('formFields',schema);
+$('#create').click((event) => {
+  event.preventDefault();
+  const values = {};
+  $.each($('#form').serializeArray(), (i, field) => {
+    values[field.name] = field.value;
+  });
+  $.ajax({
+    type: 'POST',
+    url: '/api/tokens',
+    data: values,
+    success: function (result) {
+      window.location = '/tokens'
+    },
+    error: function (result) {
+      errorAlert(result.responseJSON.message);
+    }
+  });
+});
+</script>
