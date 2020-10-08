@@ -17,7 +17,7 @@ const main = async function () {
   const options = { relativeTo: __dirname };
   const server = await Glue.compose(Manifest.get('/'), options);
 
-  server.route({
+  /*server.route({
      method: 'GET',
       path: '/public/{param*}',
       handler: {
@@ -27,7 +27,7 @@ const main = async function () {
           index: false
         }
       }
-  });
+  });*/
 
   server.views({
     engines: {handlebars: require('handlebars') },                  

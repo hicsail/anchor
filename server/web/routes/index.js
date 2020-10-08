@@ -37,7 +37,8 @@ const register = function (server, options) {
 module.exports = {
   name: 'home',
   dependencies: [
-    
+    'hapi-anchor-model',
+    'auth'  
   ],
   register
 };

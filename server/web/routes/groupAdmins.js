@@ -56,7 +56,8 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'groupAdminList',
-  dependencies: [    
+  dependencies: [
+    'hapi-anchor-model',    
     'auth'   
   ],
   register

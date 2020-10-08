@@ -20,7 +20,7 @@ const register = function (server,serverOptions) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
-            return (Boom.notFound('Model not found'));
+            throw Boom.notFound('Model not found');
           }
           return model;
         }
@@ -208,7 +208,7 @@ const register = function (server,serverOptions) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
-            return Boom.notFound('Model not found');
+            throw Boom.notFound('Model not found');
           }
           return model;
         }
@@ -254,7 +254,7 @@ const register = function (server,serverOptions) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
-            return Boom.notFound('Model not found');
+            throw Boom.notFound('Model not found');
           }
           return model;
         }
@@ -277,7 +277,7 @@ const register = function (server,serverOptions) {
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
 
           if (!model) {
-            return Boom.notFound('Model not found');
+            throw Boom.notFound('Model not found');
           }
 
           return model;
@@ -306,7 +306,7 @@ const register = function (server,serverOptions) {
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
 
           if (!model) {
-            return Boom.notFound('Model not found');
+            throw Boom.notFound('Model not found');
           }
 
           return model;
@@ -357,7 +357,7 @@ const register = function (server,serverOptions) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
-            return Boom.notFound('Model not found');
+            throw Boom.notFound('Model not found');
           }
           return model;
         }
@@ -420,7 +420,7 @@ const register = function (server,serverOptions) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
-            return Boom.notFound('Model not found');
+            throw Boom.notFound('Model not found');
           }
           return model;
         }
@@ -483,7 +483,7 @@ const register = function (server,serverOptions) {
 
           const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
           if (!model) {
-            return (Boom.notFound('Model not found'));
+            throw (Boom.notFound('Model not found'));
           }
           return model;
         }
@@ -556,10 +556,7 @@ const register = function (server,serverOptions) {
 
 module.exports = {
   name: 'anchor-api',
-  dependencies: [
-    'hapi-auth-basic',
-    'hapi-auth-cookie',
-    'hapi-auth-jwt2',
+  dependencies: [    
     'auth',
     'hapi-anchor-model'
   ],

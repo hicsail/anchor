@@ -52,14 +52,14 @@
       },
       "columns": [
         {
-          data: "user[0].username",
+          data: "user.username",
           defaultContent: ""
         },
         {
-          data: "user[0].studyID",
+          data: "user.studyID",
           render: function (data, type, row) {
-            if (row.user[0].studyID > 0) {
-              return row.user[0].studyID;
+            if (row.user.studyID > 0) {
+              return row.user.studyID;
             }
             return '';
           }

@@ -71,7 +71,8 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'tokenList',
-  dependencies: [   
+  dependencies: [
+    'hapi-anchor-model',   
     'auth'   
   ],
   register

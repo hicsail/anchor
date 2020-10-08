@@ -99,7 +99,8 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'inviteList',
-  dependencies: [    
+  dependencies: [
+    'hapi-anchor-model',     
     'auth'       
   ],
   register

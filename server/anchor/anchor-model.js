@@ -3,6 +3,7 @@ const Hoek = require('hoek');
 const Joi = require('joi');
 const Boom = require('boom');
 const Mongodb = require('mongodb');
+const DefaultScope = require('../helper/getRoleNames');
 
 const argsFromArguments = function (argumentz) {
 
@@ -526,7 +527,7 @@ class AnchorModel {
         const foreignFilter = {};
         foreignFilter[lookup.foreign] = {};
         foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
-        if (lookup.foreign === '_id') {
+        if (lookup.foreign === '_id') {          
           if (Array.isArray(doc[lookup.local])) {
             foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local].map((v) => {
 
@@ -684,7 +685,7 @@ class AnchorModel {
     const limit = args.shift();
     const lookups = args.pop() || [];
     const options = args.pop() || {};
-
+   
     const output = {
       data: undefined,
       pages: {
@@ -938,6 +939,7 @@ AnchorModel.routes = {
     auth: false,
     disabled: false,
     payload: null,
+    scope: DefaultScope,
     handler: async (request,h) => {
       
       const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
@@ -954,7 +956,7 @@ AnchorModel.routes = {
         //sort: model.sortAdapter(request.query.sort)
       };
       const results =  await model.pagedLookup(query, page, limit, options, model.lookups);
-
+      
       return {
         draw: request.query.draw,
         recordsTotal: results.data.length,
@@ -968,6 +970,7 @@ AnchorModel.routes = {
     auth: false,
     disabled: false,
     payload: null,
+    scope: DefaultScope,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -984,6 +987,7 @@ AnchorModel.routes = {
     auth: false,
     disabled: true,
     payload: null,
+    scope: DefaultScope,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1000,6 +1004,7 @@ AnchorModel.routes = {
       limit: Joi.number().default(20),
       page: Joi.number().default(1)
     },
+    scope: DefaultScope,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1016,6 +1021,7 @@ AnchorModel.routes = {
   update: {
     disabled: false,
     payload: {},
+    scope: DefaultScope,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1034,6 +1040,7 @@ AnchorModel.routes = {
   delete: {
     disabled: false,
     payload: null,
+    scope: DefaultScope,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1048,6 +1055,7 @@ AnchorModel.routes = {
   },
   getId: {
     disabled: false,
+    scope: DefaultScope,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1069,6 +1077,7 @@ AnchorModel.routes = {
       limit: Joi.number().default(20),
       page: Joi.number().default(1)
     },
+    scope: DefaultScope,
     handler: async (request,h) => {
 
       const model = request.pre.model;

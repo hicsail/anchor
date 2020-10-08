@@ -26,8 +26,7 @@ const register = function (server, options) {
 module.exports = {
   name: 'account',
   dependencies: [
-    'inert',
-    //'vision',
+    'hapi-anchor-model',
     'auth'    
   ],
   register

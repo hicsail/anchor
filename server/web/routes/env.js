@@ -28,7 +28,8 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'envList',
-  dependencies: [    
+  dependencies: [ 
+    'hapi-anchor-model',   
     'auth'   
   ],
   register

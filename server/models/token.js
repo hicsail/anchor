@@ -65,7 +65,7 @@ Token.lookups = [{
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: false               
+  one: true               
 }]; 
 
 

@@ -26,7 +26,8 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'backupList',
-  dependencies: [    
+  dependencies: [
+    'hapi-anchor-model',    
     'auth'   
   ],
   register

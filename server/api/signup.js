@@ -174,10 +174,7 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'signup',
-  dependencies: [
-    'hapi-auth-basic',
-    'hapi-auth-cookie',
-    'hapi-auth-jwt2',
+  dependencies: [    
     'hapi-anchor-model',
     'auth',    
   ],

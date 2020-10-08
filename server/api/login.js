@@ -1,4 +1,5 @@
 
+
 'use strict';
 const AuthAttempt = require('../models/auth-attempt');
 const Token = require('../models/token');
@@ -317,12 +318,9 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'api-login',
-  dependencies: [
-    'hapi-auth-basic',
-    'hapi-auth-cookie',
-    //'hapi-auth-jwt2',
+  dependencies: [        
     'hapi-anchor-model',
-    //'hapi-remote-address'
+    'auth'    
   ],
   register
 };

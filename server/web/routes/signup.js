@@ -28,6 +28,10 @@ const register  = function (server, options) {
 };
 
 module.exports = {
-  name: 'signup/index',  
+  name: 'signup/index',
+  dependencies: [
+    'hapi-anchor-model',   
+    'auth'   
+  ],  
   register
 };
