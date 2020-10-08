@@ -936,7 +936,7 @@ AnchorModel.routes = {
   auth: true,
   disabled: false,
   getAllTable: {
-    auth: false,
+    auth: true,
     disabled: false,
     payload: null,
     scope: DefaultScope,
@@ -967,7 +967,7 @@ AnchorModel.routes = {
     query: null
   },
   create: {
-    auth: false,
+    auth: true,
     disabled: false,
     payload: null,
     scope: DefaultScope,
@@ -984,7 +984,7 @@ AnchorModel.routes = {
     query: null
   },
   insertMany: {
-    auth: false,
+    auth: true,
     disabled: true,
     payload: null,
     scope: DefaultScope,
@@ -998,6 +998,7 @@ AnchorModel.routes = {
     query: null
   },
   getAll: {
+    auth:true,
     disabled: false,
     query: {
       sort: Joi.string().default('_id'),
@@ -1015,10 +1016,10 @@ AnchorModel.routes = {
         sort: model.sortAdapter(request.query.sort)
       };
       return await model.pagedLookup(query, page, limit, options, model.lookups);
-    },
-    auth: true
+    }    
   },
   update: {
+    auth:true,
     disabled: false,
     payload: {},
     scope: DefaultScope,
@@ -1038,6 +1039,7 @@ AnchorModel.routes = {
     query: null
   },
   delete: {
+    auth:true,
     disabled: false,
     payload: null,
     scope: DefaultScope,
@@ -1054,6 +1056,7 @@ AnchorModel.routes = {
     query: null
   },
   getId: {
+    auth:true,
     disabled: false,
     scope: DefaultScope,
     handler: async (request,h) => {
@@ -1071,6 +1074,7 @@ AnchorModel.routes = {
   },
 
   getMy: {
+    auth:true,
     disabled: false,
     query: {
       sort: Joi.string().default('_id'),

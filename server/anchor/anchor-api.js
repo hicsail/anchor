@@ -1,6 +1,7 @@
 'use strict';
 const Boom = require('boom');
 const Joi = require('joi');
+const IsAllowed = require('../helper/isAllowed');
 
 const register = function (server,serverOptions) {
 
@@ -33,7 +34,7 @@ const register = function (server,serverOptions) {
           }
           return h.continue;
         }
-      }, /*{
+      },/*{
         assign: 'validate',
         method: function (request,h) {// TODO: need to figuer out a ay for query validations of datatbles 
           
@@ -48,14 +49,31 @@ const register = function (server,serverOptions) {
       },*/ {
         assign: 'auth',
         method: function (request,h) {
-
+          
           const model = request.pre.model;
 
           if (model.routes.getAllTable.auth) {
+            
             if (!request.auth.isAuthenticated) {
+              
               throw Boom.unauthorized('Authentication Required');
             }
             return h.continue;
+          }
+          return h.continue;
+        }
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.getAllTable.auth) {
+
+            const scopes = model.routes.getAllTable.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
           }
           return h.continue;
         }
@@ -122,8 +140,22 @@ const register = function (server,serverOptions) {
           }
           return h.continue;
         }
-      }
-      ]
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.create.auth) {
+
+            const scopes = model.routes.create.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
+          }
+          return h.continue;
+        }
+      }]
     },
     handler: async function (request,h) {
       
@@ -185,6 +217,21 @@ const register = function (server,serverOptions) {
           }
           return h.continue;
         }
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.insertMany.auth) {
+
+            const scopes = model.routes.insertMany.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
+          }
+          return h.continue;
+        }
       }]
     },
     handler: async function (request,h) {
@@ -233,6 +280,21 @@ const register = function (server,serverOptions) {
               throw Boom.unauthorized('Authentication Required');
             }
             return h.continue;
+          }
+          return h.continue;
+        }
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.getId.auth) {
+
+            const scopes = model.routes.getId.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
           }
           return h.continue;
         }
@@ -335,6 +397,21 @@ const register = function (server,serverOptions) {
           }
           return h.continue;
         }
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.delete.auth) {
+
+            const scopes = model.routes.delete.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
+          }
+          return h.continue;
+        }
       }]
     },
     handler: async function (request,h) {
@@ -393,6 +470,21 @@ const register = function (server,serverOptions) {
               throw Boom.unauthorized('Authentication Required');
             }
             return h.continue;
+          }
+          return h.continue;
+        }
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.getMy.auth) {
+
+            const scopes = model.routes.getMy.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
           }
           return h.continue;
         }
@@ -460,6 +552,21 @@ const register = function (server,serverOptions) {
           }
           return h.continue;
         }
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.update.auth) {
+
+            const scopes = model.routes.update.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
+          }
+          return h.continue;
+        }
       }]
     },
     handler: async function (request,h) {
@@ -521,6 +628,21 @@ const register = function (server,serverOptions) {
               throw Boom.unauthorized('Authentication Required');
             }
             return h.continue;
+          }
+          return h.continue;
+        }
+      },{
+        assign: 'scopeCheck',
+        method: function (request, h) {
+
+          const model = request.pre.model;
+          if (model.routes.getAll.auth) {
+
+            const scopes = model.routes.getAll.scope;
+            const userRoles = request.auth.credentials.scope;
+            if (!IsAllowed(userRoles, scopes)){
+              throw Boom.unauthorized('Insufficient Scope');
+            }
           }
           return h.continue;
         }
