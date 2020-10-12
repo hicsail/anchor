@@ -96,7 +96,6 @@ const register = function (server, serverOptions) {
       };
 
       const res = await server.inject(req);
-
       let outputCols = [];
       let outputData = res.result.data;
 
@@ -147,8 +146,34 @@ const register = function (server, serverOptions) {
       else {
         if (outputData.length !== 0 ) {
           for (let key of Object.keys(outputData[0])) {
-            outputCols.push({'label': key});
+            if (key === 'user'){//checks for a user model.
+              for (let userKey of Object.keys(outputData[0][key])){
+                if (userKey === 'createdAt'){
+                  outputCols.push({'label': 'userCreatedAt', 'invisible': true, from: 'user'})
+                }
+                else if (userKey !== '_id'){
+                  outputCols.push({'label': userKey, 'invisible': true, from: 'user'});
+                }
+              }
+            }
+            else{
+              outputCols.push({'label': key});
+            }
           }
+          let processedData = [];
+          outputData.forEach((tokenData) => {
+            let doc = {};
+            outputCols.forEach((keyObject) => {
+              if ('from' in keyObject) {
+                doc[keyObject.label] = tokenData[keyObject.from][keyObject.label];
+              }
+              else {
+                doc[keyObject.label] = tokenData[keyObject.label];
+              }
+            });
+            processedData.push(doc);
+          });
+          outputData = processedData;
         }
         else {
           for (let key of recursiveFindJoiKeys(model.schema)){
