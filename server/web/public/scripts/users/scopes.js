@@ -22,7 +22,7 @@ $(document).ready(() => {
     successAlert(msg);
     break;
   }
-  localStorage.removeItem('modalMessage');  
+  localStorage.removeItem('modalMessage');
 });
 
 $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){//adjusts the columns of the dataTable on switching between navTabs
@@ -39,27 +39,27 @@ function updateScope(path, method, scope) {
       scope: scope
     },
     success: function (result) {
-      location.assign("/scopes")
-      console.log(result)
-      console.log("method", method)
-      console.log("path", path)
-      //location.reload();
-      /*$.ajax({//API route for comparing the scope for configurability in the config file and in server for the specified route's scope
+      // location.assign("/scopes")
+      // console.log(result)
+      // console.log("method", method)
+      // console.log("path", path)
+      // location.reload();
+      $.ajax({//API route for comparing the scope for configurability in the config file and in server for the specified route's scope
         url: '/api/users/scopeCheck',
         type: 'POST',
         data: {
           method: method,
-          path: path          
+          path: path
         },
         success: function (result){
-          localStorage.setItem('modalMessage', result);          
+          localStorage.setItem('modalMessage', result);
           location.reload();
         },
         error: function (result){
           console.log(result)
           //errorAlert(result.responseJSON.message);
         }
-      })*/
+      })
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);

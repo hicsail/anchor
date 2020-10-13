@@ -1,4 +1,5 @@
 'use strict';
+const Fs = require('fs');
 const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
@@ -37,7 +38,7 @@ const register = function (server, options) {
         {
           assign: 'Authorization',
           method: (request, h) => {
-            return h.continue; 
+            return h.continue;
             /*Authorization(request, PermissionConfigTable['/roles']) ?
               reply(true) :
               reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));*/
@@ -49,8 +50,8 @@ const register = function (server, options) {
 
       const users = await User.find({});
 
-      if (!users) {        
-        throw Boom.notFound('Document not found.');        
+      if (!users) {
+        throw Boom.notFound('Document not found.');
       }
 
       return h.view('users/roles', {
@@ -60,7 +61,7 @@ const register = function (server, options) {
         title: 'Users',
         baseUrl: Config.get('/baseUrl'),
         role: Config.get('/roles')
-      });      
+      });
     }
   });
 
@@ -69,7 +70,7 @@ const register = function (server, options) {
     path: '/scopes',
     options: {
       auth: {
-        strategy: 'session',        
+        strategy: 'session',
         scope: ['root']
         //scope: ScopeArray('/scopes', 'GET', defaultScopes)
       }
@@ -138,7 +139,7 @@ const register = function (server, options) {
         POSTunconfig: UnconfigurableRoutes.POST,
         role: defaultScopes,
         UnconfigurableRoutes
-      });      
+      });
     }
   });
 
@@ -226,7 +227,7 @@ const register = function (server, options) {
         title: 'Users',
         baseUrl: Config.get('/baseUrl'),
         editUser: user
-      });      
+      });
     }
   });
 
@@ -249,14 +250,14 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl')
       });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'usersList',
   dependencies: [
     'hapi-anchor-model',
-    'auth'       
+    'auth'
   ],
   register
 };
