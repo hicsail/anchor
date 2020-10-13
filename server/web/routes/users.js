@@ -108,7 +108,7 @@ const register = function (server, options) {
           });
           AnyUnconfigurable = PermissionConfigTable[method][path].some((role) => {//if a certain route doesn't have the same scope as the one in server means its unconfigurable.
 
-            if (!set.has(role)){
+            if (!set.has(role) || ConfigurableRoutes[method][path].length !== PermissionConfigTable[method][path].length){
               console.log('adding unconfigurable route: ', method, path );
               if (!UnconfigurableRoutes.hasOwnProperty(method)){
                 UnconfigurableRoutes[method] = {};
