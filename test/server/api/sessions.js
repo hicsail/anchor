@@ -30,18 +30,18 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  plugins.push(HapiAuthBasic);  
+  plugins.push(HapiAuthBasic);
   plugins.push(HapiAuthCookie);
   plugins.push(HapiAuthJWT);
   plugins.push(Auth);
-  plugins.push(AnchorApi);  
+  plugins.push(AnchorApi);
   plugins.push(SessionApi);
-  
+
   await server.register(plugins);
   await server.start();
   await Fixtures.Db.removeAllData();
 
-  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');   
+  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
 });
 
 lab.after(async () => {
@@ -54,7 +54,7 @@ lab.experiment('DELETE /api/sessions/my/{id}', () => {
 
   let request;
 
-  lab.beforeEach(async () => {    
+  lab.beforeEach(() => {
 
     request = {
       method: 'DELETE',
@@ -62,40 +62,40 @@ lab.experiment('DELETE /api/sessions/my/{id}', () => {
       credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
-      }     
+      }
     };
-  });  
+  });
 
-  lab.test('it returns HTTP 400 when the logged in user tries to delete the current session', async () => { 
+  lab.test('it returns HTTP 400 when the logged in user tries to delete the current session', async () => {
 
-    request.url = '/api/sessions/my/' + authenticatedRoot.session._id.toString();    
+    request.url = '/api/sessions/my/' + authenticatedRoot.session._id.toString();
 
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(400);
-    Code.expect(response.result.message).to.match(/Unable to close your current session. You can use logout instead/i);    
+    Code.expect(response.result.message).to.match(/Unable to close your current session. You can use logout instead/i);
   });
 
-  lab.test('it returns HTTP 404 session findOneAndDelete misses', async () => {    
-        
-    request.url = '/api/sessions/my/' + '555555555555555555555555';   
+  lab.test('it returns HTTP 404 session findOneAndDelete misses', async () => {
+
+    request.url = '/api/sessions/my/' + '555555555555555555555555';
 
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(404);
     Code.expect(response.result.message).to.match(/Document not found/i);
 
-  });    
+  });
 
-  lab.test('it returns HTTP 200 when all is well', async () => { 
-    
-    let session = await Session.create(`${authenticatedRoot.user._id}`,'127.0.0.1','Lab');    
-    request.url = '/api/sessions/my/' + session._id.toString();   
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const session = await Session.create(`${authenticatedRoot.user._id}`,'127.0.0.1','Lab');
+    request.url = '/api/sessions/my/' + session._id.toString();
 
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.message).to.match(/Success/i);
 
-  });  
+  });
 });

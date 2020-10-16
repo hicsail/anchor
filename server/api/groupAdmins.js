@@ -21,18 +21,18 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
-      const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
+      //const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
+      //const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
       const limit = Number(request.query.length);
       const page = Math.ceil(Number(request.query.start) / limit) + 1;
-      const fields = request.query.fields;
+      //const fields = request.query.fields;
       const userId = AnchorModel.ObjectID(request.auth.credentials.user._id.toString());
 
       const query = {
-        username: { $regex: request.query['search[value]'].toLowerCase() }        
+        username: { $regex: request.query['search[value]'].toLowerCase() }
       };
 
-      var field = "roles." + request.params.role + ".userAccess";
+      const field = 'roles.' + request.params.role + '.userAccess';
       query[field] = { $in: [userId] };
 
       const results  = await User.pagedFind(query, page, limit);
@@ -41,8 +41,8 @@ const register = function (server, options) {
         draw: request.query.draw,
         recordsTotal: results.data.length,
         recordsFiltered: results.items.total,
-        data: results.data          
-      };      
+        data: results.data
+      };
     }
   });
 
@@ -68,7 +68,7 @@ const register = function (server, options) {
       const userId = MongoModels.ObjectID(request.params.id);
 
       const query = {
-        username: { $regex: request.query['search[value]'].toLowerCase() }        
+        username: { $regex: request.query['search[value]'].toLowerCase() }
       };
 
       var field = "roles." + request.params.role + ".userAccess";
@@ -80,8 +80,8 @@ const register = function (server, options) {
         draw: request.query.draw,
         recordsTotal: results.data.length,
         recordsFiltered: results.items.total,
-        data: results.data          
-      };       
+        data: results.data
+      };
     }
   });*/
 
@@ -101,31 +101,30 @@ const register = function (server, options) {
         }
       }
     },
-    handler: async function (request, h) {   
+    handler: async function (request, h) {
 
       const query = {
         $or: [
           { email: { $regex: request.query.term, $options: 'i' } },
           { name: { $regex: request.query.term, $options: 'i' } },
           { username: { $regex: request.query.term, $options: 'i' } }
-        ]        
+        ]
       };
 
-      var field = "roles." + request.params.role;
+      const field = 'roles.' + request.params.role;
       query[field] = { $exists: true };
 
-      const fields = 'name email username';
       const limit = 25;
       const page = 1;
 
       const results  = await User.pagedFind(query, page, limit);
-      
+
       return {
         results: results.data,
         pagination: {
           more: results.pages.hasNext
-        }        
-      };      
+        }
+      };
     }
   });
 
@@ -149,26 +148,24 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      let conditions = [];
-      for (let role of Config.get('/roles')) {
-        if (role['type'] === 'groupAdmin') {          
-          let query = {};
-          var field = "roles." + role['name'];
+      const conditions = [];
+      for (const role of Config.get('/roles')) {
+        if (role.type === 'groupAdmin') {
+          const query = {};
+          const field = 'roles.' + role.name;
           query[field] = { $exists: true };
           conditions.push(query);
         }
       }
 
-      const query = { $or: conditions};
+      const query = { $or: conditions };
 
-      const fields = request.query.fields;
-      const sort = request.query.sort;
       const limit = request.query.limit;
       const page = request.query.page;
 
       const results = await User.pagedFind(query, page, limit);
 
-      return results;      
+      return results;
     }
   });
 
@@ -191,23 +188,21 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const fields = request.query.fields;
-      const sort = request.query.sort;
       const limit = request.query.limit;
       const page = request.query.page;
-      const userId = MongoModels.ObjectID(request.auth.credentials.user._id.toString());
+      const userId = AnchorModel.ObjectID(request.auth.credentials.user._id.toString());
 
       const query = {};
 
-      var field = "roles." + request.params.role + ".userAccess";
+      const field = 'roles.' + request.params.role + '.userAccess';
       query[field] = { $in: [userId] };
 
       const results = await User.pagedFind(query, page, limit);
 
-      return results;      
+      return results;
     }
   });
-  
+
   server.route({
     method: 'PUT',
     path: '/api/groupAdmins/{role}/{adminId}',
@@ -230,16 +225,16 @@ const register = function (server, options) {
               throw Boom.conflict('User is not a ' + request.params.role);
             }
 
-            return user;            
+            return user;
           }
         }
       ]
     },
     handler: async function (request, h) {
 
-      const admin = request.pre.admin;       
-      
-      admin.roles[request.params.role].userAccess = JSON.parse(request.payload['users']);
+      const admin = request.pre.admin;
+
+      admin.roles[request.params.role].userAccess = JSON.parse(request.payload.users);
 
       const update = {
         $set: {
@@ -253,7 +248,7 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
-      return 'Success';      
+      return 'Success';
     }
   });
 
@@ -274,13 +269,13 @@ const register = function (server, options) {
 
             if (!user) {
               throw Boom.notFound('User not found');
-            }           
+            }
 
             if (!user.roles[request.params.role]) {
               throw Boom.conflict('User is not a ' + request.params.role);
             }
 
-            return user;            
+            return user;
           }
         }
       ]
@@ -306,7 +301,7 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
-      return 'Success';      
+      return 'Success';
     }
   });
 
@@ -334,7 +329,7 @@ const register = function (server, options) {
               throw Boom.conflict('User is not a ' + request.params.role);
             }
 
-            return user;             
+            return user;
           }
         },{
           assign: 'user',
@@ -344,9 +339,9 @@ const register = function (server, options) {
 
             if (!user) {
               throw Boom.notFound('User not found');
-            }            
+            }
 
-            return request.params.userId;             
+            return request.params.userId;
           }
         }
       ]
@@ -372,7 +367,7 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
-      return 'Success';      
+      return 'Success';
     }
   });
 
@@ -398,9 +393,9 @@ const register = function (server, options) {
 
             if (!user.roles[request.params.role]) {
               throw Boom.conflict('User is not a ' + request.params.role);
-            }           
+            }
 
-            return user;             
+            return user;
           }
         },{
           assign: 'user',
@@ -410,9 +405,9 @@ const register = function (server, options) {
 
             if (!user) {
               throw Boom.notFound('User not found');
-            }            
+            }
 
-            return request.params.userId;            
+            return request.params.userId;
           }
         }
       ]
@@ -438,16 +433,16 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
-      return 'Success';     
+      return 'Success';
     }
-  }); 
+  });
 };
 
 module.exports = {
   name: 'groupAdmins',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

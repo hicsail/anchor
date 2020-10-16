@@ -47,7 +47,7 @@ lab.experiment('POST /api/signup', () => {
   const Mailer_sendEmail = Mailer.sendEmail;
   let request;
 
-  lab.beforeEach(async() => {
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
@@ -55,7 +55,7 @@ lab.experiment('POST /api/signup', () => {
     };
   });
 
-  lab.afterEach(async () => {
+  lab.afterEach(() => {
 
     Mailer.sendEmail = Mailer_sendEmail;
   });

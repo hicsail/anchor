@@ -30,13 +30,13 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  plugins.push(HapiAuthBasic);  
+  plugins.push(HapiAuthBasic);
   plugins.push(HapiAuthCookie);
   plugins.push(HapiAuthJWT);
   plugins.push(Auth);
-  plugins.push(AnchorApi);  
+  plugins.push(AnchorApi);
   plugins.push(FeedbackApi);
-  
+
   await server.register(plugins);
   await server.start();
   await Fixtures.Db.removeAllData();
@@ -44,7 +44,7 @@ lab.before(async () => {
   authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
   await Feedback.create('subject1', 'description1','555555555555555555555555');
   await Feedback.create('subject2', 'description2','155555555555555555555555');
-  await Feedback.create('subject3', 'description3','255555555555555555555555');  
+  await Feedback.create('subject3', 'description3','255555555555555555555555');
 });
 
 lab.after(async () => {
@@ -57,7 +57,7 @@ lab.experiment('GET /api/feedback/unresolved', () => {
 
   let request;
 
-  lab.beforeEach(async () => {    
+  lab.beforeEach(() => {
 
     request = {
       method: 'GET',
@@ -65,25 +65,25 @@ lab.experiment('GET /api/feedback/unresolved', () => {
       credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
-      }     
+      }
     };
-  }); 
+  });
 
-  lab.test('it returns HTTP 200 when all is well', async () => {      
+  lab.test('it returns HTTP 200 when all is well', async () => {
 
     const response = await server.inject(request);
 
-    Code.expect(response.statusCode).to.equal(200);    
+    Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result).to.match(/3/i);
 
-  });  
+  });
 });
 
 lab.experiment('PUT /api/feedback/{id}', () => {
 
   let request;
 
-  lab.beforeEach(async () => {    
+  lab.beforeEach(() => {
 
     request = {
       method: 'PUT',
@@ -91,41 +91,41 @@ lab.experiment('PUT /api/feedback/{id}', () => {
       credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
-      }     
+      }
     };
-  }); 
+  });
 
-  lab.test('it returns HTTP 404 when feedback findByIdAndUpdate misees', async () => {  
+  lab.test('it returns HTTP 404 when feedback findByIdAndUpdate misees', async () => {
 
     request.url = '/api/feedback/555555555555555555555555';
 
     request.payload = {
       resolved: true,
-      comment: 'new comment'      
+      comment: 'new comment'
     };
-    
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(404);
-    Code.expect(response.result.message).to.match(/feedback not found/i);     
-  });  
+    Code.expect(response.result.message).to.match(/feedback not found/i);
+  });
 
-  lab.test('it returns HTTP 200 when all is well', async () => {      
-    
-    let feedback = await Feedback.create('subject1', 'description1','555555555555555555555555');
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
+    const feedback = await Feedback.create('subject1', 'description1','555555555555555555555555');
 
     request.url = '/api/feedback/' + feedback._id.toString();
 
     request.payload = {
       resolved: true,
-      comment: 'new comment'      
+      comment: 'new comment'
     };
-    
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result).to.be.an.instanceOf(Feedback); 
-    Code.expect(response.result.resolved).to.equal(true); 
+    Code.expect(response.result).to.be.an.instanceOf(Feedback);
+    Code.expect(response.result.resolved).to.equal(true);
     Code.expect(response.result.comment).to.equal('new comment');
-  });  
+  });
 });

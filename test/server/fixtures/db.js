@@ -10,11 +10,11 @@ const User = require('../../../server/models/user');
 class Db {
   static async removeAllData() {
 
-    return await Promise.all([      
+    return await Promise.all([
       AuthAttempt.deleteMany({}),
       Backup.deleteMany({}),
       Feedback.deleteMany({}),
-      Invite.deleteMany({}),            
+      Invite.deleteMany({}),
       Session.deleteMany({}),
       Token.deleteMany({}),
       User.deleteMany({})

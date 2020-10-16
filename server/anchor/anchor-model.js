@@ -239,7 +239,7 @@ class AnchorModel {
 
     return fields;
   }
-  
+
   /**
    * Finds documents and returns an array of model instances
    * @async
@@ -416,7 +416,7 @@ class AnchorModel {
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
     const filter = args.shift();
-    const doc = args.shift();    
+    const doc = args.shift();
     const defaultOptions = {
       returnOriginal: false
     };
@@ -426,7 +426,7 @@ class AnchorModel {
       }
       else {
         doc.updatedAt = new Date();
-      }      
+      }
     }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
 
@@ -527,7 +527,7 @@ class AnchorModel {
         const foreignFilter = {};
         foreignFilter[lookup.foreign] = {};
         foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local];
-        if (lookup.foreign === '_id') {          
+        if (lookup.foreign === '_id') {
           if (Array.isArray(doc[lookup.local])) {
             foreignFilter[lookup.foreign][lookup.operator] = doc[lookup.local].map((v) => {
 
@@ -612,7 +612,7 @@ class AnchorModel {
     const page = args.shift();
     const limit = args.shift();
     const options = args.pop() || {};
-    
+
     const output = {
       data: undefined,
       pages: {
@@ -685,7 +685,7 @@ class AnchorModel {
     const limit = args.shift();
     const lookups = args.pop() || [];
     const options = args.pop() || {};
-   
+
     const output = {
       data: undefined,
       pages: {
@@ -941,28 +941,28 @@ AnchorModel.routes = {
     payload: null,
     scope: DefaultScope,
     handler: async (request,h) => {
-      
+
       const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
       const sort = sortOrder + request.query['columns[' + Number(request.query['order[0][column]']) + '][data]'];
       const limit = Number(request.query.length);
-      const page = Math.ceil(Number(request.query.start) / limit) + 1;         
+      const page = Math.ceil(Number(request.query.start) / limit) + 1;
 
       const model = request.pre.model;
       const query = {};
       //const limit = request.query.limit;
       //const page = request.query.page;
       const options = {
-        sort: sort
+        sort
         //sort: model.sortAdapter(request.query.sort)
       };
       const results =  await model.pagedLookup(query, page, limit, options, model.lookups);
-      
+
       return {
         draw: request.query.draw,
         recordsTotal: results.data.length,
         recordsFiltered: results.items.total,
-        data: results.data        
-      };      
+        data: results.data
+      };
     },
     query: null
   },
@@ -1016,7 +1016,7 @@ AnchorModel.routes = {
         sort: model.sortAdapter(request.query.sort)
       };
       return await model.pagedLookup(query, page, limit, options, model.lookups);
-    }    
+    }
   },
   update: {
     auth:true,

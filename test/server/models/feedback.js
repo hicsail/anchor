@@ -26,8 +26,8 @@ lab.experiment('Feedback Model', () => {
   lab.test('it returns a new instance when create succeeds', async () => {
 
     const subject = 'subject';
-    const description ='description';
-    const userId = 'testId';   
+    const description = 'description';
+    const userId = 'testId';
 
     const feedback = await Feedback.create(subject, description, userId);
 

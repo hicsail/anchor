@@ -14,7 +14,7 @@ const register = function (server,serverOptions) {
       },
       validate: {
         query: Joi.any()
-      },    
+      },
       pre: [{
         assign: 'model',
         method: function (request,h) {
@@ -27,7 +27,8 @@ const register = function (server,serverOptions) {
         }
       }, {
         assign: 'enabled',
-        method: function (request,h) {          
+        method: function (request,h) {
+
           const model = request.pre.model;
           if (model.routes.getAllTable.disabled) {
             throw Boom.forbidden('Route Disabled');
@@ -36,11 +37,11 @@ const register = function (server,serverOptions) {
         }
       },/*{
         assign: 'validate',
-        method: function (request,h) {// TODO: need to figuer out a ay for query validations of datatbles 
-          
-          const model = request.pre.model;          
-          const { error, value } = Joi.validate(request.query,model.routes.getAll.query);          
-          if (error) {            
+        method: function (request,h) {// TODO: need to figuer out a ay for query validations of datatbles
+
+          const model = request.pre.model;
+          const { error, value } = Joi.validate(request.query,model.routes.getAll.query);
+          if (error) {
             //throw Boom.badRequest('Query not validated');
           }
           request.query = value;
@@ -49,13 +50,13 @@ const register = function (server,serverOptions) {
       },*/ {
         assign: 'auth',
         method: function (request,h) {
-          
+
           const model = request.pre.model;
 
           if (model.routes.getAllTable.auth) {
-            
+
             if (!request.auth.isAuthenticated) {
-              
+
               throw Boom.unauthorized('Authentication Required');
             }
             return h.continue;
@@ -80,8 +81,8 @@ const register = function (server,serverOptions) {
       }]
     },
     handler: async function (request, h) {
-       
-      return await request.pre.model.routes.getAllTable.handler(request,h);   
+
+      return await request.pre.model.routes.getAllTable.handler(request,h);
     }
   });
 
@@ -158,7 +159,7 @@ const register = function (server,serverOptions) {
       }]
     },
     handler: async function (request,h) {
-      
+
       return await request.pre.model.routes.create.handler(request,h);
     }
   });
@@ -415,7 +416,7 @@ const register = function (server,serverOptions) {
       }]
     },
     handler: async function (request,h) {
-      
+
       return await request.pre.model.routes.delete.handler(request,h);
     }
   });
@@ -530,7 +531,7 @@ const register = function (server,serverOptions) {
         assign: 'payload',
         method: function (request,h) {
 
-          const model = request.pre.model;                
+          const model = request.pre.model;
           const { error, value } = Joi.validate(request.payload, model.routes.update.payload);
           if (error) {
             throw Boom.badRequest('Incorrect Payload', error);
@@ -570,7 +571,7 @@ const register = function (server,serverOptions) {
       }]
     },
     handler: async function (request,h) {
-      
+
       return await request.pre.model.routes.update.handler(request,h);
     }
   });
@@ -597,7 +598,7 @@ const register = function (server,serverOptions) {
       }, {
         assign: 'enabled',
         method: function (request,h) {
-          
+
           const model = request.pre.model;
           if (model.routes.getAll.disabled) {
             throw Boom.forbidden('Route Disabled');
@@ -606,11 +607,11 @@ const register = function (server,serverOptions) {
         }
       }, {
         assign: 'validate',
-        method: function (request,h) {// TODO: need to figuer out a ay for query validations of datatbles 
-          
-          const model = request.pre.model;          
-          const { error, value } = Joi.validate(request.query, model.routes.getAll.query);          
-          if (error) {            
+        method: function (request,h) {// TODO: need to figuer out a ay for query validations of datatbles
+
+          const model = request.pre.model;
+          const { error, value } = Joi.validate(request.query, model.routes.getAll.query);
+          if (error) {
             throw Boom.badRequest('Query not validated');
           }
           request.query = value;
@@ -624,7 +625,7 @@ const register = function (server,serverOptions) {
           const model = request.pre.model;
           if (model.routes.getAll.auth) {
             if (!request.auth.isAuthenticated) {
-              
+
               throw Boom.unauthorized('Authentication Required');
             }
             return h.continue;
@@ -649,7 +650,7 @@ const register = function (server,serverOptions) {
       }]
     },
     handler: async function (request,h) {
-      
+
       return await request.pre.model.routes.getAll.handler(request,h);
     }
   });
@@ -678,7 +679,7 @@ const register = function (server,serverOptions) {
 
 module.exports = {
   name: 'anchor-api',
-  dependencies: [    
+  dependencies: [
     'auth',
     'hapi-anchor-model'
   ],

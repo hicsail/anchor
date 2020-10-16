@@ -1,5 +1,5 @@
 'use strict';
-const Assert = require('assert')
+const Assert = require('assert');
 const Crypto = require('../crypto');
 const GroupAdmin = require('./group-admin');
 const Joi = require('joi');
@@ -7,20 +7,21 @@ const Hoek = require('hoek');
 const AnchorModel = require('../anchor/anchor-model');
 const Config = require('../../config');
 
-function  getRolesValidator() {      
-  let roles = {};
+const getRolesValidator = function () {
+
+  const roles = {};
 
   Config.get('/roles').forEach((role) => {
 
-    if (role['type'] === 'groupAdmin') {
-      roles[role['name']] = GroupAdmin.schema;  
+    if (role.type === 'groupAdmin') {
+      roles[role.name] = GroupAdmin.schema;
     }
     else {
-      roles[role['name']] = Joi.boolean();  
-    }        
+      roles[role.name] = Joi.boolean();
+    }
   });
-  return roles;   
-}
+  return roles;
+};
 
 class User extends AnchorModel {
   static async generatePasswordHash(password) {
@@ -29,11 +30,11 @@ class User extends AnchorModel {
     const salt = await Crypto.genSalt(10);
     const hash = await Crypto.hash(password,salt);
 
-    return { password, hash };    
+    return { password, hash };
   }
 
   static async create(username, password, email, name) {
-    
+
     Assert.ok(username, 'Missing username arugment.');
     Assert.ok(password, 'Missing pasword arugment.');
     Assert.ok(email, 'Missing email arugment.');
@@ -41,7 +42,7 @@ class User extends AnchorModel {
 
     const self = this;
 
-    const passwordHash = await this.generatePasswordHash(password);    
+    const passwordHash = await this.generatePasswordHash(password);
     const document =  new this({
       isActive: true,
       inStudy: true,
@@ -51,14 +52,14 @@ class User extends AnchorModel {
       name,
       roles: {},
       studyID: null,
-      timeCreated: new Date()  
+      timeCreated: new Date()
     });
-    
+
     const users = await self.insertOne(document);
 
     users[0].password = passwordHash.password;
 
-    return users[0];    
+    return users[0];
   }
 
   static async findByCredentials(username, password) {
@@ -77,17 +78,17 @@ class User extends AnchorModel {
       query.username = username.toLowerCase();
     }
 
-    const user = await this.findOne(query);
-    
-    if (!user) {      
+    const user = await self.findOne(query);
+
+    if (!user) {
       return;
     }
 
     const passwordMatch = await Crypto.compare(password,user.password);
 
-    if (passwordMatch) {      
+    if (passwordMatch) {
       return user;
-    }    
+    }
   }
 
   static async findByUsername(username) {
@@ -96,7 +97,7 @@ class User extends AnchorModel {
 
     const query = { username: username.toLowerCase() };
 
-    return this.findOne(query);    
+    return await this.findOne(query);
   }
 
   static async findByEmail(email) {
@@ -105,27 +106,28 @@ class User extends AnchorModel {
 
     const query = { email: email.toLowerCase() };
 
-    return this.findOne(query);
+    return await this.findOne(query);
   }
 
   static highestRole(roles) {
-    
+
     let maxAccessLevel = 0;
-    let roleDict = {};
+    const roleDict = {};
 
-    Config.get('/roles').forEach((roleObj) => { 
+    Config.get('/roles').forEach((roleObj) => {
 
-        roleDict[roleObj['name']] = roleObj['accessLevel'];
-    });    
-    
-    for (let role in roles) {
+      roleDict[roleObj.name] = roleObj.accessLevel;
+    });
 
-        if (roleDict[role] >= maxAccessLevel)
-          maxAccessLevel = roleDict[role];        
+    for (const role in roles) {
+
+      if (roleDict[role] >= maxAccessLevel) {
+        maxAccessLevel = roleDict[role];
+      }
     }
 
-    return maxAccessLevel;    
-  }  
+    return maxAccessLevel;
+  }
 
   constructor(attrs) {
 
@@ -180,7 +182,7 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     payload: User.payload
   },
   getMy: {
-    disabled: true  
+    disabled: true
   },
   delete:{
     disabled: true

@@ -5,10 +5,9 @@ const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
 const Session = require('../models/session');
 const User = require('../models/user');
-const Invite = require('../models/invite');
 const Mailer = require('../mailer');
 
-const register = function (server, options) {  
+const register = function (server, options) {
 
   server.route({
     method: 'POST',
@@ -23,32 +22,28 @@ const register = function (server, options) {
       pre: [{
         assign: 'usernameCheck',
         method: async function (request, h) {
-          
-          const conditions = {
-            username: request.payload.username
-          };
 
           const user = await User.findByUsername(request.payload.username);
 
           if (user) {
-            
+
             throw Boom.conflict('Username already in use.');
           }
 
-          return h.continue;          
+          return h.continue;
         }
       }, {
         assign: 'emailCheck',
         method: async function (request, h) {
-          
+
           const user = await User.findByEmail(request.payload.email);
 
           if (user) {
 
             throw Boom.conflict('Email already in use.');
           }
-          
-          return h.continue;          
+
+          return h.continue;
         }
       },{
         assign: 'passwordCheck',
@@ -60,29 +55,29 @@ const register = function (server, options) {
             await Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions));
           }
           catch (err) {
-            
+
             throw Boom.conflict('Password does not meet complexity standards');
-          }          
+          }
           return h.continue;
         }
       }]
     },
     handler: async function (request, h) {
-      
+
       const username = request.payload.username;
       const password = request.payload.password;
       const email = request.payload.email;
       const name = request.payload.name;
-      
+
       // create and link account and user documents
-      const user = await User.create(username, password, email, name);      
+      const user = await User.create(username, password, email, name);
       const emailOptions = {
         subject: 'Your ' + Config.get('/projectName') + ' account',
         to: {
           name: request.payload.name,
           ddress: request.payload.email
         }
-      };     
+      };
 
       try {
         await Mailer.sendEmail(emailOptions, 'welcome', request.payload);
@@ -93,25 +88,25 @@ const register = function (server, options) {
 
       // create session
       const userAgent = request.headers['user-agent'];
-      const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;      
+      const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
       const session = await Session.create(user._id.toString(), ip, userAgent);
-      
+
       const credentials = session._id + ':' + session.key;
       const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
 
-      //request.cookieAuth.set(session);      
+      //request.cookieAuth.set(session);
       const result = {
-          user: {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            roles: user.roles
-          },
-          session: session,
-          authHeader
-        };
+        user: {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles
+        },
+        session,
+        authHeader
+      };
 
-      return result;        
+      return result;
     }
   });
 
@@ -128,7 +123,7 @@ const register = function (server, options) {
       },
       pre: [{
         assign: 'vaildInput',
-        method: async function (request, h) {
+        method: function (request, h) {
 
           const username = request.payload.username;
           const email = request.payload.email;
@@ -142,7 +137,7 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const username = request.payload.username;      
+      const username = request.payload.username;
       const user1 = await User.findOne({ username });
 
       if (user1 && username) {
@@ -157,26 +152,26 @@ const register = function (server, options) {
       }
 
       if (user1 && !user2) {
-        return {email:false, username:true};
+        return { email:false, username:true };
       }
       else if (!user1 && user2) {
-        return {email:true, username:false};
+        return { email:true, username:false };
       }
       else if (user1 && user2) {
-        return {email:true, username:true};  
+        return { email:true, username:true };
       }
 
-      return {email:false, username:false};        
+      return { email:false, username:false };
     }
   });
-  
+
 };
 
 module.exports = {
   name: 'signup',
-  dependencies: [    
+  dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

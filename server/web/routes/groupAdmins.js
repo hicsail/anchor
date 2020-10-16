@@ -16,32 +16,32 @@ const register = function (server, options) {
 
       const query = {};
 
-      var field = "roles." + "clinician";
+      const field = 'roles.' + 'clinician';
       query[field] = { $exists: true };
 
       const results  = await User.find(query);
 
-      let result = [];
-      for (let role of Config.get('/roles')) {
-        if (role['type'] === 'groupAdmin') {
-          
+      const result = [];
+      for (const role of Config.get('/roles')) {
+        if (role.type === 'groupAdmin') {
+
           const data = {};
-          const query = {};
-          data['role'] = role['name'];
-          
-          var field = "roles." + role['name'];
-          query[field] = { $exists: true };
+          const filter = {};
+          data.role = role.name;
 
-          const admins = await User.find(query);
+          const attr = 'roles.' + role.name;
+          filter[attr] = { $exists: true };
 
-          for (let admin of admins) {
-            admin.userAccess = admin.roles[role['name']]['userAccess'];
-          }          
-          data['admins'] = admins;          
+          const admins = await User.find(filter);
+
+          for (const admin of admins) {
+            admin.userAccess = admin.roles[role.name].userAccess;
+          }
+          data.admins = admins;
           result.push(data);
         }
       }
-      
+
       return h.view('groupAdmins/index', {
         clinicians: results,
         user: request.auth.credentials.user,
@@ -51,14 +51,14 @@ const register = function (server, options) {
         data: result
       });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'groupAdminList',
   dependencies: [
-    'hapi-anchor-model',    
-    'auth'   
+    'hapi-anchor-model',
+    'auth'
   ],
   register
 };

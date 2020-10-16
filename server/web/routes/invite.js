@@ -12,7 +12,7 @@ const register = function (server, options) {
         strategies: ['session']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('invite/index', {
         user: request.auth.credentials.user,
@@ -32,7 +32,7 @@ const register = function (server, options) {
         scope: ['root', 'admin','clinician','researcher']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('invite/create', {
         user: request.auth.credentials.user,
@@ -62,7 +62,7 @@ const register = function (server, options) {
         title: 'Invites',
         baseUrl: Config.get('/baseUrl'),
         invite
-      });      
+      });
     }
   });
 
@@ -70,11 +70,11 @@ const register = function (server, options) {
     method: 'GET',
     path: '/invite/{id}',
     options: {
-      auth: {        
+      auth: {
         strategies: ['session']
-      }      
+      }
     },
-    handler: async function (request, h) {     
+    handler: async function (request, h) {
 
       const invite = await Invite.findById(request.params.id);
 
@@ -92,16 +92,16 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl'),
         invite,
         valid
-      });      
+      });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'inviteList',
   dependencies: [
-    'hapi-anchor-model',     
-    'auth'       
+    'hapi-anchor-model',
+    'auth'
   ],
   register
 };

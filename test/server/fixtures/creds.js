@@ -11,7 +11,7 @@ class Credentials {
     const combo64 = (Buffer.from(combo)).toString('base64');
     return `Basic ${combo64}`;
 
-  };  
+  };
 
   static async createRootUser(password,email) {
 
@@ -23,10 +23,10 @@ class Credentials {
       password: passwordHash.hash,
       email,
       name: 'root',
-      roles: { root:true, admin:true }     
+      roles: { root:true, admin:true }
     }))[0];
 
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');  
+    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
 
     return {
       user,
@@ -46,13 +46,13 @@ class Credentials {
 
     const update = {
       $set: {
-        roles: roles
+        roles
       }
     };
 
-    await User.findByIdAndUpdate(user._id.toString(), update);    
+    await User.findByIdAndUpdate(user._id.toString(), update);
 
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');  
+    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
 
     return {
       user,

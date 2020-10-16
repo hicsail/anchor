@@ -15,7 +15,7 @@ const register = function (server, options) {
         scope: ['admin','root']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return Env.config().parsed;
     }
@@ -30,7 +30,7 @@ const register = function (server, options) {
         scope: ['admin','root']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return Env.config().parsed[request.params.name];
     }
@@ -48,7 +48,7 @@ const register = function (server, options) {
         payload: Joi.object()
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       let env = '';
       for (const key in request.payload) {
@@ -60,14 +60,14 @@ const register = function (server, options) {
       Env.parse(path); //override variables
       return { message: 'Success' };
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'env',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

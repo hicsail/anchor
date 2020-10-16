@@ -1,10 +1,7 @@
 'use strict';
-const Boom = require('boom');
-const Joi = require('joi');
-const User = require('../models/user');
 const Event = require('../models/event');
 
-const register = function (server, options) { 
+const register = function (server, options) {
 
   server.route({
     method: 'POST',
@@ -27,10 +24,10 @@ const register = function (server, options) {
       if (request.auth.isAuthenticated) {
         userId = request.auth.credentials.user._id.toString();
       }
-      
+
       const event = await Event.create(request.params.name, userId);
-      
-      return event;      
+
+      return event;
     }
   });
 
@@ -45,11 +42,9 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const fields = Event.fieldsAdapter('time');
+      const events = await Event.find({ name: request.params.name });
 
-      const events = await Event.find({ name: request.params.name});
-
-      return events;      
+      return events;
     }
   });
 
@@ -64,20 +59,18 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const fields = Event.fieldsAdapter('name time');
-
       const events = await Event.find({ userId: request.params.userId });
 
-      return events;      
+      return events;
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'events',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

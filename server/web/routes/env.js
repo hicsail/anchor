@@ -13,7 +13,7 @@ const register = function (server, options) {
         scope: ['root', 'admin']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('env/index', {
         user: request.auth.credentials.user,
@@ -23,14 +23,14 @@ const register = function (server, options) {
         env: Env.config().parsed
       });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'envList',
-  dependencies: [ 
-    'hapi-anchor-model',   
-    'auth'   
+  dependencies: [
+    'hapi-anchor-model',
+    'auth'
   ],
   register
 };

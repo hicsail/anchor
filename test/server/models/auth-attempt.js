@@ -33,7 +33,7 @@ lab.experiment('AuthAttempt Model', () => {
         '127.0.0.2',
         `mudskipper${i}`,
         ['Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us)',
-         'AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405'
+          'AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405'
         ].join('')
       );
 
@@ -68,9 +68,9 @@ lab.experiment('AuthAttempt Model', () => {
     Code.expect(result).to.equal(true);
   });
 
-  lab.test('it returns a new instance when create succeeds', async () => {    
+  lab.test('it returns a new instance when create succeeds', async () => {
 
-    const authAttempt = await AuthAttempt.create('127.0.0.4','apollo', 
+    const authAttempt = await AuthAttempt.create('127.0.0.4','apollo',
       [
         'Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us)',
         ' AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405'

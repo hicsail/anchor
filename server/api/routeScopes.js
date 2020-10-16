@@ -1,6 +1,5 @@
 'use strict';
 const Fs = require('fs');
-const Joi = require('joi');;
 const PermissionConfigTable = require('../permission-config.json');
 const RouteScope = require('../models/route-scope');
 
@@ -15,9 +14,9 @@ const register = function (server, options) {
       },
       validate: {
         payload: RouteScope.payload
-      }      
+      }
     },
-    handler: async function (request, h) {      
+    handler: async function (request, h) {
       //update scope of route
       const scopesArray = PermissionConfigTable[request.payload.method][request.payload.path];
       if (scopesArray.includes(request.payload.scope)){
@@ -32,11 +31,11 @@ const register = function (server, options) {
         method: request.payload.method
       };
 
-      const update = { $set: { scope: scopesArray } }; 
+      const update = { $set: { scope: scopesArray } };
 
       const route = await RouteScope.findOneAndUpdate(condition, update);
 
-      //if there doesn't already exist a document with method and path, insert a document 
+      //if there doesn't already exist a document with method and path, insert a document
       if (!route) {
 
         const doc = {
@@ -45,16 +44,16 @@ const register = function (server, options) {
           scope: scopesArray
         };
 
-        await RouteScope.create(doc);                
+        await RouteScope.create(doc);
       }
 
       if (!PermissionConfigTable.hasOwnProperty(request.payload.method)) {
-        PermissionConfigTable[request.payload.method] = {};        
+        PermissionConfigTable[request.payload.method] = {};
       }
 
       PermissionConfigTable[request.payload.method][request.payload.path] = scopesArray;
       //console.log("scopesArray", scopesArray)
-      //Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
+      Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
 
 
       /*const injectOptions = {
@@ -62,13 +61,13 @@ const register = function (server, options) {
         url: '/api/users/scopeCheck',
         payload: {
           method: request.payload.method,
-          path: request.payload.path        
+          path: request.payload.path
         }
      }
       const res = await server.inject(injectOptions);
-      console.log("resr.result", res.payload); */ 
+      console.log("resr.result", res.payload); */
 
-      return true;      
+      return true;
     }
   });
 
@@ -81,11 +80,12 @@ const register = function (server, options) {
         //scope: PermissionConfigTable.POST['/api/users/scopeCheck'] || DefaultScopes
       }
     },
-    handler: async function (request, h){
-      console.log("hereeee")
+    handler: function (request, h){
+
+      console.log('hereeee');
       const route = server.table().find( (item) => {
 
-        return item.path === request.payload.path && item.method.toUpperCase() === request.payload.method;        
+        return item.path === request.payload.path && item.method.toUpperCase() === request.payload.method;
       });
 
       if (route) {
@@ -109,7 +109,7 @@ const register = function (server, options) {
         return 'Unable to Update Route\'s scope';
       }
 
-      return 'specified route: ' + request.payload.path + ' ' + request.payload.method + ' not found';      
+      return 'specified route: ' + request.payload.path + ' ' + request.payload.method + ' not found';
     }
   });
 };
@@ -118,7 +118,7 @@ module.exports = {
   name: 'routeScopes',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

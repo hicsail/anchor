@@ -11,8 +11,8 @@ const register  = function (server, options) {
         strategies: ['simple'],
         mode: 'try'
       }
-    },  
-    handler: async function (request, h) {
+    },
+    handler: function (request, h) {
 
       if (request.auth.isAuthenticated) {
         return h.redirect('/');
@@ -24,14 +24,14 @@ const register  = function (server, options) {
       });
     }
   });
-  
+
 };
 
 module.exports = {
   name: 'signup/index',
   dependencies: [
-    'hapi-anchor-model',   
-    'auth'   
-  ],  
+    'hapi-anchor-model',
+    'auth'
+  ],
   register
 };

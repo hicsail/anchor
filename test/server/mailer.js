@@ -10,7 +10,7 @@ lab.experiment('Mailer', () => {
 
   const Mailer_transport = Mailer.transport;
 
-  lab.afterEach(async () => {
+  lab.afterEach(() => {
 
     Mailer.transport = Mailer_transport;
   });

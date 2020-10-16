@@ -9,9 +9,6 @@ const Login = require('../../../server/api/login');
 const Mailer = require('../../../server/mailer');
 const Manifest = require('../../../manifest');
 const User = require('../../../server/models/user');
-const Session = require('../../../server/models/session');
-//const HapiAuthBasic = require('hapi-auth-basic');
-//const HapiAuthCookie = require('hapi-auth-cookie');
 const HapiAuthJWT = require('hapi-auth-jwt2');
 
 const lab = exports.lab = Lab.script();
@@ -31,8 +28,6 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  //plugins.push(HapiAuthBasic);  
-  //plugins.push(HapiAuthCookie);
   plugins.push(HapiAuthJWT);
   plugins.push(Auth);
   plugins.push(Login);
@@ -44,8 +39,8 @@ lab.before(async () => {
   await User.create('ren', 'baddog', 'ren@stimpy.show', 'ren');
 });
 
-lab.after(async () => {const HapiAuthBasic = require('hapi-auth-basic');
 
+lab.after(async () => {
 
   await Fixtures.Db.removeAllData();
   await server.stop();
@@ -57,7 +52,7 @@ lab.experiment('POST /api/login', () => {
   const User_findByCredentials = User.findByCredentials;
   let request;
 
-  lab.beforeEach(async () => {
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
@@ -69,7 +64,7 @@ lab.experiment('POST /api/login', () => {
     };
   });
 
-  lab.afterEach(async () => {
+  lab.afterEach(() => {
 
     AuthAttempt.abuseDetected = AuthAttempt_abuseDetected;
     User.findByCredentials = User_findByCredentials;
@@ -115,7 +110,7 @@ lab.experiment('POST /api/login/forgot', () => {
   const User_findOne = User.findOne;
   let request;
 
-  lab.beforeEach(async () => {
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
@@ -126,7 +121,7 @@ lab.experiment('POST /api/login/forgot', () => {
     };
   });
 
-  lab.afterEach(async () => {
+  lab.afterEach(() => {
 
     Mailer.sendEmail = Mailer_sendEmail;
     User.findOne = User_findOne;
@@ -176,7 +171,7 @@ lab.experiment('POST /api/login/reset', () => {
     });
   });
 
-  lab.beforeEach(async () => {
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
@@ -189,7 +184,7 @@ lab.experiment('POST /api/login/reset', () => {
     };
   });
 
-  lab.afterEach(async () => {
+  lab.afterEach(() => {
 
     Mailer.sendEmail = Mailer_sendEmail;
     User.findOne = User_findOne;

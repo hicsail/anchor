@@ -1,6 +1,5 @@
 'use strict';
 const internals = {};
-const Async = require('async');
 const Config = require('../../../config');
 const Feedback = require('../../models/feedback');
 const User = require('../../models/user');
@@ -13,10 +12,10 @@ const register = function (server, options) {
     path: '/feedback',
     options : {
       auth: {
-        strategies: ['session']        
+        strategies: ['session']
       }
-    },    
-    handler: async function (request, h) {
+    },
+    handler: function (request, h) {
 
       return h.view('feedback/index', {
         user: request.auth.credentials.user,
@@ -33,16 +32,16 @@ const register = function (server, options) {
     options : {
       auth: {
         strategies: ['session'],
-        scope: ['root','admin']        
+        scope: ['root','admin']
       }
-    },    
+    },
     handler: async function (request, h) {
 
       const feedback = await Feedback.findById(request.params.id);
 
       if (!feedback) {
 
-        throw Boom.notFound('Feedback not found.');      
+        throw Boom.notFound('Feedback not found.');
       }
 
       const user = await User.findById(feedback.userId);
@@ -52,19 +51,19 @@ const register = function (server, options) {
         projectName: Config.get('/projectName'),
         title: 'Feedback',
         baseUrl: Config.get('/baseUrl'),
-        feedback: feedback,
+        feedback,
         feedbackUser: user
-      });      
+      });
     }
   });
-  
+
 };
 
 module.exports = {
   name: 'feedbackList',
   dependencies: [
     'hapi-anchor-model',
-    'auth'       
+    'auth'
   ],
   register
 };

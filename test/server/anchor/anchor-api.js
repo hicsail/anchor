@@ -30,9 +30,9 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  //plugins.push(HapiAuthBasic);  
+  //plugins.push(HapiAuthBasic);
   //plugins.push(HapiAuthCookie);
-  //plugins.push(HapiAuthJWT);  
+  //plugins.push(HapiAuthJWT);
   plugins.push(Auth);
   //plugins.push(Permissions);
   plugins.push(AnchorApi);
@@ -57,16 +57,16 @@ lab.experiment('GET /api/{collectionName}', () => {
   let request;
 
   lab.beforeEach(() => {
-    
+
     request = {
       method: 'GET',
       url: '/api/users',
       credentials: authenticatedRoot,
       headers: {
-        authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id.toString(), authenticatedRoot.session.key)        
-      }      
+        authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id.toString(), authenticatedRoot.session.key)
+      }
     };
-    
+
     User.routes.getAll.disabled = false;
     User.routes.getAll.auth = true;
   });
@@ -104,7 +104,7 @@ lab.experiment('GET /api/{collectionName}', () => {
 
     delete request.headers;
     delete request.credentials;
-    
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(401);
@@ -143,7 +143,7 @@ lab.experiment('POST /api/{collectionName}', () => {
       url: '/api/tokens',
       payload: {
         tokenName: 'test token',
-        active: false        
+        active: false
       },
       credentials: authenticatedRoot,
       headers: {
@@ -197,7 +197,7 @@ lab.experiment('POST /api/{collectionName}', () => {
   lab.test('it returns HTTP 401 when auth is not provided and required', async () => {
 
     delete request.headers;
-    delete request.credentials; 
+    delete request.credentials;
 
     const response = await server.inject(request);
 

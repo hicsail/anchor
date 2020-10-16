@@ -8,10 +8,10 @@ const register = function (server, options) {
     path: '/account',
     options : {
       auth: {
-        strategies: ['session']        
+        strategies: ['session']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('account/index', {
         user: request.auth.credentials.user,
@@ -20,14 +20,14 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl')
       });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'account',
   dependencies: [
     'hapi-anchor-model',
-    'auth'    
+    'auth'
   ],
   register
 };

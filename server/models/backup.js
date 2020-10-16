@@ -1,5 +1,5 @@
 'use strict';
-const Assert = require('assert');
+//const Assert = require('assert');
 const Joi = require('joi');
 const AnchorModel = require('../anchor/anchor-model');
 const Hoek = require('hoek');
@@ -8,7 +8,7 @@ class Backup extends AnchorModel {
 
   static async create(backupId, zip, s3, time = (new Date())) {
 
-    //Assert.ok(backupId, 'Missing backupId argument.');    
+    //Assert.ok(backupId, 'Missing backupId argument.');
     //Assert.ok(zip, 'Missing zip argument.');
     //Assert.ok(s3, 'Missing s3 argument.');
 
@@ -20,8 +20,8 @@ class Backup extends AnchorModel {
     };
 
     const docs = await this.insertOne(document);
-    
-    return docs[0];   
+
+    return docs[0];
   }
 }
 
@@ -37,7 +37,7 @@ Backup.schema = Joi.object({
   time: Joi.date().required()
 });
 
-Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {  
+Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     disabled: true
   },
@@ -46,7 +46,7 @@ Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   delete: {
     disabled: true
-  }   
+  }
 });
 
 Backup.indexes = [

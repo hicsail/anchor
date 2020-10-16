@@ -19,20 +19,20 @@ class AuthAttempt extends AnchorModel {
 
     const document = new this({
       browser,
-      ip: ip,
+      ip,
       os: agentInfo.os.toString(),
-      username: username
-    }); 
+      username
+    });
 
     const authAttempts = await this.insertOne(document);
 
-    return authAttempts[0];    
+    return authAttempts[0];
   }
 
   static async abuseDetected(ip, username) {
 
     Assert.ok(ip, 'Missing ip argument.');
-    Assert.ok(username, 'Missing username argument.');    
+    Assert.ok(username, 'Missing username argument.');
 
     const [countByIp, countByIpAndUser] = await Promise.all([
       this.count({ ip }),
@@ -43,8 +43,8 @@ class AuthAttempt extends AnchorModel {
     const ipLimitReached = countByIp >= config.forIp;
     const ipUserLimitReached = countByIpAndUser >= config.forIpAndUser;
 
-    return ipLimitReached || ipUserLimitReached;    
-  }  
+    return ipLimitReached || ipUserLimitReached;
+  }
 }
 
 
@@ -59,13 +59,13 @@ AuthAttempt.schema = Joi.object({
   createdAt: Joi.date().default(new Date(), 'time of creation')
 });
 
-AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {  
+AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     disabled: true
   },
   update: {
     disabled: true
-  }  
+  }
 });
 
 AuthAttempt.lookups = [];

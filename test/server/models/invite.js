@@ -24,12 +24,12 @@ lab.experiment('Invite Model', () => {
   });
 
   lab.test('it returns a new instance when create succeeds', async () => {
-    
-      const email = 'test@gmail.com';
-      const name = 'Test Test';     
-      const userId =  'John';
-      const description = 'This is a test invitation';
-    
+
+    const email = 'test@gmail.com';
+    const name = 'Test Test';
+    const userId =  'John';
+    const description = 'This is a test invitation';
+
 
     const invite = await Invite.create(name, email, description, userId);
 

@@ -4,14 +4,12 @@ const Crypto = require('../crypto');
 const Joi = require('joi');
 const AnchorModel = require('../anchor/anchor-model');
 const UserAgent = require('useragent');
-const Hoek = require('hoek');
 //const Uuid = require('uuid');
-
 
 class Session extends AnchorModel {
 
   static async create(userId, ip, userAgent) {
-    
+
     Assert.ok(userId, 'Missing userId argument.');
     Assert.ok(ip, 'Missing ip argument.');
     Assert.ok(userAgent, 'Missing userAgent argument.');
@@ -30,11 +28,11 @@ class Session extends AnchorModel {
       os: agentInfo.os.toString()
     };
 
-    const sessions = await this.insertOne(document);    
+    const sessions = await this.insertOne(document);
 
     sessions[0].key = keyHash.key;
 
-    return sessions[0];    
+    return sessions[0];
   }
 
   static async findByCredentials(id, key) {
@@ -52,7 +50,7 @@ class Session extends AnchorModel {
 
     if (keyMatch) {
       return session;
-    }    
+    }
   }
 
   async updateLastActive() {
@@ -87,8 +85,8 @@ Session.lookups = [{
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: true               
-}]; 
+  one: true
+}];
 
 Session.indexes = [
   { key: { userId: 1, application: 1 } }

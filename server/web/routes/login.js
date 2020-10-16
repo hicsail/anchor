@@ -2,7 +2,7 @@
 const Config = require('../../../config');
 const Session = require('../../models/session');
 
-const register  = function (server, options) {  
+const register  = function (server, options) {
 
   server.route({
     method: 'GET',
@@ -11,10 +11,11 @@ const register  = function (server, options) {
       auth: {
         strategies: ['session'],
         mode: 'try'
-      }     
+      }
     },
-    handler: async function (request, h) {      
-      if (request.auth.isAuthenticated) {        
+    handler: function (request, h) {
+
+      if (request.auth.isAuthenticated) {
         /*if (request.query.returnUrl) {
           return h.redirect(request.query.returnUrl);
         }*/
@@ -35,8 +36,8 @@ const register  = function (server, options) {
       auth: {
         strategies: ['simple'],
         mode: 'try'
-      }     
-    },    
+      }
+    },
     handler: async function (request, h) {
 
       const credentials = request.auth.credentials || { session: {} };
@@ -45,12 +46,12 @@ const register  = function (server, options) {
       try {
         await Session.findByIdAndDelete(session._id);
       }
-      catch(err) {
+      catch (err) {
         return err;
       }
       request.cookieAuth.clear();
 
-      return h.redirect('/');      
+      return h.redirect('/');
     }
   });
 
@@ -61,9 +62,9 @@ const register  = function (server, options) {
       auth: {
         strategies: ['simple'],
         mode: 'try'
-      }     
-    },    
-    handler: async function (request, h) {
+      }
+    },
+    handler: function (request, h) {
 
       if (request.auth.isAuthenticated) {
         return h.redirect('/');
@@ -80,9 +81,9 @@ const register  = function (server, options) {
       auth: {
         strategies: ['simple'],
         mode: 'try'
-      }     
+      }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       if (request.auth.isAuthenticated) {
         return h.redirect('/');
@@ -90,12 +91,12 @@ const register  = function (server, options) {
       return h.view('login/reset');
 
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'login/index',
-  dependencies: [    
+  dependencies: [
     'auth',
     'hapi-anchor-model'
   ],
