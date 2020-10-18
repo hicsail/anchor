@@ -145,30 +145,50 @@ const register = function (server, serverOptions) {
       }
       else {
         if (outputData.length !== 0 ) {
-          for (let key of Object.keys(outputData[0])) {
-            if (key === 'user'){//checks for a user model.
-              for (let userKey of Object.keys(outputData[0][key])){
-                if (userKey === 'createdAt'){
-                  outputCols.push({'label': 'userCreatedAt', 'invisible': true, from: 'user'})
-                }
-                else if (userKey !== '_id'){
-                  outputCols.push({'label': userKey, 'invisible': true, from: 'user'});
-                }
+          //create the column headers for the database
+          let modelsName = new Set(); //all the model names joined to this one
+          model.lookups.forEach((model) => {//find all the secondary model joined.
+
+            modelsName.add(model.as);
+          });
+          Object.keys(outputData[0]).forEach((key) => {//get column header from the primary model.
+
+            if (!(modelsName.has(key))){//makes sure to not include secondary joins yet
+              outputCols.push({label: key});
+            }
+          });
+          model.lookups.forEach((model) => {//for each model save the label, set invisible and assign where it came from
+
+            recursiveFindJoiKeys(model.from.schema).forEach((key) => {
+
+              if (!(key in outputData[0])) {//checks that the key is not already a header.
+                outputCols.push({label: key, invisible: true, from: model.as});
               }
-            }
-            else{
-              outputCols.push({'label': key});
-            }
-          }
+            });
+          });
+
+          //process data coming from outputData based on the column headers given above.
           let processedData = [];
           outputData.forEach((tokenData) => {
+
             let doc = {};
             outputCols.forEach((keyObject) => {
-              if ('from' in keyObject) {
-                doc[keyObject.label] = tokenData[keyObject.from][keyObject.label];
+
+              if ('from' in keyObject){
+                if (keyObject.label in tokenData[keyObject.from]){
+                  doc[keyObject.label] = tokenData[keyObject.from][keyObject.label];
+                }
+                else{
+                  doc[keyObject.label] = 'N/A';
+                }
               }
-              else {
-                doc[keyObject.label] = tokenData[keyObject.label];
+              else{
+                if (tokenData[keyObject.label] === null){
+                  doc[keyObject.label] = 'N/A'
+                }
+                else{
+                  doc[keyObject.label] = tokenData[keyObject.label];
+                }
               }
             });
             processedData.push(doc);
