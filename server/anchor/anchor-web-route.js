@@ -3,6 +3,7 @@ const Boom = require('boom');
 const Config = require('../../config');
 const IsAllowed = require('../helper/isAllowed');
 const Joi = require('joi');
+const getRoleNames = require('../helper/getRoleNames');
 
 const register = function (server, serverOptions) {
 
@@ -54,9 +55,37 @@ const register = function (server, serverOptions) {
           const model = request.pre.model;
           const outputDataFields = model.routes.tableView.outputDataFields;
           let validationSchema = model.routes.tableView.validationSchema;
+          //
+          const keys = new Set(recursiveFindJoiKeys(model.schema));
+          const fromKeys = new Set();
+          for (let lookup of model.lookups) {
+            const nestedKeys = (recursiveFindJoiKeys(lookup.from.schema));
+            nestedKeys.forEach(key => keys.add(key))
+            fromKeys.add(lookup.as);
+          }
 
           if (outputDataFields !== null) {
-            for (let field in outputDataFields) {
+              for (const [field, value] of Object.entries(outputDataFields)) {
+
+              if (!keys.has(field)) {
+                throw Boom.badRequest('Key ' + field + ' is not valid');
+              }
+
+                console.log(value.from);
+              if (value.from != null && !fromKeys.has(value.from)) {
+                throw Boom.badRequest('The from value ' + field['from'] + ' is not valid');
+              }
+
+              //validate accessroles exist in the roles object
+              const roleNames = new Set(getRoleNames);
+              if (value.accessRoles != null) {
+                for (let role of value['accessRoles']) {
+                  console.log(role);
+                  if (!roleNames.has(role)) {
+                    throw Boom.badRequest('listed role "' + role + '" does not exist');
+                  }
+                }
+              }
 
               let obj = validationSchema.validate(outputDataFields[field]);
               if (obj.error) {

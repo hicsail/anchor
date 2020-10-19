@@ -1,7 +1,7 @@
 'use strict';
 const Config = require('./config');
 const Joi = require('joi');
-const MongoModels = require('./server/anchor/hapi-anchor-model');
+const AnchorModels = require('./server/anchor/anchor-model');
 const Mongodb = require('mongodb');
 const Promptly = require('promptly');
 const User = require('./server/models/user');
@@ -19,12 +19,14 @@ async function main() {
 
   const rootEmail = await Promptly.prompt('Root user email:');
 
-  const  rootPassword = await Promptly.password('Root user password:');
+  const rootPassword = await Promptly.password('Root user password:');
   const complexityOptions = Config.get('/passwordComplexity');
-  const rootPasswordCheck = Joi.validate(results.rootPassword, new PasswordComplexity(complexityOptions));
+  const rootPasswordCheck = Joi.validate(rootPassword, new PasswordComplexity(complexityOptions));
 
 
-  const connect = await MongoModels.connect(mongodbUri, {});
+  console.log(mongodbUri);
+  const connection = {'uri': mongodbUri, 'db': 'anchor'};
+  const connect = await AnchorModels.connect(connection, {});
   const rootUser = await User.findOne({ username: 'root' });
 
   if (rootUser) {
@@ -32,19 +34,19 @@ async function main() {
     return process.exit(1);
   }
 
-  const userEmail = await User.findOne({ email: results.rootEmail });
+  const userEmail = await User.findOne({ email: rootEmail });
   // replaces emailCheck
   if (userEmail != null) {
     console.err(Error('Email is in use'));
   }
-  const passwordHash = await User.generatePasswordHash(results.rootPassword);
+  const passwordHash = await User.generatePasswordHash(rootPassword);
   const document = {
     _id: User.ObjectId('000000000000000000000000'),
     isActive: true,
     username: 'root',
     name: 'Root',
-    password: passResults.passwordHash.hash,
-    email: results.rootEmail.toLowerCase(),
+    password: passwordHash.hash,
+    email: rootEmail.toLowerCase(),
     roles: {
       root: true
     },
@@ -65,3 +67,4 @@ async function main() {
    *  process.exit(0);
    */
 }
+main()
