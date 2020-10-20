@@ -9,6 +9,9 @@ const Manifest = require('../../../manifest');
 const Session = require('../../../server/models/session');
 const User = require('../../../server/models/user');
 const Token = require('../../../server/models/token');
+const HapiAuthBasic = require('hapi-auth-basic');
+const HapiAuthCookie = require('hapi-auth-cookie');
+const HapiAuthJWT = require('hapi-auth-jwt2');
 
 const lab = exports.lab = Lab.script();
 let server;
@@ -30,11 +33,10 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  //plugins.push(HapiAuthBasic);
-  //plugins.push(HapiAuthCookie);
-  //plugins.push(HapiAuthJWT);
+  plugins.push(HapiAuthBasic);
+  plugins.push(HapiAuthCookie);
+  plugins.push(HapiAuthJWT);
   plugins.push(Auth);
-  //plugins.push(Permissions);
   plugins.push(AnchorApi);
 
   await server.register(plugins);

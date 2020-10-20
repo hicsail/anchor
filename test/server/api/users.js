@@ -74,8 +74,8 @@ lab.experiment('POST /api/users', () => {
     request.payload = {
       name: 'Unoriginal Bill',
       email: 'bill@hotmail.gov',
-      username: 'ren',
-      password: 'Pass123'
+      username: 'asadeg02',
+      password: 'Pass1234'
     };
 
     const response = await server.inject(request);
@@ -88,9 +88,9 @@ lab.experiment('POST /api/users', () => {
 
     request.payload = {
       name: 'user',
-      email: 'ren@stimpy.show',
+      email: 'asade02@test.com',
       username: 'newren',
-      password: 'Pass123'
+      password: 'Pass1234'
     };
 
     const response = await server.inject(request);
@@ -150,12 +150,12 @@ lab.experiment('PUT /api/users/{id}', () => {
 
   lab.test('it returns HTTP 409 when the username is already in use', async () => {
 
-    request.url = '/api/users/555555555555555555555555';
+    request.url = '/api/users/' + authenticatedAdmin.user._id.toString();
 
     request.payload = {
       name: 'Arezoo',
       email: 'test@test.com',
-      username: 'ren'
+      username: 'root'
     };
 
     const response = await server.inject(request);
@@ -166,11 +166,11 @@ lab.experiment('PUT /api/users/{id}', () => {
 
   lab.test('it returns HTTP 409 when email is already in use', async () => {
 
-    request.url = '/api/users/555555555555555555555555';
+    request.url = '/api/users/' + authenticatedAdmin.user._id.toString();
 
     request.payload = {
       name: 'Arezoo',
-      email: 'ren@stimpy.show',
+      email: 'email@email.com',
       username: 'Arezoo'
     };
 
