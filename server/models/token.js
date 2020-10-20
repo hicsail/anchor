@@ -84,6 +84,12 @@ Token.lookups = [{
   one: true               
 }]; 
 
+Token.constraints = [{
+  foreignKey: 'userId',
+  parentTable: require('./user'),
+  onDelete: 'CASCADE'
+}]
+
 
 Token.indexes = [
   { key: { tokenId: 1 } },

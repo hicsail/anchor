@@ -340,6 +340,24 @@ const register = function (server,serverOptions) {
 
           return model;
         }
+      },{
+        assign: 'constraints',
+        method: function (request,h) {
+
+          const collections = server.plugins['hapi-anchor-model'].models; 
+          const colWithRefs = [];       
+          for (let [collectionName, col] of Object.entries(collections)) {
+            if (col['constraints']) {
+              for (let constraint of col['constraints']) {
+                if (constraint['parentTable']['collectionName'] === request.params.collectionName) {
+                  colWithRefs.push({'onDelete': constraint['onDelete'], 'foreignKey': constraint['foreignKey'], 'childTable': col});
+                }                
+              }
+            }
+          }
+          console.log(colWithRefs);
+          return colWithRefs;
+        }
       }, {
         assign: 'enabled',
         method: function (request,h) {

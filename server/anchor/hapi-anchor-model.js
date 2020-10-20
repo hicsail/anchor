@@ -33,7 +33,7 @@ const register = async function (server, options) {
     }
     return accumulator;
   },[[],{},[],[]]);
-  //console.log(collectionModels)
+  console.log(collectionModels)
   server.expose('models',collectionModels);
   server.expose('anchorModel', AnchorModel);
   server.expose('modelsArray', anchorModels);

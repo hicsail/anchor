@@ -153,7 +153,9 @@ class AnchorModel {
    * @async
    * @static
    * @param {object} filter - a filter object used to select the document to delete.
-   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.deleteOne]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne} method.
+   * @param {object} [options] - an optional object passed to MongoDB's native [Collection.deleteOne
+
+   ]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne} method.
    * @returns {Promise}
    */
   static deleteOne() {
@@ -1032,11 +1034,20 @@ AnchorModel.routes = {
     payload: null,
     handler: async (request,h) => {
 
+      const colWithRef = request.pre.constraints;
       const model = request.pre.model;
       const id = request.params.id;
-      const check = await model.findByIdAndDelete(id);
+      const check = await model.findByIdAndDelete(id);      
       if (!check) {
         throw Boom.notFound('Model with id not found');
+      }
+      for (let obj of colWithRef) {
+        if (obj['onDelete'] === 'CASCADE') {
+          const field = obj['foreignKey'];
+          const childTable = obj['childTable'];
+          const childDocs = await childTable.find({field: id})
+          console.log(childDocs);
+        }
       }
       return check;
     },
