@@ -18,8 +18,20 @@
   </div>
 </div>
 <script>
-var schema;
-$.ajax({
+//var schema;
+/*const schema = Joi.object({
+  tokenName: Joi.array().items(Joi.string()),
+});*/
+/*const schema = extra.Enjoi.schema({
+    type: 'object',
+    properties: {
+        TokenName: {            
+            type: 'string'
+        }       
+    },
+    'required': ['tokenName']
+});*/
+/*$.ajax({
   url: '/api/createSchema/tokens',
   type: 'GET',
   success: function (result){
@@ -33,9 +45,9 @@ $.ajax({
   error: function (result){    
     errorAlert(result.responseJSON.message);
   }
-})
+})*/
 //console.log(schema)
-//joiToForm('formFields',schema);
+joiToForm('formFields',schema);
 $('#create').click((event) => {
   event.preventDefault();
   const values = {};
