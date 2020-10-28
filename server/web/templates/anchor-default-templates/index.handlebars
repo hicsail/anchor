@@ -5,7 +5,7 @@
       <div style="padding: 30px">
         <h3>{{title}}</h3>
         {{#role user 'researcher'}}
-          <a class="btn btn-primary" href="/tokens/create">Create</a>
+          <a class="btn btn-primary" href="/create/{{collectionName}}">Create</a>
         {{/role}}
         <hr>
         <div class="card">
@@ -15,7 +15,7 @@
                 <tr>
                   {{#each columns as |col|}}
                     <th {{#if col.invisible}} class='detail'{{/if}}>{{col.label}}</th>
-                  {{/each}}                
+                  {{/each}}
                   {{#role user 'admin'}}
                     <th class='detail'>Edit</th>
                     <th class='detail'>Delete</th>
@@ -59,7 +59,7 @@
       dom: 'Bfrtip',
       buttons: [
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
-      ]     
+      ]
     });
     table.columns( '.detail' ).visible( false );
   });

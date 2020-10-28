@@ -207,6 +207,7 @@ const register = function (server, serverOptions) {
         projectName: Config.get('/projectName'),
         baseUrl: Config.get('/baseUrl'),
         title:  capitalizeFirstLetter(request.params.collectionName),
+        collectionName: request.params.collectionName,
         columns: outputCols,
         data: outputData
       });
