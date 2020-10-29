@@ -1,10 +1,13 @@
 'use strict';
-const _ = require('lodash');
 
-const concat = function (string1, string2) {  
+module.exports = (...args) => {
 
-  return string1 + "_" + string2;
+  let string = '' + args[0];
+  args.forEach((item, index) => {
+
+    if (index > 0 && index < args.length - 1) {//ignores the last item in the parameter which contains the function info for some reason.
+      string += '_' + item;
+    }
+  });
+  return string;
 };
-
-module.exports = concat;
-

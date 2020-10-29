@@ -11,7 +11,7 @@ class Token extends AnchorModel {
   static async create(doc) {
 
     Assert.ok(doc.tokenName, 'Missing tokenName arugment.');
-    Assert.ok(doc.userId, 'Missing userId arugment.');    
+    Assert.ok(doc.userId, 'Missing userId arugment.');
 
     const id = AnchorModel.ObjectID().toString();
 
@@ -24,10 +24,10 @@ class Token extends AnchorModel {
       active: true,
       lastUsed: null
     };
-   
-    const tokens = await this.insertOne(document);    
 
-    return tokens[0];   
+    const tokens = await this.insertOne(document);
+
+    return tokens[0];
   }
 }
 
@@ -44,18 +44,18 @@ Token.schema = Joi.object({
   lastUsed: Joi.date().required()
 });
 
-Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {   
+Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: {      
+    payload: {
       tokenName: Joi.string().required(),
-      active: Joi.boolean().default(true)   
-    } 
+      active: Joi.boolean().default(true)
+    }
   },
   update: {
-    payload: {      
+    payload: {
       tokenName: Joi.string().required(),
-      active: Joi.boolean().default(true)   
-    }    
+      active: Joi.boolean().default(true)
+    }
   },
   tableView: {
     outputDataFields: {
@@ -81,7 +81,7 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
         } 
       }
     } 
-  }   
+  }
 });
 
 Token.lookups = [{
@@ -89,8 +89,8 @@ Token.lookups = [{
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: true               
-}]; 
+  one: true
+}];
 
 
 Token.indexes = [
