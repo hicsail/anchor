@@ -1,52 +1,3 @@
-const json = {
-    type: 'object',
-    properties: {
-        firstName: {          
-            type: 'string',
-            properties: {
-            	required: true,
-            	//lowercase:true,
-            	min: 5,
-            	max:10,
-            	//description: 'First name.',	
-            }
-        },
-        email: {          
-            type: 'string',
-            properties: {
-            	required: true,
-            	lowercase:true,
-            	email:true	
-            }
-        },
-        username: {          
-            type: 'string',
-            properties: {
-            	required: true,
-            	lowercase:true,
-            	token:true	
-            }
-        },
-        counts: {
-        	type: 'number',
-        	properties: {
-        		greater: 10,
-        		less: 20,
-        		multiple: 3
-        	}
-        },
-        date: {
-        	type: 'date'
-        	/*properties: {
-        		greater: 10     		
-        	}*/	
-        },
-        arezoo: {
-        	type: 'boolean'
-        }
-    }    
-}
-
 const stringConverter= function(props, result) {
 	if (props.length === 0){		
 		return result;	
@@ -174,5 +125,3 @@ const convert = function(jsonSchema) {
 		return (booleanConverter(properties, Joi.boolean()));
 	}
 }
-
-let schema = convert(json);

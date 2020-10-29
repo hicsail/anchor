@@ -18,35 +18,7 @@
   </div>
 </div>
 <script>
-//var schema;
-/*const schema = Joi.object({
-  tokenName: Joi.array().items(Joi.string()),
-});*/
-/*const schema = extra.Enjoi.schema({
-    type: 'object',
-    properties: {
-        TokenName: {            
-            type: 'string'
-        }       
-    },
-    'required': ['tokenName']
-});*/
-/*$.ajax({
-  url: '/api/createSchema/tokens',
-  type: 'GET',
-  success: function (result){
-    schema = result.schema;
-    console.log(builder.builder)
-    console.log(builder.builder.build(schema));
-    console.log(schema)
-    joiToForm('formFields', builder.builder.build(schema)); 
-    console.log("Tamam")   
-  },
-  error: function (result){    
-    errorAlert(result.responseJSON.message);
-  }
-})*/
-//console.log(schema)
+let schema = convert({{{json createSchema}}});
 joiToForm('formFields',schema);
 $('#create').click((event) => {
   event.preventDefault();

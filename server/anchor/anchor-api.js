@@ -242,36 +242,7 @@ const register = function (server,serverOptions) {
 
       return await request.pre.model.routes.getId.handler(request,h);
     }
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/api/createSchema/{collectionName}',
-    options: {
-      auth: {
-        strategies: ['simple','session','jwt'],
-        mode: 'try'
-      },
-      pre: [{
-        assign: 'model',
-        method: function (request,h) {
-
-          const model = server.plugins['hapi-anchor-model'].models[request.params.collectionName];
-          if (!model) {
-            return Boom.notFound('Model not found');
-          }
-          return model;
-        }       
-      }]
-    },
-    handler: async function (request,h) {  
-      console.log(typeof require( 'joi-json' ).builder())     
-      return {
-        'builder': require( 'joi-json' ).builder(),
-        'schema': request.pre.model.routes.createView.createSchema
-      };
-    }
-  });
+  }); 
 
   server.route({
     method: 'GET',

@@ -71,8 +71,16 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   createView: {
     createSchema: { 
-      tokenName: 'string:required'
-    }
+      type: 'object',
+      properties: {
+        tokenName: {          
+          type: 'string',
+          properties: {
+            required: true 
+          }             
+        } 
+      }
+    } 
   }   
 });
 
