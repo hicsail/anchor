@@ -28,10 +28,10 @@ $('#create').click((event) => {
   });
   $.ajax({
     type: 'POST',
-    url: '/api/tokens',
+    url: '/api/{{collectionName}}',
     data: values,
     success: function (result) {
-      window.location = '/tokens'
+      window.location = '/{{collectionName}}'
     },
     error: function (result) {
       errorAlert(result.responseJSON.message);
