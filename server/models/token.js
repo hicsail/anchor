@@ -61,12 +61,12 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     outputDataFields: {
       username: {label: 'Username', from: 'user'},
       name: {label: 'name', from: 'user'},
-      tokenName: {label: 'Token Name'},
+      tokenName: {label: 'Token Name', accessRoles: ['root']},
       active: {label: 'Active'},
       lastUsed: {label: 'Last Used'},
       time: {label: 'Time'},
       token: {label: 'Token', invisible: true},
-      _id: {label: 'ID', invisible: true}
+      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
     }
   },
   createView: {
