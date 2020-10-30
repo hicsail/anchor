@@ -6,7 +6,7 @@
         <h3>{{title}}</h3>
         {{#role user 'researcher'}}
           <a class="btn btn-primary" href="/create/{{collectionName}}">Create</a>
-        {{/role}}                 
+        {{/role}}
         <hr>
         <div class="card">
           <div style="padding: 20px">
@@ -29,11 +29,11 @@
                         <td>{{this}}</td>
                       {{/each}}
                       <td>
-                        <button class="btn btn-secondary" id="{{concat 'edit' record._id}}" onclick="editDoc({{record._id}})">Edit
+                        <button class="btn btn-secondary" id="{{concat 'edit' record._id}}" onclick="editDoc({{json record._id}}, '{{../collectionName}}')">Edit
                         </button>
                       </td>
                       <td>
-                        <button class="btn btn-danger" id="{{concat 'delete' record._id}}" onclick="deleteDoc({{record._id}})">Delete
+                        <button class="btn btn-danger" id="{{concat 'delete' record._id}}" onclick="deleteDoc({{json record._id}}, '{{../collectionName}}')">Delete
                         </button>
                       </td>
                     </tr>
@@ -47,7 +47,7 @@
   </div>
 </div>
 <script>
-  var table;
+  let table;
   $(document).ready(function () {
     table = $('#table').DataTable({
       processing: true,
@@ -64,4 +64,4 @@
     table.columns( '.detail' ).visible( false );
   });
 </script>
-<script type="text/javascript" src="/public/scripts/tokens/index.js"></script>
+<script type="text/javascript" src="/public/scripts/anchor-default-script.js"></script>
