@@ -6,7 +6,7 @@ const Joi = require('joi');
 
 const register = function (server, serverOptions) {
 
-  server.route({ 
+  server.route({
     method: 'GET',
     path: '/{collectionName}',
     options: {
@@ -57,13 +57,13 @@ const register = function (server, serverOptions) {
           //console.log(Object.keys(server.plugins['hapi-anchor-model'].models[request.params.collectionName]))
 
           if (outputDataFields !== null) {
-            for (let field in outputDataFields) {                        
-              
-              let obj = validationSchema.validate(outputDataFields[field]);              
+            for (let field in outputDataFields) {
+
+              let obj = validationSchema.validate(outputDataFields[field]);
               if (obj.error) {
                 console.log(obj.error.details[0].message);
                 throw Boom.badRequest('outputDataFields violates the validation schema, ' + obj.error.details[0].message);
-              }             
+              }
             }
           }
           return h.continue;
@@ -81,7 +81,7 @@ const register = function (server, serverOptions) {
       }
     ]},
     handler: async function (request, h) {
-           
+
       const model = request.pre.model;
       let apiDataSource = model.routes.tableView.apiDataSourcePath;
 
@@ -92,16 +92,16 @@ const register = function (server, serverOptions) {
       const req = {
         method: 'GET',
         url: apiDataSource,
-        credentials: request.auth.credentials       
-      };  
+        credentials: request.auth.credentials
+      };
 
       const res = await server.inject(req);
 
       let outputCols = [];
       let outputData = res.result.data;
 
-      if (model.routes.tableView.outputDataFields !== null) {        
-        
+      if (model.routes.tableView.outputDataFields !== null) {
+
         let processedData = [];
         const fields = model.routes.tableView.outputDataFields;
         let unAddedKeys = new Set();
@@ -137,13 +137,13 @@ const register = function (server, serverOptions) {
             }
             else {
               doc[key] = rec[key];
-            } 
+            }
           }
           processedData.push(doc);
         }
-        outputData = processedData;        
+        outputData = processedData;
       }
-      else {        
+      else {
         if (outputData.length !== 0 ) {
           //create the column headers for the database
           let modelsName = new Set(); //all the model names joined to this one
@@ -155,8 +155,8 @@ const register = function (server, serverOptions) {
           for (let key of Object.keys(outputData[0])) {
             if (!(modelsName.has(key))){//makes sure to not include secondary attached collection yet
               outputCols.push({label: key});
-            }            
-          } 
+            }
+          }
 
           model.lookups.forEach((lookup) => {//for each model save the label, set invisible and assign where it came from
 
@@ -194,21 +194,34 @@ const register = function (server, serverOptions) {
             });
             processedData.push(doc);
           });
-          outputData = processedData;                
+          outputData = processedData;
         }
-        else {          
+        else {
           for (let key of recursiveFindJoiKeys(model.schema)){
             outputCols.push({'label': key});
-          }  
-        }        
+          }
+        }
       }
-      console.log(outputCols)
+      outputData.map((dataRow) => {//render function to change default string version of specified types.
+
+        for (let key of Object.keys(dataRow)){
+          if (dataRow[key] instanceof Date && !isNaN(dataRow[key])){ //check for JS Date Object.
+            dataRow[key] = dataRow[key].toDateString() + ' ' + dataRow[key].toLocaleTimeString('en-us');//DOES NOT HAVE THE TIMEZONE...
+          }
+          else if (dataRow[key] instanceof Date){
+            console.log(dataRow[key], key);
+          }
+        }
+      });
+
+      console.log(outputData);
+
       return h.view('anchor-default-templates/index', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),               
+        projectName: Config.get('/projectName'),
         baseUrl: Config.get('/baseUrl'),
         title:  capitalizeFirstLetter(request.params.collectionName),
-        collectionName: request.params.collectionName, 
+        collectionName: request.params.collectionName,
         columns: outputCols,
         data: outputData
       });
@@ -281,8 +294,8 @@ const register = function (server, serverOptions) {
       }
     ]},
     handler: async function (request, h) {
-    
-      return h.view('dummy');      
+
+      return h.view('dummy');
     }
 
   });
@@ -342,15 +355,15 @@ const register = function (server, serverOptions) {
     ]},
     handler: async function (request, h) {
       const model = request.pre.model;
-      const schema = model.routes.createView.createSchema; 
+      const schema = model.routes.createView.createSchema;
 
       return h.view('anchor-default-templates/create', {
         user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),               
+        projectName: Config.get('/projectName'),
         baseUrl: Config.get('/baseUrl'),
         title: capitalizeFirstLetter(request.params.collectionName),
         collectionName: request.params.collectionName,
-        createSchema: schema         
+        createSchema: schema
       });
     }
   });

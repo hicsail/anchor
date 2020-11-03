@@ -26,7 +26,13 @@
                   {{#each data as |record|}}
                     <tr>
                       {{#each record}}
-                        <td>{{this}}</td>
+                        {{#if (isBoolean this)}}
+                          <td>
+                            <span class="badge badge-info">{{this}}</span>
+                          </td>
+                        {{else}}
+                          <td>{{this}}</td>
+                        {{/if}}
                       {{/each}}
                       <td>
                         <button class="btn btn-secondary" id="{{concat 'edit' record._id}}" onclick="editDoc({{json record._id}}, '{{../collectionName}}')">Edit
@@ -63,5 +69,29 @@
     });
     table.columns( '.detail' ).visible( false );
   });
+
+  function deleteDoc(id, collectionName) {
+    const button = $('#delete_' + id);
+    const text = button.text().trim();
+    if (text === 'Delete') {
+      button.text('Are You Sure?');
+    }
+    else {
+      $.ajax({
+        url: '/api/'+collectionName+'/' + id,
+        type: 'DELETE',
+        success: function (result) {
+          successAlert('Token Deleted');
+          table.ajax.reload();
+        },
+        error: function (result) {
+          errorAlert(result.responseJSON.message);
+        }
+      });
+    }
+  }
+
+  function editDoc(id, collectionName) {
+    window.location = '/'+collectionName+'/' + id
+  }
 </script>
-<script type="text/javascript" src="/public/scripts/anchor-default-script.js"></script>
