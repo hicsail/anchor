@@ -69,18 +69,10 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
     }
   },
-  createView: {
-    createSchema: { 
-      type: 'object',
-      properties: {
-        tokenName: {          
-          type: 'string',
-          properties: {
-            required: true 
-          }             
-        } 
-      }
-    } 
+  createView: {    
+    createSchema: Joi.object({
+      tokenName: Joi.string().required()      
+    })
   }
 });
 
