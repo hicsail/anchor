@@ -2,6 +2,7 @@
 const Boom = require('boom');
 const Config = require('../../config');
 const IsAllowed = require('../helper/isAllowed');
+const joiToJson = require('../helper/joiToJson');
 const Joi = require('joi');
 
 const register = function (server, serverOptions) {
@@ -363,7 +364,7 @@ const register = function (server, serverOptions) {
     ]},
     handler: async function (request, h) {
       const model = request.pre.model;
-      const schema = model.routes.createView.createSchema;
+      const schema = joiToJson(model.routes.createView.createSchema);
 
       return h.view('anchor-default-templates/create', {
         user: request.auth.credentials.user,
