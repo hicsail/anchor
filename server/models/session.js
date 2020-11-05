@@ -11,7 +11,7 @@ const Hoek = require('hoek');
 class Session extends AnchorModel {
 
   static async create(userId, ip, userAgent) {
-    
+
     Assert.ok(userId, 'Missing userId argument.');
     Assert.ok(ip, 'Missing ip argument.');
     Assert.ok(userAgent, 'Missing userAgent argument.');
@@ -30,11 +30,11 @@ class Session extends AnchorModel {
       os: agentInfo.os.toString()
     };
 
-    const sessions = await this.insertOne(document);    
+    const sessions = await this.insertOne(document);
 
     sessions[0].key = keyHash.key;
 
-    return sessions[0];    
+    return sessions[0];
   }
 
   static async findByCredentials(id, key) {
@@ -52,7 +52,7 @@ class Session extends AnchorModel {
 
     if (keyMatch) {
       return session;
-    }    
+    }
   }
 
   async updateLastActive() {
@@ -82,13 +82,28 @@ Session.schema = Joi.object({
   os: Joi.string().required()
 });
 
+Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  tableView: {
+    outputDataFields: {
+      userId: {label: 'User ID'},
+      time: {label: 'Time'},
+      lastActive: {label: 'Last Active'},
+      ip: {label: 'IP'},
+      browser: {label: 'Browser'},
+      os: {label: 'OS'},
+      key: {label: 'Key', invisible: true},
+      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
+    }
+  }
+});
+
 Session.lookups = [{
   from: require('./user'),
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: false               
-}]; 
+  one: true
+}];
 
 Session.indexes = [
   { key: { userId: 1, application: 1 } }

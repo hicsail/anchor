@@ -108,18 +108,20 @@ const register = function (server, serverOptions) {
 
         for (let key in fields) {
 
-          let userRoles = request.auth.credentials.scope;
-          if (fields[key]['accessRoles'] && !IsAllowed(userRoles, fields[key]['accessRoles'])){//Blocks column option if user role is too low
-            unAddedKeys.add(key);
-            continue;
-          }
+          if (fields.hasOwnProperty(key)){
+            let userRoles = request.auth.credentials.scope;
+            if (fields[key]['accessRoles'] && !IsAllowed(userRoles, fields[key]['accessRoles'])){//Blocks column option if user role is too low
+              unAddedKeys.add(key);
+              continue;
+            }
 
-          const col = {'label': fields[key]['label']};
-          if (fields[key]['invisible']){
-            col['invisible'] = true;
-          }
+            const col = {'label': fields[key]['label']};
+            if (fields[key]['invisible']){
+              col['invisible'] = true;
+            }
 
-          outputCols.push(col);
+            outputCols.push(col);
+          }
         }
 
         //modify fields to remove sensitive keys where user permission is too low.
@@ -128,15 +130,26 @@ const register = function (server, serverOptions) {
             delete fields[key];
           }
         }
-
         for (let rec of outputData){
           let doc = {};
           for (let key in fields) {
-            if (fields[key]['from']) {
-              doc[key] = rec[fields[key]['from']][key];
-            }
-            else {
-              doc[key] = rec[key];
+            if (fields.hasOwnProperty(key)){
+              if ('from' in fields[key]){
+                if (fields[key]['from']) {
+                  doc[key] = rec[fields[key]['from']][key];
+                }
+                else{
+                  doc[key] = 'N/A';
+                }
+              }
+              else {
+                if (rec[key] === null){
+                  doc[key] = 'N/A';
+                }
+                else {
+                  doc[key] = rec[key];
+                }
+              }
             }
           }
           processedData.push(doc);
@@ -208,13 +221,8 @@ const register = function (server, serverOptions) {
           if (dataRow[key] instanceof Date && !isNaN(dataRow[key])){ //check for JS Date Object.
             dataRow[key] = dataRow[key].toDateString() + ' ' + dataRow[key].toLocaleTimeString('en-us');//DOES NOT HAVE THE TIMEZONE...
           }
-          else if (dataRow[key] instanceof Date){
-            console.log(dataRow[key], key);
-          }
         }
       });
-
-      console.log(outputData);
 
       return h.view('anchor-default-templates/index', {
         user: request.auth.credentials.user,

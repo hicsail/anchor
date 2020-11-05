@@ -3,6 +3,7 @@ const Assert = require('assert');
 const Joi = require('joi');
 const AnchorModel = require('../anchor/anchor-model');
 const DefaultRoles = require('../helper/getRoleNames');
+const Hoek = require('hoek');
 
 class RouteScope extends AnchorModel{
 
@@ -14,7 +15,7 @@ class RouteScope extends AnchorModel{
     };
 
     const result = await this.updateOne(condition, newScope);
-    return result;    
+    return result;
   }
 
   static async findByPathAndMethod(path, method) {
@@ -23,28 +24,28 @@ class RouteScope extends AnchorModel{
       path,
       method
     };
-    
+
     const route = await this.findOne(condition);
 
-    return route;    
+    return route;
   }
 
   static async create(doc) {
 
     Assert.ok(doc.path, 'Missing path arugment.');
     Assert.ok(doc.method, 'Missing method arugment.');
-    Assert.ok(doc.scope, 'Missing scope arugment.'); 
+    Assert.ok(doc.scope, 'Missing scope arugment.');
 
     const document = {
       path: doc.path,
       method: doc.method,
-      scope: doc.scope,      
-      createdAt: new Date()      
-    };    
-   
+      scope: doc.scope,
+      createdAt: new Date()
+    };
+
     const results = await this.insertOne(document);
 
-    return results[0];    
+    return results[0];
   }
 }
 
@@ -61,7 +62,13 @@ RouteScope.schema = Joi.object({
 RouteScope.payload = Joi.object({
   method: Joi.string().valid('PUT', 'POST', 'DELETE', 'GET').required(),
   path: Joi.string().required(),
-  scope: Joi.string().valid(...DefaultRoles).required()   
+  scope: Joi.string().valid(...DefaultRoles).required()
+});
+
+RouteScope.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  tableView: {
+    disabled: true
+  }
 });
 
 module.exports = RouteScope;

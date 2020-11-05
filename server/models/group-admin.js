@@ -1,6 +1,8 @@
 'use strict';
 const Joi = require('joi');
 const AnchorModel = require('../anchor/anchor-model');
+const Hoek = require('hoek');
+
 
 class GroupAdmin {
 
@@ -39,5 +41,10 @@ GroupAdmin.schema = Joi.object({
   userAccess: Joi.array().items(Joi.object()).required()
 });
 
+GroupAdmin.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  tableView: {
+    disabled: true
+  }
+});
 
 module.exports = GroupAdmin;

@@ -1107,7 +1107,7 @@ AnchorModel.routes = {
   }
 };
 
-AnchorModel.routeMap = {  
+AnchorModel.routeMap = {
   getAllTable: {
     method: 'GET',
     path: '/api/table/{collectionName}'

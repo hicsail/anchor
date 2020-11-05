@@ -22,7 +22,7 @@ class Feedback extends AnchorModel {
 
     const feedback =  await this.insertOne(document);
 
-    return feedback[0];    
+    return feedback[0];
   }
 }
 
@@ -44,10 +44,21 @@ Feedback.payload = Joi.object({
   description: Joi.string().required()
 });
 
-Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {   
+Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   update: {
     disabled: true
-  }   
+  },
+  tableView: {
+    outputDataFields: {
+      username: {label: 'Username', from: 'user'},
+      subject: {label: 'Subject'},
+      description: {label: 'Description'},
+      resolved: {label: 'Resolved'},
+      userId: {label: 'User ID'},
+      time: {label: 'Time'},
+      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
+    }
+  }
 });
 
 Feedback.lookups = [{
@@ -55,8 +66,8 @@ Feedback.lookups = [{
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: false               
-}];  
+  one: false
+}];
 
 Feedback.indexes = [
   { key: { name: 1 } },

@@ -60,7 +60,7 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   tableView: {
     outputDataFields: {
       username: {label: 'Username', from: 'user'},
-      name: {label: 'name', from: 'user'},
+      name: {label: 'Name', from: 'user'},
       tokenName: {label: 'Token Name', accessRoles: ['root']},
       active: {label: 'Active'},
       lastUsed: {label: 'Last Used'},
@@ -70,17 +70,17 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     }
   },
   createView: {
-    createSchema: { 
+    createSchema: {
       type: 'object',
       properties: {
-        tokenName: {          
+        tokenName: {
           type: 'string',
           properties: {
-            required: true 
-          }             
-        } 
+            required: true
+          }
+        }
       }
-    } 
+    }
   }
 });
 

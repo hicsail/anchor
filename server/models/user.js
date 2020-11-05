@@ -15,11 +15,11 @@ class User extends AnchorModel {
     const salt = await Crypto.genSalt(10);
     const hash = await Crypto.hash(password,salt);
 
-    return { password, hash };    
+    return { password, hash };
   }
 
   static async create(username, password, email, name) {
-    
+
     Assert.ok(username, 'Missing username arugment.');
     Assert.ok(password, 'Missing pasword arugment.');
     Assert.ok(email, 'Missing email arugment.');
@@ -27,7 +27,7 @@ class User extends AnchorModel {
 
     const self = this;
 
-    const passwordHash = await this.generatePasswordHash(password);    
+    const passwordHash = await this.generatePasswordHash(password);
     const document =  new this({
       isActive: true,
       inStudy: true,
@@ -37,14 +37,14 @@ class User extends AnchorModel {
       name,
       roles: {},
       studyID: null,
-      timeCreated: new Date()  
+      timeCreated: new Date()
     });
-    
+
     const users = await self.insertOne(document);
 
     users[0].password = passwordHash.password;
 
-    return users[0];    
+    return users[0];
   }
 
   static async findByCredentials(username, password) {
@@ -73,7 +73,7 @@ class User extends AnchorModel {
 
     if (passwordMatch) {
       return user;
-    }    
+    }
   }
 
   static async findByUsername(username) {
@@ -82,7 +82,7 @@ class User extends AnchorModel {
 
     const query = { username: username.toLowerCase() };
 
-    return this.findOne(query);    
+    return this.findOne(query);
   }
 
   static async findByEmail(email) {
@@ -95,22 +95,22 @@ class User extends AnchorModel {
   }
 
   static highestRole(roles) {
-    
+
     let maxAccessLevel = 0;
     let roleDict = {};
 
-    Config.get('/roles').forEach((roleObj) => { 
+    Config.get('/roles').forEach((roleObj) => {
 
         roleDict[roleObj['name']] = roleObj['accessLevel'];
-    });    
-    
+    });
+
     for (let role in roles) {
 
         if (roleDict[role] >= maxAccessLevel)
-          maxAccessLevel = roleDict[role];        
+          maxAccessLevel = roleDict[role];
     }
 
-    return maxAccessLevel;    
+    return maxAccessLevel;
   }
 
   constructor(attrs) {
@@ -173,6 +173,9 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   insertMany: {
     payload: User.payload
+  },
+  tableView: {
+    disabled: true
   }
 });
 

@@ -25,9 +25,9 @@ class Invite extends AnchorModel {
       expiredAt: new Date(new Date().getTime() + 1000 * 86400 * 7) //7 days
     };
 
-    const invites = await this.insertOne(document);   
+    const invites = await this.insertOne(document);
 
-    return invites[0];   
+    return invites[0];
   }
 }
 
@@ -50,7 +50,7 @@ Invite.payload = Joi.object({
 });
 
 
-Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {   
+Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     disabled: true
   },
@@ -59,17 +59,30 @@ Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       email: Joi.string().email().lowercase().required(),
       name: Joi.string().required(),
       description: Joi.string().optional()
-    }    
-  }       
+    }
+  },
+  tableView: {
+    outputDataFields: {
+      username: {label: 'Username', from: 'user'},
+      name: {label: 'Name'},
+      email: {label: 'Email'},
+      description: {label: 'Description'},
+      status: {label: 'Status'},
+      userId: {label: 'User ID'},
+      time: {label: 'Created At'},
+      expiredAt: {label: 'Expired At'},
+      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
+    }
+  }
 });
 
 Invite.lookups = [{
-  from: User,
+  from: require('./user'),
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: false               
-}];  
+  one: true
+}];
 
 
 Invite.indexes = [
