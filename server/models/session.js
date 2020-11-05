@@ -88,7 +88,7 @@ Session.lookups = [{
   foreign: '_id',
   as: 'user',
   one: false               
-}]; 
+}];
 
 Session.indexes = [
   { key: { userId: 1, application: 1 } }

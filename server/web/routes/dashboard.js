@@ -8,11 +8,11 @@ const register = function (server, options) {
     path: '/dashboard',
     options : {
       auth: {
-        strategies: ['session']        
+        strategies: ['session']                
       }
     },
     handler: async function (request, h) {     
-
+      console.log("hereee")
       return h.view('dashboard/index', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),

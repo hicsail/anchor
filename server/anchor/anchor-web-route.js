@@ -202,7 +202,7 @@ const register = function (server, serverOptions) {
 
   });
 
-  server.route({
+  /*server.route({
     method: 'GET',
     path: '/create/{collectionName}',
     options: {
@@ -258,7 +258,7 @@ const register = function (server, serverOptions) {
         createSchema: schema         
       });
     }
-  });
+  });*/
 };
 
 function recursiveFindJoiKeys(joi, prefix = '') {

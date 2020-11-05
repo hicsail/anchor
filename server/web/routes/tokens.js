@@ -24,7 +24,7 @@ const register = function (server, options) {
     }
   });*/
 
-  /*server.route({
+  server.route({
     method: 'GET',
     path: '/tokens/create',
     options: {
@@ -42,7 +42,7 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl')
       });
     }
-  });*/
+  });
 
   server.route({
     method: 'GET',

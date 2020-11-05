@@ -340,7 +340,7 @@ const register = function (server,serverOptions) {
 
           return model;
         }
-      },{
+      },/*{
         assign: 'constraints',
         method: function (request,h) {
 
@@ -358,7 +358,7 @@ const register = function (server,serverOptions) {
           console.log(colWithRefs);
           return colWithRefs;
         }
-      }, {
+      }, */{
         assign: 'enabled',
         method: function (request,h) {
 

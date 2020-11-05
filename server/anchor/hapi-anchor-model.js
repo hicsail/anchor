@@ -33,8 +33,26 @@ const register = async function (server, options) {
     }
     return accumulator;
   },[[],{},[],[]]);
-  console.log(collectionModels)
+  //console.log(collectionModels)
+  
+  //---------------------------CONSTRAINTS------------------------------
+  const foreignKeyMappings = {};       
+  for (let [collectionName, collection] of Object.entries(collectionModels)) {
+    if (collection['constraints']) {
+      for (let constraint of collection['constraints']) {        
+        let object = {'onDelete': constraint['onDelete'], 'foreignKey': constraint['foreignKey'], 'childTable': collection};
+        if (constraint['parentTable']['collectionName'] in foreignKeyMappings) {
+          foreignKeyMappings[constraint['parentTable']['collectionName']].push(object);
+        }
+        else {
+          foreignKeyMappings[constraint['parentTable']['collectionName']] = [object];
+        }                       
+      }
+    }
+  }
+  //---------------------------------------------------------------------------------
   server.expose('models',collectionModels);
+  server.expose('constraints', foreignKeyMappings);
   server.expose('anchorModel', AnchorModel);
   server.expose('modelsArray', anchorModels);
   server.expose('collectionNames', collectionNames);
@@ -69,6 +87,7 @@ const register = async function (server, options) {
   });
 
   await AnchorModel.connect(options.mongodb.connection, options.mongodb.options);
+  AnchorModel.constraints = foreignKeyMappings;
   server.log(['info', 'mongodb'], 'HapiAnchorModels: successfully connected to the db.');
 
 };

@@ -128,7 +128,7 @@ const register = function (server, options) {
         user,
         scope: Object.keys(user.roles)        
       };
-
+      console.log("roles", user.roles)
       return { credentials, valid: true };
 
       

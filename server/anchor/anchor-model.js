@@ -297,9 +297,25 @@ class AnchorModel {
     const id = args.shift();
     const filter = { _id: this._idClass(id) };
     const options = Hoek.applyToDefaults({}, args.pop() || {});
-    const result = await collection.findOneAndDelete(filter, options);
+    //const result = await collection.findOneAndDelete(filter, options);
 
-    return this.resultFactory(result);
+    const constraintMapping = this.constraints;
+    //console.log("inside delete", constraintMapping[this.collectionName]);
+
+    if (constraintMapping[this.collectionName]) {
+      for (let obj of constraintMapping[this.collectionName]) {
+        if (obj['onDelete'] === 'CASCADE') {
+          const field = obj['foreignKey'];
+          const childTable = obj['childTable'];
+          const findQuery = {};
+          findQuery[field] = id;          
+          const childDocs = await childTable.find(findQuery);
+          console.log("child docs", childDocs);
+        }
+      }
+    }
+    return "here"
+    //return this.resultFactory(result);
   }
 
   /**
@@ -951,7 +967,7 @@ AnchorModel.routes = {
         //sort: model.sortAdapter(request.query.sort)
       };
       const results =  await model.pagedLookup(query, page, limit, options, model.lookups);
-
+      console.log("Arezoo",model.constraints);
       return {
         draw: request.query.draw,
         recordsTotal: results.data.length,
@@ -1041,14 +1057,14 @@ AnchorModel.routes = {
       if (!check) {
         throw Boom.notFound('Model with id not found');
       }
-      for (let obj of colWithRef) {
+      /*for (let obj of colWithRef) {
         if (obj['onDelete'] === 'CASCADE') {
           const field = obj['foreignKey'];
           const childTable = obj['childTable'];
           const childDocs = await childTable.find({field: id})
           console.log(childDocs);
         }
-      }
+      }*/
       return check;
     },
     query: null

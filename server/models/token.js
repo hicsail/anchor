@@ -24,7 +24,7 @@ class Token extends AnchorModel {
       active: true,
       lastUsed: null
     };
-   
+    console.log(document['userId'])
     const tokens = await this.insertOne(document);    
 
     return tokens[0];   
