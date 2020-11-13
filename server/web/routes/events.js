@@ -4,27 +4,27 @@ const Event = require('../../models/event');
 
 const register = function (server, options) {
 
-  server.route({
-    method: 'GET',
-    path: '/events',
-    options: {
-      auth: {
-        strategies: ['session']
-      }
-    },
-    handler: async function (request, h) {
-      
-      const names = await Event.distinct('name');    
-
-      return h.view('events/index', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),
-        title: 'Events',
-        baseUrl: Config.get('/baseUrl'),
-        events: names
-      });      
-    }
-  });
+  // server.route({
+  //   method: 'GET',
+  //   path: '/events',
+  //   options: {
+  //     auth: {
+  //       strategies: ['session']
+  //     }
+  //   },
+  //   handler: async function (request, h) {
+  //
+  //     const names = await Event.distinct('name');
+  //
+  //     return h.view('events/index', {
+  //       user: request.auth.credentials.user,
+  //       projectName: Config.get('/projectName'),
+  //       title: 'Events',
+  //       baseUrl: Config.get('/baseUrl'),
+  //       events: names
+  //     });
+  //   }
+  // });
 
   server.route({
     method: 'GET',
@@ -41,7 +41,7 @@ const register = function (server, options) {
       const fields = Event.fieldsAdapter('time');
       const events = await Event.find({ name: request.params.name },fields);
 
-      events.sort((a, b) => {        
+      events.sort((a, b) => {
         return parseFloat(a.time.getTime()) - parseFloat(b.time.getTime());
       });
 
@@ -53,7 +53,7 @@ const register = function (server, options) {
         eventName: request.params.name,
         eventData: events,
         events: names
-      });      
+      });
     }
   });
 
@@ -72,7 +72,7 @@ const register = function (server, options) {
       const fields = Event.fieldsAdapter('name time');
       const events = await Event.find({ userId: request.params.userId },fields);
 
-      events.sort((a, b) => {        
+      events.sort((a, b) => {
         return parseFloat(a.time.getTime()) - parseFloat(b.time.getTime());
       });
 
@@ -83,15 +83,15 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl'),
         eventData: events,
         events: names
-      });     
+      });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'eventsList',
-  dependencies: [    
-    'auth'    
+  dependencies: [
+    'auth'
   ],
   register
 };
