@@ -1,0 +1,49 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>Edit {{title}}</h3>
+        <hr>
+        <div class="card">
+          <div style="padding: 20px">            
+            <form id="form">
+              <div id="formFields"></div>
+              <button id="update" type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const doc = {{{json doc}}}
+let schema = convert({{{json editSchema}}});
+joiToForm('formFields',schema);
+$.each($('#form').serializeArray(), (i, field) => {  
+  joiFormValue(field.name, doc[field.name]);
+});
+$('#update').click((event) => {
+  event.preventDefault();
+  const values = {};
+  const id = window.location.pathname.split('/').pop();
+  $.each($('#form').serializeArray(), (i, field) => {    
+    values[field.name] = field.value;               
+  });
+  $('input[type=checkbox]').each(function() {       
+    values[$(this).attr("name")] = $(this).is(":checked");    
+  });  
+  $.ajax({
+    type: 'PUT',
+    url: '/api/{{collectionName}}/' + id,
+    data: values,
+    success: function (result) {
+      window.location = '/{{collectionName}}'
+    },
+    error: function (result) {
+      errorAlert(result.responseJSON.message);
+    }
+  });
+});
+</script>

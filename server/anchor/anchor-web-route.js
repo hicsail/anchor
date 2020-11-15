@@ -239,7 +239,8 @@ const register = function (server, serverOptions) {
 
   server.route({//returns the edit view template
     method: 'GET',
-    path: '/edit/{collectionName}/{id}',options: {
+    path: '/edit/{collectionName}/{id}',
+    options: {
       auth: {
         strategies: ['session']
       },
@@ -260,22 +261,9 @@ const register = function (server, serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.create.disabled) {
+          if (model.routes.editView.disabled) {
             throw Boom.forbidden('Route Disabled');
           }
-          return h.continue;
-        }
-      }, {
-        assign: 'payload',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-          const { error, value } = Joi.validate(request.payload,model.routes.create.payload);
-
-          if (error) {
-            throw Boom.badRequest('Incorrect Payload', error);
-          }
-          request.payload = value;
           return h.continue;
         }
       }, {
@@ -283,7 +271,7 @@ const register = function (server, serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.create.auth) {
+          if (model.routes.editView.auth) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
@@ -293,7 +281,7 @@ const register = function (server, serverOptions) {
       }, {
         assign: 'scopeCheck',
         method: function (request, h) {
-          const model = request.pre.model.routes.tableView.scope;
+          const model = request.pre.model.routes.editView.scope;
           const userRoles = request.auth.credentials.scope;
           if (!IsAllowed(userRoles, model)){
             throw Boom.unauthorized('Insufficient Scope');
@@ -304,7 +292,21 @@ const register = function (server, serverOptions) {
     ]},
     handler: async function (request, h) {
 
-      return h.view('dummy');
+      const model = request.pre.model;
+      const schema = joiToJson(model.routes.editView.editSchema);
+
+      const document = await model.findById(request.params.id);
+
+
+      return h.view('anchor-default-templates/edit', {
+        user: request.auth.credentials.user,
+        projectName: Config.get('/projectName'),
+        baseUrl: Config.get('/baseUrl'),
+        title: capitalizeFirstLetter(request.params.collectionName),
+        collectionName: request.params.collectionName,
+        editSchema: schema,
+        doc: document
+      });
     }
 
   });
@@ -333,7 +335,7 @@ const register = function (server, serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.create.disabled) {
+          if (model.routes.createView.disabled) {
             throw Boom.forbidden('Route Disabled');
           }
           return h.continue;
@@ -343,7 +345,7 @@ const register = function (server, serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          if (model.routes.create.auth) {
+          if (model.routes.createView.auth) {
             if (!request.auth.isAuthenticated) {
               throw Boom.unauthorized('Authentication Required');
             }
@@ -353,7 +355,7 @@ const register = function (server, serverOptions) {
       }, {
         assign: 'scopeCheck',
         method: function (request, h) {
-          const model = request.pre.model.routes.tableView.scope;
+          const model = request.pre.model.routes.createView.scope;
           const userRoles = request.auth.credentials.scope;
           if (!IsAllowed(userRoles, model)){
             throw Boom.unauthorized('Insufficient Scope');
