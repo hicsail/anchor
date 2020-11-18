@@ -97,7 +97,7 @@ const register = function (server, serverOptions) {
         for (let rec of outputData){
           let doc = {};
           for (let key in fields) {
-            if (fields[key]['from']) {
+            if (fields[key]['from'] && rec[fields[key]['from']]) {
               doc[key] = rec[fields[key]['from']][key];
             }
             else {

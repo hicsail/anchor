@@ -491,6 +491,10 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
+      else if (typeof user === 'string') {
+        throw Boom.badRequest(user);
+      }
+
       return ({ message: 'Success.' });
             
     }

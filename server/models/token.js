@@ -87,7 +87,8 @@ Token.lookups = [{
 Token.constraints = [{
   foreignKey: 'userId',
   parentTable: require('./user'),
-  onDelete: 'CASCADE'
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
 }]
 
 

@@ -39,14 +39,26 @@ const register = async function (server, options) {
   const foreignKeyMappings = {};       
   for (let [collectionName, collection] of Object.entries(collectionModels)) {
     if (collection['constraints']) {
-      for (let constraint of collection['constraints']) {        
-        let object = {'onDelete': constraint['onDelete'], 'foreignKey': constraint['foreignKey'], 'childTable': collection};
+      for (let constraint of collection['constraints']) { 
+
+        let referencingInfo = {
+          'onDelete': constraint['onDelete'], 
+          'onUpdate': constraint['onUpdate'], 
+          'foreignKey': constraint['foreignKey'], 
+          'childTable': collection          
+        };      
+
         if (constraint['parentTable']['collectionName'] in foreignKeyMappings) {
-          foreignKeyMappings[constraint['parentTable']['collectionName']].push(object);
+          foreignKeyMappings[constraint['parentTable']['collectionName']]['referencingInfo'].push(referencingInfo);
         }
         else {
-          foreignKeyMappings[constraint['parentTable']['collectionName']] = [object];
-        }                       
+          foreignKeyMappings[constraint['parentTable']['collectionName']] = {'referencingInfo': [referencingInfo], 'restrictUpdate': false, 'restrictDelete': false};
+          //foreignKeyMappings[constraint['parentTable']['collectionName']] = [referencingInfo];
+        }
+        if (constraint['onDelete'] === 'NO-ACTION' || constraint['onDelete'] === 'RESTRICT')
+          foreignKeyMappings[constraint['parentTable']['collectionName']]['restrictDelete'] = true;
+        if (constraint['onUpdate'] === 'NO-ACTION' || constraint['onUpdate'] === 'RESTRICT')
+          foreignKeyMappings[constraint['parentTable']['collectionName']]['restrictUpdate'] = true;                        
       }
     }
   }

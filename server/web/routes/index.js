@@ -14,7 +14,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: PermissionConfigTable['GET']['/'] || DefaultScopes,
+        //scope: PermissionConfigTable['GET']['/'] || DefaultScopes,
         mode: 'try'
       }
     },    

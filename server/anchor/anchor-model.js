@@ -139,13 +139,37 @@ class AnchorModel {
    * @param {object} [options] - an optional object passed to MongoDB's native [Collection.deleteMany]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteMany} method.
    * @returns {Promise}
    */
-  static deleteMany() {
+  static async deleteMany() {
 
     const args = argsFromArguments(arguments);
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
+    const filter = args.shift();    
+    const options = Hoek.applyToDefaults({}, args.pop() || {});  
 
-    return collection.deleteMany.apply(collection, args);
+    const constraintsMapping = this.constraints;    
+    
+    if (constraintsMapping[this.collectionName]) {
+
+      //case when there doesn't exist child collections restricting the delete
+      if (!constraintsMapping[this.collectionName]['restrictDelete']) {
+        const docs = await this.findMany(filter, options);
+        const result = await collection.deleteMany(filter, options);
+        for (let doc of docs) {
+          const id = doc._id.toString();       
+          updateChildCollections(constraintsMapping[this.collectionName]['referencingInfo'], id); 
+        }       
+        return result;  
+      }
+      //case when there exist child collections restricting the delete
+      else if (constraintsMapping[this.collectionName]['restrictDelete']){
+        return 'Deletion not allowed due to violation of referential integrity';  
+      }      
+    }
+    //case when there exists no child collections referencing the document
+    else {
+      return await collection.deleteMany(filter, options);      
+    }   
   }
 
   /**
@@ -158,13 +182,38 @@ class AnchorModel {
    ]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#deleteOne} method.
    * @returns {Promise}
    */
-  static deleteOne() {
+  static async deleteOne() {
 
     const args = argsFromArguments(arguments);
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
+    const filter = args.shift();    
+    const options = Hoek.applyToDefaults({}, args.pop() || {});
 
-    return collection.deleteOne.apply(collection, args);
+    //return collection.deleteOne.apply(collection, args);
+
+    const constraintsMapping = this.constraints;    
+    
+    if (constraintsMapping[this.collectionName]) {
+
+      //case when there doesn't exist child collections restricting the delete
+      if (!constraintsMapping[this.collectionName]['restrictDelete']) {
+        const doc = await this.findOne(filter, options);
+        const id = doc._id.toString();  
+
+        const result = await collection.deleteOne(filter, options);
+        updateChildCollections(constraintsMapping[this.collectionName]['referencingInfo'], id);        
+        return result;  
+      }
+      //case when there exist child collections restricting the delete
+      else if (constraintsMapping[this.collectionName]['restrictDelete']){
+        return 'Deletion not allowed due to violation of referential integrity';  
+      }      
+    }
+    //case when there deleteOnedoesn't exist no child collections referencing the document
+    else {
+      return await collection.deleteOne(filter, options);      
+    }   
   }
 
   /**
@@ -297,25 +346,27 @@ class AnchorModel {
     const id = args.shift();
     const filter = { _id: this._idClass(id) };
     const options = Hoek.applyToDefaults({}, args.pop() || {});
-    //const result = await collection.findOneAndDelete(filter, options);
 
-    const constraintMapping = this.constraints;
-    //console.log("inside delete", constraintMapping[this.collectionName]);
+    const constraintsMapping = this.constraints;    
+    
+    if (constraintsMapping[this.collectionName]) {
 
-    if (constraintMapping[this.collectionName]) {
-      for (let obj of constraintMapping[this.collectionName]) {
-        if (obj['onDelete'] === 'CASCADE') {
-          const field = obj['foreignKey'];
-          const childTable = obj['childTable'];
-          const findQuery = {};
-          findQuery[field] = id;          
-          const childDocs = await childTable.find(findQuery);
-          console.log("child docs", childDocs);
-        }
+      //case when there doesn't exist child collections restricting the delete
+      if (!constraintsMapping[this.collectionName]['restrictDelete']) {
+        const result = await collection.findOneAndDelete(filter, options);
+        updateChildCollections(constraintsMapping[this.collectionName]['referencingInfo'], id);        
+        return this.resultFactory(result);  
       }
+      //case when there exist child collections restricting the delete
+      else if (constraintsMapping[this.collectionName]['restrictDelete']){
+        return 'Deletion not allowed due to violation of referential integrity';  
+      }      
     }
-    return "here"
-    //return this.resultFactory(result);
+    //case when there deleteOnedoesn't exist no child collections referencing the document
+    else {
+      const result = await collection.findOneAndDelete(filter, options);
+      return this.resultFactory(result);
+    }   
   }
 
   /**
@@ -378,14 +429,35 @@ class AnchorModel {
    * @param {object} [options] - an optional object passed to MongoDB's native [Collection.findOneAndDelete]{@link https://mongodb.github.io/node-mongodb-native/3.0/api/Collection.html#findOneAndDelete} method.
    * @return {Promise<AnchorModel>}
    */
-  static async findOneAndDelete() {
+  static async findOneAndDelete() {  
 
     const args = argsFromArguments(arguments);
     const db = dbFromArgs(args);
     const collection = db.collection(this.collectionName);
-    const result = await collection.findOneAndDelete.apply(collection, args);
+    const filter = args.shift();    
+    const options = Hoek.applyToDefaults({}, args.pop() || {});
 
-    return this.resultFactory(result);
+    const constraintsMapping = this.constraints;    
+    
+    if (constraintsMapping[this.collectionName]) {
+
+      //case when there doesn't exist child collections restricting the delete
+      if (!constraintsMapping[this.collectionName]['restrictDelete']) {
+        const result = await collection.findOneAndDelete(filter, options);
+        const id = result._id.toString();
+        updateChildCollections(constraintsMapping[this.collectionName]['referencingInfo'], id);        
+        return this.resultFactory(result);  
+      }
+      //case when there exist child collections restricting the delete
+      else if (constraintsMapping[this.collectionName]['restrictDelete']){
+        return 'Deletion not allowed due to violation of referential integrity';  
+      }      
+    }
+    //case when there deleteOnedoesn't exist no child collections referencing the document
+    else {
+      const result = await collection.findOneAndDelete(filter, options);
+      return this.resultFactory(result);
+    }   
   }
 
   /**
@@ -966,8 +1038,7 @@ AnchorModel.routes = {
         sort: sort
         //sort: model.sortAdapter(request.query.sort)
       };
-      const results =  await model.pagedLookup(query, page, limit, options, model.lookups);
-      console.log("Arezoo",model.constraints);
+      const results =  await model.pagedLookup(query, page, limit, options, model.lookups);      
       return {
         draw: request.query.draw,
         recordsTotal: results.data.length,
@@ -1057,14 +1128,9 @@ AnchorModel.routes = {
       if (!check) {
         throw Boom.notFound('Model with id not found');
       }
-      /*for (let obj of colWithRef) {
-        if (obj['onDelete'] === 'CASCADE') {
-          const field = obj['foreignKey'];
-          const childTable = obj['childTable'];
-          const childDocs = await childTable.find({field: id})
-          console.log(childDocs);
-        }
-      }*/
+      else if (typeof check === 'string') {
+        throw Boom.badRequest(check);  
+      }
       return check;
     },
     query: null
@@ -1184,3 +1250,22 @@ AnchorModel.clients = {};
 AnchorModel.dbs = {};
 
 module.exports = AnchorModel;
+
+const updateChildCollections = async function(constraintsInfo, parentKey) {
+  for (let constraintInfo of constraintsInfo) {
+
+    const childKey = constraintInfo['foreignKey'];
+    const childTable = constraintInfo['childTable'];
+    const query = {};
+    query[childKey] = parentKey;
+
+    if (constraintInfo['onDelete'] === 'CASCADE') {          
+      await childTable.deleteMany(query);
+    }
+    else if (constraintInfo['onDelete'] === 'SET-NULL') {          
+      const update = {};
+      update[childKey] = null;
+      await childTable.updateMany(query, {$set: update});
+    }        
+  }
+}
