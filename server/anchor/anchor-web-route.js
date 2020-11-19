@@ -107,49 +107,44 @@ const register = function (server, serverOptions) {
         const fields = model.routes.tableView.outputDataFields;
         let unAddedKeys = new Set();
 
-        for (let key in fields) {
-
-          if (fields.hasOwnProperty(key)){
-            let userRoles = request.auth.credentials.scope;
-            if (fields[key]['accessRoles'] && !IsAllowed(userRoles, fields[key]['accessRoles'])){//Blocks column option if user role is too low
-              unAddedKeys.add(key);
-              continue;
-            }
-
-            const col = {'label': fields[key]['label']};
-            if (fields[key]['invisible']){
-              col['invisible'] = true;
-            }
-
-            outputCols.push(col);
+        for (let key of Object.keys(fields)){
+          let userRoles = request.auth.credentials.scope;
+          if (fields[key]['accessRoles'] && !IsAllowed(userRoles, fields[key]['accessRoles'])){//Blocks column option if user role is too low
+            unAddedKeys.add(key);
+            continue;
           }
+
+          const col = {'label': fields[key]['label']};
+          if (fields[key]['invisible']){
+            col['invisible'] = true;
+          }
+
+          outputCols.push(col);
         }
 
         //modify fields to remove sensitive keys where user permission is too low.
-        for (let key in fields){
+        for (let key of Object.keys(fields)){
           if (unAddedKeys.has(key)){
             delete fields[key];
           }
         }
         for (let rec of outputData){
           let doc = {};
-          for (let key in fields) {
-            if (fields.hasOwnProperty(key)){
-              if ('from' in fields[key]){
-                if (fields[key]['from']) {
-                  doc[key] = rec[fields[key]['from']][key];
-                }
-                else{
-                  doc[key] = 'N/A';
-                }
+          for (let key of Object.keys(fields)) {
+            if ('from' in fields[key]){
+              if (rec[fields[key]['from']][key]) {
+                doc[key] = rec[fields[key]['from']][key];
+              }
+              else{
+                doc[key] = 'N/A';
+              }
+            }
+            else {
+              if (rec[key] === null || typeof rec[key] === 'undefined'){
+                doc[key] = 'N/A';
               }
               else {
-                if (rec[key] === null){
-                  doc[key] = 'N/A';
-                }
-                else {
-                  doc[key] = rec[key];
-                }
+                doc[key] = rec[key];
               }
             }
           }
@@ -198,7 +193,7 @@ const register = function (server, serverOptions) {
                 }
               }
               else{
-                if (data[col.label] === null){
+                if (data[col.label] === null || typeof data[col.label] === 'undefined'){
                   doc[col.label] = 'N/A'
                 }
                 else{
