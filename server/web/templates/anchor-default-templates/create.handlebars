@@ -23,8 +23,12 @@ joiToForm('formFields',schema);
 $('#create').click((event) => {
   event.preventDefault();
   const values = {};
-  $.each($('#form').serializeArray(), (i, field) => {
+
+  $.each($('#form').serializeArray({ checkboxesAsBools: true }), (i, field) => {
     values[field.name] = field.value;
+  });
+  $.each($("#form").find("input[type=checkbox]"), function(key, val) {
+    values[$(val).attr('name')] = $(val).is(':checked');
   });
   $.ajax({
     type: 'POST',

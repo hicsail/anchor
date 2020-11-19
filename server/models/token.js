@@ -21,7 +21,7 @@ class Token extends AnchorModel {
       token: JWT.sign(id,Config.get('/authSecret')),
       tokenId: id,
       time: new Date(),
-      active: true,
+      active: doc.active,
       lastUsed: null
     };
 
