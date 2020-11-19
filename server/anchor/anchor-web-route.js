@@ -2,7 +2,7 @@
 const Boom = require('boom');
 const Config = require('../../config');
 const IsAllowed = require('../helper/isAllowed');
-const JoiToJson = require('../helper/JoiToJson');
+const JoiToJson = require('../helper/joiToJson');
 
 const register = function (server, serverOptions) {
 
