@@ -6,14 +6,14 @@ const Hoek = require('hoek');
 
 class Event extends AnchorModel {
 
-  static async create(name, userId) {
+  static async create(doc) {
 
-    Assert.ok(name, 'Missing name argument.');
-    Assert.ok(userId, 'Missing userId argument.');
+    Assert.ok(doc.name, 'Missing name argument.');
+    Assert.ok(doc.userId, 'Missing userId argument.');
 
     const document = {
-      name: name.toUpperCase(),
-      userId,
+      name: doc.name.toUpperCase(),
+      userId: doc.userId,
       time: new Date()
     };
 
@@ -34,11 +34,12 @@ Event.schema = Joi.object({
   time: Joi.date().required()
 });
 
-Event.payload = Joi.object({
-  name: Joi.string().required()
-});
-
 Event.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    payload: Joi.object({
+      name: Joi.string().required()
+    })
+  },
   delete: {
     disabled: true
   },
@@ -50,6 +51,11 @@ Event.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       userID: {label: 'User ID'},
       _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
     }
+  },
+  createView: {
+    createSchema: Joi.object({
+      name: Joi.string().required()
+    })
   }
 });
 

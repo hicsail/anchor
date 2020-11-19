@@ -46,16 +46,16 @@ Token.schema = Joi.object({
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: {
+    payload: Joi.object({
       tokenName: Joi.string().required(),
-      active: Joi.boolean().default(true),      
-    }
+      active: Joi.boolean().default(true),
+    })
   },
   update: {
-    payload: {
+    payload: Joi.object({
       tokenName: Joi.string().required(),
       active: Joi.boolean().default(true)
-    }
+    })
   },
   tableView: {
     outputDataFields: {
@@ -71,13 +71,14 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   createView: {
     createSchema: Joi.object({
-      tokenName: Joi.string().required()
+      tokenName: Joi.string().required(),
+      active: Joi.boolean().required()
     })
   },
   editView: {
-    editSchema: Joi.object({      
+    editSchema: Joi.object({
       tokenName: Joi.string().required(),
-      active: Joi.boolean().required()      
+      active: Joi.boolean().required()
     })
   }
 });

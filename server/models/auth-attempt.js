@@ -61,10 +61,10 @@ AuthAttempt.schema = Joi.object({
 
 AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: true
+    payload: Joi.object({})
   },
   update: {
-    disabled: true
+    payload: Joi.object({})
   },
   tableView: {
     outputDataFields: {
@@ -76,6 +76,9 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       browser: {label: 'browser', invisible: true},
 
     }
+  },
+  createView: {
+    createSchema: Joi.object({})
   }
 });
 

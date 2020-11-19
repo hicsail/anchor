@@ -66,6 +66,12 @@ RouteScope.payload = Joi.object({
 });
 
 RouteScope.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: true
+  },
+  update: {
+    disabled: true
+  },
   tableView: {
     disabled: true
   }

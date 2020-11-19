@@ -6,16 +6,16 @@ const Hoek = require('hoek');
 
 class Feedback extends AnchorModel {
 
-  static async create(subject,description, userId) {
+  static async create(doc) {
 
-    Assert.ok(subject,'Missing subject');
-    Assert.ok(description, 'Missing description');
-    Assert.ok(userId,'Missing userid');
+    Assert.ok(doc.subject,'Missing subject');
+    Assert.ok(doc.description, 'Missing description');
+    Assert.ok(doc.userId,'Missing userid');
 
     const document = {
-      subject,
-      description,
-      userId,
+      subject: doc.subject,
+      description: doc.description,
+      userId: doc.userId,
       resolved: false,
       time: new Date()
     };
@@ -39,12 +39,13 @@ Feedback.schema = Joi.object({
   time: Joi.date().required()
 });
 
-Feedback.payload = Joi.object({
-  subject: Joi.string().required(),
-  description: Joi.string().required()
-});
-
 Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    payload: Joi.object({
+      subject: Joi.string().required(),
+      description: Joi.string().required()
+    })
+  },
   update: {
     disabled: true
   },
@@ -54,10 +55,17 @@ Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       subject: {label: 'Subject'},
       description: {label: 'Description'},
       resolved: {label: 'Resolved'},
+      studyID: {label: 'Study ID', from: 'user'},
       userId: {label: 'User ID'},
       time: {label: 'Time'},
       _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
     }
+  },
+  createView: {
+    createSchema: Joi.object({
+      subject: Joi.string().required(),
+      description: Joi.string().required()
+    })
   }
 });
 
@@ -66,7 +74,7 @@ Feedback.lookups = [{
   local: 'userId',
   foreign: '_id',
   as: 'user',
-  one: false
+  one: true
 }];
 
 Feedback.indexes = [

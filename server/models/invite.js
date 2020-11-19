@@ -8,18 +8,17 @@ const Hoek = require('hoek');
 
 class Invite extends AnchorModel {
 
-  static async create(name, email, description, userId) {
+  static async create(doc) {
 
-    Assert.ok(name, 'Missing name argument.');
-    Assert.ok(email, 'Missing email argument.');
-    Assert.ok(description, 'Missing description argument.');
-    Assert.ok(userId, 'Missing userId argument.');
+    Assert.ok(doc.name, 'Missing name argument.');
+    Assert.ok(doc.email, 'Missing email argument.');
+    Assert.ok(doc.userId, 'Missing userId argument.');
 
     const document = {
-      name,
-      email,
-      description,
-      userId,
+      name: doc.name,
+      email: doc.email,
+      description: doc.description,
+      userId: doc.userId,
       status: 'Pending',
       time: new Date(),
       expiredAt: new Date(new Date().getTime() + 1000 * 86400 * 7) //7 days
@@ -40,26 +39,25 @@ Invite.schema = Joi.object({
   user: User.payload,
   userId: Joi.string().required(),
   status: Joi.boolean().required(),
-  time: Joi.date().required()
-});
-
-Invite.payload = Joi.object({
-  email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required(),
-  description: Joi.string().optional()
+  time: Joi.date().required(),
+  expiredAt: Joi.date().required()
 });
 
 
 Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: true
-  },
-  update: {
-    payload: {
+    payload: Joi.object({
       email: Joi.string().email().lowercase().required(),
       name: Joi.string().required(),
-      description: Joi.string().optional()
-    }
+      description: Joi.string().allow('')
+    })
+  },
+  update: {
+    payload: Joi.object({
+      email: Joi.string().email().lowercase().required(),
+      name: Joi.string().required(),
+      description: Joi.string().allow('')
+    })
   },
   tableView: {
     outputDataFields: {
@@ -73,6 +71,13 @@ Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       expiredAt: {label: 'Expired At'},
       _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
     }
+  },
+  createView: {
+    createSchema: Joi.object({
+      email: Joi.string().email().lowercase().required(),
+      name: Joi.string().required(),
+      description: Joi.string().allow('')
+    })
   }
 });
 

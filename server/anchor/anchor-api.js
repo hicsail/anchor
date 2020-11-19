@@ -102,12 +102,12 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          const { error, value } = Joi.validate(request.payload,model.routes.create.payload);
-
-          if (error) {
-            throw Boom.badRequest('Incorrect Payload', error);
+          const joiSchema = model.routes.create.payload;
+          const obj = joiSchema.validate(request.payload);
+          if (obj.error) {
+            throw Boom.badRequest('Incorrect Payload', obj.error);
           }
-          request.payload = value;
+          request.payload = obj.value;
           return h.continue;
         }
       }, {
@@ -242,7 +242,7 @@ const register = function (server,serverOptions) {
 
       return await request.pre.model.routes.getId.handler(request,h);
     }
-  }); 
+  });
 
   server.route({
     method: 'GET',

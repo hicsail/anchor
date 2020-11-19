@@ -83,6 +83,9 @@ Session.schema = Joi.object({
 });
 
 Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    payload: Joi.object({})
+  },
   tableView: {
     outputDataFields: {
       userId: {label: 'User ID'},
@@ -94,6 +97,9 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       key: {label: 'Key', invisible: true},
       _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
     }
+  },
+  createView: {
+    createSchema: Joi.object({})
   }
 });
 
