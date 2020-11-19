@@ -1,9 +1,10 @@
 'use strict';
 const Fs = require('fs');
+const Boom = require('boom');
 const Config = require('../../../config');
 const Joi = require('joi');
 const User = require('../../models/user');
-const defaultScopes = require('../../helper/getRoleNames');
+const DefaultScopes = require('../../helper/getRoleNames');
 const PermissionConfigTable = require('../../permission-config.json');
 
 const register = function (server, options) {
@@ -16,7 +17,7 @@ const register = function (server, options) {
         strategies: ['session']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('users/index', {
         user: request.auth.credentials.user,
@@ -34,17 +35,16 @@ const register = function (server, options) {
       auth: {
         strategies: ['session']
       },
-      pre: [
-        {
-          assign: 'Authorization',
-          method: (request, h) => {
-            return h.continue;
-            /*Authorization(request, PermissionConfigTable['/roles']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));*/
-          }
+      pre: [{
+        assign: 'Authorization',
+        method: (request, h) => {
+
+          return h.continue;
+          /*Authorization(request, PermissionConfigTable['/roles']) ?
+          reply(true) :
+           reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));*/
         }
-      ]
+      }]
     },
     handler: async function (request, h) {
 
@@ -72,7 +72,7 @@ const register = function (server, options) {
       auth: {
         strategy: 'session',
         scope: ['root']
-        //scope: ScopeArray('/scopes', 'GET', defaultScopes)
+        //scope: ScopeArray('/scopes', 'GET', DefaultScopes)
       }
     },
     handler: function (request, h) {
@@ -93,7 +93,7 @@ const register = function (server, options) {
             ConfigurableRoutes[method][path] = route.settings.auth.access[0].scope.selection;
           }
           else {//routes don't have scope, assign default value to each route
-            ConfigurableRoutes[method][path] = defaultScopes;
+            ConfigurableRoutes[method][path] = DefaultScopes;
           }
 
           if (!PermissionConfigTable[method][path]){ //check to see if they exist in the config file if not add that route and its scopes to config file.
@@ -137,7 +137,7 @@ const register = function (server, options) {
         PUTunconfig: UnconfigurableRoutes.PUT,
         DELETEunconfig: UnconfigurableRoutes.DELETE,
         POSTunconfig: UnconfigurableRoutes.POST,
-        role: defaultScopes,
+        role: DefaultScopes,
         UnconfigurableRoutes
       });
     }
@@ -152,7 +152,7 @@ const register = function (server, options) {
         scope: ['root', 'admin', 'researcher']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('users/participation', {
         user: request.auth.credentials.user,
@@ -172,7 +172,7 @@ const register = function (server, options) {
         scope: ['root', 'admin','researcher']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('users/create', {
         user: request.auth.credentials.user,
@@ -197,7 +197,7 @@ const register = function (server, options) {
         }
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('users/password', {
         user: request.auth.credentials.user,
@@ -241,9 +241,9 @@ const register = function (server, options) {
         scope: ['root','admin']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
-      return h.view('clinician/usersClinicians', {
+      return h.view('groupAdmins/usersClinicians', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
         title: 'User\'s Clinicians',

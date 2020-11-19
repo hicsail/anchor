@@ -19,9 +19,9 @@ class AuthAttempt extends AnchorModel {
 
     const document = new this({
       browser,
-      ip: ip,
+      ip,
       os: agentInfo.os.toString(),
-      username: username
+      username
     });
 
     const authAttempts = await this.insertOne(document);
@@ -68,12 +68,12 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   tableView: {
     outputDataFields: {
-      username: {label: 'Username'},
-      ip: {label: 'IP'},
-      createdAt: {label: 'Time'},
-      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true},
-      os: {label: 'OS', invisible: true},
-      browser: {label: 'browser', invisible: true},
+      username: { label: 'Username' },
+      ip: { label: 'IP' },
+      createdAt: { label: 'Time' },
+      _id: { label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true },
+      os: { label: 'OS', invisible: true },
+      browser: { label: 'browser', invisible: true }
 
     }
   }

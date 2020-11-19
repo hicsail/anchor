@@ -12,7 +12,7 @@ const register = function (server, options) {
         scope: ['root', 'admin']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('backups/index', {
         user: request.auth.credentials.user,
@@ -21,13 +21,14 @@ const register = function (server, options) {
         baseUrl: Config.get('/baseUrl')
       });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'backupList',
-  dependencies: [    
-    'auth'   
+  dependencies: [
+    'hapi-anchor-model',
+    'auth'
   ],
   register
 };

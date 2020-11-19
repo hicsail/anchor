@@ -12,7 +12,7 @@ const register = function (server, options) {
         strategies: ['session']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('invite/index', {
         user: request.auth.credentials.user,
@@ -32,7 +32,7 @@ const register = function (server, options) {
         scope: ['root', 'admin','clinician','researcher']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('invite/create', {
         user: request.auth.credentials.user,
@@ -100,6 +100,7 @@ const register = function (server, options) {
 module.exports = {
   name: 'inviteList',
   dependencies: [
+    'hapi-anchor-model',
     'auth'
   ],
   register

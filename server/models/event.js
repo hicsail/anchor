@@ -44,11 +44,11 @@ Event.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   tableView: {
     outputDataFields: {
-      username: {label: 'Username', from: 'user'},
-      name: {label: 'Name'},
-      time: {label: 'Time'},
-      userID: {label: 'User ID'},
-      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
+      username: { label: 'Username', from: 'user' },
+      name: { label: 'Name' },
+      time: { label: 'Time' },
+      userID: { label: 'User ID' },
+      _id: { label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true }
     }
   }
 });

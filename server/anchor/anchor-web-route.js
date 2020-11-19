@@ -2,8 +2,7 @@
 const Boom = require('boom');
 const Config = require('../../config');
 const IsAllowed = require('../helper/isAllowed');
-const joiToJson = require('../helper/joiToJson');
-const Joi = require('joi');
+const JoiToJson = require('../helper/JoiToJson');
 
 const register = function (server, serverOptions) {
 
@@ -54,13 +53,13 @@ const register = function (server, serverOptions) {
 
           const model = request.pre.model;
           const outputDataFields = model.routes.tableView.outputDataFields;
-          let validationSchema = model.routes.tableView.validationSchema;
+          const validationSchema = model.routes.tableView.validationSchema;
           //console.log(Object.keys(server.plugins['hapi-anchor-model'].models[request.params.collectionName]))
 
           if (outputDataFields !== null) {
-            for (let field in outputDataFields) {
+            for (const field in outputDataFields) {
 
-              let obj = validationSchema.validate(outputDataFields[field]);
+              const obj = validationSchema.validate(outputDataFields[field]);
               if (obj.error) {
                 console.log(obj.error.details[0].message);
                 throw Boom.badRequest('outputDataFields violates the validation schema, ' + obj.error.details[0].message);
@@ -72,6 +71,7 @@ const register = function (server, serverOptions) {
       }, {
         assign: 'scopeCheck',
         method: function (request, h) {
+
           const model = request.pre.model.routes.tableView.scope;
           const userRoles = request.auth.credentials.scope;
           if (!IsAllowed(userRoles, model)){
@@ -80,7 +80,7 @@ const register = function (server, serverOptions) {
           return h.continue;
         }
       }
-    ]},
+      ] },
     handler: async function (request, h) {
 
       const model = request.pre.model;
@@ -98,27 +98,27 @@ const register = function (server, serverOptions) {
 
       const res = await server.inject(req);
 
-      let outputCols = [];
+      const outputCols = [];
       let outputData = res.result.data;
 
       if (model.routes.tableView.outputDataFields !== null) {
 
-        let processedData = [];
+        const processedData = [];
         const fields = model.routes.tableView.outputDataFields;
-        let unAddedKeys = new Set();
+        const unAddedKeys = new Set();
 
-        for (let key in fields) {
+        for (const key in fields) {
 
           if (fields.hasOwnProperty(key)){
-            let userRoles = request.auth.credentials.scope;
-            if (fields[key]['accessRoles'] && !IsAllowed(userRoles, fields[key]['accessRoles'])){//Blocks column option if user role is too low
+            const userRoles = request.auth.credentials.scope;
+            if (fields[key].accessRoles && !IsAllowed(userRoles, fields[key].accessRoles)){//Blocks column option if user role is too low
               unAddedKeys.add(key);
               continue;
             }
 
-            const col = {'label': fields[key]['label']};
-            if (fields[key]['invisible']){
-              col['invisible'] = true;
+            const col = { 'label': fields[key].label };
+            if (fields[key].invisible){
+              col.invisible = true;
             }
 
             outputCols.push(col);
@@ -126,20 +126,20 @@ const register = function (server, serverOptions) {
         }
 
         //modify fields to remove sensitive keys where user permission is too low.
-        for (let key in fields){
+        for (const key in fields){
           if (unAddedKeys.has(key)){
             delete fields[key];
           }
         }
-        for (let rec of outputData){
-          let doc = {};
-          for (let key in fields) {
+        for (const rec of outputData){
+          const doc = {};
+          for (const key in fields) {
             if (fields.hasOwnProperty(key)){
               if ('from' in fields[key]){
-                if (fields[key]['from']) {
-                  doc[key] = rec[fields[key]['from']][key];
+                if (fields[key].from) {
+                  doc[key] = rec[fields[key].from][key];
                 }
-                else{
+                else {
                   doc[key] = 'N/A';
                 }
               }
@@ -160,15 +160,15 @@ const register = function (server, serverOptions) {
       else {
         if (outputData.length !== 0 ) {
           //create the column headers for the database
-          let modelsName = new Set(); //all the model names joined to this one
+          const modelsName = new Set(); //all the model names joined to this one
           model.lookups.forEach((lookup) => {//find all the secondary model joined.
 
             modelsName.add(lookup.as);
           });
 
-          for (let key of Object.keys(outputData[0])) {
+          for (const key of Object.keys(outputData[0])) {
             if (!(modelsName.has(key))){//makes sure to not include secondary attached collection yet
-              outputCols.push({label: key});
+              outputCols.push({ label: key });
             }
           }
 
@@ -177,31 +177,31 @@ const register = function (server, serverOptions) {
             recursiveFindJoiKeys(lookup.from.schema).forEach((key) => {
 
               if (!(key in outputData[0])) {//checks that the key is not already a header.
-                outputCols.push({label: key, invisible: true, from: lookup.as});
+                outputCols.push({ label: key, invisible: true, from: lookup.as });
               }
             });
           });
 
           //process data coming from outputData based on the column headers given above.
-          let processedData = [];
+          const processedData = [];
           outputData.forEach((data) => {
 
-            let doc = {};
+            const doc = {};
             outputCols.forEach((col) => {
 
               if ('from' in col){
                 if (col.label in data[col.from]){
                   doc[col.label] = data[col.from][col.label];
                 }
-                else{
+                else {
                   doc[col.label] = 'N/A';
                 }
               }
-              else{
+              else {
                 if (data[col.label] === null){
-                  doc[col.label] = 'N/A'
+                  doc[col.label] = 'N/A';
                 }
-                else{
+                else {
                   doc[col.label] = data[col.label];
                 }
               }
@@ -211,14 +211,14 @@ const register = function (server, serverOptions) {
           outputData = processedData;
         }
         else {
-          for (let key of recursiveFindJoiKeys(model.schema)){
-            outputCols.push({'label': key});
+          for (const key of recursiveFindJoiKeys(model.schema)){
+            outputCols.push({ 'label': key });
           }
         }
       }
       outputData.map((dataRow) => {//render function to change default string version of specified types.
 
-        for (let key of Object.keys(dataRow)){
+        for (const key of Object.keys(dataRow)){
           if (dataRow[key] instanceof Date && !isNaN(dataRow[key])){ //check for JS Date Object.
             dataRow[key] = dataRow[key].toDateString() + ' ' + dataRow[key].toLocaleTimeString('en-us');//DOES NOT HAVE THE TIMEZONE...
           }
@@ -281,6 +281,7 @@ const register = function (server, serverOptions) {
       }, {
         assign: 'scopeCheck',
         method: function (request, h) {
+
           const model = request.pre.model.routes.editView.scope;
           const userRoles = request.auth.credentials.scope;
           if (!IsAllowed(userRoles, model)){
@@ -289,11 +290,11 @@ const register = function (server, serverOptions) {
           return h.continue;
         }
       }
-    ]},
+      ] },
     handler: async function (request, h) {
 
       const model = request.pre.model;
-      const schema = joiToJson(model.routes.editView.editSchema);
+      const schema = JoiToJson(model.routes.editView.editSchema);
 
       const document = await model.findById(request.params.id);
 
@@ -355,6 +356,7 @@ const register = function (server, serverOptions) {
       }, {
         assign: 'scopeCheck',
         method: function (request, h) {
+
           const model = request.pre.model.routes.createView.scope;
           const userRoles = request.auth.credentials.scope;
           if (!IsAllowed(userRoles, model)){
@@ -363,10 +365,11 @@ const register = function (server, serverOptions) {
           return h.continue;
         }
       }
-    ]},
-    handler: async function (request, h) {
+      ] },
+    handler: function (request, h) {
+
       const model = request.pre.model;
-      const schema = joiToJson(model.routes.createView.createSchema);
+      const schema = JoiToJson(model.routes.createView.createSchema);
 
       return h.view('anchor-default-templates/create', {
         user: request.auth.credentials.user,
@@ -380,22 +383,25 @@ const register = function (server, serverOptions) {
   });
 };
 
-function recursiveFindJoiKeys(joi, prefix = '') {
-    const keys = []
-    const children = joi && joi._inner && joi._inner.children
-    if (Array.isArray(children)) {
-        children.forEach(child => {
-            keys.push(child.key)
-            recursiveFindJoiKeys(child.schema, `${child.key}.`)
-                .forEach(k => keys.push(k))
-        })
-    }
-    return keys
-}
+const recursiveFindJoiKeys = function (joi, prefix = '') {
 
-function capitalizeFirstLetter(string) {
+  const keys = [];
+  const children = joi && joi._inner && joi._inner.children;
+  if (Array.isArray(children)) {
+    children.forEach((child) => {
+
+      keys.push(child.key);
+      recursiveFindJoiKeys(child.schema, `${child.key}.`)
+        .forEach((k) => keys.push(k));
+    });
+  }
+  return keys;
+};
+
+const capitalizeFirstLetter = function (string) {
+
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
+};
 
 module.exports = {
   name: 'anchor-web-route',

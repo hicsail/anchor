@@ -29,27 +29,27 @@ lab.before(async () => {
     });*/
 
   plugins.push({ plugin: require('../../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  plugins.push(HapiAuthBasic);  
+  plugins.push(HapiAuthBasic);
   plugins.push(HapiAuthCookie);
   plugins.push(HapiAuthJWT);
   plugins.push(Auth);
-  plugins.push(Vision);   
+  plugins.push(Vision);
   plugins.push(Signup);
-  
+
   await server.register(plugins);
   server.views({
-    engines: {handlebars: require('handlebars') },
-    relativeTo: __dirname,                  
+    engines: { handlebars: require('handlebars') },
+    relativeTo: __dirname,
     path: '../../../../server/web/templates',
     layout: 'layout',
     layoutPath: '../../../../server/web/layouts',
     partialsPath: '../../../../server/web/partials',
     helpersPath: '../../../../server/web/helpers'
-  });  
+  });
   await server.start();
   await Fixtures.Db.removeAllData();
 
-  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');   
+  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
 });
 
 lab.after(async () => {
@@ -62,29 +62,29 @@ lab.experiment('Signup Page View', () => {
 
   let request;
 
-  lab.beforeEach(async () => {    
+  lab.beforeEach(() => {
 
     request = {
       method: 'GET',
-      url: '/signup'          
+      url: '/signup'
     };
-  });  
+  });
 
-  lab.test('signup page renders properly', async () => {      
+  lab.test('signup page renders properly', async () => {
 
     const response = await server.inject(request);
 
     Code.expect(response.statusMessage).to.match(/Ok/i);
-    Code.expect(response.statusCode).to.equal(200);    
-  });  
+    Code.expect(response.statusCode).to.equal(200);
+  });
 
-  lab.test('it redirects when user is authenticated as an account', async () => {    
-       
-    request.credentials = authenticatedRoot;   
+  lab.test('it redirects when user is authenticated as an account', async () => {
+
+    request.credentials = authenticatedRoot;
 
     const response = await server.inject(request);
 
     //Code.expect(response.statusMessage).to.match(/Ok/i);
     Code.expect(response.statusCode).to.equal(302);
-  });  
+  });
 });

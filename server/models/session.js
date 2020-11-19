@@ -7,7 +7,6 @@ const UserAgent = require('useragent');
 const Hoek = require('hoek');
 //const Uuid = require('uuid');
 
-
 class Session extends AnchorModel {
 
   static async create(userId, ip, userAgent) {
@@ -85,14 +84,14 @@ Session.schema = Joi.object({
 Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   tableView: {
     outputDataFields: {
-      userId: {label: 'User ID'},
-      time: {label: 'Time'},
-      lastActive: {label: 'Last Active'},
-      ip: {label: 'IP'},
-      browser: {label: 'Browser'},
-      os: {label: 'OS'},
-      key: {label: 'Key', invisible: true},
-      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
+      userId: { label: 'User ID' },
+      time: { label: 'Time' },
+      lastActive: { label: 'Last Active' },
+      ip: { label: 'IP' },
+      browser: { label: 'Browser' },
+      os: { label: 'OS' },
+      key: { label: 'Key', invisible: true },
+      _id: { label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true }
     }
   }
 });

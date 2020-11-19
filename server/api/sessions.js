@@ -1,11 +1,8 @@
 'use strict';
 const Boom = require('boom');
-const Joi = require('joi');
-const User = require('../models/user');
 const Session = require('../models/session');
 
-
-const register = function (server, options) {  
+const register = function (server, options) {
 
   server.route({
     method: 'DELETE',
@@ -16,9 +13,9 @@ const register = function (server, options) {
       },
       pre: [{
         assign: 'current',
-        method: async function (request,h) {
+        method: function (request,h) {
 
-          const currentSession = request.auth.credentials.session._id.toString();          
+          const currentSession = request.auth.credentials.session._id.toString();
           if (currentSession === request.params.id) {
 
             throw Boom.badRequest('Unable to close your current session. You can use logout instead.');
@@ -44,16 +41,16 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
-      return ({ message: 'Success' });      
+      return ({ message: 'Success' });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'sessions',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

@@ -8,27 +8,26 @@ const register = function (server, options) {
     path: '/dashboard',
     options : {
       auth: {
-        strategies: ['session']        
+        strategies: ['session']
       }
     },
-    handler: async function (request, h) {     
+    handler: function (request, h) {
 
       return h.view('dashboard/index', {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
         title: 'Dashboard',
         baseUrl: Config.get('/baseUrl')
-      });             
+      });
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'dashboard',
   dependencies: [
-    'inert',
-    //'vision',
-    'auth'   
+    'hapi-anchor-model',
+    'auth'
   ],
   register
 };

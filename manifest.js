@@ -2,8 +2,6 @@
 const Confidence = require('confidence');
 const Config = require('./config');
 const Package = require('./package.json');
-const Path = require('path');
-const Handlebars = require('handlebars')
 
 const criteria = {
   env: process.env.NODE_ENV

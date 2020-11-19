@@ -1,6 +1,5 @@
 'use strict';
 const Fs = require('fs');
-const Joi = require('joi');
 const PermissionConfigTable = require('../permission-config.json');
 const RouteScope = require('../models/route-scope');
 
@@ -53,6 +52,7 @@ const register = function (server, options) {
       }
 
       PermissionConfigTable[request.payload.method][request.payload.path] = scopesArray;
+      //console.log("scopesArray", scopesArray)
 
       Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
 
@@ -81,8 +81,10 @@ const register = function (server, options) {
         //scope: PermissionConfigTable.POST['/api/users/scopeCheck'] || DefaultScopes
       }
     },
-    handler: async function (request, h){
-      console.log("hereeee");
+    handler: function (request, h){
+
+      console.log('hereeee');
+
       const route = server.table().find( (item) => {
 
         return item.path === request.payload.path && item.method.toUpperCase() === request.payload.method;
@@ -118,7 +120,7 @@ module.exports = {
   name: 'routeScopes',
   dependencies: [
     'hapi-anchor-model',
-    'auth',
+    'auth'
   ],
   register
 };

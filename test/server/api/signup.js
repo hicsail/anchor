@@ -8,6 +8,9 @@ const Mailer = require('../../../server/mailer');
 const Manifest = require('../../../manifest');
 const Signup = require('../../../server/api/signup');
 const User = require('../../../server/models/user');
+const HapiAuthBasic = require('hapi-auth-basic');
+const HapiAuthCookie = require('hapi-auth-cookie');
+const HapiAuthJWT = require('hapi-auth-jwt2');
 
 const lab = exports.lab = Lab.script();
 let server;
@@ -28,6 +31,9 @@ lab.before(async () => {
     plugin: require('../../../server/anchor/hapi-anchor-model'),
     options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options
   });
+  plugins.push(HapiAuthBasic);
+  plugins.push(HapiAuthCookie);
+  plugins.push(HapiAuthJWT);
   plugins.push(Auth);
   plugins.push(Signup);
 
@@ -47,7 +53,7 @@ lab.experiment('POST /api/signup', () => {
   const Mailer_sendEmail = Mailer.sendEmail;
   let request;
 
-  lab.beforeEach(async() => {
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
@@ -55,7 +61,7 @@ lab.experiment('POST /api/signup', () => {
     };
   });
 
-  lab.afterEach(async () => {
+  lab.afterEach(() => {
 
     Mailer.sendEmail = Mailer_sendEmail;
   });

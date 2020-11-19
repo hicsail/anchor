@@ -4,16 +4,15 @@ const Archiver = require('archiver');
 const Config = require('../../config');
 const Exec = require('child_process').exec;
 const Fs = require('fs');
-const util = require('util');
-const Joi = require('joi');
+const Util = require('util');
 const Boom = require('boom');
 const Path = require('path');
 const Backup = require('../models/backup');
 
-const readdir = util.promisify(Fs.readdir);
-const unlink =  util.promisify(Fs.unlink);
+const readdir = Util.promisify(Fs.readdir);
+//const unlink =  Util.promisify(Fs.unlink);
 
-const register = function (server, options) {  
+const register = function (server, options) {
 
   server.route({
     method: 'POST',
@@ -37,7 +36,7 @@ const register = function (server, options) {
       }
     },
     handler: async function (request, h) {
-      
+
       return await backup(request, h);
     }
   });
@@ -83,7 +82,7 @@ const register = function (server, options) {
       await Exec(`rm -r '${outPath}'`);
       return { message: 'Success' };
 
-    }      
+    }
   });
 
 
@@ -97,25 +96,25 @@ const register = function (server, options) {
       }
     },
     handler: async function (request, h) {
-     
-      const backup = await Backup.findById(request.params.id);     
+
+      const backup = await Backup.findById(request.params.id);
 
       if (!backup) {
-              
+
         throw Boom.notFound('backup not found');
       }
 
-      const path = Path.join(__dirname,`../backups/${backup.backupId}.zip`);      
+      //const path = Path.join(__dirname,`../backups/${backup.backupId}.zip`);
       //await unlink(path);
-      
+
       await Backup.findByIdAndDelete(request.params.id);
 
-      return { message: 'Success' };      
+      return { message: 'Success' };
     }
   });
 
   const findBackups = async function () {
-    
+
     const path = Path.join(__dirname, '../backups/');
     const ls = await readdir(path);
 
@@ -136,14 +135,14 @@ const register = function (server, options) {
     }
 
     for (const id of createIds) {
-      const path = Path.join(__dirname, `../backups/${id}.zip`);
-      const stat = Fs.statSync(path);
+      const filePath = Path.join(__dirname, `../backups/${id}.zip`);
+      const stat = Fs.statSync(filePath);
       const time = new Date(stat.ctime);
       await Backup.create(id,true,false,time);
     }
 
     return true;
-  }    
+  };
 
   const backup =  async function (request, h) {
 
@@ -162,11 +161,13 @@ const register = function (server, options) {
     });
 
     outputStream.on('close', () => {
-      return true;  
+
+      return true;
     });
 
     Archive.on('error', (err) => {
-      return err;          
+
+      return err;
     });
 
     Archive.pipe(outputStream);
@@ -175,12 +176,12 @@ const register = function (server, options) {
 
     await Exec(`rm -r '${path}'`);
 
-    const backup = await Backup.create(Backup.ObjectID().toString(), true, false);
+    const result = await Backup.create(Backup.ObjectID().toString(), true, false);
 
     await clean();
 
-    return backup;
-  }    
+    return result;
+  };
 
   const clean = async function () {
 
@@ -190,29 +191,29 @@ const register = function (server, options) {
 
     for (const file of files) {
       const id = file.split('.')[0];
-      if (id !== 'backup' && id) {        
+      if (id !== 'backup' && id) {
         ids.push(id);
-      } 
+      }
     }
 
     const backups = await Backup.find({});
 
-    for (const backup of backups) {
-      if (ids.indexOf(backup.backupId) === -1) {
+    for (const file of backups) {
+      if (ids.indexOf(file.backupId) === -1) {
 
-        return await Backup.findByIdAndDelete(backup._id.toString());
-      }  
+        return await Backup.findByIdAndDelete(file._id.toString());
+      }
     }
 
     return true;
-  } 
+  };
 };
 
 module.exports = {
   name: 'backup',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

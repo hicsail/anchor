@@ -50,13 +50,13 @@ Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   tableView: {
     outputDataFields: {
-      username: {label: 'Username', from: 'user'},
-      subject: {label: 'Subject'},
-      description: {label: 'Description'},
-      resolved: {label: 'Resolved'},
-      userId: {label: 'User ID'},
-      time: {label: 'Time'},
-      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
+      username: { label: 'Username', from: 'user' },
+      subject: { label: 'Subject' },
+      description: { label: 'Description' },
+      resolved: { label: 'Resolved' },
+      userId: { label: 'User ID' },
+      time: { label: 'Time' },
+      _id: { label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true }
     }
   }
 });

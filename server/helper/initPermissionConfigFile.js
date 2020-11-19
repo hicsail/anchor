@@ -5,7 +5,7 @@ const DefaultScopes = require('./getRoleNames');
 module.exports = (server) => {
 
   try {
-    const data = {};    
+    const data = {};
     server.table().forEach((route) => {
 
       if (route.hasOwnProperty('path')){//processing routes in server

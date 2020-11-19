@@ -120,7 +120,7 @@ const config = {
     },
     {
       name: 'admin',
-      accessLevel: '4'    
+      accessLevel: '4'
     },
     {
       name: 'root',

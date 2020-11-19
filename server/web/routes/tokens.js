@@ -13,7 +13,7 @@ const register = function (server, options) {
         strategies: ['session']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('tokens/index', {
         user: request.auth.credentials.user,
@@ -33,7 +33,7 @@ const register = function (server, options) {
         scope: ['root', 'admin','researcher']
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       return h.view('tokens/create', {
         user: request.auth.credentials.user,
@@ -53,9 +53,9 @@ const register = function (server, options) {
         scope: ['root', 'admin','researcher']
       }
     },
-    handler: async function (request, h) {      
-      
-      const token = await Token.findById(request.params.id);     
+    handler: async function (request, h) {
+
+      const token = await Token.findById(request.params.id);
 
       return h.view('tokens/edit', {
         user: request.auth.credentials.user,
@@ -63,7 +63,7 @@ const register = function (server, options) {
         title: 'Tokens',
         baseUrl: Config.get('/baseUrl'),
         token
-      });      
+      });
     }
   });
 
@@ -71,8 +71,9 @@ const register = function (server, options) {
 
 module.exports = {
   name: 'tokenList',
-  dependencies: [   
-    'auth'   
+  dependencies: [
+    'hapi-anchor-model',
+    'auth'
   ],
   register
 };

@@ -19,7 +19,7 @@ const register = async function (server, options) {
 
   const models = await readDir(Path.join(__dirname,modelPath));
 
-  const [anchorModels, collectionModels, collectionNames, sidebar] = models.reduce((accumulator, file) => {
+  const [anchorModels, collectionModels, collectionNames] = models.reduce((accumulator, file) => {
 
     const model = require(Path.join(__dirname,modelPath,file));
     if (model.prototype instanceof AnchorModel) {

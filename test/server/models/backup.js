@@ -23,7 +23,7 @@ lab.experiment('Backup Model', () => {
     Backup.disconnect();
   });
 
-  lab.test('it returns a new instance when create succeeds', async () => {   
+  lab.test('it returns a new instance when create succeeds', async () => {
 
     const backup = await Backup.create('test', true, false);
 

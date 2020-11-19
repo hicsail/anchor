@@ -2,9 +2,8 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const Feedback = require('../models/feedback');
-const User = require('../models/user');
 
-const register = function (server, options) {  
+const register = function (server, options) {
 
   server.route({
     method: 'GET',
@@ -19,7 +18,7 @@ const register = function (server, options) {
 
       const total = await Feedback.count({ resolved: false });
 
-      return total;      
+      return total;
     }
   });
 
@@ -51,19 +50,19 @@ const register = function (server, options) {
       const feedback = await Feedback.findByIdAndUpdate(id, update);
 
       if (!feedback) {
-          throw Boom.notFound('feedback not found.');          
+        throw Boom.notFound('feedback not found.');
       }
 
-      return feedback;      
+      return feedback;
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'feedbacks',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

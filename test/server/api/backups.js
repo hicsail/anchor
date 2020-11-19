@@ -30,18 +30,18 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  plugins.push(HapiAuthBasic);  
+  plugins.push(HapiAuthBasic);
   plugins.push(HapiAuthCookie);
   plugins.push(HapiAuthJWT);
   plugins.push(Auth);
-  plugins.push(AnchorApi);  
+  plugins.push(AnchorApi);
   plugins.push(BackupApi);
-  
+
   await server.register(plugins);
   await server.start();
   await Fixtures.Db.removeAllData();
 
-  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');   
+  authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
 });
 
 lab.after(async () => {
@@ -54,19 +54,20 @@ lab.experiment('POST /api/backups', () => {
 
   let request;
 
-  lab.beforeEach(async () => {    
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
-      url: '/api/backups',      
+      url: '/api/backups',
+      credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
-      }     
+      }
     };
-  });   
+  });
 
-  lab.test('it returns HTTP 200 when all is well', async () => {     
-    
+  lab.test('it returns HTTP 200 when all is well', async () => {
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
@@ -77,14 +78,14 @@ lab.experiment('POST /api/backups', () => {
     Code.expect(response.result.time).to.be.a.date();
     Code.expect(response.result._id).to.be.a.object();
 
-  });  
+  });
 });
 
 lab.experiment('POST /api/backups/internal', () => {
 
   let request;
 
-  lab.beforeEach(async () => {
+  lab.beforeEach(() => {
 
     request = {
       method: 'POST',
@@ -111,36 +112,39 @@ lab.experiment('DELETE /api/backups/{id}', () => {
 
   let request;
 
-  lab.beforeEach(async () => {
+  lab.beforeEach(() => {
 
     request = {
       method: 'DELETE',
       url: '/api/backups/{id}',
+      credentials: authenticatedRoot,
       headers: {
         authorization: Fixtures.Creds.authHeader(authenticatedRoot.session._id, authenticatedRoot.session.key)
-      }         
+      }
     };
   });
 
-  lab.test('it returns HTTP 404 when backup findByIdAndDelete misses', async () => {    
-    console.log("here")
+
+  lab.test('it returns HTTP 404 when backup findByIdAndDelete misses', async () => {
+
+
     request.url = '/api/backups/555555555555555555555555';
-    
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(404);
-    Code.expect(response.result.message).to.match(/backup not found/i);    
+    Code.expect(response.result.message).to.match(/backup not found/i);
   });
 
   lab.test('it returns HTTP 200 when all is well', async () => {
- 
+
     const backup = await Backup.create('New Backup', true, false);
 
     request.url = '/api/backups/' + backup._id.toString();
-    
+
     const response = await server.inject(request);
 
     Code.expect(response.statusCode).to.equal(200);
-    Code.expect(response.result.message).to.match(/Success/i);    
+    Code.expect(response.result.message).to.match(/Success/i);
   });
 });

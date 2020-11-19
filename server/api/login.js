@@ -1,7 +1,5 @@
-
 'use strict';
 const AuthAttempt = require('../models/auth-attempt');
-const Token = require('../models/token');
 const Session = require('../models/session');
 const User = require('../models/user');
 const Crypto = require('../crypto');
@@ -9,9 +7,10 @@ const Boom = require('boom');
 const Config = require('../../config');
 const Joi = require('joi');
 const Mailer = require('../mailer');
+//const Token = require('../models/token');
 
 const register = function (server, options) {
-  
+
   server.route({
     method: 'POST',
     path: '/api/login',
@@ -43,7 +42,7 @@ const register = function (server, options) {
             throw Boom.badRequest('Maximum number of auth attempts reached.');
           }
 
-          return h.continue;          
+          return h.continue;
         }
       }, {
         assign: 'user',
@@ -56,13 +55,13 @@ const register = function (server, options) {
           const userAgent = request.headers['user-agent'];
 
           if (!user) {
-            
+
             await AuthAttempt.create(ip, username, userAgent);
 
             throw Boom.badRequest('Credentials are invalid or account is inactive.');
           }
 
-          return user;          
+          return user;
         }
       }, {
         assign: 'session',
@@ -73,11 +72,11 @@ const register = function (server, options) {
 
           const session = await Session.create(request.pre.user._id.toString(), ip, userAgent);
           //request.cookieAuth.set(session);
-          return session;          
+          return session;
         }
       }]
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       const credentials = request.pre.session._id.toString() + ':' + request.pre.session.key;
       const authHeader = `Basic ${Buffer.from(credentials).toString('base64')}`;
@@ -124,7 +123,7 @@ const register = function (server, options) {
             return response.takeover();
           }
 
-          return user;          
+          return user;
         }
       }]
     },
@@ -154,7 +153,7 @@ const register = function (server, options) {
 
       await Mailer.sendEmail(emailOptions, template, context);
 
-      return { message: 'Success.' };      
+      return { message: 'Success.' };
     }
   });
 
@@ -280,7 +279,7 @@ const register = function (server, options) {
             throw Boom.badRequest('Invalid email or key.');
           }
 
-          return user;          
+          return user;
         }
       }]
     },
@@ -310,19 +309,16 @@ const register = function (server, options) {
 
       await User.findByIdAndUpdate(request.pre.user._id, update);
 
-      return { message: 'Success.' };      
+      return { message: 'Success.' };
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'api-login',
   dependencies: [
-    'hapi-auth-basic',
-    'hapi-auth-cookie',
-    //'hapi-auth-jwt2',
     'hapi-anchor-model',
-    //'hapi-remote-address'
+    'auth'
   ],
   register
 };

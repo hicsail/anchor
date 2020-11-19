@@ -26,8 +26,8 @@ lab.experiment('Event Model', () => {
 
   lab.test('it returns a new instance when create succeeds', async () => {
 
-    const event = await Event.create('eventName', 'userID');     
-    Code.expect(event).to.be.an.instanceOf(Event);   
+    const event = await Event.create('eventName', 'userID');
+    Code.expect(event).to.be.an.instanceOf(Event);
 
-  });  
+  });
 });

@@ -1,19 +1,18 @@
 'use strict';
-const Async = require('async');
 const Config = require('../config');
 const Session = require('./models/session');
 const Token = require('./models/token');
 const User = require('./models/user');
 
-const register = function (server, options) {  
+const register = function (server, options) {
 
   server.auth.strategy('simple', 'basic', {
     validate: async function (request, username, password) {
 
       const user = await User.findByCredentials(username, password);
-      
+
       if (!user) {
-          return { isValid: false };
+        return { isValid: false };
       }
 
       if (!user.isActive) {
@@ -24,37 +23,37 @@ const register = function (server, options) {
       const sessionKey = request.state.AuthCookie.key;
 
       const session = await Session.findByCredentials(sessionId, sessionKey);
-      
-      if (!session) {         
-          return { isValid: false };
-      }    
+
+      if (!session) {
+        return { isValid: false };
+      }
 
       const update = {
         $set: {
           lastActive: new Date()
         }
       };
- 
+
       await Session.findByIdAndUpdate(session._id.toString(), update);
 
       const credentials = {
         session,
         user,
-        scope: Object.keys(user.roles)
+        scope: await getPermissions(request, user.roles)
       };
 
-      return { credentials, isValid: true };      
+      return { credentials, isValid: true };
     }
   });
 
   server.auth.strategy('jwt', 'jwt', {
     key: Config.get('/authSecret'),
     verifyOptions: { algorithms: ['HS256'] },
-    validate: async function (decoded, request) {     
+    validate: async function (decoded, request) {
 
-      const token = await Token.findOne({tokenId: decoded, active: true});
+      const token = await Token.findOne({ tokenId: decoded, active: true });
 
-      if (!token) {        
+      if (!token) {
         return { isValid: false };
       }
 
@@ -62,7 +61,7 @@ const register = function (server, options) {
         return { isValid: false };
       }
 
-      await Token.findByIdAndUpdate(token._id.toString(), { $set: {lastUsed: new Date()} });
+      await Token.findByIdAndUpdate(token._id.toString(), { $set: { lastUsed: new Date() } });
 
       const user = await User.findById(token.userId);
 
@@ -77,10 +76,10 @@ const register = function (server, options) {
       const credentials = {
         token,
         user,
-        scoep: Object.keys(user.roles)
+        scope: await getPermissions(request, user.roles)
       };
 
-      return { credentials, isValid: true };      
+      return { credentials, isValid: true };
     }
   });
 
@@ -94,8 +93,8 @@ const register = function (server, options) {
     ttl: 60000 * 30, //30 Minutes
     redirectTo: '/login',
     //appendNext: 'returnUrl',
-    validateFunc: async function (request, data) {  
-        
+    validateFunc: async function (request, data) {
+
       const id = data._id;
       const key = data.key;
 
@@ -126,15 +125,34 @@ const register = function (server, options) {
       const credentials = {
         session,
         user,
-        scope: Object.keys(user.roles)        
+        scope: await getPermissions(request, user.roles)
       };
 
       return { credentials, valid: true };
-
-      
     }
   });
-  
+
+};
+
+const getPermissions = async function (request, userRoles) {
+
+  const permissions = [];
+  for (const key in userRoles) {
+    if (typeof userRoles[key] === 'boolean') {
+      permissions.push(key);
+    }
+    else if (request.params.id) {
+      const user = await User.findById(request.params.id);
+
+      if (userRoles[key].userAccess.includes(user.username)) {
+        permissions.push(key);
+      }
+    }
+    else {
+      permissions.push(key);
+    }
+  }
+  return permissions;
 };
 
 module.exports = {
@@ -145,5 +163,5 @@ module.exports = {
     'hapi-auth-jwt2',
     'hapi-anchor-model'
   ],
-  register,  
+  register
 };

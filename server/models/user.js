@@ -1,5 +1,5 @@
 'use strict';
-const Assert = require('assert')
+const Assert = require('assert');
 const Crypto = require('../crypto');
 const GroupAdmin = require('./group-admin');
 const Joi = require('joi');
@@ -7,6 +7,21 @@ const Hoek = require('hoek');
 const AnchorModel = require('../anchor/anchor-model');
 const Config = require('../../config');
 
+const getRolesValidator = function () {
+
+  const roles = {};
+
+  Config.get('/roles').forEach((role) => {
+
+    if (role.type === 'groupAdmin') {
+      roles[role.name] = GroupAdmin.schema;
+    }
+    else {
+      roles[role.name] = Joi.boolean();
+    }
+  });
+  return roles;
+};
 
 class User extends AnchorModel {
   static async generatePasswordHash(password) {
@@ -63,7 +78,7 @@ class User extends AnchorModel {
       query.username = username.toLowerCase();
     }
 
-    const user = await this.findOne(query);
+    const user = await self.findOne(query);
 
     if (!user) {
       return;
@@ -82,7 +97,7 @@ class User extends AnchorModel {
 
     const query = { username: username.toLowerCase() };
 
-    return this.findOne(query);
+    return await this.findOne(query);
   }
 
   static async findByEmail(email) {
@@ -91,23 +106,24 @@ class User extends AnchorModel {
 
     const query = { email: email.toLowerCase() };
 
-    return this.findOne(query);
+    return await this.findOne(query);
   }
 
   static highestRole(roles) {
 
     let maxAccessLevel = 0;
-    let roleDict = {};
+    const roleDict = {};
 
     Config.get('/roles').forEach((roleObj) => {
 
-        roleDict[roleObj['name']] = roleObj['accessLevel'];
+      roleDict[roleObj.name] = roleObj.accessLevel;
     });
 
-    for (let role in roles) {
+    for (const role in roles) {
 
-        if (roleDict[role] >= maxAccessLevel)
-          maxAccessLevel = roleDict[role];
+      if (roleDict[role] >= maxAccessLevel) {
+        maxAccessLevel = roleDict[role];
+      }
     }
 
     return maxAccessLevel;
@@ -141,13 +157,7 @@ User.schema = Joi.object({
   name: Joi.string(),
   inStudy: Joi.boolean().default(true),
   email: Joi.string().email().lowercase().required(),
-  roles: Joi.object({
-    //clinician: Clinician.schema,
-    analyst: Joi.boolean().required(),
-    researcher: Joi.boolean().required(),
-    admin: Joi.boolean().required(),
-    root: Joi.boolean().required()
-  }),
+  roles: Joi.object(getRolesValidator()),
   resetPassword: Joi.object({
     token: Joi.string().required(),
     expires: Joi.date().required()
@@ -171,6 +181,12 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: true,
     payload: User.payload
   },
+  getMy: {
+    disabled: true
+  },
+  delete:{
+    disabled: true
+  },
   insertMany: {
     payload: User.payload
   },
@@ -183,6 +199,5 @@ User.indexes = [
   { key: { username: 1, unique: 1 } },
   { key: { email: 1, unique: 1 } }
 ];
-
 
 module.exports = User;

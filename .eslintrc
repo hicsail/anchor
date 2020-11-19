@@ -4,5 +4,12 @@
   ],
   "rules": {
     "indent": ["error", 2]
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 8
   }
 }

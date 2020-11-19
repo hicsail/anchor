@@ -30,21 +30,21 @@ lab.experiment('User Model', () => {
     const email =  'ren@stimpy.show';
     const name =  'Ren';
 
-    const user = await User.create(username, password, email, name);    
+    const user = await User.create(username, password, email, name);
 
     Code.expect(user).to.be.an.instanceOf(User);
   });
 
   lab.test('it returns undefined when finding by credentials user misses', async () => {
 
-    const user = await User.findByCredentials("steve", "123456");
+    const user = await User.findByCredentials('steve', '123456');
 
     Code.expect(user).to.be.undefined();
   });
 
   lab.test('it returns undefined when finding by credentials user hits and password match misses', async () => {
 
-    const user = await User.findByCredentials("ren", "123456");    
+    const user = await User.findByCredentials('ren', '123456');
 
     Code.expect(user).to.be.undefined();
   });

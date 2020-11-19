@@ -1,13 +1,10 @@
 'use strict';
 const Boom = require('boom');
-const Fs = require('fs');
 const GroupAdmin = require('../models/group-admin');
 const User = require('../models/user');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
-const PermissionConfigTable = require('../permission-config.json');
-const RouteScope = require('../models/route-scope');
 
 const register = function (server, options) {
 
@@ -36,7 +33,7 @@ const register = function (server, options) {
         ]
 
       };
-      const fields = 'name email username';
+
       const limit = 25;
       const page = 1;
 
@@ -47,10 +44,10 @@ const register = function (server, options) {
         pagination: {
           more: users.pages.hasNext
         }
-      });      
+      });
     }
   });
-  
+
   server.route({
     method: 'POST',
     path: '/api/users',
@@ -66,7 +63,7 @@ const register = function (server, options) {
         {
           assign: 'usernameCheck',
           method: async function (request, h) {
-            
+
             const conditions = {
               username: request.payload.username
             };
@@ -77,7 +74,7 @@ const register = function (server, options) {
               throw Boom.conflict('Username already in use.');
             }
 
-            return h.continue;            
+            return h.continue;
           }
         }, {
           assign: 'emailCheck',
@@ -88,12 +85,12 @@ const register = function (server, options) {
             };
 
             const user = await User.findOne(conditions);
-            
+
             if (user) {
               throw Boom.conflict('Email already in use.');
             }
 
-            return h.continue;             
+            return h.continue;
           }
         }, {
           assign: 'passwordCheck',
@@ -106,9 +103,9 @@ const register = function (server, options) {
             }
             catch (err) {
               throw Boom.conflict('Password does not meet complexity standards');
-            } 
+            }
 
-            return h.continue;            
+            return h.continue;
           }
         }]
     },
@@ -121,7 +118,7 @@ const register = function (server, options) {
 
       const user = await User.create(username, password, email, name);
 
-      return user;      
+      return user;
     }
   });
 
@@ -160,7 +157,7 @@ const register = function (server, options) {
               throw Boom.conflict('Username already in use.');
             }
 
-            return h.continue;            
+            return h.continue;
           }
         }, {
           assign: 'emailCheck',
@@ -177,7 +174,7 @@ const register = function (server, options) {
               throw Boom.conflict('Email already in use.');
             }
 
-            return h.continue;            
+            return h.continue;
           }
         }
       ]
@@ -194,12 +191,12 @@ const register = function (server, options) {
       };
 
       const user = await User.findByIdAndUpdate(id, update);
-      
+
       if (!user) {
         throw Boom.notFound('Document not found.');
       }
 
-      return user;      
+      return user;
     }
   });
 
@@ -221,7 +218,7 @@ const register = function (server, options) {
         }
       }
     },
-    handler: async function (request, h) {
+    handler: function (request, h) {
 
       const id = request.params.id;
       const update = {
@@ -237,7 +234,7 @@ const register = function (server, options) {
         throw Boom.notFound('Document not found.');
       }
 
-      return user;      
+      return user;
     }
   });
 
@@ -278,7 +275,7 @@ const register = function (server, options) {
               throw Boom.conflict('Username already in use.');
             }
 
-            return h.continue;            
+            return h.continue;
           }
         }, {
           assign: 'emailCheck',
@@ -295,7 +292,7 @@ const register = function (server, options) {
               throw Boom.conflict('Email already in use.');
             }
 
-            return h.continue;            
+            return h.continue;
           }
         }
       ]
@@ -320,10 +317,10 @@ const register = function (server, options) {
         fields: User.fieldsAdapter('username email roles gender dob address phone height weight')
       };
 
-      
+
       const user = await User.findByIdAndUpdate(id, update, findOptions);
 
-      return user;      
+      return user;
     }
   });
 
@@ -347,11 +344,11 @@ const register = function (server, options) {
       pre: [
         {
           assign: 'password',
-          method: async function (request, h) {
+          method: function (request, h) {
 
             const hash = User.generatePasswordHash(request.payload.password);
 
-            return hash;            
+            return hash;
           }
         },{
           assign: 'passwordCheck',
@@ -363,10 +360,10 @@ const register = function (server, options) {
               await Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions));
             }
             catch (err) {
-              
+
               throw Boom.conflict('Password does not meet complexity standards');
-            } 
-            
+            }
+
             return h.continue;
           }
         },{
@@ -386,10 +383,10 @@ const register = function (server, options) {
             if (role > userRole) {
               return true;
             }
-            else {
-              
-              throw Boom.unauthorized('User does not have permission to update this users password');
-            }            
+
+
+            throw Boom.unauthorized('User does not have permission to update this users password');
+
           }
         }
       ]
@@ -406,11 +403,11 @@ const register = function (server, options) {
       const user = await User.findByIdAndUpdate(id, update);
 
       if (!user) {
-        
+
         throw Boom.notFound('User not found.');
       }
 
-      return user;      
+      return user;
     }
   });
 
@@ -430,10 +427,10 @@ const register = function (server, options) {
       pre: [{
         assign: 'password',
         method: async function (request, h) {
-           
+
           const hash = await User.generatePasswordHash(request.payload.password);
 
-          return hash;          
+          return hash;
         }
       },{
         assign: 'passwordCheck',
@@ -445,16 +442,16 @@ const register = function (server, options) {
             await Joi.validate(request.payload.password, new PasswordComplexity(complexityOptions));
           }
           catch (err) {
-            
+
             throw Boom.conflict('Password does not meet complexity standards');
-          } 
-            
-          return h.continue;          
+          }
+
+          return h.continue;
         }
       }]
     },
     handler: async function (request, h) {
-      
+
       const id = request.auth.credentials.user._id.toString();
       const update = {
         $set: {
@@ -463,8 +460,8 @@ const register = function (server, options) {
       };
 
       const user = await User.findByIdAndUpdate(id, update);
-      
-      return user;      
+
+      return user;
     }
   });
 
@@ -475,7 +472,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root','admin']
+        scope: ['root', 'admin']
       },
       validate: {
         params: {
@@ -492,7 +489,7 @@ const register = function (server, options) {
       }
 
       return ({ message: 'Success.' });
-            
+
     }
   });
 
@@ -514,7 +511,8 @@ const register = function (server, options) {
       },
       pre: [{
         assign: 'canChangeRoles',
-        method: function (request, h){          
+        method: function (request, h){
+
           return h.continue;
           /*User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
             reply(true) :
@@ -523,9 +521,10 @@ const register = function (server, options) {
       },{
         assign: 'notYou',
         method: function (request, h) {
-      
-          if (request.auth.credentials.user._id === request.params.id)
+
+          if (request.auth.credentials.user._id === request.params.id) {
             throw Boom.conflict('Unable to promote yourself.');
+          }
 
           return h.continue;
         }
@@ -540,20 +539,24 @@ const register = function (server, options) {
           const user = await User.findById(request.params.id, findOptions);
 
           if (!user) {
-              throw Boom.notFound('User not found to promote.');
+            throw Boom.notFound('User not found to promote.');
           }
 
-          return user;         
+          return user;
         }
       }]
     },
     handler: async function (request, h) {
 
-      const user = request.pre.user;     
+      const user = request.pre.user;
+      const role = Config.get('/roles').find((elem) => elem.name === request.params.role);
 
-      request.params.role.type  === 'groupAdmin' ?
-        user.roles[request.params.role] = GroupAdmin.create([]) :
+      if (role.type  === 'groupAdmin') {
+        user.roles[request.params.role] = GroupAdmin.create([]);
+      }
+      else {
         user.roles[request.params.role] = true;
+      }
 
       const update = {
         $set: {
@@ -567,7 +570,7 @@ const register = function (server, options) {
         _id: updatedUser._id,
         username: updatedUser.username,
         roles: updatedUser.roles
-      };      
+      };
     }
   });
 
@@ -590,7 +593,8 @@ const register = function (server, options) {
       pre: [{
         assign: 'canChangeRoles',
         method: function (request, h){
-           return h.continue;
+
+          return h.continue;
           /*User.highestRole(request.auth.credentials.user.roles) >= User.highestRole({ [request.params.role]: true }) ?
             reply(true) :
             reply(Boom.conflict('Unable to demote a higher access level than your own'));*/
@@ -599,8 +603,9 @@ const register = function (server, options) {
         assign: 'notYou',
         method: function (request, h) {
 
-          if (request.auth.credentials.user._id === request.params.id)
+          if (request.auth.credentials.user._id === request.params.id) {
             throw Boom.conflict('Unable to demote yourself.');
+          }
 
           return h.continue;
         }
@@ -617,7 +622,7 @@ const register = function (server, options) {
           if (!user) {
             throw Boom.notFound('User not found to promote');
           }
-          return user;          
+          return user;
         }
       }]
     },
@@ -639,16 +644,16 @@ const register = function (server, options) {
         _id: updatedUser._id,
         username: updatedUser.username,
         roles: updatedUser.roles
-      };      
+      };
     }
-  });  
+  });
 };
 
 module.exports = {
   name: 'users',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth'
   ],
   register
 };

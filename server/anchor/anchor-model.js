@@ -421,7 +421,12 @@ class AnchorModel {
       returnOriginal: false
     };
     if (this.timestamps) {
-      doc.$set.updatedAt = new Date();
+      if (doc.$set) {
+        doc.$set.updatedAt = new Date();
+      }
+      else {
+        doc.updatedAt = new Date();
+      }
     }
     const options = Hoek.applyToDefaults(defaultOptions, args.pop() || {});
 
@@ -931,9 +936,10 @@ AnchorModel.routes = {
   auth: true,
   disabled: false,
   getAllTable: {
-    auth: false,
+    auth: true,
     disabled: false,
     payload: null,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
@@ -946,7 +952,7 @@ AnchorModel.routes = {
       //const limit = request.query.limit;
       //const page = request.query.page;
       const options = {
-        sort: sort
+        sort
         //sort: model.sortAdapter(request.query.sort)
       };
       const results =  await model.pagedLookup(query, page, limit, options, model.lookups);
@@ -964,6 +970,7 @@ AnchorModel.routes = {
     auth: true,
     disabled: false,
     payload: null,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -978,9 +985,10 @@ AnchorModel.routes = {
     query: null
   },
   insertMany: {
-    auth: false,
+    auth: true,
     disabled: true,
     payload: null,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -991,12 +999,14 @@ AnchorModel.routes = {
     query: null
   },
   getAll: {
+    auth:true,
     disabled: false,
     query: {
       sort: Joi.string().default('_id'),
       limit: Joi.number().default(20),
       page: Joi.number().default(1)
     },
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1007,12 +1017,13 @@ AnchorModel.routes = {
         sort: model.sortAdapter(request.query.sort)
       };
       return await model.pagedLookup(query, page, limit, options, model.lookups);
-    },
-    auth: true
+    }
   },
   update: {
+    auth:true,
     disabled: false,
     payload: {},
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1029,8 +1040,10 @@ AnchorModel.routes = {
     query: null
   },
   delete: {
+    auth:true,
     disabled: false,
     payload: null,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1044,7 +1057,9 @@ AnchorModel.routes = {
     query: null
   },
   getId: {
+    auth:true,
     disabled: false,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1060,12 +1075,14 @@ AnchorModel.routes = {
   },
 
   getMy: {
+    auth:true,
     disabled: false,
     query: {
       sort: Joi.string().default('_id'),
       limit: Joi.number().default(20),
       page: Joi.number().default(1)
     },
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1092,7 +1109,7 @@ AnchorModel.routes = {
       from: Joi.string(),
       invisible: Joi.boolean().default(false),
       accessRoles: Joi.array()
-    }),
+    })
   },
   editView: {
     auth: true,

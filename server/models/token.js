@@ -48,7 +48,7 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     payload: {
       tokenName: Joi.string().required(),
-      active: Joi.boolean().default(true),      
+      active: Joi.boolean().default(true)
     }
   },
   update: {
@@ -59,14 +59,14 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   tableView: {
     outputDataFields: {
-      username: {label: 'Username', from: 'user'},
-      name: {label: 'Name', from: 'user'},
-      tokenName: {label: 'Token Name', accessRoles: ['root']},
-      active: {label: 'Active'},
-      lastUsed: {label: 'Last Used'},
-      time: {label: 'Time'},
-      token: {label: 'Token', invisible: true},
-      _id: {label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true}
+      username: { label: 'Username', from: 'user' },
+      name: { label: 'Name', from: 'user' },
+      tokenName: { label: 'Token Name', accessRoles: ['root'] },
+      active: { label: 'Active' },
+      lastUsed: { label: 'Last Used' },
+      time: { label: 'Time' },
+      token: { label: 'Token', invisible: true },
+      _id: { label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true }
     }
   },
   createView: {
@@ -75,9 +75,9 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     })
   },
   editView: {
-    editSchema: Joi.object({      
+    editSchema: Joi.object({
       tokenName: Joi.string().required(),
-      active: Joi.boolean().required()      
+      active: Joi.boolean().required()
     })
   }
 });
