@@ -136,7 +136,7 @@ const register = function (server, serverOptions) {
           for (const key in fields) {
             if (fields.hasOwnProperty(key)){
               if ('from' in fields[key]){
-                if (fields[key].from) {
+                if (fields[key].from && rec[fields[key].from]) {
                   doc[key] = rec[fields[key].from][key];
                 }
                 else {
