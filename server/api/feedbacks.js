@@ -4,7 +4,7 @@ const Joi = require('joi');
 const Feedback = require('../models/feedback');
 const User = require('../models/user');
 
-const register = function (server, options) {  
+const register = function (server, options) {
 
   server.route({
     method: 'GET',
@@ -19,51 +19,51 @@ const register = function (server, options) {
 
       const total = await Feedback.count({ resolved: false });
 
-      return total;      
+      return total;
     }
   });
 
-  server.route({
-    method: 'PUT',
-    path: '/api/feedback/{id}',
-    options: {
-      auth: {
-        strategies: ['simple', 'session'],
-        scope: ['root','admin','researcher']
-      },
-      validate: {
-        payload: {
-          resolved: Joi.boolean().required(),
-          comment: Joi.string().required()
-        }
-      }
-    },
-    handler: async function (request, h) {
-
-      const id = request.params.id;
-      const update = {
-        $set: {
-          resolved: request.payload.resolved,
-          comment: request.payload.comment
-        }
-      };
-
-      const feedback = await Feedback.findByIdAndUpdate(id, update);
-
-      if (!feedback) {
-          throw Boom.notFound('feedback not found.');          
-      }
-
-      return feedback;      
-    }
-  });  
+  // server.route({
+  //   method: 'PUT',
+  //   path: '/api/feedback/{id}',
+  //   options: {
+  //     auth: {
+  //       strategies: ['simple', 'session'],
+  //       scope: ['root','admin','researcher']
+  //     },
+  //     validate: {
+  //       payload: {
+  //         resolved: Joi.boolean().required(),
+  //         comment: Joi.string().required()
+  //       }
+  //     }
+  //   },
+  //   handler: async function (request, h) {
+  //
+  //     const id = request.params.id;
+  //     const update = {
+  //       $set: {
+  //         resolved: request.payload.resolved,
+  //         comment: request.payload.comment
+  //       }
+  //     };
+  //
+  //     const feedback = await Feedback.findByIdAndUpdate(id, update);
+  //
+  //     if (!feedback) {
+  //         throw Boom.notFound('feedback not found.');
+  //     }
+  //
+  //     return feedback;
+  //   }
+  // });
 };
 
 module.exports = {
   name: 'feedbacks',
   dependencies: [
     'hapi-anchor-model',
-    'auth',    
+    'auth',
   ],
   register
 };

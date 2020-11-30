@@ -61,11 +61,11 @@ AuthAttempt.schema = Joi.object({
 
 AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: Joi.object({})
+    disabled: true
   },
-  update: {
-    payload: Joi.object({})
-  },
+  update: Joi.object({
+    username: Joi.string().lowercase().required()
+  }),
   tableView: {
     outputDataFields: {
       username: {label: 'Username'},
@@ -78,7 +78,12 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     }
   },
   createView: {
-    createSchema: Joi.object({})
+    disabled: true
+  },
+  editView: {
+    editSchema: Joi.object({
+      username: Joi.string().lowercase().required()
+    })
   }
 });
 

@@ -47,7 +47,10 @@ Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     })
   },
   update: {
-    disabled: true
+    payload: Joi.object({
+      subject: Joi.string().required(),
+      description: Joi.string().required()
+    })
   },
   tableView: {
     outputDataFields: {
@@ -63,6 +66,12 @@ Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   createView: {
     createSchema: Joi.object({
+      subject: Joi.string().required(),
+      description: Joi.string().required()
+    })
+  },
+  editView: {
+    editSchema: Joi.object({
       subject: Joi.string().required(),
       description: Joi.string().required()
     })

@@ -78,6 +78,13 @@ Invite.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       name: Joi.string().required(),
       description: Joi.string().allow('')
     })
+  },
+  editView: {
+    editSchema: Joi.object({
+      email: Joi.string().email().lowercase().required(),
+      name: Joi.string().required(),
+      description: Joi.string().allow('')
+    })
   }
 });
 

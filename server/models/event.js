@@ -40,6 +40,11 @@ Event.routes = Hoek.applyToDefaults(AnchorModel.routes, {
       name: Joi.string().required()
     })
   },
+  update: {
+    payload: Joi.object({
+      name: Joi.string().required()
+    })
+  },
   delete: {
     disabled: true
   },
@@ -56,7 +61,13 @@ Event.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     createSchema: Joi.object({
       name: Joi.string().required()
     })
-  }
+  },
+  editView: {
+    editSchema: Joi.object({
+      name: Joi.string().required()
+    })
+  },
+
 });
 
 Event.lookups = [{

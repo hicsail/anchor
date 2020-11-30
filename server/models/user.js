@@ -176,6 +176,12 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   tableView: {
     disabled: true
+  },
+  createView: {
+    disabled: true
+  },
+  editView: {
+    disabled: true
   }
 });
 

@@ -84,11 +84,31 @@ Session.schema = Joi.object({
 
 Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: Joi.object({})
+    payload: Joi.object({
+      userId: Joi.string().required(),
+      key: Joi.string().required(),
+      time: Joi.date().required(),
+      lastActive: Joi.date().required(),
+      ip: Joi.string().required(),
+      browser: Joi.string().required(),
+      os: Joi.string().required()
+    })
+  },
+  updated: {
+    payload: Joi.object({
+      userId: Joi.string().required(),
+      key: Joi.string().required(),
+      time: Joi.date().required(),
+      lastActive: Joi.date().required(),
+      ip: Joi.string().required(),
+      browser: Joi.string().required(),
+      os: Joi.string().required()
+    })
   },
   tableView: {
     outputDataFields: {
       userId: {label: 'User ID'},
+      userAgent: {label: 'User Agent'},
       time: {label: 'Time'},
       lastActive: {label: 'Last Active'},
       ip: {label: 'IP'},
@@ -99,7 +119,26 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     }
   },
   createView: {
-    createSchema: Joi.object({})
+    createSchema: Joi.object({
+      userId: Joi.string().required(),
+      key: Joi.string().required(),
+      time: Joi.date().required(),
+      lastActive: Joi.date().required(),
+      ip: Joi.string().required(),
+      browser: Joi.string().required(),
+      os: Joi.string().required()
+    })
+  },
+  editView: {
+    editSchema: Joi.object({
+      userId: Joi.string().required(),
+      key: Joi.string().required(),
+      time: Joi.date().required(),
+      lastActive: Joi.date().required(),
+      ip: Joi.string().required(),
+      browser: Joi.string().required(),
+      os: Joi.string().required()
+    })
   }
 });
 
