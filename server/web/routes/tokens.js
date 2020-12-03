@@ -2,6 +2,7 @@
 const internals = {};
 const Config = require('../../../config');
 const Token = require('../../models/token');
+const PermissionConfigTable = require('../../permission-config.json');
 
 const register = function (server, options) {
 
@@ -30,7 +31,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root', 'admin','researcher']
+        scope: PermissionConfigTable.GET['/tokens/create'] || ['root']
       }
     },
     handler: function (request, h) {
@@ -50,7 +51,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root', 'admin','researcher']
+        scope: PermissionConfigTable.GET['/tokens/{id}'] || ['root']
       }
     },
     handler: async function (request, h) {

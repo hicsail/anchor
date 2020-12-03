@@ -3,6 +3,7 @@ const Env = require('dotenv');
 const Fs = require('fs');
 const Joi = require('joi');
 const Path = require('path');
+const PermissionConfigTable = require('../permission-config.json');
 
 const register = function (server, options) {
 
@@ -12,7 +13,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['admin','root']
+        scope: PermissionConfigTable.GET['/api/env'] || ['root']
       }
     },
     handler: function (request, h) {
@@ -27,7 +28,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['admin','root']
+        scope: PermissionConfigTable.GET['/api/env/{name}'] || ['root']
       }
     },
     handler: function (request, h) {
@@ -42,7 +43,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['admin','root']
+        scope: PermissionConfigTable.POST['/api/env'] || ['root']
       },
       validate: {
         payload: Joi.object()

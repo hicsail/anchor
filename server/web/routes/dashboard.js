@@ -1,5 +1,7 @@
 'use strict';
 const Config = require('../../../config');
+const PermissionConfigTable = require('../../permission-config.json');
+const DefaultScopes = require('../../helper/getRoleNames');
 
 const register = function (server, options) {
 
@@ -8,7 +10,8 @@ const register = function (server, options) {
     path: '/dashboard',
     options : {
       auth: {
-        strategies: ['session']
+        strategies: ['session'],
+        scope: PermissionConfigTable.GET['/dashboard'] || DefaultScopes
       }
     },
     handler: function (request, h) {

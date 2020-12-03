@@ -1,6 +1,7 @@
 'use strict';
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
+const PermissionConfigTable = require('../../permission-config.json');
 
 const register = function (server, options) {
 
@@ -29,7 +30,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root', 'admin','clinician','researcher']
+        scope: PermissionConfigTable.GET['/invite/create'] || ['root']
       }
     },
     handler: function (request, h) {
@@ -49,7 +50,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root','admin']
+        scope: PermissionConfigTable.GET['/invite/edit/{id}'] || ['root']
       }
     },
     handler: async function (request, h) {

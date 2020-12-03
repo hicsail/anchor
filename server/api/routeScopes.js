@@ -10,7 +10,8 @@ const register = function (server, options) {
     path: '/api/users/scopes',
     options: {
       auth: {
-        strategies: ['simple', 'jwt', 'session']
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.PUT['/api/users/scopes'] || ['root']
       },
       validate: {
         payload: RouteScope.payload
@@ -52,21 +53,9 @@ const register = function (server, options) {
       }
 
       PermissionConfigTable[request.payload.method][request.payload.path] = scopesArray;
-      //console.log("scopesArray", scopesArray)
+
 
       Fs.writeFileSync('server/permission-config.json', JSON.stringify(PermissionConfigTable, null, 2));
-
-
-      /*const injectOptions = {
-        method: 'POST',
-        url: '/api/users/scopeCheck',
-        payload: {
-          method: request.payload.method,
-          path: request.payload.path
-        }
-     }
-      const res = await server.inject(injectOptions);
-      console.log("resr.result", res.payload); */
 
       return true;
     }
@@ -77,13 +66,11 @@ const register = function (server, options) {
     path: '/api/users/scopeCheck',
     options: {
       auth: {
-        strategy: 'session'
-        //scope: PermissionConfigTable.POST['/api/users/scopeCheck'] || DefaultScopes
+        strategies: ['simple', 'jwt', 'session'],
+        scope: PermissionConfigTable.POST['/api/users/scopeCheck'] || ['root']
       }
     },
     handler: function (request, h){
-
-      console.log('hereeee');
 
       const route = server.table().find( (item) => {
 

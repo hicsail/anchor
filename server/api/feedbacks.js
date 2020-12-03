@@ -2,6 +2,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const Feedback = require('../models/feedback');
+const PermissionConfigTable = require('../permission-config.json');
 
 const register = function (server, options) {
 
@@ -11,7 +12,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/api/feedback/unresolved'] || ['root']
       }
     },
     handler: async function (request, h) {
@@ -28,7 +29,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root','admin','researcher']
+        scope: PermissionConfigTable.PUT['/api/feedback/{id}'] || ['root']
       },
       validate: {
         payload: {

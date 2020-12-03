@@ -30,7 +30,10 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){//adjusts the columns o
 });
 
 function updateScope(path, method, scope) {
+
+  var scopeUpdated = false;
   $.ajax({
+    async: false,
     url: '/api/users/scopes',
     type: 'PUT',
     data: {
@@ -38,31 +41,37 @@ function updateScope(path, method, scope) {
       path: path,
       scope: scope
     },
-    success: function (result) {
-      // location.assign("/scopes")
-      // console.log(result)
-      // console.log("method", method)
-      // console.log("path", path)
-      // location.reload();
-      $.ajax({//API route for comparing the scope for configurability in the config file and in server for the specified route's scope
+    success: function (result) {      
+      scopeUpdated = true;      
+    },
+    error: function (result) {
+      errorAlert(result.responseJSON.message);
+    }    
+  });  
+
+  //function for comparing the scope for configurability in the config file and in server for the specified route's scope
+  function scopeCheck() {
+    
+    if (scopeUpdated) {  
+      $.ajax({
         url: '/api/users/scopeCheck',
         type: 'POST',
         data: {
           method: method,
           path: path
         },
-        success: function (result){
+        async: false,
+        success: function (result){ 
+               
           localStorage.setItem('modalMessage', result);
           location.reload();
         },
         error: function (result){
-          console.log(result)
-          //errorAlert(result.responseJSON.message);
-        }
-      })
-    },
-    error: function (result) {
-      errorAlert(result.responseJSON.message);
+          
+          errorAlert(result.responseJSON.message);
+        }        
+      })    
     }
-  });
+  }
+  window.setTimeout(scopeCheck, 1000)
 }
