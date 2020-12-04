@@ -368,13 +368,19 @@ const register = function (server, serverOptions) {
 
       }
       else{
-        model.routes.create.payload = model.schema;
-        schema = joiToJson(model.schema);
-        Object.entries(schema.properties).forEach( ([key, value]) => {
-          if (!value || Object.keys(value).length === 0){
-            delete schema.properties[key]
-          }
-        });
+        if (!model.routes.create.payload){
+          model.routes.create.payload = model.schema;
+          schema = joiToJson(model.schema);
+          Object.entries(schema.properties).forEach( ([key, value]) => {
+            if (!value || Object.keys(value).length === 0){
+              delete schema.properties[key]
+            }
+          });
+        }
+        else{
+          schema = joiToJson(model.routes.create.payload);
+        }
+
       }
 
       return h.view('anchor-default-templates/create', {

@@ -65,10 +65,10 @@ Feedback.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     }
   },
   createView: {
-    // createSchema: Joi.object({
-    //   subject: Joi.string().required(),
-    //   description: Joi.string().required()
-    // })
+    createSchema: Joi.object({
+      subject: Joi.string().required(),
+      description: Joi.string().required()
+    })
   },
   editView: {
     editSchema: Joi.object({

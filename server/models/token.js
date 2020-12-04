@@ -70,10 +70,10 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     }
   },
   createView: {
-    // createSchema: Joi.object({
-    //   tokenName: Joi.string().required(),
-    //   active: Joi.boolean().required()
-    // })
+    createSchema: Joi.object({
+      tokenName: Joi.string().required(),
+      active: Joi.boolean().required()
+    })
   },
   editView: {
     editSchema: Joi.object({
