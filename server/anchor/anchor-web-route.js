@@ -361,7 +361,21 @@ const register = function (server, serverOptions) {
     ]},
     handler: async function (request, h) {
       const model = request.pre.model;
-      const schema = joiToJson(model.routes.createView.createSchema);
+      const createView = model.routes.createView;
+      let schema;
+      if (createView.createSchema){
+        schema = joiToJson(createView.createSchema);
+
+      }
+      else{
+        model.routes.create.payload = model.schema;
+        schema = joiToJson(model.schema);
+        Object.entries(schema.properties).forEach( ([key, value]) => {
+          if (!value || Object.keys(value).length === 0){
+            delete schema.properties[key]
+          }
+        });
+      }
 
       return h.view('anchor-default-templates/create', {
         user: request.auth.credentials.user,

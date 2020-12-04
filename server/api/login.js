@@ -11,7 +11,7 @@ const Joi = require('joi');
 const Mailer = require('../mailer');
 
 const register = function (server, options) {
-  
+
   server.route({
     method: 'POST',
     path: '/api/login',
@@ -43,7 +43,7 @@ const register = function (server, options) {
             throw Boom.badRequest('Maximum number of auth attempts reached.');
           }
 
-          return h.continue;          
+          return h.continue;
         }
       }, {
         assign: 'user',
@@ -56,13 +56,13 @@ const register = function (server, options) {
           const userAgent = request.headers['user-agent'];
 
           if (!user) {
-            
+
             await AuthAttempt.create(ip, username, userAgent);
 
             throw Boom.badRequest('Credentials are invalid or account is inactive.');
           }
 
-          return user;          
+          return user;
         }
       }, {
         assign: 'session',
@@ -71,9 +71,14 @@ const register = function (server, options) {
           const userAgent = request.headers['user-agent'];
           const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
 
-          const session = await Session.create(request.pre.user._id.toString(), ip, userAgent);
+          let doc = {
+            userId: request.pre.user._id.toString(),
+            ip,
+            userAgent
+          };
+          const session = await Session.create(doc);
           //request.cookieAuth.set(session);
-          return session;          
+          return session;
         }
       }]
     },
@@ -124,7 +129,7 @@ const register = function (server, options) {
             return response.takeover();
           }
 
-          return user;          
+          return user;
         }
       }]
     },
@@ -154,7 +159,7 @@ const register = function (server, options) {
 
       await Mailer.sendEmail(emailOptions, template, context);
 
-      return { message: 'Success.' };      
+      return { message: 'Success.' };
     }
   });
 
@@ -280,7 +285,7 @@ const register = function (server, options) {
             throw Boom.badRequest('Invalid email or key.');
           }
 
-          return user;          
+          return user;
         }
       }]
     },
@@ -310,9 +315,9 @@ const register = function (server, options) {
 
       await User.findByIdAndUpdate(request.pre.user._id, update);
 
-      return { message: 'Success.' };      
+      return { message: 'Success.' };
     }
-  });  
+  });
 };
 
 module.exports = {

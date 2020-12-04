@@ -36,21 +36,27 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  plugins.push(HapiAuthBasic);  
+  plugins.push(HapiAuthBasic);
   plugins.push(HapiAuthCookie);
   plugins.push(HapiAuthJWT);
   plugins.push(Auth);
-  plugins.push(AnchorApi);  
+  plugins.push(AnchorApi);
   plugins.push(InviteApi);
   plugins.push(Signup);
-  
+
   await server.register(plugins);
   await server.start();
   await Fixtures.Db.removeAllData();
 
   user = await User.create('ren', 'baddog', 'ren@stimpy.show', 'ren');
   invite = await Invite.create('renny', 'mytest@test.com',  'this is a test invitation', user._id.toString());
-  session = await Session.create(user._id.toString(), '127.0.0.1', 'Lab');
+
+  let doc = {
+    userId: user._id.toString(),
+    ip: '127.0.0.1',
+    userAgent: 'Lab'
+  };
+  session = await Session.create(doc);
 });
 
 lab.after(async () => {
@@ -114,7 +120,7 @@ lab.experiment('POST /api/invites', () => {
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result).to.be.an.instanceOf(Invite);
-  });  
+  });
 });
 
 /*lab.experiment('POST /api/invites/{id}',  () => {

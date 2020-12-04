@@ -26,7 +26,12 @@ lab.experiment('Session Model', () => {
 
   lab.test('it returns a new instance when create succeeds', async () => {
 
-    const session = await Session.create('ren', 'ip', 'userAgent');
+    let doc = {
+      userId: 'ren',
+      ip: 'ip',
+      userAgent: 'userAgent'
+    }
+    const session = await Session.create(doc);
     Code.expect(session).to.be.an.instanceOf(Session);
   });
 
@@ -47,7 +52,13 @@ lab.experiment('Session Model', () => {
       'Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us)',
       ' AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405'
     ].join('');
-    const session = await Session.create(userId, ip, userAgent);
+
+    let doc = {
+      userId,
+      ip,
+      userAgent
+    };
+    const session = await Session.create(doc);
 
     Code.expect(session).to.be.an.instanceOf(Session);
 
@@ -65,7 +76,13 @@ lab.experiment('Session Model', () => {
       'Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us)',
       ' AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405'
     ].join('');
-    const session = await Session.create(userId, ip, userAgent);
+
+    let doc = {
+      userId,
+      ip,
+      userAgent
+    };
+    const session = await Session.create(doc);
 
     Code.expect(session).to.be.an.instanceOf(Session);
 
@@ -93,7 +110,13 @@ lab.experiment('Session Model', () => {
       'Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us)',
       ' AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405'
     ].join('');
-    const session = await Session.create(userId, ip, userAgent);
+
+    let doc = {
+      userId,
+      ip,
+      userAgent
+    }
+    const session = await Session.create(doc);
 
     await session.updateLastActive();
 

@@ -38,6 +38,8 @@ Invite.schema = Joi.object({
   _id: Joi.object(),
   user: User.payload,
   userId: Joi.string().required(),
+  name: Joi.string().required(),
+  email: Joi.string().email().lowercase().required(),
   status: Joi.boolean().required(),
   time: Joi.date().required(),
   expiredAt: Joi.date().required()

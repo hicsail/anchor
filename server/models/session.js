@@ -10,22 +10,22 @@ const Hoek = require('hoek');
 
 class Session extends AnchorModel {
 
-  static async create(userId, ip, userAgent) {
+  static async create(doc) {
 
-    Assert.ok(userId, 'Missing userId argument.');
-    Assert.ok(ip, 'Missing ip argument.');
-    Assert.ok(userAgent, 'Missing userAgent argument.');
+    Assert.ok(doc.userId, 'Missing userId argument.');
+    Assert.ok(doc.ip, 'Missing ip argument.');
+    Assert.ok(doc.userAgent, 'Missing userAgent argument.');
 
     const keyHash = await Crypto.generateKeyHash();
-    const agentInfo = UserAgent.lookup(userAgent);
+    const agentInfo = UserAgent.lookup(doc.userAgent);
     const browser = agentInfo.family;
 
     const document = {
-      userId,
+      userId: doc.userId,
       key: keyHash.hash,
       time: new Date(),
       lastActive: new Date(),
-      ip,
+      ip: doc.ip,
       browser,
       os: agentInfo.os.toString()
     };
@@ -74,6 +74,7 @@ Session.collectionName = 'sessions';
 Session.schema = Joi.object({
   _id: Joi.object(),
   userId: Joi.string().required(),
+  userAgent: Joi.string().required(),
   key: Joi.string().required(),
   time: Joi.date().required(),
   lastActive: Joi.date().required(),
@@ -86,6 +87,7 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
     payload: Joi.object({
       userId: Joi.string().required(),
+      userAgent: Joi.string().required(),
       key: Joi.string().required(),
       time: Joi.date().required(),
       lastActive: Joi.date().required(),
@@ -97,6 +99,7 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   updated: {
     payload: Joi.object({
       userId: Joi.string().required(),
+      userAgent: Joi.string().required(),
       key: Joi.string().required(),
       time: Joi.date().required(),
       lastActive: Joi.date().required(),
@@ -108,7 +111,7 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   tableView: {
     outputDataFields: {
       userId: {label: 'User ID'},
-      userAgent: {label: 'User Agent'},
+      userAgent: {label: 'User Agent', invisible: true},
       time: {label: 'Time'},
       lastActive: {label: 'Last Active'},
       ip: {label: 'IP'},
@@ -121,6 +124,7 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   createView: {
     createSchema: Joi.object({
       userId: Joi.string().required(),
+      userAgent: Joi.string().required(),
       key: Joi.string().required(),
       time: Joi.date().required(),
       lastActive: Joi.date().required(),
@@ -132,6 +136,7 @@ Session.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   editView: {
     editSchema: Joi.object({
       userId: Joi.string().required(),
+      userAgent: Joi.string().required(),
       key: Joi.string().required(),
       time: Joi.date().required(),
       lastActive: Joi.date().required(),

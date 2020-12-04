@@ -29,9 +29,9 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
-  //plugins.push(HapiAuthBasic);  
+  //plugins.push(HapiAuthBasic);
   //plugins.push(HapiAuthCookie);
-  //plugins.push(HapiAuthJWT);  
+  //plugins.push(HapiAuthJWT);
   plugins.push(Auth);
   //plugins.push(Permissions);
   plugins.push(AnchorApi);
@@ -41,7 +41,12 @@ lab.before(async () => {
   await Fixtures.Db.removeAllData();
 
   user = await User.create('ren', 'baddog', 'ren@stimpy.show', 'ren');
-  session = await Session.create(user._id.toString(), 'test', 'test');
+  let doc = {
+    userId: user._id.toString(),
+    ip: 'test',
+    userAgent: 'test'
+  };
+  session = await Session.create(doc);
 });
 
 lab.after(async () => {
@@ -139,7 +144,7 @@ lab.experiment('POST /api/{collectionName}', () => {
       url: '/api/tokens',
       payload: {
         tokenName: 'test token',
-        active: false        
+        active: false
       },
       headers: {
         authorization: Fixtures.Creds.authHeader(session._id, session.key)

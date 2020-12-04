@@ -30,7 +30,7 @@ Event.collectionName = 'events';
 Event.schema = Joi.object({
   _id: Joi.object(),
   name: Joi.string().required(),
-  userId: Joi.boolean().required(),
+  userId: Joi.string().required(),
   time: Joi.date().required()
 });
 

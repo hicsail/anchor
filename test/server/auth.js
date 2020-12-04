@@ -74,7 +74,7 @@ lab.before(async () => {
 
         return { isValid: true };
       }
-      catch (err) {        
+      catch (err) {
         return { isValid: false };
       }
     }
@@ -151,7 +151,7 @@ lab.before(async () => {
         _id: userCreds.session._id
       };
 
-      request.cookieAuth.set(creds);      
+      request.cookieAuth.set(creds);
       return creds;
     }
   });
@@ -196,7 +196,12 @@ lab.experiment('Simple Auth Strategy', () => {
 
   lab.test('it returns as invalid when the user query misses', async () => {
 
-    const session = await Session.create('000000000000000000000000', '127.0.0.1', 'Lab');
+    let doc = {
+      userId: '000000000000000000000000',
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    }
+    const session = await Session.create(doc);
     const request = {
       method: 'GET',
       url: '/simple',
@@ -213,8 +218,12 @@ lab.experiment('Simple Auth Strategy', () => {
   lab.test('it returns as invalid when the user is not active', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy', []);
-
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
+    let doc = {
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    }
+    const session = await Session.create(doc);
     const update = {
       $set: {
         isActive: false
@@ -236,12 +245,17 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
   });
-  
+
   lab.test('it returns as valid when it is the root user', async () => {
 
     const { user } = await Fixtures.Creds.createRootUser('321!abc','ren@stimpy.show');
 
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
+    let doc = {
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    }
+    const session = await Session.create(doc);
 
     const request = {
       method: 'GET',
@@ -261,7 +275,12 @@ lab.experiment('Simple Auth Strategy', () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy', []);
 
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
+    let doc = {
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    };
+    const session = await Session.create(doc);
 
     const request = {
       method: 'GET',
@@ -361,7 +380,7 @@ lab.experiment('Session Auth Strategy', () => {
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
-  });  
+  });
 
   lab.test('it returns valid when its the root user', async () => {
 
@@ -372,7 +391,7 @@ lab.experiment('Session Auth Strategy', () => {
     const loginResponse = await server.inject(loginRequest);
 
     const user = loginResponse.result.user;
-    
+
 
     const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
     const request = {
@@ -515,7 +534,7 @@ lab.experiment('JWT Auth Strategy', () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy', []);
     const token = await Token.create({ userId: `${user._id}`, tokenName: 'test token' });
-    const keyHash = await Crypto.generateKeyHash();    
+    const keyHash = await Crypto.generateKeyHash();
     keyHash.key = JWT.sign(( token._id + ':' + keyHash.key), Config.get('/authSecret'));
 
     const request = {
@@ -530,12 +549,12 @@ lab.experiment('JWT Auth Strategy', () => {
 
     Code.expect(response.statusCode).to.equal(200);
     Code.expect(response.result.isValid).to.equal(false);
-  });  
+  });
 
   lab.test('it returns as valid when all is well', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy', []);
-    const token = await Token.create({ userId: `${user._id}`, tokenName: 'test token' });   
+    const token = await Token.create({ userId: `${user._id}`, tokenName: 'test token' });
 
     const request = {
       method: 'GET',

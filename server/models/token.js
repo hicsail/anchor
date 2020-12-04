@@ -14,7 +14,7 @@ class Token extends AnchorModel {
     Assert.ok(doc.userId, 'Missing userId arugment.');
 
     const id = AnchorModel.ObjectID().toString();
-
+    const lastUsed = doc.lastUsed ? doc.lastUsed : null;
     const document = {
       tokenName: doc.tokenName,
       userId: doc.userId,
@@ -22,7 +22,7 @@ class Token extends AnchorModel {
       tokenId: id,
       time: new Date(),
       active: doc.active,
-      lastUsed: null
+      lastUsed: lastUsed
     };
 
     const tokens = await this.insertOne(document);
@@ -70,10 +70,10 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     }
   },
   createView: {
-    createSchema: Joi.object({
-      tokenName: Joi.string().required(),
-      active: Joi.boolean().required()
-    })
+    // createSchema: Joi.object({
+    //   tokenName: Joi.string().required(),
+    //   active: Joi.boolean().required()
+    // })
   },
   editView: {
     editSchema: Joi.object({
