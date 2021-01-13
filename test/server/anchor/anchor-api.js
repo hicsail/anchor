@@ -33,6 +33,7 @@ lab.before(async () => {
     });
 
   plugins.push({ plugin: require('../../../server/anchor/hapi-anchor-model'), options: Manifest.get('/register/plugins').filter((v) => v.plugin === './server/anchor/hapi-anchor-model.js')[0].options });
+
   plugins.push(HapiAuthBasic);
   plugins.push(HapiAuthCookie);
   plugins.push(HapiAuthJWT);
@@ -45,7 +46,12 @@ lab.before(async () => {
 
   authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
   user = await User.create('ren', 'baddog', 'ren@stimpy.show', 'ren');
-  session = await Session.create(user._id.toString(), 'test', 'test');
+  const doc = {
+    userId: user._id.toString(),
+    ip: 'test',
+    userAgent: 'test'
+  };
+  session = await Session.create(doc);
 });
 
 lab.after(async () => {

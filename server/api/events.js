@@ -1,5 +1,6 @@
 'use strict';
 const Event = require('../models/event');
+const PermissionConfigTable = require('../permission-config.json');
 
 const register = function (server, options) {
 
@@ -8,7 +9,6 @@ const register = function (server, options) {
     path: '/api/events/{name}',
     options: {
       auth: {
-        mode: 'try',
         strategies: ['simple', 'session']
       },
       plugins: {
@@ -37,7 +37,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root','admin','researcher']
+        scope: PermissionConfigTable.GET['/api/events/name/{name}'] || ['root']
       }
     },
     handler: async function (request, h) {
@@ -54,7 +54,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root','admin','researcher']
+        scope: PermissionConfigTable.GET['/api/events/user/{userId}'] || ['root']
       }
     },
     handler: async function (request, h) {

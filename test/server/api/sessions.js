@@ -54,6 +54,7 @@ lab.experiment('DELETE /api/sessions/my/{id}', () => {
 
   let request;
 
+
   lab.beforeEach(() => {
 
     request = {
@@ -89,7 +90,12 @@ lab.experiment('DELETE /api/sessions/my/{id}', () => {
 
   lab.test('it returns HTTP 200 when all is well', async () => {
 
-    const session = await Session.create(`${authenticatedRoot.user._id}`,'127.0.0.1','Lab');
+    const doc = {
+      userId: `${authenticatedRoot.user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    };
+    const session = await Session.create(doc);
     request.url = '/api/sessions/my/' + session._id.toString();
 
     const response = await server.inject(request);

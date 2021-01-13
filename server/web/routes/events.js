@@ -4,27 +4,27 @@ const Event = require('../../models/event');
 
 const register = function (server, options) {
 
-  server.route({
-    method: 'GET',
-    path: '/events',
-    options: {
-      auth: {
-        strategies: ['session']
-      }
-    },
-    handler: async function (request, h) {
-
-      const names = await Event.distinct('name');
-
-      return h.view('events/index', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),
-        title: 'Events',
-        baseUrl: Config.get('/baseUrl'),
-        events: names
-      });
-    }
-  });
+  // server.route({
+  //   method: 'GET',
+  //   path: '/events',
+  //   options: {
+  //     auth: {
+  //       strategies: ['session']
+  //     }
+  //   },
+  //   handler: async function (request, h) {
+  //
+  //     const names = await Event.distinct('name');
+  //
+  //     return h.view('events/index', {
+  //       user: request.auth.credentials.user,
+  //       projectName: Config.get('/projectName'),
+  //       title: 'Events',
+  //       baseUrl: Config.get('/baseUrl'),
+  //       events: names
+  //     });
+  //   }
+  // });
 
   server.route({
     method: 'GET',
@@ -94,7 +94,6 @@ module.exports = {
   name: 'eventsList',
   dependencies: [
     'hapi-anchor-model',
-    'auth'
-  ],
+    'auth'],
   register
 };

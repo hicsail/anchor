@@ -1,0 +1,45 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>Create {{title}}</h3>
+        <hr>
+        <div class="card">
+          <div style="padding: 20px">
+            <form id="form">
+              <div id="formFields"></div>
+              <button id="create" type="submit" class="btn btn-primary">Create</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+let schema = convert({{{json createSchema}}});
+joiToForm('formFields',schema);
+$('#create').click((event) => {
+  event.preventDefault();
+  const values = {};
+
+  $.each($('#form').serializeArray({ checkboxesAsBools: true }), (i, field) => {
+    values[field.name] = field.value;
+  });
+  $.each($("#form").find("input[type=checkbox]"), function(key, val) {
+    values[$(val).attr('name')] = $(val).is(':checked');
+  });
+  $.ajax({
+    type: 'POST',
+    url: '/api/{{collectionName}}',
+    data: values,
+    success: function (result) {
+      window.location = '/{{collectionName}}'
+    },
+    error: function (result) {
+      errorAlert(result.responseJSON.message);
+    }
+  });
+});
+</script>

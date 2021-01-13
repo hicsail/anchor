@@ -3,7 +3,7 @@ const Hoek = require('hoek');
 const Joi = require('joi');
 const Boom = require('boom');
 const Mongodb = require('mongodb');
-const DefaultScope = require('../helper/getRoleNames');
+const DefaultScopes = require('../helper/getRoleNames');
 
 const argsFromArguments = function (argumentz) {
 
@@ -939,7 +939,7 @@ AnchorModel.routes = {
     auth: true,
     disabled: false,
     payload: null,
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const sortOrder = request.query['order[0][dir]'] === 'asc' ? '' : '-';
@@ -970,13 +970,14 @@ AnchorModel.routes = {
     auth: true,
     disabled: false,
     payload: null,
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
       const payload = request.payload;
 
-      if (request.auth.isAuthenticated){
+      if (request.auth.isAuthenticated) {
+
         payload.userId = String(request.auth.credentials.user._id);
       }
       return await model.create(payload);
@@ -987,7 +988,7 @@ AnchorModel.routes = {
     auth: true,
     disabled: true,
     payload: null,
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1005,7 +1006,7 @@ AnchorModel.routes = {
       limit: Joi.number().default(20),
       page: Joi.number().default(1)
     },
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1022,7 +1023,7 @@ AnchorModel.routes = {
     auth:true,
     disabled: false,
     payload: {},
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1042,7 +1043,7 @@ AnchorModel.routes = {
     auth:true,
     disabled: false,
     payload: null,
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1058,7 +1059,7 @@ AnchorModel.routes = {
   getId: {
     auth:true,
     disabled: false,
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1081,7 +1082,7 @@ AnchorModel.routes = {
       limit: Joi.number().default(20),
       page: Joi.number().default(1)
     },
-    scope: DefaultScope,
+    scope: DefaultScopes,
     handler: async (request,h) => {
 
       const model = request.pre.model;
@@ -1096,6 +1097,30 @@ AnchorModel.routes = {
       };
       return await model.pagedLookup(query,page,limit,options,model.lookups);
     }
+  },
+  tableView: {
+    auth: true,
+    disabled: false,
+    scope: DefaultScopes,
+    apiDataSourcePath: '/api/table/{collectionName}',
+    outputDataFields: null,
+    validationSchema: Joi.object({
+      label: Joi.string().required(),
+      from: Joi.string(),
+      invisible: Joi.boolean().default(false),
+      accessRoles: Joi.array()
+    })
+  },
+  editView: {
+    auth: true,
+    disabled: false,
+    scope: DefaultScopes
+  },
+  createView: {
+    auth: true,
+    disabled: false,
+    scope: DefaultScopes,
+    createSchema: null
   }
 };
 
@@ -1131,6 +1156,18 @@ AnchorModel.routeMap = {
   insertMany: {
     method: 'POST',
     path: '/api/{collectionName}/insertMany'
+  },
+  tableView: {
+    method: 'GET',
+    path: '/{collectionName}'
+  },
+  editView: {
+    method: 'GET',
+    path: '/edit/{collectionName}/{id}'
+  },
+  createView: {
+    method: 'GET',
+    path: '/create/{collectionName}'
   }
 };
 AnchorModel.timestamps = true;
@@ -1141,4 +1178,3 @@ AnchorModel.clients = {};
 AnchorModel.dbs = {};
 
 module.exports = AnchorModel;
-

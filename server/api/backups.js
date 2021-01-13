@@ -8,6 +8,7 @@ const Util = require('util');
 const Boom = require('boom');
 const Path = require('path');
 const Backup = require('../models/backup');
+const PermissionConfigTable = require('../permission-config.json');
 
 const readdir = Util.promisify(Fs.readdir);
 //const unlink =  Util.promisify(Fs.unlink);
@@ -32,7 +33,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.POST['/api/backups'] || ['root']
       }
     },
     handler: async function (request, h) {
@@ -47,7 +48,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.GET['/api/backups/refresh'] || ['root']
       }
     },
     handler: async function (request, h) {
@@ -66,7 +67,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.PUT['/api/backups/{id}'] || ['root']
       }
     },
     handler: async function (request, h) {
@@ -92,7 +93,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.DELETE['/api/backups/{id}'] || ['root']
       }
     },
     handler: async function (request, h) {

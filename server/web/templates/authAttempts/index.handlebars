@@ -11,9 +11,10 @@
               <thead>
               <tr>
                 <th>Username</th>
-                <th>Application</th>
                 <th>IP</th>
                 <th>Time</th>
+                <th>OS</th>
+                <th>Browser</th>
                 {{#role user 'admin'}}
                   <th>ID</th>
                   <th>Delete</th>
@@ -28,7 +29,7 @@
   </div>
 </div>
 <script>
-  var table;
+  let table;
   $(document).ready(function () {
     table = $('#table').DataTable({
       processing: true,
@@ -40,9 +41,9 @@
         'copy', 'csv', 'excel', 'pdf', 'print','colvis'
       ],
       ajax: {
-        url: '/api/table/authAttempts',        
+        url: '/api/table/authAttempts',
         data: function (d) {
-          d.fields = "username application ip time";
+          d.fields = "username ip time";
         }
       },
       columns: [
@@ -51,19 +52,23 @@
           defaultContent: ""
         },
         {
-          data: "application",
-          defaultContent: ""
-        },
-        {
           data: "ip",
           defaultContent: ""
         },
         {
-          data: "time",
+          data: "createdAt",
           render: function (data, type, row) {
-            var date = new Date(row.time);
+            const date = new Date(row.createdAt);
             return date.toDateString() + ' ' + date.toLocaleTimeString('en-us');
           }
+        },
+        {
+          data: "os",
+          defaultContent: ""
+        },
+        {
+          data: "browser",
+          defaultContent: ""
         },
         {{#role user 'admin'}}
           {

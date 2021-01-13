@@ -14,15 +14,15 @@ class Token extends AnchorModel {
     Assert.ok(doc.userId, 'Missing userId arugment.');
 
     const id = AnchorModel.ObjectID().toString();
-
+    const lastUsed = doc.lastUsed ? doc.lastUsed : null;
     const document = {
       tokenName: doc.tokenName,
       userId: doc.userId,
       token: JWT.sign(id,Config.get('/authSecret')),
       tokenId: id,
       time: new Date(),
-      active: true,
-      lastUsed: null
+      active: doc.active,
+      lastUsed
     };
 
     const tokens = await this.insertOne(document);
@@ -33,7 +33,6 @@ class Token extends AnchorModel {
 
 
 Token.collectionName = 'tokens';
-
 
 Token.schema = Joi.object({
   _id: Joi.object(),
@@ -47,16 +46,40 @@ Token.schema = Joi.object({
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: {
+    payload: Joi.object({
       tokenName: Joi.string().required(),
       active: Joi.boolean().default(true)
-    }
+    })
   },
   update: {
-    payload: {
+    payload: Joi.object({
       tokenName: Joi.string().required(),
       active: Joi.boolean().default(true)
+    })
+  },
+  tableView: {
+    outputDataFields: {
+      username: { label: 'Username', from: 'user' },
+      name: { label: 'Name', from: 'user' },
+      tokenName: { label: 'Token Name', accessRoles: ['root'] },
+      active: { label: 'Active' },
+      lastUsed: { label: 'Last Used' },
+      time: { label: 'Time' },
+      token: { label: 'Token', invisible: true },
+      _id: { label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true }
     }
+  },
+  createView: {
+    createSchema: Joi.object({
+      tokenName: Joi.string().required(),
+      active: Joi.boolean().required()
+    })
+  },
+  editView: {
+    editSchema: Joi.object({
+      tokenName: Joi.string().required(),
+      active: Joi.boolean().required()
+    })
   }
 });
 

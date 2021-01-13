@@ -7,24 +7,24 @@ const Boom = require('boom');
 
 const register = function (server, options) {
 
-  server.route({
-    method: 'GET',
-    path: '/feedback',
-    options : {
-      auth: {
-        strategies: ['session']
-      }
-    },
-    handler: function (request, h) {
-
-      return h.view('feedback/index', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),
-        title: 'Feedback',
-        baseUrl: Config.get('/baseUrl')
-      });
-    }
-  });
+  // server.route({
+  //   method: 'GET',
+  //   path: '/feedback',
+  //   options : {
+  //     auth: {
+  //       strategies: ['session']
+  //     }
+  //   },
+  //   handler: function (request, h) {
+  //
+  //     return h.view('feedback/index', {
+  //       user: request.auth.credentials.user,
+  //       projectName: Config.get('/projectName'),
+  //       title: 'Feedback',
+  //       baseUrl: Config.get('/baseUrl')
+  //     });
+  //   }
+  // });
 
   server.route({
     method: 'GET',

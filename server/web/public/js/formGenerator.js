@@ -70,14 +70,14 @@ const camelCaseToWords = function(str){
 };
 
 const JoiToFormTemp = '<div class="form-group">\n' +
-    '<label for="joiFormLabel{{key}}">{{key}}</label>\n' +
+    '<label for="JoiFormLabel{{key}}">{{key}}</label>\n' +
     '<input type="{{type}}" class="form-control" id="JoiFormInput{{key}}" aria-describedby="{{key}}Help" name="{{key}}" placeholder="Enter {{key}}" onkeyup="validate(\'{{key}}\')">\n' +
     '<small id="JoiFormHelp{{key}}" class="form-text text-danger"></small>\n' +
     '</div>\n';
 
 const JoiToFormTempBoolean = '<div class="form-check">\n' +
-  '<label class="form-check-label" for="joiFormLabel{{key}}">' +
-  '<input type="checkbox" class="form-check-input" id="JoiFormInput{{key}}" name="{{key}}" value="{{key}}" checked>\n' +
+  '<label class="form-check-label" for="JoiFormLabel{{key}}">' +
+  '<input type="checkbox" class="form-check-input" id="JoiFormInput{{key}}" name="{{key}}" checked>\n' +
   '{{key}}</label>\n' +
   '</div>\n';
 
@@ -89,7 +89,12 @@ $(() => {
   });
 });
 
-const joiFormValue = function(key,value) {
-  $('#JoiFormInput' + key).val(value);
-  validate(key);
+const joiFormValue = function(key,value) {  
+  if ($('#JoiFormInput' + key).attr('type') === 'checkbox') {    
+    $('#JoiFormInput' + key).prop('checked', value)  
+  }
+  else {
+    $('#JoiFormInput' + key).val(value);  
+  }  
+  //validate(key);
 }

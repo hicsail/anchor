@@ -139,9 +139,11 @@
       "root"
     ],
     "/": [
-      "admin",      
       "root",
-      "analyst"
+      "clinician",
+      "analyst",
+      "researcher",
+      "admin"
     ],
     "/api/clinicians": [
       "root",
@@ -150,7 +152,8 @@
     ],
     "/api/env": [
       "admin",
-      "root"
+      "root",
+      "researcher"
     ],
     "/api/{collectionName}": [
       "analyst",
@@ -222,7 +225,8 @@
     ],
     "/api/backups/refresh": [
       "root",
-      "admin"
+      "admin",
+      "researcher"
     ],
     "/api/clinicians/my": [
       "clinician",
@@ -232,12 +236,14 @@
     ],
     "/api/env/{name}": [
       "admin",
-      "root"
+      "root",
+      "researcher"
     ],
     "/api/feedback/unresolved": [
       "root",
       "admin",
-      "researcher"
+      "researcher",
+      "clinician"
     ],
     "/api/select2/clinicians": [
       "analyst",
@@ -320,12 +326,16 @@
     "/api/events/name/{name}": [
       "root",
       "admin",
-      "researcher"
+      "researcher",
+      "clinician",
+      "analyst"
     ],
     "/api/events/user/{userId}": [
       "root",
       "admin",
-      "researcher"
+      "researcher",
+      "clinician",
+      "analyst"
     ],
     "/api/table/clinicians/{id}": [
       "analyst",
@@ -335,6 +345,61 @@
       "root"
     ],
     "/scopes": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/group-admins": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/{collectionName}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/create/{collectionName}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/api/select2/{role}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/edit/{collectionName}/{id}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/api/groupAdmins/": [
+      "root",
+      "admin",
+      "researcher",
+      "clinician"
+    ],
+    "/api/groupAdmins/my/{role}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/api/table/groupAdmins/{role}": [
       "analyst",
       "clinician",
       "researcher",
@@ -475,6 +540,18 @@
       "researcher",
       "admin",
       "root"
+    ],
+    "/api/groupAdmins/{role}/{id}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/api/groupAdmins/{role}/{userId}/{adminId}": [
+      "root",
+      "admin",
+      "researcher"
     ]
   },
   "PUT": {
@@ -552,6 +629,25 @@
       "researcher",
       "admin",
       "root"
+    ],
+    "/api/groupAdmins/{role}/{clinicianId}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/api/groupAdmins/{role}/{adminId}": [
+      "analyst",
+      "clinician",
+      "researcher",
+      "admin",
+      "root"
+    ],
+    "/api/groupAdmins/{role}/{userId}/{adminId}": [
+      "root",
+      "admin",
+      "researcher"
     ]
   }
 }

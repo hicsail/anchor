@@ -41,11 +41,10 @@ const register = function (server, options) {
 
           return h.continue;
           /*Authorization(request, PermissionConfigTable['/roles']) ?
-              reply(true) :
-              reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));*/
+          reply(true) :
+           reply(Boom.conflict('Insufficient Authorization for user: ' + request.auth.credentials.user._id));*/
         }
-      }
-      ]
+      }]
     },
     handler: async function (request, h) {
 
@@ -72,8 +71,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategy: 'session',
-        scope: ['root']
-        //scope: ScopeArray('/scopes', 'GET', DefaultScopes)
+        scope: PermissionConfigTable.GET['/scopes'] || ['root']
       }
     },
     handler: function (request, h) {
@@ -109,7 +107,7 @@ const register = function (server, options) {
           });
           AnyUnconfigurable = PermissionConfigTable[method][path].some((role) => {//if a certain route doesn't have the same scope as the one in server means its unconfigurable.
 
-            if (!set.has(role)){
+            if (!set.has(role) || ConfigurableRoutes[method][path].length !== PermissionConfigTable[method][path].length){
               console.log('adding unconfigurable route: ', method, path );
               if (!UnconfigurableRoutes.hasOwnProperty(method)){
                 UnconfigurableRoutes[method] = {};
@@ -150,7 +148,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.GET['/participation'] || ['root']
       }
     },
     handler: function (request, h) {
@@ -170,7 +168,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root', 'admin','researcher']
+        scope: PermissionConfigTable.GET['/users/create'] || ['root']
       }
     },
     handler: function (request, h) {
@@ -190,7 +188,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.GET['/change-password/{id}'] || ['root']
       },
       validate: {
         params: {
@@ -215,7 +213,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root','admin']
+        scope: PermissionConfigTable.GET['/users/{id}'] || ['root']
       }
     },
     handler: async function (request, h) {
@@ -239,7 +237,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root','admin']
+        scope: PermissionConfigTable.GET['/users/clinicians/{id}'] || ['root']
       }
     },
     handler: function (request, h) {

@@ -1,0 +1,97 @@
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    {{>dashboardNav}}
+    <div class="col-sm-9 col-md-10">
+      <div style="padding: 30px">
+        <h3>{{title}}</h3>
+        {{#role user 'researcher'}}
+          <a class="btn btn-primary" href="/create/{{collectionName}}">Create</a>
+        {{/role}}
+        <hr>
+        <div class="card">
+          <div style="padding: 20px">
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+              <thead>
+                <tr>
+                  {{#each columns as |col|}}
+                    <th {{#if col.invisible}} class='detail'{{/if}}>{{col.label}}</th>
+                  {{/each}}
+                  {{#role user 'admin'}}
+                    <th class='detail'>Edit</th>
+                    <th class='detail'>Delete</th>
+                  {{/role}}
+               </tr>
+              </thead>
+                <tbody>
+                  {{#each data as |record|}}
+                    <tr>
+                      {{#each record}}
+                        {{#if (isBoolean this)}}
+                          <td>
+                            <span class="badge badge-info">{{this}}</span>
+                          </td>
+                        {{else}}
+                          <td>{{this}}</td>
+                        {{/if}}
+                      {{/each}}
+                      <td>
+                        <button class="btn btn-secondary" id="{{concat 'edit' record._id}}" onclick="editDoc({{json record._id}}, '{{../collectionName}}')">Edit
+                        </button>
+                      </td>
+                      <td>
+                        <button class="btn btn-danger" id="{{concat 'delete' record._id}}" onclick="deleteDoc({{json record._id}}, '{{../collectionName}}')">Delete
+                        </button>
+                      </td>
+                    </tr>
+                  {{/each}}
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  let table;
+  $(document).ready(function () {
+    table = $('#table').DataTable({
+      processing: true,
+      serverSide: false,
+      scrollX: true,
+      scrollY: '500px',
+      scrollCollapse: true,
+      lengthChange: false,
+      dom: 'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print','colvis'
+      ]
+    });
+    table.columns( '.detail' ).visible( false );
+  });
+
+  function deleteDoc(id, collectionName) {
+    const button = $('#delete_' + id);
+    const text = button.text().trim();
+    if (text === 'Delete') {
+      button.text('Are You Sure?');
+    }
+    else {
+      $.ajax({
+        url: '/api/'+collectionName+'/' + id,
+        type: 'DELETE',
+        success: function (result) {
+          successAlert('Token Deleted');
+          table.ajax.reload();
+        },
+        error: function (result) {
+          errorAlert(result.responseJSON.message);
+        }
+      });
+    }
+  }
+
+  function editDoc(id, collectionName) {
+    window.location = '/edit/'+collectionName+'/' + id
+  }
+</script>

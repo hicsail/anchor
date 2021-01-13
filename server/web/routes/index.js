@@ -3,8 +3,6 @@ const Config = require('../../../config');
 const PermissionConfigTable = require('../../permission-config.json');
 const DefaultScopes = require('../../helper/getRoleNames');
 
-console.log(PermissionConfigTable.GET['/']);
-
 const register = function (server, options) {
 
   server.route({
@@ -13,8 +11,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: PermissionConfigTable.GET['/'] || DefaultScopes,
-        mode: 'try'
+        scope: PermissionConfigTable.GET['/'] || DefaultScopes
       }
     },
     handler: function (request, h) {

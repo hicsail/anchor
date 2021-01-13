@@ -1,6 +1,8 @@
 'use strict';
 const Config = require('../../../config');
 const Env = require('dotenv');
+const PermissionConfigTable = require('../../permission-config.json');
+const DefaultScopes = require('../../helper/getRoleNames');
 
 const register = function (server, options) {
 
@@ -10,7 +12,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.GET['/env'] || DefaultScopes
       }
     },
     handler: function (request, h) {

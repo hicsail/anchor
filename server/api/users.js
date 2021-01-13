@@ -5,6 +5,7 @@ const User = require('../models/user');
 const Config = require('../../config');
 const Joi = require('joi');
 const PasswordComplexity = require('joi-password-complexity');
+const PermissionConfigTable = require('../permission-config.json');
 
 const register = function (server, options) {
 
@@ -54,7 +55,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root','admin','researcher']
+        scope: PermissionConfigTable.POST['/api/users'] || ['root']
       },
       validate: {
         payload: User.payload
@@ -129,7 +130,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: 'admin'
+        scope: PermissionConfigTable.PUT['/api/users/{id}'] || ['root']
       },
       validate: {
         params: {
@@ -206,7 +207,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root', 'admin', 'researcher']
+        scope: PermissionConfigTable.PUT['/api/users/{id}/participation'] || ['root']
       },
       validate: {
         params: {
@@ -331,7 +332,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple','session'],
-        scope: ['root','admin']
+        scope: PermissionConfigTable.PUT['/api/users/{id}/password'] || ['root']
       },
       validate: {
         params: {
@@ -472,7 +473,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['simple', 'session'],
-        scope: ['root', 'admin']
+        scope: PermissionConfigTable.DELETE['/api/users/{id}'] || ['root']
       },
       validate: {
         params: {

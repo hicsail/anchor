@@ -25,6 +25,7 @@
     "node": "8.x.x"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "adm-zip": "0.4.x",
     "archiver": "2.x.x",
     "async": "2.x.x",
@@ -46,6 +47,7 @@
     "hoek": "5.x.x",
     "inert": "^5.1.0",
     "joi": "13.x.x",
+    "joi-json": "^4.0.0",
     "joi-password-complexity": "2.x.x",
     "jsonwebtoken": "8.x.x",
     "lout": "10.x.x",
