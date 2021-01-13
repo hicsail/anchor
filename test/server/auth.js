@@ -195,7 +195,12 @@ lab.experiment('Simple Auth Strategy', () => {
 
   lab.test('it returns as invalid when the user query misses', async () => {
 
-    const session = await Session.create('000000000000000000000000', '127.0.0.1', 'Lab');
+    const doc = {
+      userId: '000000000000000000000000',
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    };
+    const session = await Session.create(doc);
     const request = {
       method: 'GET',
       url: '/simple',
@@ -212,8 +217,12 @@ lab.experiment('Simple Auth Strategy', () => {
   lab.test('it returns as invalid when the user is not active', async () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy', []);
-
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
+    const doc = {
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    };
+    const session = await Session.create(doc);
     const update = {
       $set: {
         isActive: false
@@ -236,11 +245,17 @@ lab.experiment('Simple Auth Strategy', () => {
     Code.expect(response.result.isValid).to.equal(false);
   });
 
+
   /*lab.test('it returns as valid when it is the root user', async () => {
 
     const rootUser = await Fixtures.Creds.createRootUser('321!abc','ren@stimpy.show');
 
-    //const session = await Session.create(`${rootUser.user._id}`, '127.0.0.1', 'Lab');
+    let doc = {
+      userId: `${rootUser.user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    }
+    const session = await Session.create(doc);
 
     const request = {
       method: 'GET',
@@ -261,7 +276,12 @@ lab.experiment('Simple Auth Strategy', () => {
 
     const { user } = await Fixtures.Creds.createUser('Ren','321!abc','ren@stimpy.show','Stimpy', []);
 
-    const session = await Session.create(`${user._id}`, '127.0.0.1', 'Lab');
+    let doc = {
+      userId: `${user._id}`,
+      ip: '127.0.0.1',
+      userAgent: 'Lab'
+    };
+    const session = await Session.create(doc);
 
     const request = {
       method: 'GET',
@@ -370,6 +390,8 @@ lab.experiment('Session Auth Strategy', () => {
       url: '/login?rootUser=1'
     };
     const loginResponse = await server.inject(loginRequest);
+
+    //const user = loginResponse.result.user;
 
     const cookie = loginResponse.headers['set-cookie'][0].replace(/;.*$/, '');
     const request = {

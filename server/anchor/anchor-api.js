@@ -2,6 +2,7 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const IsAllowed = require('../helper/isAllowed');
+//const JoiToJson = require('../helper/joiToJson');
 
 const register = function (server,serverOptions) {
 
@@ -121,12 +122,13 @@ const register = function (server,serverOptions) {
         method: function (request,h) {
 
           const model = request.pre.model;
-          const { error, value } = Joi.validate(request.payload,model.routes.create.payload);
-
-          if (error) {
-            throw Boom.badRequest('Incorrect Payload', error);
+          const joiSchema = model.routes.create.payload;
+          //console.log(JoiToJson(joiSchema));
+          const obj = joiSchema.validate(request.payload);
+          if (obj.error) {
+            throw Boom.badRequest('Incorrect Payload', obj.error);
           }
-          request.payload = value;
+          request.payload = obj.value;
           return h.continue;
         }
       }, {
@@ -527,19 +529,24 @@ const register = function (server,serverOptions) {
           }
           return h.continue;
         }
-      }, {
-        assign: 'payload',
-        method: function (request,h) {
-
-          const model = request.pre.model;
-          const { error, value } = Joi.validate(request.payload, model.routes.update.payload);
-          if (error) {
-            throw Boom.badRequest('Incorrect Payload', error);
-          }
-          request.payload = value;
-          return h.continue;
-        }
-      }, {
+      },
+      //   {
+      //   assign: 'payload',
+      //   method: function (request,h) {
+      //
+      //     const model = request.pre.model;
+      //     const joiSchema = model.routes.update.payload;
+      //     console.log(joiSchema);
+      //     // joiSchema.validate(request.payload);
+      //     const { error, value } = Joi.validate(request.payload, model.routes.update.payload);
+      //     if (error) {
+      //       throw Boom.badRequest('Incorrect Payload', error);
+      //     }
+      //     request.payload = value;
+      //     return h.continue;
+      //   }
+      // },
+      {
 
         assign: 'auth',
         method: function (request,h) {

@@ -976,7 +976,7 @@ AnchorModel.routes = {
       const model = request.pre.model;
       const payload = request.payload;
 
-      if (request.auth.isAuthenticated){
+      if (request.auth.isAuthenticated) {
 
         payload.userId = String(request.auth.credentials.user._id);
       }

@@ -6,7 +6,7 @@
         <h3>Create {{title}}</h3>
         <hr>
         <div class="card">
-          <div style="padding: 20px">            
+          <div style="padding: 20px">
             <form id="form">
               <div id="formFields"></div>
               <button id="create" type="submit" class="btn btn-primary">Create</button>
@@ -23,8 +23,12 @@ joiToForm('formFields',schema);
 $('#create').click((event) => {
   event.preventDefault();
   const values = {};
-  $.each($('#form').serializeArray(), (i, field) => {
+
+  $.each($('#form').serializeArray({ checkboxesAsBools: true }), (i, field) => {
     values[field.name] = field.value;
+  });
+  $.each($("#form").find("input[type=checkbox]"), function(key, val) {
+    values[$(val).attr('name')] = $(val).is(':checked');
   });
   $.ajax({
     type: 'POST',

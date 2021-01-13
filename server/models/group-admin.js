@@ -42,6 +42,15 @@ GroupAdmin.schema = Joi.object({
 });
 
 GroupAdmin.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: true
+  },
+  update: {
+    disabled: true
+  },
+  delete: {
+    disabled: true
+  },
   tableView: {
     disabled: true
   }

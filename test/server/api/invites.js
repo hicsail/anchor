@@ -50,7 +50,14 @@ lab.before(async () => {
 
   authenticatedRoot = await Fixtures.Creds.createRootUser('123abs','email@email.com');
   user = await User.create('ren', 'baddog', 'ren@stimpy.show', 'ren');
-  session = await Session.create(user._id.toString(), '127.0.0.1', 'Lab');
+  //invite = await Invite.create('renny', 'mytest@test.com',  'this is a test invitation', user._id.toString());
+
+  const doc = {
+    userId: user._id.toString(),
+    ip: '127.0.0.1',
+    userAgent: 'Lab'
+  };
+  session = await Session.create(doc);
 });
 
 lab.after(async () => {

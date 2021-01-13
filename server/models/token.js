@@ -14,15 +14,15 @@ class Token extends AnchorModel {
     Assert.ok(doc.userId, 'Missing userId arugment.');
 
     const id = AnchorModel.ObjectID().toString();
-
+    const lastUsed = doc.lastUsed ? doc.lastUsed : null;
     const document = {
       tokenName: doc.tokenName,
       userId: doc.userId,
       token: JWT.sign(id,Config.get('/authSecret')),
       tokenId: id,
       time: new Date(),
-      active: true,
-      lastUsed: null
+      active: doc.active,
+      lastUsed
     };
 
     const tokens = await this.insertOne(document);
@@ -46,16 +46,16 @@ Token.schema = Joi.object({
 
 Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    payload: {
+    payload: Joi.object({
       tokenName: Joi.string().required(),
       active: Joi.boolean().default(true)
-    }
+    })
   },
   update: {
-    payload: {
+    payload: Joi.object({
       tokenName: Joi.string().required(),
       active: Joi.boolean().default(true)
-    }
+    })
   },
   tableView: {
     outputDataFields: {
@@ -71,7 +71,8 @@ Token.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   createView: {
     createSchema: Joi.object({
-      tokenName: Joi.string().required()
+      tokenName: Joi.string().required(),
+      active: Joi.boolean().required()
     })
   },
   editView: {
