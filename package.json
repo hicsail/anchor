@@ -50,7 +50,7 @@
     "lout": "10.x.x",
     "mongo-models": "1.x.x",
     "mongodb": "2.x.x",
-    "nodemailer": "4.x.x",
+    "nodemailer": "6.x.x",
     "nodemailer-markdown": "1.0.2",
     "object-assign": "4.x.x",
     "slug": "0.9.x",
