@@ -5,7 +5,11 @@
         <div class="card-body">
           <h4 class="card-title">Signup</h4>
           <form id="signupForm">
-            <div id="signUpFormFields"></div>
+            {{#if usernameRequired}}
+              <div id="signUpFormFields"></div>
+            {{else}}
+              <div id="signUpFormFieldsNoUsername"></div>
+            {{/if}}
             <button id="signup" type="submit" class="btn btn-primary">Sign Up</button>
           </form>
         </div>

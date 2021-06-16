@@ -23,13 +23,14 @@ const register = function (server, options) {
         assign: 'usernameCheck',
         method: async function (request, h) {
 
-          const user = await User.findByUsername(request.payload.username);
+          if (Config.get('/loginInfo/usernameRequired')) {
+            const user = await User.findByUsername(request.payload.username);
 
-          if (user) {
+            if (user) {
 
-            throw Boom.conflict('Username already in use.');
+              throw Boom.conflict('Username already in use.');
+            }
           }
-
           return h.continue;
         }
       }, {
@@ -104,12 +105,14 @@ const register = function (server, options) {
       const result = {
         user: {
           _id: user._id,
-          username: user.username,
           email: user.email,
           roles: user.roles
         },
         session,
         authHeader
+      };
+      if (Config.get('/loginInfo/usernameRequired')) {
+        result.user.username = user.username;
       };
 
       return result;

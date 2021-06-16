@@ -112,7 +112,10 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const username = request.payload.username;
+      let username = null;
+      if (Config.get('/loginInfo/usernameRequired')) {
+        username = request.payload.username;
+      }
       const password = request.payload.password;
       const email = request.payload.email;
       const name = request.payload.name;

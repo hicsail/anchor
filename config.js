@@ -94,6 +94,9 @@ const config = {
       address: 'jedireza@gmail.com'
     }
   },
+  loginInfo: {
+    usernameRequired: true
+  },
   passwordComplexity: {
     min: 8,
     max: 32,
