@@ -17,7 +17,8 @@ const register = function (server, options) {
         user: request.auth.credentials.user,
         projectName: Config.get('/projectName'),
         title: 'Accounts',
-        baseUrl: Config.get('/baseUrl')
+        baseUrl: Config.get('/baseUrl'),
+        usernameRequired: Config.get('/loginInfo/usernameRequired')
       });
     }
   });

@@ -3,7 +3,13 @@ const schema = Joi.object({
   email: Joi.string().email().lowercase().required(),
   username: Joi.string().token().lowercase().required(),
 });
+const schemaNoUsername = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().lowercase().required()
+});
+
 joiToForm('formFields',schema);
+joiToForm('formFieldsNoUsername',schemaNoUsername);
 $('#update').click((event) => {
   event.preventDefault();
   const values = {};
