@@ -6,7 +6,15 @@ const signUpSchema = Joi.object({
   password: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number'),
   confirmPassword: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number')
 });
+const signUpSchemaNoUsername = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number'),
+  confirmPassword: Joi.string().required().min(8).regex(/^[A-Z]+[a-z]+[0-9]+$/, '1 Uppercase, 1 lowercase, 1 number')
+});
+
 joiToForm('signUpFormFields',signUpSchema);
+joiToForm('signUpFormFieldsNoUsername',signUpSchemaNoUsername);
 
 $('#signup').click((event) => {
   event.preventDefault();
@@ -15,12 +23,12 @@ $('#signup').click((event) => {
     values[field.name] = field.value;
   });
   if(values['password'] === values['confirmPassword']) {
-    delete values['confirmPassword'];    
+    delete values['confirmPassword'];
     $.ajax({
       type: 'POST',
       url: '/api/signup',
       data: values,
-      success: function (result) {      
+      success: function (result) {
         window.location = '/';
       },
       error: function (result) {

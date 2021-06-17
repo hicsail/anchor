@@ -28,7 +28,11 @@
       {{/if}}
       <p class="card-text">
       <form id="form">
+      {{#if usernameRequired}}
         <div id="formFields"></div>
+      {{else}}
+        <div id="formFieldsNoUsername"></div>
+      {{/if}}
       <button type="submit" id="update" class="btn btn-primary">Update</button>
       </form>
     </div>

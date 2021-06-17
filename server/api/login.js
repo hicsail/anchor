@@ -15,12 +15,13 @@ const register = function (server, options) {
     method: 'POST',
     path: '/api/login',
     options: {
-      tags: ['api','auth'],
+      tags: ['api', 'auth'],
       description: 'Log in with username and password.',
       auth: false,
       validate: {
         payload: {
-          username: Joi.string().lowercase().required(),
+          username: Joi.string().lowercase().optional(),
+          email: Joi.string().lowercase().optional(),
           password: Joi.string().required()
         }
       },
@@ -34,10 +35,15 @@ const register = function (server, options) {
         method: async function (request, h) {
 
           const ip = request.info.remoteAddress;
-          const username = request.payload.username;
-
-          const detected = await AuthAttempt.abuseDetected(ip,username);
-
+          let detected;
+          if (Config.get('/loginInfo/usernameRequired')) {
+            const username = request.payload.username;
+            detected = await AuthAttempt.abuseDetected(ip, username);
+          }
+          else {
+            const email = request.payload.email;
+            detected = await AuthAttempt.abuseDetected(ip, email);
+          }
           if (detected) {
             throw Boom.badRequest('Maximum number of auth attempts reached.');
           }
@@ -48,15 +54,27 @@ const register = function (server, options) {
         assign: 'user',
         method: async function (request, h) {
 
-          const username = request.payload.username;
+          let userInfo;
+          if (Config.get('/loginInfo/usernameRequired')) {
+            userInfo = request.payload.username;
+            if (userInfo.indexOf('@') > -1) {
+              throw Boom.badRequest('Email cannot be used as username');
+            }
+          }
+          else {
+            userInfo = request.payload.email;
+            if (userInfo.indexOf('@') === -1) {
+              throw Boom.badRequest('Email required');
+            }
+          }
           const password = request.payload.password;
           const ip = request.info.remoteAddress;
-          const user = await User.findByCredentials(username, password);
+          const user = await User.findByCredentials(userInfo, password);
           const userAgent = request.headers['user-agent'];
 
           if (!user) {
 
-            await AuthAttempt.create(ip, username, userAgent);
+            await AuthAttempt.create(ip, userInfo, userAgent);
 
             throw Boom.badRequest('Credentials are invalid or account is inactive.');
           }
@@ -87,11 +105,23 @@ const register = function (server, options) {
       const authHeader = `Basic ${Buffer.from(credentials).toString('base64')}`;
 
       request.cookieAuth.set(request.pre.session);
+      if (Config.get('/loginInfo/usernameRequired')) {
+        return ({
+          user: {
+            _id: request.pre.user._id,
+            name: request.pre.user.name,
+            username: request.pre.user.username,
+            email: request.pre.user.email,
+            roles: request.pre.user.roles
+          },
+          session: request.pre.session,
+          authHeader
+        });
+      }
       return ({
         user: {
           _id: request.pre.user._id,
           name: request.pre.user.name,
-          username: request.pre.user.username,
           email: request.pre.user.email,
           roles: request.pre.user.roles
         },
@@ -100,7 +130,6 @@ const register = function (server, options) {
       });
     }
   });
-
 
 
   server.route({
@@ -259,7 +288,7 @@ const register = function (server, options) {
     method: 'POST',
     path: '/api/login/reset',
     options: {
-      tags: ['api','auth'],
+      tags: ['api', 'auth'],
       description: 'Verify Key to reset new password',
       auth: false,
       validate: {

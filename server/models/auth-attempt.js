@@ -8,10 +8,10 @@ const Hoek = require('hoek');
 
 class AuthAttempt extends AnchorModel {
 
-  static async create(ip, username, userAgent) {
+  static async create(ip, userInfo, userAgent) {
 
     Assert.ok(ip, 'Missing ip argument.');
-    Assert.ok(username, 'Missing username argument.');
+    Assert.ok(userInfo, 'Missing username or email argument.');
     Assert.ok(userAgent, 'Missing userAgent argument.');
 
     const agentInfo = UserAgent.lookup(userAgent);
@@ -21,7 +21,7 @@ class AuthAttempt extends AnchorModel {
       browser,
       ip,
       os: agentInfo.os.toString(),
-      username
+      userInfo
     });
 
     const authAttempts = await this.insertOne(document);
@@ -29,14 +29,14 @@ class AuthAttempt extends AnchorModel {
     return authAttempts[0];
   }
 
-  static async abuseDetected(ip, username) {
+  static async abuseDetected(ip, userInfo) {
 
     Assert.ok(ip, 'Missing ip argument.');
-    Assert.ok(username, 'Missing username argument.');
+    Assert.ok(userInfo, 'Missing username or email argument.');
 
     const [countByIp, countByIpAndUser] = await Promise.all([
       this.count({ ip }),
-      this.count({ ip, username })
+      this.count({ ip, userInfo })
     ]);
 
     const config = Config.get('/authAttempts');
@@ -49,13 +49,12 @@ class AuthAttempt extends AnchorModel {
 
 
 AuthAttempt.collectionName = 'authAttempts';
-
 AuthAttempt.schema = Joi.object({
   _id: Joi.object(),
   browser: Joi.string(),
   ip: Joi.string().required(),
   os: Joi.string().required(),
-  username: Joi.string().lowercase().required(),
+  userInfo: Joi.string().lowercase().required(),
   createdAt: Joi.date().default(new Date(), 'time of creation')
 });
 
@@ -64,14 +63,14 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: true
   },
   update: Joi.object({
-    username: Joi.string().lowercase().required()
+    userInfo: Joi.string().lowercase().required()
   }),
   tableView: {
     outputDataFields: {
-      username: { label: 'Username' },
+      userInfo: { label: 'User Info' },
       ip: { label: 'IP' },
       createdAt: { label: 'Time' },
-      _id: { label: 'ID', accessRoles: ['admin', 'researcher','root'], invisible: true },
+      _id: { label: 'ID', accessRoles: ['admin', 'researcher', 'root'], invisible: true },
       os: { label: 'OS', invisible: true },
       browser: { label: 'browser', invisible: true }
 
@@ -82,7 +81,7 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   editView: {
     editSchema: Joi.object({
-      username: Joi.string().lowercase().required()
+      userInfo: Joi.string().lowercase().required()
     })
   }
 });
@@ -90,8 +89,8 @@ AuthAttempt.routes = Hoek.applyToDefaults(AnchorModel.routes, {
 AuthAttempt.lookups = [];
 
 AuthAttempt.indexes = [
-  { key: { ip: 1, username: 1 } },
-  { key: { username: 1 } }
+  { key: { ip: 1, userInfo: 1 } },
+  { key: { userInfo: 1 } }
 ];
 
 module.exports = AuthAttempt;

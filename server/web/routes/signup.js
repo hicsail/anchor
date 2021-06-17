@@ -20,7 +20,8 @@ const register  = function (server, options) {
       return h.view('signup/signup',{
         projectName: Config.get('/projectName'),
         title: 'Signup',
-        baseUrl: Config.get('/baseUrl')
+        baseUrl: Config.get('/baseUrl'),
+        usernameRequired: Config.get('/loginInfo/usernameRequired')
       });
     }
   });

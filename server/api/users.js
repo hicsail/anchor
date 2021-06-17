@@ -112,7 +112,10 @@ const register = function (server, options) {
     },
     handler: async function (request, h) {
 
-      const username = request.payload.username;
+      let username = null;
+      if (Config.get('/loginInfo/usernameRequired')) {
+        username = request.payload.username;
+      }
       const password = request.payload.password;
       const email = request.payload.email;
       const name = request.payload.name;
@@ -249,7 +252,7 @@ const register = function (server, options) {
       },
       validate: {
         payload: {
-          username: Joi.string().token().lowercase().required(),
+          username: Joi.string().token().lowercase().optional(),
           email: Joi.string().email().lowercase().required(),
           name: Joi.string().required(),
           gender: Joi.string().allow('male', 'female'),
@@ -265,17 +268,18 @@ const register = function (server, options) {
           assign: 'usernameCheck',
           method: async function (request, h) {
 
-            const conditions = {
-              username: request.payload.username,
-              _id: { $ne: request.auth.credentials.user._id }
-            };
+            if (Config.get('/loginInfo/usernameRequired')) {
+              const conditions = {
+                username: request.payload.username,
+                _id: { $ne: request.auth.credentials.user._id }
+              };
 
-            const user = await User.findOne(conditions);
+              const user = await User.findOne(conditions);
 
-            if (user) {
-              throw Boom.conflict('Username already in use.');
+              if (user) {
+                throw Boom.conflict('Username already in use.');
+              }
             }
-
             return h.continue;
           }
         }, {

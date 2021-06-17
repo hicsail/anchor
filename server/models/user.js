@@ -35,7 +35,9 @@ class User extends AnchorModel {
 
   static async create(username, password, email, name) {
 
-    Assert.ok(username, 'Missing username arugment.');
+    if (Config.get('/loginInfo/usernameRequired')) {
+      Assert.ok(username, 'Missing username arugment.');
+    }
     Assert.ok(password, 'Missing pasword arugment.');
     Assert.ok(email, 'Missing email arugment.');
     Assert.ok(name, 'Missing name arugment.');
@@ -43,17 +45,32 @@ class User extends AnchorModel {
     const self = this;
 
     const passwordHash = await this.generatePasswordHash(password);
-    const document =  new this({
-      isActive: true,
-      inStudy: true,
-      username: username.toLowerCase(),
-      password: passwordHash.hash,
-      email: email.toLowerCase(),
-      name,
-      roles: {},
-      studyID: null,
-      timeCreated: new Date()
-    });
+    let document;
+    if (Config.get('/loginInfo/usernameRequired')) {
+      document = new this({
+        isActive: true,
+        inStudy: true,
+        username: username.toLowerCase(),
+        password: passwordHash.hash,
+        email: email.toLowerCase(),
+        name,
+        roles: {},
+        studyID: null,
+        timeCreated: new Date()
+      });
+    }
+    else {
+      document = new this({
+        isActive: true,
+        inStudy: true,
+        password: passwordHash.hash,
+        email: email.toLowerCase(),
+        name,
+        roles: {},
+        studyID: null,
+        timeCreated: new Date()
+      });
+    }
 
     const users = await self.insertOne(document);
 
@@ -148,29 +165,61 @@ class User extends AnchorModel {
 
 User.collectionName = 'users';
 
+if (Config.get('/loginInfo/usernameRequired')) {
+  User.schema = Joi.object({
+    _id: Joi.object(),
+    isActive: Joi.boolean().default(true),
+    username: Joi.string().token().lowercase().required(),
+    password: Joi.string(),
+    name: Joi.string(),
+    inStudy: Joi.boolean().default(true),
+    email: Joi.string().email().lowercase().required(),
+    roles: Joi.object(getRolesValidator()),
+    resetPassword: Joi.object({
+      token: Joi.string().required(),
+      expires: Joi.date().required()
+    }),
+    timeCreated: Joi.date()
+  });
 
-User.schema = Joi.object({
-  _id: Joi.object(),
-  isActive: Joi.boolean().default(true),
-  username: Joi.string().token().lowercase().required(),
-  password: Joi.string(),
-  name: Joi.string(),
-  inStudy: Joi.boolean().default(true),
-  email: Joi.string().email().lowercase().required(),
-  roles: Joi.object(getRolesValidator()),
-  resetPassword: Joi.object({
-    token: Joi.string().required(),
-    expires: Joi.date().required()
-  }),
-  timeCreated: Joi.date()
-});
+  User.payload = Joi.object({
+    username: Joi.string().token().lowercase().invalid('root').required(),
+    password: Joi.string().required(),
+    email: Joi.string().email().lowercase().required(),
+    name: Joi.string().required()
+  });
 
-User.payload = Joi.object({
-  username: Joi.string().token().lowercase().invalid('root').required(),
-  password: Joi.string().required(),
-  email: Joi.string().email().lowercase().required(),
-  name: Joi.string().required()
-});
+  User.indexes = [
+    { key: { username: 1, unique: 1 } },
+    { key: { email: 1, unique: 1 } }
+  ];
+}
+else {
+  User.schema = Joi.object({
+    _id: Joi.object(),
+    isActive: Joi.boolean().default(true),
+    password: Joi.string(),
+    name: Joi.string(),
+    inStudy: Joi.boolean().default(true),
+    email: Joi.string().email().lowercase().required(),
+    roles: Joi.object(getRolesValidator()),
+    resetPassword: Joi.object({
+      token: Joi.string().required(),
+      expires: Joi.date().required()
+    }),
+    timeCreated: Joi.date()
+  });
+
+  User.payload = Joi.object({
+    password: Joi.string().required(),
+    email: Joi.string().email().lowercase().required(),
+    name: Joi.string().required()
+  });
+
+  User.indexes = [
+    { key: { email: 1, unique: 1 } }
+  ];
+}
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
@@ -198,10 +247,5 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
     disabled: true
   }
 });
-
-User.indexes = [
-  { key: { username: 1, unique: 1 } },
-  { key: { email: 1, unique: 1 } }
-];
 
 module.exports = User;
