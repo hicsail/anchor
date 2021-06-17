@@ -9,7 +9,8 @@ const register  = function (server, options) {
     path: '/login',
     options: {
       auth: {
-        strategies: ['session']
+        strategies: ['session'],
+        mode: 'try'
       }
     },
     handler: function (request, h) {
@@ -23,7 +24,8 @@ const register  = function (server, options) {
       return h.view('login/login', {
         projectName: Config.get('/projectName'),
         title: 'Login',
-        baseUrl: Config.get('/baseUrl')
+        baseUrl: Config.get('/baseUrl'),
+        usernameRequired: Config.get('/loginInfo/usernameRequired')
       });
     }
   });

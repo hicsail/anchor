@@ -3,7 +3,12 @@ const loginSchema = Joi.object({
   username: Joi.string().lowercase().required(),
   password: Joi.string().required()
 });
+const loginSchemaEmail = Joi.object({
+  email: Joi.string().lowercase().required(),
+  password: Joi.string().required()
+});
 joiToForm('loginFormFields',loginSchema);
+joiToForm('loginFormFieldsEmail',loginSchemaEmail);
 
 $('#login').click((event) => {
   event.preventDefault();
@@ -16,7 +21,7 @@ $('#login').click((event) => {
     url: '/api/login',
     data: values,
     success: function (result) {
-      console.log("is success")      
+      console.log("is success")
       location.reload();
     },
     error: function (result) {
