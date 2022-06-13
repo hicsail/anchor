@@ -10,8 +10,9 @@ const register = function (server, options) {
     path: '/',
     options: {
       auth: {
-        strategies: ['simple', 'session'],
-        scope: PermissionConfigTable.GET['/'] || DefaultScopes
+        mode: 'try',
+        strategies: ['session']
+        //scope: PermissionConfigTable.GET['/'] || DefaultScopes
       }
     },
     handler: function (request, h) {

@@ -9,6 +9,7 @@ const register  = function (server, options) {
     path: '/login',
     options: {
       auth: {
+        mode: 'try',
         strategies: ['session']
       }
     },
