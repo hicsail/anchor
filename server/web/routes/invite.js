@@ -1,47 +1,48 @@
 'use strict';
 const Config = require('../../../config');
 const Invite = require('../../models/invite');
+const PermissionConfigTable = require('../../permission-config.json');
 
 const register = function (server, options) {
 
-  server.route({
-    method: 'GET',
-    path: '/invite',
-    options: {
-      auth: {
-        strategies: ['session']
-      }
-    },
-    handler: function (request, h) {
-
-      return h.view('invite/index', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),
-        title: 'Invites',
-        baseUrl: Config.get('/baseUrl')
-      });
-    }
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/invite/create',
-    options: {
-      auth: {
-        strategies: ['session'],
-        scope: ['root', 'admin','clinician','researcher']
-      }
-    },
-    handler: function (request, h) {
-
-      return h.view('invite/create', {
-        user: request.auth.credentials.user,
-        projectName: Config.get('/projectName'),
-        title: 'Invites',
-        baseUrl: Config.get('/baseUrl')
-      });
-    }
-  });
+  // server.route({
+  //   method: 'GET',
+  //   path: '/invite',
+  //   options: {
+  //     auth: {
+  //       strategies: ['session']
+  //     }
+  //   },
+  //   handler: function (request, h) {
+  //
+  //     return h.view('invite/index', {
+  //       user: request.auth.credentials.user,
+  //       projectName: Config.get('/projectName'),
+  //       title: 'Invites',
+  //       baseUrl: Config.get('/baseUrl')
+  //     });
+  //   }
+  // });
+  //
+  // server.route({
+  //   method: 'GET',
+  //   path: '/invite/create',
+  //   options: {
+  //     auth: {
+  //       strategies: ['session'],
+  //       scope: ['root', 'admin','clinician','researcher']
+  //     }
+  //   },
+  //   handler: function (request, h) {
+  //
+  //     return h.view('invite/create', {
+  //       user: request.auth.credentials.user,
+  //       projectName: Config.get('/projectName'),
+  //       title: 'Invites',
+  //       baseUrl: Config.get('/baseUrl')
+  //     });
+  //   }
+  // });
 
   server.route({
     method: 'GET',
@@ -49,7 +50,7 @@ const register = function (server, options) {
     options: {
       auth: {
         strategies: ['session'],
-        scope: ['root','admin']
+        scope: PermissionConfigTable.GET['/invite/edit/{id}'] || ['root']
       }
     },
     handler: async function (request, h) {

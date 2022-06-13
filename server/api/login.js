@@ -70,7 +70,12 @@ const register = function (server, options) {
           const userAgent = request.headers['user-agent'];
           const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
 
-          const session = await Session.create(request.pre.user._id.toString(), ip, userAgent);
+          const doc = {
+            userId: request.pre.user._id.toString(),
+            ip,
+            userAgent
+          };
+          const session = await Session.create(doc);
           //request.cookieAuth.set(session);
           return session;
         }

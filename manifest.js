@@ -50,6 +50,9 @@ const manifest = {
         plugin: './server/anchor/anchor-api'
       },
       {
+        plugin: './server/anchor/anchor-web-route'
+      },
+      {
         plugin: './server/anchor/hapi-anchor-api'
       },
       {

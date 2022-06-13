@@ -3,6 +3,7 @@ const Assert = require('assert');
 const Joi = require('joi');
 const AnchorModel = require('../anchor/anchor-model');
 const DefaultRoles = require('../helper/getRoleNames');
+const Hoek = require('hoek');
 
 class RouteScope extends AnchorModel{
 
@@ -62,6 +63,18 @@ RouteScope.payload = Joi.object({
   method: Joi.string().valid('PUT', 'POST', 'DELETE', 'GET').required(),
   path: Joi.string().required(),
   scope: Joi.string().valid(...DefaultRoles).required()
+});
+
+RouteScope.routes = Hoek.applyToDefaults(AnchorModel.routes, {
+  create: {
+    disabled: true
+  },
+  update: {
+    disabled: true
+  },
+  tableView: {
+    disabled: true
+  }
 });
 
 module.exports = RouteScope;

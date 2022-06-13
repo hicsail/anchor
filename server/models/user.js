@@ -174,12 +174,10 @@ User.payload = Joi.object({
 
 User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   create: {
-    disabled: true,
-    payload: User.payload
+    disabled: true
   },
   update: {
-    disabled: true,
-    payload: User.payload
+    disabled: true
   },
   getMy: {
     disabled: true
@@ -189,6 +187,15 @@ User.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   insertMany: {
     payload: User.payload
+  },
+  tableView: {
+    disabled: true
+  },
+  createView: {
+    disabled: true
+  },
+  editView: {
+    disabled: true
   }
 });
 

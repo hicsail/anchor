@@ -46,6 +46,9 @@ Backup.routes = Hoek.applyToDefaults(AnchorModel.routes, {
   },
   delete: {
     disabled: true
+  },
+  tableView: {
+    disabled: true
   }
 });
 

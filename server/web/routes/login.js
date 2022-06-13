@@ -9,8 +9,8 @@ const register  = function (server, options) {
     path: '/login',
     options: {
       auth: {
-        strategies: ['session'],
-        mode: 'try'
+        mode: 'try',
+        strategies: ['session']
       }
     },
     handler: function (request, h) {

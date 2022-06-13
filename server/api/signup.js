@@ -89,7 +89,13 @@ const register = function (server, options) {
       // create session
       const userAgent = request.headers['user-agent'];
       const ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
-      const session = await Session.create(user._id.toString(), ip, userAgent);
+
+      const doc = {
+        userId: user._id.toString(),
+        ip,
+        userAgent
+      };
+      const session = await Session.create(doc);
 
       const credentials = session._id + ':' + session.key;
       const authHeader = 'Basic ' + new Buffer(credentials).toString('base64');
