@@ -46,7 +46,7 @@
     "inert": "4.x.x",
     "joi": "10.x.x",
     "joi-password-complexity": "2.x.x",
-    "jsonwebtoken": "8.x.x",
+    "jsonwebtoken": "9.x.x",
     "lout": "10.x.x",
     "mongo-models": "1.x.x",
     "mongodb": "2.x.x",
