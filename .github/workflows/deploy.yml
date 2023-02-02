@@ -27,7 +27,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push Docker Build
         uses: docker/build-push-action@v3
-        if: github.ref == 'refs/heads/221-XHN-dev'
+        if: github.ref == 'refs/heads/docker'
         with:
           push: true
           tags: hicsail/anchor:unstable
