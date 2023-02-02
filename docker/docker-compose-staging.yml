@@ -1,0 +1,20 @@
+version: '3'
+services:
+  anchor-mongo:
+    image: mongo:3.4
+    ports:
+      - 27021:27017
+    volumes:
+      - anchor-staging:/data/db
+  anchor:
+    image: hicsail/anchor:unstable
+    restart: always
+    depends_on:
+      - anchor-mongo
+    ports:
+      - 9000:9000
+    env_file:
+      - ./stack.env
+volumes:
+  anchor-staging:
+    external: true
