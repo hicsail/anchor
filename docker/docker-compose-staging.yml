@@ -14,7 +14,7 @@ services:
     ports:
       - 9000:9000
     env_file:
-      - ./stack.env
+      - ../stack.env
 volumes:
   anchor-staging:
     external: true
