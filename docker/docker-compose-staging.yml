@@ -16,5 +16,4 @@ services:
     env_file:
       - ../stack.env
 volumes:
-  anchor-staging:
-    external: true
+  anchor-staging: ~
