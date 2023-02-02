@@ -3,7 +3,7 @@ services:
   anchor-mongo:
     image: mongo:3.4
     ports:
-      — 27021:27017
+      - 27021:27017
     volumes:
       - anchor-staging:/data/db
   anchor:
